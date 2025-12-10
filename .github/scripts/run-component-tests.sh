@@ -25,7 +25,7 @@ mockConfig=
 mockPort=9998
 testExe=
 
-while [[ ! -z ${1:-} ]]; do
+while [[ -n ${1:-} ]]; do
     case $1 in
     --mock) mockPath="$2"; shift;;
     --port) mockPort="$2"; shift;;
@@ -39,7 +39,7 @@ done
 
 [[ -e $mockPath ]] || die "mock-firebolt not installed"
 [[ -e $specOpenRpc ]] || die "OpenRPC spec '$specOpenRpc' not found"
-[[ -e $specAppOpenRpc ]] || die "OpenRPC App spec '$specOpenRpc' not found"
+[[ -e $specAppOpenRpc ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
 [[ -e $mockConfig ]] || die "Config '$mockConfig' not found"
 [[ -e $testExe ]] || die "Executable for CT '$testExe' not found"
 
@@ -71,8 +71,8 @@ while ! nc -z localhost $mockPort >/dev/null 2>&1; do
 done
 
 echo "Starting Component Tests"
-cd $(dirname $testExe)
-"./$(basename $testExe)"
+cd "$(dirname "$testExe")"
+"./$(basename "$testExe")"
 exitCode=$?
 
 kill-rec $mock_pid

@@ -7,7 +7,7 @@ version="0.1.0-unknown"
 sub_path=
 dst=
 
-while [[ ! -z $1 ]]; do
+while [[ -n $1 ]]; do
   case $1 in
   --package) package="$2"; shift;;
   --version) version="$2"; shift;;
@@ -34,7 +34,7 @@ fi
 echo "$version" >$dist_path/.version
 tar -czf "build/$dist_name.tar.gz" -C "build" "$dist_name"
 
-if [[ ! -z "$dst" ]]; then
+if [[ -n "$dst" ]]; then
   mkdir -p "$dst"
   cp "build/$dist_name.tar.gz" "$dst/"
 fi

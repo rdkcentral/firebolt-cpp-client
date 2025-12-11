@@ -27,7 +27,7 @@ RUN mkdir -p /deps
 ARG DEPS_GOOGLETEST_V="1.15.2"
 RUN cd /deps \
     && dir="googletest-${DEPS_GOOGLETEST_V}" \
-    && curl -sL https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/$dir.tar.gz | tar xzf - \
+    && i=0 && while ! curl -sL https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/$dir.tar.gz | tar xzf -; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
@@ -50,7 +50,7 @@ RUN cd /deps \
 ARG DEPS_JSON_SCHEMA_VALIDATOR_V="2.3.0"
 RUN cd /deps \
     && dir="json-schema-validator-${DEPS_JSON_SCHEMA_VALIDATOR_V}" \
-    && curl -sL https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz | tar xzf - \
+    && i=0 && while ! curl -sL https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
@@ -63,7 +63,7 @@ RUN cd /deps \
 ARG DEPS_WEBSOCKETPP_V="0.8.2"
 RUN cd /deps \
     && dir="websocketpp-${DEPS_WEBSOCKETPP_V}" \
-    && curl -sL https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz | tar xzf - \
+    && i=0 && while ! curl -sL https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
@@ -83,7 +83,7 @@ RUN pip install --break-system-packages gcovr
 ARG DEPS_TRANSPORT_V
 RUN cd /deps \
     && dir="firebolt-native-transport-${DEPS_TRANSPORT_V}" \
-    && curl -sL https://github.com/rdkcentral/firebolt-native-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-native-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - \
+    && i=0 && while ! curl -sL https://github.com/rdkcentral/firebolt-native-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-native-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \

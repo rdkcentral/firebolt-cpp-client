@@ -20,140 +20,35 @@
 #include "device_impl.h"
 #include "jsondata_device_types.h"
 
-using namespace Firebolt::Helpers;
-
 namespace Firebolt::Device
 {
-// Methods
-Result<AudioProfiles> DeviceImpl::audio() const
+DeviceImpl::DeviceImpl(Firebolt::Helpers::IHelper& helper)
+    : helper_(helper)
 {
-    return get<JsonData::AudioProfiles, AudioProfiles>(_T("device.audio"));
 }
 
-Result<std::string> DeviceImpl::distributor() const
+Result<DeviceClass> DeviceImpl::deviceClass() const
 {
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.distributor"));
+    return Result(helper_.get<JsonData::DeviceClassJson, DeviceClass>("Device.deviceClass"));
 }
 
-Result<HDCPVersionMap> DeviceImpl::hdcp() const
+Result<u_int32_t> DeviceImpl::timeInActiveState() const
 {
-    return get<JsonData::HDCPVersionMap, HDCPVersionMap>(_T("device.hdcp"));
+    return helper_.get<Firebolt::JSON::Unsigned, u_int32_t>("Device.timeInActiveState");
 }
 
-Result<HDRFormatMap> DeviceImpl::hdr() const
+Result<uint32_t> DeviceImpl::uptime() const
 {
-    return get<JsonData::HDRFormatMap, HDRFormatMap>(_T("device.hdr"));
+    return helper_.get<Firebolt::JSON::Unsigned, uint32_t>("Device.uptime");
 }
 
-Result<std::string> DeviceImpl::id() const
+Result<std::string> DeviceImpl::chipsetId() const
 {
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.id"));
-}
-
-Result<std::string> DeviceImpl::make() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.make"));
-}
-
-Result<std::string> DeviceImpl::model() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.model"));
-}
-
-Result<std::string> DeviceImpl::name() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.name"));
-}
-
-Result<NetworkInfoResult> DeviceImpl::network() const
-{
-    return get<JsonData::NetworkInfoResult, NetworkInfoResult>(_T("device.network"));
-}
-
-Result<std::string> DeviceImpl::platform() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.platform"));
-}
-
-Result<Resolution> DeviceImpl::screenResolution() const
-{
-    return get<WPEFramework::Core::JSON::DecSInt32, Resolution>(_T("device.screenResolution"));
-}
-
-Result<std::string> DeviceImpl::sku() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.sku"));
-}
-
-Result<std::string> DeviceImpl::type() const
-{
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.type"));
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.chipsetId");
 }
 
 Result<std::string> DeviceImpl::uid() const
 {
-    return get<FireboltSDK::JSON::String, std::string>(_T("device.uid"));
-}
-
-Result<Resolution> DeviceImpl::videoResolution() const
-{
-    return get<WPEFramework::Core::JSON::DecSInt32, Resolution>(_T("device.videoResolution"));
-}
-
-// Events
-Result<SubscriptionId> DeviceImpl::subscribeOnAudioChanged(std::function<void(const AudioProfiles&)>&& notification)
-{
-    return subscribe<JsonData::AudioProfiles>(_T("device.onAudioChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnDeviceNameChanged(std::function<void(const std::string&)>&& notification)
-{
-    return subscribe<FireboltSDK::JSON::String>(_T("device.onDeviceNameChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnHdcpChanged(std::function<void(const HDCPVersionMap&)>&& notification)
-{
-    return subscribe<JsonData::HDCPVersionMap>(_T("device.onHdcpChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnHdrChanged(std::function<void(const HDRFormatMap&)>&& notification)
-{
-    return subscribe<JsonData::HDRFormatMap>(_T("device.onHdrChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnNameChanged(std::function<void(const std::string&)>&& notification)
-{
-    return subscribe<FireboltSDK::JSON::String>(_T("device.onNameChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnNetworkChanged(std::function<void(const NetworkInfoResult&)>&& notification)
-{
-    return subscribe<JsonData::NetworkInfoResult>(_T("device.onNetworkChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnScreenResolutionChanged(std::function<void(const std::string&)>&& notification)
-{
-    return subscribe<FireboltSDK::JSON::String>(_T("device.onScreenResolutionChanged"), std::move(notification));
-}
-
-Result<SubscriptionId> DeviceImpl::subscribeOnVideoResolutionChanged(std::function<void(const std::string&)>&& notification)
-{
-    return subscribe<FireboltSDK::JSON::String>(_T("device.onVideoResolutionChanged"), std::move(notification));
-}
-
-Result<void> DeviceImpl::unsubscribe(SubscriptionId id)
-{
-    return SubscriptionHelper::unsubscribe(id);
-}
-
-void DeviceImpl::unsubscribeAll()
-{
-    SubscriptionHelper::unsubscribeAll();
-}
-
-Result<DeviceVersion> DeviceImpl::version() const
-{
-    Parameters params;
-    return invoke<JsonData::DeviceVersion, DeviceVersion>("device.version", params);
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.uid");
 }
 } // namespace Firebolt::Device

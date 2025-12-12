@@ -19,103 +19,28 @@
 
 #pragma once
 
-#include "FireboltSDK.h"
-#include "device.h"
+#include "firebolt/device.h"
+#include <firebolt/json_types.h>
+#include <nlohmann/json.hpp>
 
 namespace Firebolt::Device::JsonData
 {
-using NetworkState = WPEFramework::Core::JSON::EnumType<::Firebolt::Device::NetworkState>;
-using NetworkType = WPEFramework::Core::JSON::EnumType<::Firebolt::Device::NetworkType>;
+// Enums
+inline const Firebolt::JSON::EnumType<::Firebolt::Device::DeviceClass> DeviceClassEnum({
+    {"stb", ::Firebolt::Device::DeviceClass::STB},
+    {"ott", ::Firebolt::Device::DeviceClass::OTT},
+    {"tv", ::Firebolt::Device::DeviceClass::TV},
+});
 
-class SemanticVersion : public WPEFramework::Core::JSON::Container
+// Types
+class DeviceClassJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::DeviceClass>
 {
 public:
-    ~SemanticVersion() override = default;
-    SemanticVersion();
-    SemanticVersion(const SemanticVersion& other);
-    SemanticVersion& operator=(const SemanticVersion& other);
-    ::Firebolt::Device::SemanticVersion Value();
-
-    WPEFramework::Core::JSON::DecSInt32 major;
-    WPEFramework::Core::JSON::DecSInt32 minor;
-    WPEFramework::Core::JSON::DecSInt32 patch;
-    FireboltSDK::JSON::String readable;
-};
-
-class DeviceVersion : public WPEFramework::Core::JSON::Container
-{
-public:
-    ~DeviceVersion() override = default;
-    DeviceVersion();
-    DeviceVersion(const DeviceVersion& other);
-    DeviceVersion& operator=(const DeviceVersion& other);
-    ::Firebolt::Device::DeviceVersion Value();
+    void fromJson(const nlohmann::json& json) override { deviceClass_ = DeviceClassEnum.at(json); }
+    ::Firebolt::Device::DeviceClass value() const override { return deviceClass_; }
 
 private:
-    SemanticVersion sdk_;
-    SemanticVersion api_;
-    SemanticVersion firmware_;
-    SemanticVersion os_;
-    FireboltSDK::JSON::String debug_;
+    ::Firebolt::Device::DeviceClass deviceClass_;
 };
 
-class AudioProfiles : public WPEFramework::Core::JSON::Container
-{
-public:
-    ~AudioProfiles() override = default;
-    AudioProfiles();
-    AudioProfiles(const AudioProfiles& other);
-    AudioProfiles& operator=(const AudioProfiles& other);
-    ::Firebolt::Device::AudioProfiles Value() const;
-
-private:
-    WPEFramework::Core::JSON::Boolean isStereo_;
-    WPEFramework::Core::JSON::Boolean isDolbyDigital5_1_;
-    WPEFramework::Core::JSON::Boolean isDolbyDigital5_1_plus_;
-    WPEFramework::Core::JSON::Boolean isDolbyAtmos_;
-};
-
-class HDCPVersionMap : public WPEFramework::Core::JSON::Container
-{
-public:
-    ~HDCPVersionMap() override = default;
-    HDCPVersionMap();
-    HDCPVersionMap(const HDCPVersionMap& other);
-    HDCPVersionMap& operator=(const HDCPVersionMap& other);
-    ::Firebolt::Device::HDCPVersionMap Value();
-
-private:
-    WPEFramework::Core::JSON::Boolean isHdcp1_4_;
-    WPEFramework::Core::JSON::Boolean isHdcp2_2_;
-};
-
-class HDRFormatMap : public WPEFramework::Core::JSON::Container
-{
-public:
-    ~HDRFormatMap() override = default;
-    HDRFormatMap();
-    HDRFormatMap(const HDRFormatMap& other);
-    HDRFormatMap& operator=(const HDRFormatMap& other);
-    ::Firebolt::Device::HDRFormatMap Value();
-
-private:
-    WPEFramework::Core::JSON::Boolean isHdr10_;
-    WPEFramework::Core::JSON::Boolean isHdr10Plus_;
-    WPEFramework::Core::JSON::Boolean isDolbyVision_;
-    WPEFramework::Core::JSON::Boolean isHlg_;
-};
-
-class NetworkInfoResult : public WPEFramework::Core::JSON::Container
-{
-public:
-    ~NetworkInfoResult() override = default;
-    NetworkInfoResult();
-    NetworkInfoResult(const NetworkInfoResult& other);
-    NetworkInfoResult& operator=(const NetworkInfoResult& other);
-    ::Firebolt::Device::NetworkInfoResult Value();
-
-private:
-    NetworkState state_;
-    NetworkType type_;
-};
 } // namespace Firebolt::Device::JsonData

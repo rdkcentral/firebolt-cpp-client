@@ -17,61 +17,100 @@
  * limitations under the License.
  */
 
-#include "unit.h"
+#include "json_engine.h"
+#include "localization_impl.h"
+#include "mock_helper.h"
 
-class LocalizationTest : public ::testing::Test
+class LocalizationTest : public ::testing::Test, protected MockBase
 {
 protected:
-    JsonEngine* jsonEngine;
-
-    void SetUp() override { jsonEngine = new JsonEngine(); }
-
-    void TearDown() override { delete jsonEngine; }
+    Firebolt::Localization::LocalizationImpl localizationImpl_{mockHelper};
 };
 
-TEST_F(LocalizationTest, CountryCode)
+TEST_F(LocalizationTest, Country)
 {
-    std::string expectedValues = jsonEngine->get_value("Localization.countryCode");
-    auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().countryCode();
-    ASSERT_TRUE(result) << "Error on calling localization.countryCode() method";
-    EXPECT_EQ(REMOVE_QUOTES(expectedValues), *result) << "Error: wrong countryCode returned by "
-                                                         "localization.countryCode()";
+    auto expectedValue = jsonEngine.get_value("Localization.country").get<std::string>();
+    mock("Localization.country");
+
+    auto result = localizationImpl_.country();
+    ASSERT_TRUE(result) << "error on get";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(LocalizationTest, CountryBadResponse)
+{
+    mock_with_response("Localization.country", 12345);
+    ASSERT_FALSE(localizationImpl_.country()) << "LocalizationImpl::country() did not return an error";
 }
 
 TEST_F(LocalizationTest, PreferredAudioLanguages)
 {
-    std::string expectedValues = jsonEngine->get_value("Localization.preferredAudioLanguages");
-    auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().preferredAudioLanguages();
-    ASSERT_TRUE(result) << "Error on calling localization.PreferredAudioLanguages() method";
-    std::string actualValues{"["};
-    for (const auto& lang : *result)
-    {
-        actualValues += "\"" + lang + "\",";
-    }
-    actualValues.pop_back();
-    actualValues += "]";
+    mock("Localization.preferredAudioLanguages");
 
-    EXPECT_EQ(expectedValues, actualValues) << "Error: wrong PreferredAudioLanguages returned by "
-                                               "localization.PreferredAudioLanguages()";
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_TRUE(result) << "error on get";
+
+    auto expectedValue = jsonEngine.get_value("Localization.preferredAudioLanguages");
+    std::set<std::string> expectedSet(expectedValue.begin(), expectedValue.end());
+    std::set<std::string> resultSet(result->begin(), result->end());
+    EXPECT_EQ(resultSet, expectedSet);
 }
 
-TEST_F(LocalizationTest, subscribeOnCountryCodeChanged)
+TEST_F(LocalizationTest, PreferredAudioLanguagesBadResponse)
 {
-    auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnCountryCodeChanged(
-        [](const auto&) { std::cout << "CountryCode changed\n"; });
-    EXPECT_TRUE(result) << "Error in subscribing to CountryCode";
+    mock_with_response("Localization.preferredAudioLanguages", 12345);
+    ASSERT_FALSE(localizationImpl_.preferredAudioLanguages())
+        << "LocalizationImpl::preferredAudioLanguages() did not return an error";
+}
 
-    auto unsubResult = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().unsubscribe(result.value_or(0));
-    EXPECT_EQ(unsubResult.error(), Firebolt::Error::None) << "Error in unsubscribing to CountryCode";
+TEST_F(LocalizationTest, PresentationLanguage)
+{
+    auto expectedValue = jsonEngine.get_value("Localization.presentationLanguage").get<std::string>();
+    mock("Localization.presentationLanguage");
+
+    auto result = localizationImpl_.presentationLanguage();
+    ASSERT_TRUE(result) << "error on get";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(LocalizationTest, PresentationLanguageBadResponse)
+{
+    mock_with_response("Localization.presentationLanguage", 67890);
+    ASSERT_FALSE(localizationImpl_.presentationLanguage())
+        << "LocalizationImpl::presentationLanguage() did not return an error";
+}
+
+TEST_F(LocalizationTest, subscribeOnCountryChanged)
+{
+    mockSubscribe("Localization.onCountryChanged");
+
+    auto id = localizationImpl_.subscribeOnCountryChanged([](auto) {});
+    ASSERT_TRUE(id) << "error on subscribe ";
+    EXPECT_TRUE(id.has_value()) << "error on id";
+    auto result = localizationImpl_.unsubscribe(id.value_or(0));
+    ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
 TEST_F(LocalizationTest, subscribeOnPreferredAudioLanguagesChanged)
 {
-    auto result =
-        Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnPreferredAudioLanguagesChanged(
-            [](const auto&) { std::cout << "PreferredAudioLanguages changed\n"; });
-    EXPECT_TRUE(result) << "Error in subscribing to PreferredAudioLanguages";
+    mockSubscribe("Localization.onPreferredAudioLanguagesChanged");
 
-    auto unsubResult = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().unsubscribe(result.value_or(0));
-    EXPECT_EQ(unsubResult.error(), Firebolt::Error::None) << "Error in unsubscribing to PreferredAudioLanguages";
+    auto id = localizationImpl_.subscribeOnPreferredAudioLanguagesChanged([](auto) {});
+    ASSERT_TRUE(id) << "error on subscribe ";
+    EXPECT_TRUE(id.has_value()) << "error on id";
+    auto result = localizationImpl_.unsubscribe(id.value_or(0));
+    ASSERT_TRUE(result) << "error on unsubscribe ";
+}
+
+TEST_F(LocalizationTest, subscribeOnPresentationLanguageChanged)
+{
+    mockSubscribe("Localization.onPresentationLanguageChanged");
+
+    auto id = localizationImpl_.subscribeOnPresentationLanguageChanged([](auto) {});
+    ASSERT_TRUE(id) << "error on subscribe ";
+    EXPECT_TRUE(id.has_value()) << "error on id";
+    auto result = localizationImpl_.unsubscribe(id.value_or(0));
+    ASSERT_TRUE(result) << "error on unsubscribe ";
 }

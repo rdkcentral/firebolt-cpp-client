@@ -45,7 +45,7 @@ TEST_F(DeviceTest, Uptime)
     ASSERT_TRUE(result) << "DeviceImpl::uptime() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, recived: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
         return;
     }
     EXPECT_EQ(*result, expectedValue);
@@ -58,7 +58,7 @@ TEST_F(DeviceTest, TimeInActiveState)
     ASSERT_TRUE(result) << "DeviceImpl::timeInActiveState() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, recived: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
         return;
     }
     EXPECT_EQ(*result, expectedValue);

@@ -20,9 +20,7 @@
 #pragma once
 
 #include <firebolt/types.h>
-#include <functional>
 #include <string>
-#include <vector>
 
 namespace Firebolt::Advertising
 {

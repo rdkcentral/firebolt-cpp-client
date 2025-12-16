@@ -33,3 +33,10 @@ jobs:
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+
+      - name: Output release info
+        if: steps.semantic.outcome == 'success'
+        run: |
+          echo "Release completed successfully"
+          echo "A new branch 'release/<version>' has been created with the updated CHANGELOG.md"
+          echo "Please create a PR from that branch to merge the changelog back to main"

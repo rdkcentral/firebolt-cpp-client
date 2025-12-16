@@ -19,27 +19,54 @@
 
 #pragma once
 
-#include "FireboltSDK.h"
-#include "lifecycle.h"
+#include "firebolt/lifecycle.h"
+#include <firebolt/json_types.h>
 
 namespace Firebolt::Lifecycle::JsonData
 {
-using CloseReason = WPEFramework::Core::JSON::EnumType<::Firebolt::Lifecycle::CloseReason>;
-using LifecycleState = WPEFramework::Core::JSON::EnumType<::Firebolt::Lifecycle::LifecycleState>;
-using LifecycleEventSource = WPEFramework::Core::JSON::EnumType<::Firebolt::Lifecycle::LifecycleEventSource>;
 
-class LifecycleEvent : public WPEFramework::Core::JSON::Container
+inline const Firebolt::JSON::EnumType<::Firebolt::Lifecycle::CloseType> CloseReasonEnum({
+    {"deactivate", ::Firebolt::Lifecycle::CloseType::DEACTIVATE},
+    {"unload", ::Firebolt::Lifecycle::CloseType::UNLOAD},
+    {"kill_reload", ::Firebolt::Lifecycle::CloseType::KILL_RELOAD},
+    {"kill_reactivate", ::Firebolt::Lifecycle::CloseType::KILL_REACTIVATE},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::Lifecycle::LifecycleState> LifecycleStateEnum({
+    {"initializing", ::Firebolt::Lifecycle::LifecycleState::INITIALIZING},
+    {"active", ::Firebolt::Lifecycle::LifecycleState::ACTIVE},
+    {"paused", ::Firebolt::Lifecycle::LifecycleState::PAUSED},
+    {"suspended", ::Firebolt::Lifecycle::LifecycleState::SUSPENDED},
+    {"hibernated", ::Firebolt::Lifecycle::LifecycleState::HIBERNATED},
+    {"terminating", ::Firebolt::Lifecycle::LifecycleState::TERMINATING},
+});
+
+class LifecycleState : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Lifecycle::LifecycleState>
 {
 public:
-    ~LifecycleEvent() override = default;
-    LifecycleEvent();
-    LifecycleEvent(const LifecycleEvent& other);
-    LifecycleEvent& operator=(const LifecycleEvent& other);
-    ::Firebolt::Lifecycle::LifecycleEvent Value();
+    void fromJson(const nlohmann::json& json) override { state_ = LifecycleStateEnum.at(json.get<std::string>()); }
+    ::Firebolt::Lifecycle::LifecycleState value() const override { return state_; }
 
 private:
-    LifecycleState state_;
-    LifecycleState previous_;
-    LifecycleEventSource source_;
+    ::Firebolt::Lifecycle::LifecycleState state_;
 };
+
+class StateChange : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Lifecycle::StateChange>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        oldState_ = LifecycleStateEnum.at(json["oldState"]);
+        newState_ = LifecycleStateEnum.at(json["newState"]);
+    }
+    ::Firebolt::Lifecycle::StateChange value() const override
+    {
+        return ::Firebolt::Lifecycle::StateChange{oldState_, newState_};
+    }
+
+private:
+    ::Firebolt::Lifecycle::LifecycleState oldState_;
+    ::Firebolt::Lifecycle::LifecycleState newState_;
+};
+
 } // namespace Firebolt::Lifecycle::JsonData

@@ -17,85 +17,80 @@
  * limitations under the License.
  */
 
-#include "FireboltSDK.h"
-#include "closedcaptions_impl.h"
+#include "firebolt/firebolt.h"
+#include "accessibility_impl.h"
+#include "advertising_impl.h"
 #include "device_impl.h"
-#include "hdmiinput_impl.h"
+#include "display_impl.h"
+#include "firebolt/client_version.h"
 #include "lifecycle_impl.h"
 #include "localization_impl.h"
-#include "metrics_impl.h"
-#include "securestorage_impl.h"
-#include <firebolt.h>
+#include "presentation_impl.h"
+#include "stats_impl.h"
+#include <firebolt/gateway.h>
 
 namespace Firebolt
 {
 class FireboltAccessorImpl : public IFireboltAccessor
 {
 public:
-    FireboltAccessorImpl() = default;
+    FireboltAccessorImpl()
+        : accessibility_(Firebolt::Helpers::GetHelperInstance()),
+          advertising_(Firebolt::Helpers::GetHelperInstance()),
+          device_(Firebolt::Helpers::GetHelperInstance()),
+          display_(Firebolt::Helpers::GetHelperInstance()),
+          lifecycle_(Firebolt::Helpers::GetHelperInstance()),
+          localization_(Firebolt::Helpers::GetHelperInstance()),
+          presentation_(Firebolt::Helpers::GetHelperInstance()),
+          stats_(Firebolt::Helpers::GetHelperInstance())
+    {
+    }
+
     FireboltAccessorImpl(const FireboltAccessorImpl&) = delete;
     FireboltAccessorImpl& operator=(const FireboltAccessorImpl&) = delete;
 
-    ~FireboltAccessorImpl()
+    ~FireboltAccessorImpl() { unsubscribeAll(); }
+
+    Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
     {
-        unsubscribeAll();
-
-        if (accessor_)
-        {
-            accessor_->Dispose();
-            accessor_ = nullptr;
-        }
+        auto result = Firebolt::Transport::GetGatewayInstance().connect(config, listener);
+        FIREBOLT_LOG_NOTICE("Client", "Version: %s", Version::String);
+        return result;
     }
-
-    Firebolt::Error Initialize(const std::string& configLine) override
-    {
-        accessor_ = &(FireboltSDK::Transport::Accessor::Instance(configLine));
-        return Error::None;
-    }
-
-    Firebolt::Error Connect(OnConnectionChanged listener) override { return accessor_->Connect(listener); }
 
     Firebolt::Error Disconnect() override
     {
         unsubscribeAll();
-        return accessor_->Disconnect();
+        return Firebolt::Transport::GetGatewayInstance().disconnect();
     }
 
-    ClosedCaptions::IClosedCaptions& ClosedCaptionsInterface() override { return closedCaptions_; }
-
+    Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
+    Advertising::IAdvertising& AdvertisingInterface() override { return advertising_; }
     Device::IDevice& DeviceInterface() override { return device_; }
-
-    HDMIInput::IHDMIInput& HDMIInputInterface() override { return hdmiInput_; }
-
-    Localization::ILocalization& LocalizationInterface() override { return localization_; }
-
-    Metrics::IMetrics& MetricsInterface() override { return metrics_; }
-
+    Display::IDisplay& DisplayInterface() override { return display_; }
     Lifecycle::ILifecycle& LifecycleInterface() override { return lifecycle_; }
-
-    SecureStorage::ISecureStorage& SecureStorageInterface() override { return secureStorage_; }
+    Localization::ILocalization& LocalizationInterface() override { return localization_; }
+    Presentation::IPresentation& PresentationInterface() override { return presentation_; }
+    Stats::IStats& StatsInterface() override { return stats_; }
 
 private:
     void unsubscribeAll()
     {
-        closedCaptions_.unsubscribeAll();
-        device_.unsubscribeAll();
-        hdmiInput_.unsubscribeAll();
-        localization_.unsubscribeAll();
-        metrics_.unsubscribeAll();
+        accessibility_.unsubscribeAll();
         lifecycle_.unsubscribeAll();
-        secureStorage_.unsubscribeAll();
+        localization_.unsubscribeAll();
+        presentation_.unsubscribeAll();
     }
 
 private:
-    FireboltSDK::Transport::Accessor* accessor_;
-    ClosedCaptions::ClosedCaptionsImpl closedCaptions_;
+    Accessibility::AccessibilityImpl accessibility_;
+    Advertising::AdvertisingImpl advertising_;
     Device::DeviceImpl device_;
-    HDMIInput::HDMIInputImpl hdmiInput_;
-    Localization::LocalizationImpl localization_;
-    Metrics::MetricsImpl metrics_;
+    Display::DisplayImpl display_;
     Lifecycle::LifecycleImpl lifecycle_;
-    SecureStorage::SecureStorageImpl secureStorage_;
+    Localization::LocalizationImpl localization_;
+    Presentation::PresentationImpl presentation_;
+    Stats::StatsImpl stats_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

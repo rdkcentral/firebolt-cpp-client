@@ -17,109 +17,128 @@
 # limitations under the License.
 #
 
-cmake_minimum_required(VERSION 3.3)
+find_package(Curl REQUIRED )
+find_package(GTest CONFIG REQUIRED)
+find_package(nlohmann_json_schema_validator CONFIG REQUIRED)
 
-project(FireboltCoreSDKTests)
+include(GoogleTest)
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${SYSROOT_PATH}/usr" CACHE INTERNAL "" FORCE)
-    set(CMAKE_PREFIX_PATH ${SYSROOT_PATH}/usr/lib/cmake CACHE INTERNAL "" FORCE)
-endif()
+enable_testing()
 
-list(APPEND CMAKE_MODULE_PATH
-	"${SYSROOT_PATH}/usr/lib/cmake"
-	"${SYSROOT_PATH}/tools/cmake")
-message("FIREBOLT_PATH inside cmake " ${FIREBOLT_PATH})
-if (FIREBOLT_PATH)
-    set(CMAKE_FIREBOLT_PATH
-        "${FIREBOLT_PATH}/usr/lib/cmake/Firebolt"
-	"${FIREBOLT_PATH}/usr/lib/cmake/FireboltSDK")
-    list(APPEND CMAKE_PREFIX_PATH ${CMAKE_FIREBOLT_PATH})
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_FIREBOLT_PATH})
-else ()
-   set(FIREBOLT_PATH "${SYSROOT_PATH}" CACHE INTERNAL "" FORCE)
-endif ()
+add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
-find_package(WPEFramework CONFIG REQUIRED)
-find_package(${NAMESPACE}Core CONFIG REQUIRED)
+set(UNIT_TESTS_APP FireboltClientUnitTests)
 
-set(TESTAPP TestFireboltCore)
+message("Setup ${UNIT_TESTS_APP}")
 
-message("Setup ${TESTAPP}")
-
-add_executable(${TESTAPP} CoreSDKTest.cpp Main.cpp)
-
-target_link_libraries(${TESTAPP}
-    PRIVATE
-        ${NAMESPACE}Core::${NAMESPACE}Core
-        ${FIREBOLT_NAMESPACE}SDK::${FIREBOLT_NAMESPACE}SDK
-        nlohmann_json_schema_validator
-        gtest_main
+set(UNIT_TESTS
+    "unit/accessibilityTest.cpp"
+    "unit/advertisingTest.cpp"
+    "unit/deviceTest.cpp"
+    "unit/displayTest.cpp"
+    "unit/lifecycleTest.cpp"
+    "unit/localizationTest.cpp"
+    "unit/presentationTest.cpp"
+    "unit/statsTest.cpp"
 )
 
-target_include_directories(${TESTAPP}
+add_executable(${UNIT_TESTS_APP}
+    UnitTestsMain.cpp
+    ${UNIT_TESTS}
+)
+
+target_compile_options(${UNIT_TESTS_APP} PRIVATE --coverage -g -O0 -fno-inline)
+target_link_options(${UNIT_TESTS_APP} PRIVATE --coverage)
+
+target_link_libraries(${UNIT_TESTS_APP}
+    PRIVATE
+        FireboltClient
+        $<IF:$<TARGET_EXISTS:FireboltTransport::FireboltTransport>,FireboltTransport::FireboltTransport,FireboltTransport>
+        nlohmann_json::nlohmann_json
+        nlohmann_json_schema_validator::validator
+        GTest::gtest
+        GTest::gmock
+)
+
+target_include_directories(${UNIT_TESTS_APP}
     PRIVATE
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/test/>
 )
 
-if (POLYMORPHICS_REDUCER_METHODS)
-    target_compile_definitions(${TESTAPP}
-        PUBLIC
-            POLYMORPHICS_REDUCER_METHODS=1)
-endif()
-
-set_target_properties(${TESTAPP} PROPERTIES
+set_target_properties(${UNIT_TESTS_APP} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
+    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
+    INSTALL_RPATH "$ORIGIN/../src"
 )
 
-add_custom_command(
-    TARGET ${TESTAPP}
-    POST_BUILD
-    COMMENT "=================== Installing TestApp ======================"
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/${FIREBOLT_NAMESPACE}/usr/bin
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/${TESTAPP} ${CMAKE_BINARY_DIR}/${FIREBOLT_NAMESPACE}/usr/bin
+if(DISCOVER_UT)
+    gtest_discover_tests(${UNIT_TESTS_APP}
+        PROPERTIES
+            ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/src"
+    )
+endif()
+
+set(COMPONENT_TESTS_APP FireboltClientComponentTests)
+
+message("Setup ${COMPONENT_TESTS_APP}")
+
+set(COMPONENT_TESTS
+    "component/accessibilityTest.cpp"
+    "component/advertisingTest.cpp"
+    "component/deviceTest.cpp"
+    "component/displayTest.cpp"
+    "component/lifecycleTest.cpp"
+    "component/localizationTest.cpp"
+    "component/presentationTest.cpp"
+    "component/statsTest.cpp"
 )
 
-if(ENABLE_UNIT_TESTS)
-    set(UNIT_TESTS_APP FireboltCoreUnitTests)
+add_executable(${COMPONENT_TESTS_APP}
+    "ComponentTestsMain.cpp"
+    "utils.cpp"
+    ${COMPONENT_TESTS}
+)
 
-    message("Setup ${UNIT_TESTS_APP}")
+target_link_libraries(${COMPONENT_TESTS_APP}
+    PRIVATE
+        FireboltClient
+        $<IF:$<TARGET_EXISTS:FireboltTransport::FireboltTransport>,FireboltTransport::FireboltTransport,FireboltTransport>
+        nlohmann_json::nlohmann_json
+        nlohmann_json_schema_validator::validator
+        CURL::libcurl
+        GTest::gtest
+        GTest::gmock
+)
 
-    file(GLOB UNIT_TESTS "unit/*")
+target_include_directories(${COMPONENT_TESTS_APP}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/test/>
+)
 
-    add_executable(${UNIT_TESTS_APP} 
-        CoreSDKTest.cpp
-        Unit.cpp
-        ${UNIT_TESTS}
+set_target_properties(${COMPONENT_TESTS_APP} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
+    INSTALL_RPATH "$ORIGIN/../src"
+)
+
+if(DISCOVER_CT)
+    gtest_discover_tests(${COMPONENT_TESTS_APP}
+        PROPERTIES
+            ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/src"
     )
-    
-    link_directories(${CMAKE_SOURCE_DIR}/../../Thunder/install/usr/lib/)
-    target_link_libraries(${UNIT_TESTS_APP}
-        PRIVATE
-            ${NAMESPACE}Core::${NAMESPACE}Core
-            ${FIREBOLT_NAMESPACE}SDK::${FIREBOLT_NAMESPACE}SDK
-            nlohmann_json_schema_validator
-            gtest_main
-    )
-
-    target_include_directories(${UNIT_TESTS_APP}
-        PRIVATE
-            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
-    )
-
-    set_target_properties(${UNIT_TESTS_APP} PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED YES
-    )
-
-    include(GoogleTest)
-    gtest_discover_tests(${UNIT_TESTS_APP})
 endif()
 
 if(ENABLE_COVERAGE)
     include(${CMAKE_SOURCE_DIR}/cmake/CodeCoverage.cmake)
-    
+
     set(COVERAGE_MAIN "coverage")
     set(COVERAGE_EXCLUDES
         "${CMAKE_SOURCE_DIR}/build/*"
@@ -130,7 +149,7 @@ if(ENABLE_COVERAGE)
 
     set(COVERAGE_EXTRA_FLAGS)
     set(COVERAGE_DEPENDENCIES ${UNIT_TESTS_APP})
-    
+
     setup_target_for_coverage_gcovr_html(
         NAME ${COVERAGE_MAIN}
         BASE_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -138,5 +157,4 @@ if(ENABLE_COVERAGE)
         EXECUTABLE_ARGS "--test-dir ../build/ --output-on-failure"
         DEPENDENCIES ${COVERAGE_DEPENDENCIES}
     )
-
 endif()

@@ -14,51 +14,106 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
+
+include(FetchContent)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-include(HelperFunctions)
 
-project(FireboltSDK)
-project_version("1.0.0")
+project(FireboltClient)
 
-set(FIREBOLT_TRANSPORT_WAITTIME 1000 CACHE STRING "Maximum time to wait for Transport layer to get response")
-set(FIREBOLT_LOGLEVEL "Info" CACHE STRING  "Log level to be enabled")
-option(FIREBOLT_ENABLE_STATIC_LIB "Create Firebolt library as Static library" OFF)
-option(ENABLE_TESTS "Build openrpc native test" OFF)
-option(ENABLE_DEMO_APP "Build demo app" OFF)
+if (NOT PROJECT_VERSION)
+    set(VERSION_STRING "0.1.0-unknown")
 
-if (FIREBOLT_ENABLE_STATIC_LIB)
-    set(FIREBOLT_LIBRARY_TYPE STATIC)
-    add_compile_definitions(FIREBOLTSDK_STATIC)
-else ()
-    set(FIREBOLT_LIBRARY_TYPE SHARED)
+    find_package(Git QUIET)
+
+    if (GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0 --match "v[0-9]*.[0-9]*.[0-9]*"
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_VERSION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+    endif ()
+
+    if (GIT_VERSION)
+        string(REGEX REPLACE "^v" "" VERSION_STRING "${GIT_VERSION}")
+    endif ()
+
+    if(VERSION_STRING STREQUAL "0.1.0-unknown" AND EXISTS "${CMAKE_SOURCE_DIR}/.version")
+        file(READ "${CMAKE_SOURCE_DIR}/.version" VERSION_STRING)
+        string(STRIP ${VERSION_STRING} VERSION_STRING)
+    endif()
+
+    set(PROJECT_VERSION "${VERSION_STRING}" CACHE STRING "Project version string")
 endif ()
+
+if(EXISTS "${CMAKE_SOURCE_DIR}/.transport.version")
+    file(READ "${CMAKE_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION)
+    string(STRIP ${FIREBOLT_TRANSPORT_VERSION} FIREBOLT_TRANSPORT_VERSION)
+else()
+    message(FATAL_ERROR "Could not determine firebolt-native-transport version from .transport.version")
+endif()
+
+set(VERSION ${PROJECT_VERSION})
+string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1" PROJECT_VERSION_MAJOR ${PROJECT_VERSION})
+string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\2" PROJECT_VERSION_MINOR ${PROJECT_VERSION})
+string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\3" PROJECT_VERSION_PATCH ${PROJECT_VERSION})
+
+message(STATUS "Project version: ${PROJECT_VERSION}")
+
+option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(ENABLE_TESTS "Build tests" OFF)
+option(DISCOVER_UT "Discover all Unit Tests" ON)
+option(DISCOVER_CT "Discover all Component Tests" OFF)
+option(ENABLE_DEMO_APP "Build demo app" OFF)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${SYSROOT_PATH}/usr" CACHE INTERNAL "" FORCE)
     set(CMAKE_PREFIX_PATH ${SYSROOT_PATH}/usr/lib/cmake CACHE INTERNAL "" FORCE)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH
-        "${SYSROOT_PATH}/usr/lib/cmake"
-        "${SYSROOT_PATH}/tools/cmake")
+list(APPEND CMAKE_PREFIX_PATH
+    "${SYSROOT_PATH}/usr/share/cmake")
 
-set(FIREBOLT_NAMESPACE ${PROJECT_NAME} CACHE STRING "Namespace of the project")
+list(APPEND CMAKE_MODULE_PATH
+    "${SYSROOT_PATH}/usr/share/cmake"
+    "${SYSROOT_PATH}/usr/lib/cmake"
+)
+
+if(NOT TARGET nlohmann_json::nlohmann_json)
+    find_package(nlohmann_json REQUIRED)
+endif()
+
+if(NOT TARGET websocketpp::websocketpp)
+    find_package(websocketpp REQUIRED)
+endif()
+
+find_package(FireboltTransport CONFIG QUIET)
+
+if(NOT FireboltTransport_VERSION STREQUAL FIREBOLT_TRANSPORT_VERSION)
+    message(STATUS "FireboltTransport version mismatch or not found. Will try to fetch it."
+                   " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'.")
+    FetchContent_Declare(
+        FireboltTransport
+        URL "https://github.com/rdkcentral/firebolt-native-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-native-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
+        DOWNLOAD_EXTRACT_TIMESTAMP true
+    )
+    set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})
+    set(ENABLE_TESTS OFF)
+    FetchContent_MakeAvailable(FireboltTransport)
+    set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
+endif()
+
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 add_subdirectory(src)
 
 if (ENABLE_DEMO_APP)
-  add_subdirectory(demo)
+    add_subdirectory(demo)
 endif()
 
 if (ENABLE_TESTS)
-   add_subdirectory(test)
+    add_subdirectory(test)
 endif()
-
-message("${CMAKE_BINARY_DIR}/${FIREBOLT_NAMESPACE}Config.cmake")
-
-# make sure others can make use cmake settings of Firebolt OpenRPC
-configure_file( "${CMAKE_SOURCE_DIR}/cmake/project.cmake.in"
-        "${CMAKE_BINARY_DIR}/${FIREBOLT_NAMESPACE}Config.cmake"
-    @ONLY)

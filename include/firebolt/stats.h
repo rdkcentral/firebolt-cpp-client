@@ -20,10 +20,6 @@
 #pragma once
 
 #include <firebolt/types.h>
-#include <functional>
-#include <optional>
-#include <string>
-#include <vector>
 
 namespace Firebolt::Stats
 {
@@ -43,7 +39,6 @@ public:
     /**
      @brief Returns information about container memory usage, in units of 1024 bytes
     *
-    * @retval The platform property or error
     * @retval MemoryInfo struct or error
     */
     virtual Result<MemoryInfo> memoryUsage() const = 0;

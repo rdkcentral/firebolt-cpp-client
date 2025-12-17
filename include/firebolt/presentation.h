@@ -49,7 +49,7 @@ public:
      * @brief Remove subscriber from subscribers list. This method is generic for
      *        all subscriptions
      *
-     * @param[in] id                  : The subscription id
+     * @param[in] id : The subscription id
      *
      * @retval The status
      */

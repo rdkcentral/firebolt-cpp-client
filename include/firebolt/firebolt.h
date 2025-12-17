@@ -61,8 +61,7 @@ public:
      *        This method is asynchronous and the user is expected to wait for the OnConnectionChanged callback
      *        to report successful connection before calling APIs methods
      *
-     * @param config: Configuration parameters
-     *
+     * @param config   : Configuration parameters
      * @param listener : Connection status listener
      *
      * @return Firebolt::Error
@@ -77,7 +76,7 @@ public:
     virtual Firebolt::Error Disconnect() = 0;
 
     /**
-     * @brief Returns instance of Accessibiilty interface
+     * @brief Returns instance of Accessibility interface
      *
      * @return Reference to Accessibility interface
      */
@@ -127,17 +126,10 @@ public:
     virtual Presentation::IPresentation& PresentationInterface() = 0;
 
     /**
-     * @brief Returns instance of Accessibiilty interface
+     * @brief Returns instance of Stats interface
      *
-     * @return Reference to Accessibility interface
+     * @return Reference to Stats interface
      */
-
-    /**
-   virtual Accessibility::IAccessibility& AccessibilityInterface() = 0;
-    * @brief Returns instance of Stats interface
-    *
-    * @return Reference to Stats interface
-    */
     virtual Stats::IStats& StatsInterface() = 0;
 };
 } // namespace Firebolt

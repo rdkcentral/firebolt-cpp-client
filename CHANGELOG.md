@@ -1,3 +1,10 @@
+## 0.2.1 (https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2.0...v0.2.1) (2025-12-17)
+
+### Bug Fixes
+
+    * Align naming convention
+    * Transport v1.0.0-next.25
+
 # 0.2.0 (https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.1.0...v0.2.0) (2025-12-16)
 
 ### Features

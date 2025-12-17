@@ -40,7 +40,7 @@ TEST_F(DeviceTest, GetClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
-TEST_F(DeviceTest, GetClassBadRespons_Test)
+TEST_F(DeviceTest, GetClassBadResponse_Test)
 {
     mock_with_response("Device.deviceClass", "abc");
     ASSERT_FALSE(deviceImpl_.deviceClass()) << "DeviceImpl::deviceClass() NOT returned an error";

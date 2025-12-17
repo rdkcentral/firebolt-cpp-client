@@ -82,8 +82,8 @@ RUN pip install --break-system-packages gcovr
 # --- Transport should be always at the very end as it changes most often
 ARG DEPS_TRANSPORT_V
 RUN cd /deps \
-    && dir="firebolt-native-transport-${DEPS_TRANSPORT_V}" \
-    && i=0 && while ! curl -sL https://github.com/rdkcentral/firebolt-native-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-native-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
+    && dir="firebolt-cpp-transport-${DEPS_TRANSPORT_V}" \
+    && i=0 && while ! curl -sL https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-cpp-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \

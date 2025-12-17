@@ -53,7 +53,7 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.transport.version")
     file(READ "${CMAKE_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION)
     string(STRIP ${FIREBOLT_TRANSPORT_VERSION} FIREBOLT_TRANSPORT_VERSION)
 else()
-    message(FATAL_ERROR "Could not determine firebolt-native-transport version from .transport.version")
+    message(FATAL_ERROR "Could not determine firebolt-cpp-transport version from .transport.version")
 endif()
 
 set(VERSION ${PROJECT_VERSION})
@@ -97,8 +97,8 @@ if(NOT FireboltTransport_VERSION STREQUAL FIREBOLT_TRANSPORT_VERSION)
                    " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'.")
     FetchContent_Declare(
         FireboltTransport
-        URL "https://github.com/rdkcentral/firebolt-native-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-native-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
-        URL_HASH "SHA256=058805fa53884b98f06b93a16bb2b7977fd65a8d5934c020f21736341723f4ce"
+        URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
+        URL_HASH "SHA256=a155b95dfab28928bed4a38430c21d7551185bf187d806016c471f53fa10e6e7"
         DOWNLOAD_EXTRACT_TIMESTAMP true
     )
     set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})

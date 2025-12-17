@@ -26,7 +26,7 @@
 #include <nlohmann/json-schema.hpp>
 #include <nlohmann/json.hpp>
 
-constexpr std::chrono::duration EventWaitTime = std::chrono::seconds(2);
+constexpr std::chrono::seconds EventWaitTime = std::chrono::seconds(2);
 
 // curl http get helper function using
 std::string httpGet(const std::string& url)

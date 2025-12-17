@@ -20,10 +20,6 @@
 #pragma once
 
 #include <firebolt/types.h>
-#include <functional>
-#include <optional>
-#include <string>
-#include <vector>
 
 namespace Firebolt::Display
 {

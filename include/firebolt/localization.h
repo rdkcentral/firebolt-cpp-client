@@ -21,7 +21,6 @@
 
 #include <firebolt/types.h>
 #include <functional>
-#include <optional>
 #include <vector>
 
 namespace Firebolt::Localization
@@ -32,7 +31,6 @@ class ILocalization
 public:
     virtual ~ILocalization() = default;
 
-    // Methods
     /**
      * @brief Get the ISO 3166-1 alpha-2 code for the country device is located in.
      *
@@ -55,11 +53,10 @@ public:
      */
     virtual Result<std::string> presentationLanguage() const = 0;
 
-    // Events
     /**
      * @brief Subscribe on the change of CountryChanged property
      *
-     * @param[in]  notification        : The callback function
+     * @param[in]  notification : The callback function
      *
      * @retval The subscriptionId or error
      */
@@ -68,7 +65,7 @@ public:
     /**
      * @brief Subscribe on the change of PreferredAudioLanguagesChanged property
      *
-     * @param[in]  notification        : The callback function
+     * @param[in]  notification : The callback function
      *
      * @retval The subscriptionId or error
      */
@@ -78,7 +75,7 @@ public:
     /**
      * @brief Subscribe on the change of PresentationLanguageChanged property
      *
-     * @param[in]  notification        : The callback function
+     * @param[in]  notification : The callback function
      *
      * @retval The subscriptionId or error
      */
@@ -87,9 +84,9 @@ public:
 
     /**
      * @brief  Remove subscriber from subscribers list. This method is generic for
-     *        all subscriptions
+     *         all subscriptions
      *
-     * @param[in] id                  : The subscription id
+     * @param[in] id : The subscription id
      *
      * @retval The status
      */

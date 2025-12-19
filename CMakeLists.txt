@@ -22,32 +22,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 project(FireboltClient)
 
-if (NOT PROJECT_VERSION)
-    set(VERSION_STRING "0.1.0-unknown")
-
-    find_package(Git QUIET)
-
-    if (GIT_FOUND)
-        execute_process(
-            COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0 --match "v[0-9]*.[0-9]*.[0-9]*"
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            OUTPUT_VARIABLE GIT_VERSION
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_QUIET
-        )
-    endif ()
-
-    if (GIT_VERSION)
-        string(REGEX REPLACE "^v" "" VERSION_STRING "${GIT_VERSION}")
-    endif ()
-
-    if(VERSION_STRING STREQUAL "0.1.0-unknown" AND EXISTS "${CMAKE_SOURCE_DIR}/.version")
-        file(READ "${CMAKE_SOURCE_DIR}/.version" VERSION_STRING)
-        string(STRIP ${VERSION_STRING} VERSION_STRING)
-    endif()
-
-    set(PROJECT_VERSION "${VERSION_STRING}" CACHE STRING "Project version string")
-endif ()
+include(version)
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.transport.version")
     file(READ "${CMAKE_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION)
@@ -56,12 +31,7 @@ else()
     message(FATAL_ERROR "Could not determine firebolt-cpp-transport version from .transport.version")
 endif()
 
-set(VERSION ${PROJECT_VERSION})
-string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1" PROJECT_VERSION_MAJOR ${PROJECT_VERSION})
-string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\2" PROJECT_VERSION_MINOR ${PROJECT_VERSION})
-string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\3" PROJECT_VERSION_PATCH ${PROJECT_VERSION})
-
-message(STATUS "Project version: ${PROJECT_VERSION}")
+message(STATUS "Project version: ${VERSION}, Transport version: ${FIREBOLT_TRANSPORT_VERSION}")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_TESTS "Build tests" OFF)

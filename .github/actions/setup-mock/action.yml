@@ -8,7 +8,7 @@ runs:
       id: cache-key
       shell: bash
       run: |
-        echo "hash=$( ( echo "${{ env.MOCK_SHA1SUM }}"; sha256sum "${{ env.MOCK_PATCH }}" | awk '{print $1}' ) | sha256sum | awk '{print $1}')" >> $GITHUB_OUTPUT
+        echo "hash=${{ env.MOCK_SHA1SUM }}" >> $GITHUB_OUTPUT
 
     - name: Restore Dependency Cache
       uses: actions/cache@v4
@@ -22,11 +22,10 @@ runs:
       shell: bash
       run: |
         echo "Building Mock-Firebolt..."
-        git clone --depth 1 --branch main https://github.com/rdkcentral/mock-firebolt.git ${{ env.MOCK_PATH }}
+        git clone --depth 1 --branch ${{ env.MOCK_BRANCH }} https://github.com/rdkcentral/mock-firebolt.git ${{ env.MOCK_PATH }}
         cd ${{ env.MOCK_PATH }}
-        git fetch --shallow-since=2025-11-01
+        git fetch --shallow-since=2026-01-01
         git checkout ${{ env.MOCK_SHA1SUM }}
-        git apply "${{ env.MOCK_PATCH }}"
         cd server
         npm ci
         echo "Mock-Firebolt built and installed to ${{ env.MOCK_PATH }}"

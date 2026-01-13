@@ -19,7 +19,6 @@ include(GNUInstallDirs)
 include(GenerateExportHeader)
 
 set(TARGET ${PROJECT_NAME})
-message("Setup ${TARGET} v${PROJECT_VERSION} with the Transport v${FIREBOLT_TRANSPORT_VERSION}")
 
 file(GLOB SOURCES *.cpp json_types/*.cpp)
 

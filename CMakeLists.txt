@@ -31,7 +31,7 @@ else()
     message(FATAL_ERROR "Could not determine firebolt-cpp-transport version from .transport.version")
 endif()
 
-message(STATUS "Project version: ${VERSION}, Transport version: ${FIREBOLT_TRANSPORT_VERSION}")
+message(STATUS "Project version: ${PROJECT_VERSION}")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 option(ENABLE_TESTS "Build tests" OFF)
@@ -62,9 +62,9 @@ endif()
 
 find_package(FireboltTransport CONFIG QUIET)
 
-if(NOT FireboltTransport_VERSION STREQUAL FIREBOLT_TRANSPORT_VERSION)
+if(NOT FireboltTransport_VERSION MATCHES "^${FIREBOLT_TRANSPORT_VERSION}")
     message(STATUS "FireboltTransport version mismatch or not found. Will try to fetch it."
-                   " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'.")
+                   " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")
     FetchContent_Declare(
         FireboltTransport
         URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
@@ -75,6 +75,10 @@ if(NOT FireboltTransport_VERSION STREQUAL FIREBOLT_TRANSPORT_VERSION)
     set(ENABLE_TESTS OFF)
     FetchContent_MakeAvailable(FireboltTransport)
     set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
+elseif(NOT FireboltTransport_VERSION STREQUAL "${FIREBOLT_TRANSPORT_VERSION}")
+    message(STATUS "Installed FireboltTransport differs from exact expected version, but matches requirements: ${FireboltTransport_VERSION}")
+else()
+    message(STATUS "Transport version: ${FireboltTransport_VERSION}")
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)

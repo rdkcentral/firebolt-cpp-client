@@ -62,23 +62,27 @@ endif()
 
 find_package(FireboltTransport CONFIG QUIET)
 
-if(NOT FireboltTransport_VERSION MATCHES "^${FIREBOLT_TRANSPORT_VERSION}")
+if(FireboltTransport_FOUND)
+    check_version_compatibility(FireboltTransport_VERSION_OK "${FireboltTransport_VERSION}" "${FIREBOLT_TRANSPORT_VERSION}")
+else()
+    set(FireboltTransport_VERSION_OK FALSE)
+endif()
+
+if(FireboltTransport_VERSION_OK)
+    message(STATUS "Installed FireboltTransport, ${FireboltTransport_VERSION}, matches expected one: ${FIREBOLT_TRANSPORT_VERSION}")
+else()
     message(STATUS "FireboltTransport version mismatch or not found. Will try to fetch it."
                    " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")
     FetchContent_Declare(
         FireboltTransport
         URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
-        URL_HASH "SHA256=a155b95dfab28928bed4a38430c21d7551185bf187d806016c471f53fa10e6e7"
+        URL_HASH "SHA256=2ff666c266ec22f9ed7989b1c4d3a7c6c2df24a8880d8587179236ccfac24163"
         DOWNLOAD_EXTRACT_TIMESTAMP true
     )
     set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})
     set(ENABLE_TESTS OFF)
     FetchContent_MakeAvailable(FireboltTransport)
     set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
-elseif(NOT FireboltTransport_VERSION STREQUAL "${FIREBOLT_TRANSPORT_VERSION}")
-    message(STATUS "Installed FireboltTransport differs from exact expected version, but matches requirements: ${FireboltTransport_VERSION}")
-else()
-    message(STATUS "Transport version: ${FireboltTransport_VERSION}")
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)

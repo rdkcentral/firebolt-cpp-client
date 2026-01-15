@@ -96,7 +96,7 @@ std::ostream& operator<<(std::ostream& out, Firebolt::Error& error)
 
 FireboltDemoService::FireboltDemoService()
 {
-    std::string url = "ws://127.0.0.1:9998";
+    std::string url = "ws://127.0.0.1:9998/";
     const char* fireboltEndpoint = std::getenv("FIREBOLT_ENDPOINT");
     if (fireboltEndpoint)
     {

@@ -68,7 +68,7 @@ bool waitOnConnectionReady()
 
 int main(int argc, char** argv)
 {
-    string url = "ws://127.0.0.1:9998";
+    string url = "ws://127.0.0.1:9998/";
     createFireboltInstance(url);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -15,7 +15,7 @@ env:
   HUSKY: 0
   MOCK_PATH: ${{ github.workspace }}/mock-firebolt
   MOCK_BRANCH: topic/changes-for-bidirectional
-  MOCK_SHA1SUM: c73938b243a6fce7f4787fef46b22caa5aa6d78a
+  MOCK_SHA1SUM: a38c77ce06ca6f6d570943b14597b2b8ebc77490
 
 jobs:
   build_docker:

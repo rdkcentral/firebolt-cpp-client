@@ -69,7 +69,7 @@ else()
 endif()
 
 if(FireboltTransport_VERSION_OK)
-    message(STATUS "Installed FireboltTransport, ${FireboltTransport_VERSION}, matches expected one: ${FIREBOLT_TRANSPORT_VERSION}")
+    message(STATUS "Installed FireboltTransport, ${FireboltTransport_VERSION}, matches expected version: ${FIREBOLT_TRANSPORT_VERSION}")
 else()
     message(STATUS "FireboltTransport version mismatch or not found. Will try to fetch it."
                    " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")

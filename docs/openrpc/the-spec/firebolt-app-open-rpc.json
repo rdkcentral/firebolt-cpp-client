@@ -2,7 +2,7 @@
 	"openrpc": "1.2.4",
 	"info": {
 		"title": "Firebolt JSON-RPC API",
-		"version": "1.8.0-next.11"
+		"version": ""
 	},
 	"methods": [
 		{
@@ -159,6 +159,7 @@
 			"tags": [
 				{
 					"name": "notifier",
+					"x-notifier-params-flattening": "true",
 					"x-notifier-for": "Accessibility.closedCaptionsSettings",
 					"x-event": "Accessibility.onClosedCaptionsSettingsChanged"
 				},
@@ -254,6 +255,7 @@
 			"tags": [
 				{
 					"name": "notifier",
+					"x-notifier-params-flattening": "true",
 					"x-notifier-for": "Accessibility.voiceGuidanceSettings",
 					"x-event": "Accessibility.onVoiceGuidanceSettingsChanged"
 				},

@@ -452,20 +452,6 @@
 	],
 	"components": {
 		"schemas": {
-			"InitializeResult": {
-				"title": "InitializeResult",
-				"type": "object",
-				"required": [
-					"version"
-				],
-				"properties": {
-					"version": {
-						"$ref": "#/x-schemas/Types/SemanticVersion",
-						"description": "The semantic version of the FEE."
-					}
-				},
-				"additionalProperties": false
-			},
 			"AdvertisingIdResult": {
 				"title": "AdvertisingIdResult",
 				"type": "object",
@@ -571,37 +557,6 @@
 		}
 	},
 	"x-schemas": {
-		"Types": {
-			"uri": "https://meta.comcast.com/firebolt/types",
-			"SemanticVersion": {
-				"title": "SemanticVersion",
-				"type": "object",
-				"properties": {
-					"major": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"minor": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"patch": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"readable": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"major",
-					"minor",
-					"patch",
-					"readable"
-				],
-				"additionalProperties": false
-			}
-		},
 		"Accessibility": {
 			"uri": "https://meta.comcast.com/firebolt/accessibility",
 			"ClosedCaptionsSettings": {

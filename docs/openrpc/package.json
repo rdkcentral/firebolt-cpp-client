@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "compile": "npx firebolt-openrpc openrpc --input ./ --template ./template/openrpc/template.json --platformApi ./the-spec/firebolt-open-rpc.json --appApi ./the-spec/firebolt-app-open-rpc.json --schemas ./schemas",
+    "dist": "mkdir -p the-spec descriptions && npm run compile"
+  },
+  "devDependencies": {
+    "@firebolt-js/openrpc": "git+https://github.com/rdkcentral/firebolt-openrpc.git#next-bidirectional"
+  }
+}

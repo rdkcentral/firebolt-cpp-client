@@ -2,9 +2,8 @@
 	"openrpc": "1.2.4",
 	"info": {
 		"title": "Firebolt JSON-RPC API",
-		"version": "1.8.0-next.11",
+		"version": "",
 		"x-module-descriptions": {
-			"Internal": "Internal methods for SDK / FEE integration",
 			"Accessibility": "The `Accessibility` module provides access to the user/device settings for closed captioning and voice guidance.\n\nApps **SHOULD** attempt o respect these settings, rather than manage and persist seprate settings, which would be different per-app.",
 			"Advertising": "A module for platform provided advertising settings and functionality.",
 			"Device": "A module for querying about the device and it's capabilities.",
@@ -41,66 +40,6 @@
 					"result": {
 						"name": "schema",
 						"value": {}
-					}
-				}
-			]
-		},
-		{
-			"name": "Internal.initialize",
-			"tags": [
-				{
-					"name": "rpc-only"
-				},
-				{
-					"name": "capabilities",
-					"x-uses": [
-						"xrn:firebolt:capability:lifecycle:initialize"
-					]
-				}
-			],
-			"summary": "Initialize the SDK / FEE session.",
-			"description": "A single version of the Firebolt SDK is compiled into each app. When an app starts up, the SDK **MUST** call this method as soon as possible and **before** any other JSON-RPC methods are sent.",
-			"params": [
-				{
-					"name": "version",
-					"required": true,
-					"schema": {
-						"$ref": "#/x-schemas/Types/SemanticVersion"
-					},
-					"summary": "The semantic version of the SDK."
-				}
-			],
-			"result": {
-				"name": "session",
-				"summary": "Info about the SDK/FEE session",
-				"schema": {
-					"$ref": "#/components/schemas/InitializeResult"
-				}
-			},
-			"examples": [
-				{
-					"name": "Default Example",
-					"params": [
-						{
-							"name": "version",
-							"value": {
-								"major": 1,
-								"minor": 0,
-								"patch": 0,
-								"readable": "Firebolt SDK 1.0.0"
-							}
-						}
-					],
-					"result": {
-						"name": "Default Result",
-						"value": {
-							"version": {
-								"major": 1,
-								"minor": 0,
-								"patch": 0,
-								"readable": "Firebolt FEE 1.0.0"
-							}
-						}
 					}
 				}
 			]
@@ -144,7 +83,8 @@
 			"params": [],
 			"tags": [
 				{
-					"name": "property:readonly"
+					"name": "property:readonly",
+					"x-notifier-params-flattening": "true"
 				},
 				{
 					"name": "capabilities",
@@ -216,7 +156,8 @@
 			"params": [],
 			"tags": [
 				{
-					"name": "property:readonly"
+					"name": "property:readonly",
+					"x-notifier-params-flattening": "true"
 				},
 				{
 					"name": "capabilities",
@@ -927,6 +868,7 @@
 			"tags": [
 				{
 					"name": "event",
+					"x-notifier-params-flattening": "true",
 					"x-notifier": "Accessibility.onClosedCaptionsSettingsChanged",
 					"x-subscriber-for": "Accessibility.closedCaptionsSettings"
 				},
@@ -1019,6 +961,7 @@
 			"tags": [
 				{
 					"name": "event",
+					"x-notifier-params-flattening": "true",
 					"x-notifier": "Accessibility.onVoiceGuidanceSettingsChanged",
 					"x-subscriber-for": "Accessibility.voiceGuidanceSettings"
 				},
@@ -1251,20 +1194,6 @@
 	],
 	"components": {
 		"schemas": {
-			"InitializeResult": {
-				"title": "InitializeResult",
-				"type": "object",
-				"required": [
-					"version"
-				],
-				"properties": {
-					"version": {
-						"$ref": "#/x-schemas/Types/SemanticVersion",
-						"description": "The semantic version of the FEE."
-					}
-				},
-				"additionalProperties": false
-			},
 			"AdvertisingIdResult": {
 				"title": "AdvertisingIdResult",
 				"type": "object",
@@ -1370,37 +1299,6 @@
 		}
 	},
 	"x-schemas": {
-		"Types": {
-			"uri": "https://meta.comcast.com/firebolt/types",
-			"SemanticVersion": {
-				"title": "SemanticVersion",
-				"type": "object",
-				"properties": {
-					"major": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"minor": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"patch": {
-						"type": "integer",
-						"minimum": 0
-					},
-					"readable": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"major",
-					"minor",
-					"patch",
-					"readable"
-				],
-				"additionalProperties": false
-			}
-		},
 		"Accessibility": {
 			"uri": "https://meta.comcast.com/firebolt/accessibility",
 			"ClosedCaptionsSettings": {

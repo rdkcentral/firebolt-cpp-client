@@ -121,7 +121,7 @@ jobs:
               && cmake -B build -S . \
                     -DCMAKE_BUILD_TYPE=Debug \
                     -DENABLE_TESTS=ON \
-              && cp firebolt-open-rpc.json build/test/ \
+              && cp docs/openrpc/the-spec/firebolt-open-rpc.json build/test/ \
             "
 
       - name: Build Project
@@ -246,6 +246,6 @@ jobs:
             ./.github/scripts/run-component-tests.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
-              --openrpc /workspace/firebolt-open-rpc.json \
-              --app-openrpc /workspace/.github/openrpc/firebolt-app-open-rpc.json \
+              --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
+              --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
               --test-exe /workspace/build/test/FireboltClientComponentTests

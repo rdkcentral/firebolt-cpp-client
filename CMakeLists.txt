@@ -91,8 +91,10 @@ add_subdirectory(src)
 
 if (ENABLE_DEMO_APP)
     add_subdirectory(demo)
+    add_subdirectory(test/cpp_test) #for now
 endif()
 
 if (ENABLE_TESTS)
     add_subdirectory(test)
 endif()
+

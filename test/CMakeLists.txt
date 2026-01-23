@@ -24,7 +24,7 @@ enable_testing()
 
 add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
-set(UNIT_TESTS_APP FireboltClientUnitTests)
+set(UNIT_TESTS_APP utApp)
 
 message("Setup ${UNIT_TESTS_APP}")
 
@@ -80,7 +80,7 @@ if(DISCOVER_UT)
     )
 endif()
 
-set(COMPONENT_TESTS_APP FireboltClientComponentTests)
+set(COMPONENT_TESTS_APP ctApp)
 
 message("Setup ${COMPONENT_TESTS_APP}")
 

@@ -28,7 +28,7 @@ if (NOT CMAKE_PROJECT_NAME)
         "${SYSROOT_PATH}/tools/cmake"
     )
 endif ()
-set(DEMO_APP FireboltCoreDemo)
+set(DEMO_APP demoApp)
 
 message("Setup ${DEMO_APP}")
 

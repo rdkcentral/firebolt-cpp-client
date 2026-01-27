@@ -38,6 +38,7 @@ option(ENABLE_TESTS "Build tests" OFF)
 option(DISCOVER_UT "Discover all Unit Tests" ON)
 option(DISCOVER_CT "Discover all Component Tests" OFF)
 option(ENABLE_DEMO_APP "Build demo app" OFF)
+option(BUILD_WITH_INSTALLED_TRANSPORT "Build the library with the transport that is installed, even if its version mismatches" ON)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${SYSROOT_PATH}/usr" CACHE INTERNAL "" FORCE)
@@ -71,18 +72,22 @@ endif()
 if(FireboltTransport_VERSION_OK)
     message(STATUS "Installed FireboltTransport, ${FireboltTransport_VERSION}, matches expected version: ${FIREBOLT_TRANSPORT_VERSION}")
 else()
-    message(STATUS "FireboltTransport version mismatch or not found. Will try to fetch it."
-                   " Expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")
-    FetchContent_Declare(
-        FireboltTransport
-        URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
-        URL_HASH "SHA256=2ff666c266ec22f9ed7989b1c4d3a7c6c2df24a8880d8587179236ccfac24163"
-        DOWNLOAD_EXTRACT_TIMESTAMP true
-    )
-    set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})
-    set(ENABLE_TESTS OFF)
-    FetchContent_MakeAvailable(FireboltTransport)
-    set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
+    message(STATUS "FireboltTransport version mismatch or not found, expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")
+    if (BUILD_WITH_INSTALLED_TRANSPORT AND FireboltTransport_FOUND)
+        message(WARNING "Using installed FireboltTransport version '${FireboltTransport_VERSION}' even though it does not match expected version '${FIREBOLT_TRANSPORT_VERSION}'")
+    else()
+        message(STATUS "Will try to fetch it.")
+        FetchContent_Declare(
+            FireboltTransport
+            URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
+            URL_HASH "SHA256=2ff666c266ec22f9ed7989b1c4d3a7c6c2df24a8880d8587179236ccfac24163"
+            DOWNLOAD_EXTRACT_TIMESTAMP true
+        )
+        set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})
+        set(ENABLE_TESTS OFF)
+        FetchContent_MakeAvailable(FireboltTransport)
+        set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
+    endif()
 endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)

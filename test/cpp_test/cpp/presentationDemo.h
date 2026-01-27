@@ -30,5 +30,5 @@ public:
     void runOption(const int index);
 
 private:
-    void triggerPresentationStateChange();
+   // void triggerPresentationStateChange();
 };

@@ -39,6 +39,14 @@ public:
     {
     }
 
+    // Delete copy operations since we have a unique_ptr member
+    OutputStream(const OutputStream&) = delete;
+    OutputStream& operator=(const OutputStream&) = delete;
+
+    // Allow move operations (optional, but good practice)
+    OutputStream(OutputStream&&) = default;
+    OutputStream& operator=(OutputStream&&) = default;
+
     template <typename T> OutputStream& operator<<(const T& value)
     {
         (*out_) << value;

@@ -1,6 +1,7 @@
-## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2.1...main)
+## [0.2.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2.1...v0.2.2) (2026-01-27)
 
 ### Changed
+- Updated Firebolt C++ Transport dependency to `v1.0.0`
 - Added `BUILD_WITH_INSTALLED_TRANSPORT` option to allow building with the installed Transport even if the version mismatches, enabled by default
 
 ## [0.2.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2.0...v0.2.1) (2025-12-17)

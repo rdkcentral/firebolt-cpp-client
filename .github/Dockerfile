@@ -2,15 +2,17 @@ FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
+RUN dpkg --add-architecture i386 && \
+    apt-get update && apt-get install -y --no-install-recommends --fix-missing \
     build-essential ca-certificates \
     cmake pkg-config clang-format \
     libboost-all-dev \
     curl wget git \
+    g++-multilib gcc-multilib \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
-    libcurl4-openssl-dev \
+    libcurl4-openssl-dev libcurl4-openssl-dev:i386 \
     jq netcat-openbsd \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 

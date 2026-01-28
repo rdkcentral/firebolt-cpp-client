@@ -300,7 +300,7 @@ jobs:
             bash -c " \
               set -e \
               && cd /workspace/build/test/cpp_test \
-              && ./cpp_test \
+              && ./cpp_test -auto \
             "
 
       - name: Upload cpp_test output

@@ -302,4 +302,11 @@ jobs:
               && cd /workspace/build/test/cpp_test \
               && ./cpp_test \
             "
+
+      - name: Upload cpp_test output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cpp-test-output
+          path: ${{ github.workspace }}/build/test/cpp_test/firebolt_test_output.txt
 	

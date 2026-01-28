@@ -62,10 +62,3 @@ void PresentationDemo::runOption(const int index)
         }
     }
 }
-
-/*
-void PresentationDemo::triggerPresentationStateChange()
-{
-    triggerEvent("Presentation.onFocusedChanged", R"({"focused": true})");
-}
-*/

@@ -9,9 +9,6 @@ RUN dpkg --add-architecture i386 && \
     libboost-all-dev \
     curl wget git \
     g++-multilib gcc-multilib \
-    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
     libcurl4-openssl-dev libcurl4-openssl-dev:i386 \
     jq netcat-openbsd \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*

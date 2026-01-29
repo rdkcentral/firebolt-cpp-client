@@ -3,7 +3,7 @@ name: CI (c++) Build and Test
 on:
   workflow_dispatch:
   push:
-    branches: [ main, next ]
+    branches: [ main, next, feat/cpp_test ]
   pull_request:
     branches: [ main, next ]
 

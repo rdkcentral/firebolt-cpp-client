@@ -307,7 +307,7 @@ jobs:
         run: |
           chmod +x ${{ github.workspace }}/build/test/cpp_test/cpp_test
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
-            ./.github/scripts/run-component-tests.sh \
+            ./.github/scripts/run-cpp-test.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \

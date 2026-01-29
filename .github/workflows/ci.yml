@@ -293,8 +293,37 @@ jobs:
               && cmake --build build --parallel \
             "
 
+      - name: Setup Mock-Firebolt
+        id: setup-mock
+        uses: ./.github/actions/setup-mock
+
+      - name: Restore Mock-Firebolt Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.MOCK_PATH }}
+          key: ${{ runner.os }}-mock-${{ steps.setup-mock.outputs.deps_cache_key }}
+
+      - name: Run cpp_test with mock server
+        run: |
+          chmod +x ${{ github.workspace }}/build/test/cpp_test/cpp_test
+          docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
+            ./.github/scripts/run-component-tests.sh \
+              --mock /mock \
+              --config /workspace/.github/mock-firebolt/config.json \
+              --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
+              --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
+              --test-exe /workspace/build/test/cpp_test/cpp_test
+
       - name: Upload cpp_test binary
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: cpp-test-binary
           path: ${{ github.workspace }}/build/test/cpp_test/cpp_test
+
+      - name: Upload cpp_test output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cpp-test-output
+          path: ${{ github.workspace }}/build/test/cpp_test/firebolt_test_output.txt

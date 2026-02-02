@@ -28,7 +28,7 @@ set(UNIT_TESTS_APP utApp)
 
 message("Setup ${UNIT_TESTS_APP}")
 
-file(GLOB UNIT_TESTS unit/*Test.cpp)
+file(GLOB UNIT_TESTS CONFIGURE_DEPENDS unit/*Test.cpp)
 
 add_executable(${UNIT_TESTS_APP}
     UnitTestsMain.cpp
@@ -75,7 +75,7 @@ set(COMPONENT_TESTS_APP ctApp)
 
 message("Setup ${COMPONENT_TESTS_APP}")
 
-file(GLOB COMPONENT_TESTS component/*Test.cpp)
+file(GLOB COMPONENT_TESTS CONFIGURE_DEPENDS component/*Test.cpp)
 
 add_executable(${COMPONENT_TESTS_APP}
     "ComponentTestsMain.cpp"

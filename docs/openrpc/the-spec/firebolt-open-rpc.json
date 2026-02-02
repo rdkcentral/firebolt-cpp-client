@@ -7,6 +7,7 @@
 			"Accessibility": "The `Accessibility` module provides access to the user/device settings for closed captioning and voice guidance.\n\nApps **SHOULD** attempt o respect these settings, rather than manage and persist seprate settings, which would be different per-app.",
 			"Advertising": "A module for platform provided advertising settings and functionality.",
 			"Device": "A module for querying about the device and it's capabilities.",
+			"Discovery": "Your App likely wants to integrate with the Platform's discovery capabilities. For example to add a \"Watch Next\" tile that links to your app from the platform's home screen.\n\nGetting access to this information requires to connect to lower level APIs made available by the platform. Since implementations differ between operators and platforms, the Firebolt SDK offers a Discovery module, that exposes a generic, agnostic interface to the developer.\n\nUnder the hood, an underlaying transport layer will then take care of calling the right APIs for the actual platform implementation that your App is running on.\n\nThe Discovery plugin is used to _send_ information to the Platform.\n\n### Localization\nApps should provide all user-facing strings in the device's language, as specified by the Firebolt `Localization.language` property.\n\nApps should provide prices in the same currency presented in the app. If multiple currencies are supported in the app, the app should provide prices in the user's current default currency.",
 			"Display": "A module for querying about the display",
 			"Lifecycle2": "Methods and events for responding to Lifecycle changes in your app.",
 			"Localization": "Methods for accessing location and language preferences.",
@@ -392,6 +393,124 @@
 					"result": {
 						"name": "Default Result",
 						"value": "BCM72180"
+					}
+				}
+			]
+		},
+		{
+			"name": "Discovery.watched",
+			"summary": "Notify the platform that content was partially or completely watched",
+			"tags": [
+				{
+					"name": "polymorphic-reducer"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:discovery:watched"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "entityId",
+					"required": true,
+					"schema": {
+						"type": "string"
+					},
+					"summary": "The entity Id of the watched content."
+				},
+				{
+					"name": "progress",
+					"summary": "How much of the content has been watched (percentage as (0-0.999) for VOD, number of seconds for live)",
+					"schema": {
+						"type": "number",
+						"minimum": 0
+					}
+				},
+				{
+					"name": "completed",
+					"summary": "Whether or not this viewing is considered \"complete,\" per the app's definition thereof",
+					"schema": {
+						"type": "boolean"
+					}
+				},
+				{
+					"name": "watchedOn",
+					"summary": "Date/Time the content was watched, ISO 8601 Date/Time",
+					"schema": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				{
+					"name": "agePolicy",
+					"description": "The age policy associated with the watch event. The age policy describes the age groups to which content may be directed.",
+					"schema": {
+						"$ref": "#/x-schemas/Policies/AgePolicy"
+					}
+				}
+			],
+			"result": {
+				"name": "success",
+				"summary": "whether the call was successful or not",
+				"schema": {
+					"type": "boolean"
+				}
+			},
+			"examples": [
+				{
+					"name": "Notify the platform of watched content",
+					"params": [
+						{
+							"name": "entityId",
+							"value": "partner.com/entity/123"
+						},
+						{
+							"name": "progress",
+							"value": 0.95
+						},
+						{
+							"name": "completed",
+							"value": true
+						},
+						{
+							"name": "watchedOn",
+							"value": "2021-04-23T18:25:43.511Z"
+						}
+					],
+					"result": {
+						"name": "success",
+						"value": true
+					}
+				},
+				{
+					"name": "Notify the platform that child-directed content was watched",
+					"params": [
+						{
+							"name": "entityId",
+							"value": "partner.com/entity/123"
+						},
+						{
+							"name": "progress",
+							"value": 0.95
+						},
+						{
+							"name": "completed",
+							"value": true
+						},
+						{
+							"name": "watchedOn",
+							"value": "2021-04-23T18:25:43.511Z"
+						},
+						{
+							"name": "agePolicy",
+							"value": "app:child"
+						}
+					],
+					"result": {
+						"name": "success",
+						"value": true
 					}
 				}
 			]
@@ -1393,6 +1512,26 @@
 			"Locale": {
 				"type": "string",
 				"pattern": "^[a-zA-Z]+([a-zA-Z0-9\\-]*)$"
+			}
+		},
+		"Policies": {
+			"uri": "https://meta.comcast.com/firebolt/policies",
+			"AgePolicy": {
+				"title": "AgePolicy",
+				"description": "The policy that describes various age groups to which content is directed. See distributor documentation for further details.",
+				"anyOf": [
+					{
+						"type": "string"
+					},
+					{
+						"type": "string",
+						"enum": [
+							"app:adult",
+							"app:child",
+							"app:teen"
+						]
+					}
+				]
 			}
 		}
 	}

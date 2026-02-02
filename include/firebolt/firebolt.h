@@ -22,6 +22,7 @@
 #include "firebolt/advertising.h"
 #include "firebolt/client_export.h"
 #include "firebolt/device.h"
+#include "firebolt/discovery.h"
 #include "firebolt/display.h"
 #include "firebolt/lifecycle.h"
 #include "firebolt/localization.h"
@@ -95,6 +96,13 @@ public:
      * @return Reference to Device interface
      */
     virtual Device::IDevice& DeviceInterface() = 0;
+
+    /**
+     * @brief Returns instance of Discovery interface
+     *
+     * @return Reference to Discovery interface
+     */
+    virtual Discovery::IDiscovery& DiscoveryInterface() = 0;
 
     /**
      * @brief Returns instance of Display interface

@@ -20,7 +20,7 @@ include(GenerateExportHeader)
 
 set(TARGET ${PROJECT_NAME})
 
-file(GLOB SOURCES *.cpp json_types/*.cpp)
+file(GLOB SOURCES CONFIGURE_DEPENDS *.cpp json_types/*.cpp)
 
 if(NOT ENABLE_TESTS)
     set(CMAKE_CXX_VISIBILITY_PRESET hidden)

@@ -20,6 +20,7 @@
 #include "accessibility_impl.h"
 #include "advertising_impl.h"
 #include "device_impl.h"
+#include "discovery_impl.h"
 #include "display_impl.h"
 #include "firebolt/client_version.h"
 #include "lifecycle_impl.h"
@@ -37,6 +38,7 @@ public:
         : accessibility_(Firebolt::Helpers::GetHelperInstance()),
           advertising_(Firebolt::Helpers::GetHelperInstance()),
           device_(Firebolt::Helpers::GetHelperInstance()),
+          discovery_(Firebolt::Helpers::GetHelperInstance()),
           display_(Firebolt::Helpers::GetHelperInstance()),
           lifecycle_(Firebolt::Helpers::GetHelperInstance()),
           localization_(Firebolt::Helpers::GetHelperInstance()),
@@ -66,6 +68,7 @@ public:
     Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
     Advertising::IAdvertising& AdvertisingInterface() override { return advertising_; }
     Device::IDevice& DeviceInterface() override { return device_; }
+    Discovery::IDiscovery& DiscoveryInterface() override { return discovery_; }
     Display::IDisplay& DisplayInterface() override { return display_; }
     Lifecycle::ILifecycle& LifecycleInterface() override { return lifecycle_; }
     Localization::ILocalization& LocalizationInterface() override { return localization_; }
@@ -85,6 +88,7 @@ private:
     Accessibility::AccessibilityImpl accessibility_;
     Advertising::AdvertisingImpl advertising_;
     Device::DeviceImpl device_;
+    Discovery::DiscoveryImpl discovery_;
     Display::DisplayImpl display_;
     Lifecycle::LifecycleImpl lifecycle_;
     Localization::LocalizationImpl localization_;

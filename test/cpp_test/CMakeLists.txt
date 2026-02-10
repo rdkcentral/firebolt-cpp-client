@@ -45,10 +45,14 @@ target_include_directories(cpp_test PRIVATE
 
 add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
+# Find Threads package for pthread
+find_package(Threads REQUIRED)
+
 target_link_libraries(cpp_test
     FireboltClient
     FireboltTransport::FireboltTransport
     nlohmann_json::nlohmann_json
     nlohmann_json_schema_validator::validator
     CURL::libcurl
+    Threads::Threads
 )

@@ -652,6 +652,26 @@
 				"type": "string",
 				"pattern": "^[a-zA-Z]+([a-zA-Z0-9\\-]*)$"
 			}
+		},
+		"Policies": {
+			"uri": "https://meta.comcast.com/firebolt/policies",
+			"AgePolicy": {
+				"title": "AgePolicy",
+				"description": "The policy that describes various age groups to which content is directed. See distributor documentation for further details.",
+				"anyOf": [
+					{
+						"type": "string"
+					},
+					{
+						"type": "string",
+						"enum": [
+							"app:adult",
+							"app:child",
+							"app:teen"
+						]
+					}
+				]
+			}
 		}
 	}
 }

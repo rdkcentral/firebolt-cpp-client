@@ -72,9 +72,6 @@ bool waitOnConnectionReady()
 
 int main(int argc, char** argv)
 {
-    gOutput = OutputStream("firebolt_test_output.txt");
-
-    gOutput << "Logging to file instead of console" << std::endl;
 
     // check args for -auto option
     for (int i = 1; i < argc; ++i)
@@ -87,12 +84,18 @@ int main(int argc, char** argv)
         }
     }
 
-    std::string url = "ws://127.0.0.1:9998";
+    // url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
+    const char* fireboltEndpoint = std::getenv("FIREBOLT_ENDPOINT");
+    if (fireboltEndpoint)
+    {
+        url = fireboltEndpoint;
+    }
+    std::cout << "-----Using firebolt URL: " << url << std::endl;
+
     createFireboltInstance(url);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    //  ::testing::InitGoogleTest(&argc, argv);
     if (!waitOnConnectionReady())
     {
         std::cout << "Test not able to connect with server..." << std::endl;

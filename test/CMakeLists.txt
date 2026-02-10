@@ -24,20 +24,11 @@ enable_testing()
 
 add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
-set(UNIT_TESTS_APP FireboltClientUnitTests)
+set(UNIT_TESTS_APP utApp)
 
 message("Setup ${UNIT_TESTS_APP}")
 
-set(UNIT_TESTS
-    "unit/accessibilityTest.cpp"
-    "unit/advertisingTest.cpp"
-    "unit/deviceTest.cpp"
-    "unit/displayTest.cpp"
-    "unit/lifecycleTest.cpp"
-    "unit/localizationTest.cpp"
-    "unit/presentationTest.cpp"
-    "unit/statsTest.cpp"
-)
+file(GLOB UNIT_TESTS CONFIGURE_DEPENDS unit/*Test.cpp)
 
 add_executable(${UNIT_TESTS_APP}
     UnitTestsMain.cpp
@@ -80,20 +71,11 @@ if(DISCOVER_UT)
     )
 endif()
 
-set(COMPONENT_TESTS_APP FireboltClientComponentTests)
+set(COMPONENT_TESTS_APP ctApp)
 
 message("Setup ${COMPONENT_TESTS_APP}")
 
-set(COMPONENT_TESTS
-    "component/accessibilityTest.cpp"
-    "component/advertisingTest.cpp"
-    "component/deviceTest.cpp"
-    "component/displayTest.cpp"
-    "component/lifecycleTest.cpp"
-    "component/localizationTest.cpp"
-    "component/presentationTest.cpp"
-    "component/statsTest.cpp"
-)
+file(GLOB COMPONENT_TESTS CONFIGURE_DEPENDS component/*Test.cpp)
 
 add_executable(${COMPONENT_TESTS_APP}
     "ComponentTestsMain.cpp"

@@ -163,7 +163,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          chmod +x ${{ github.workspace }}/build/test/FireboltClientUnitTests
+          chmod +x ${{ github.workspace }}/build/test/utApp
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
               set -e \
@@ -241,14 +241,14 @@ jobs:
 
       - name: Run Component Tests
         run: |
-          chmod +x ${{ github.workspace }}/build/test/FireboltClientComponentTests
+          chmod +x ${{ github.workspace }}/build/test/ctApp
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
             ./.github/scripts/run-component-tests.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
-              --test-exe /workspace/build/test/FireboltClientComponentTests
+              --test-exe /workspace/build/test/ctApp
 
   cpp_demo_tests:
     permissions:
@@ -327,3 +327,4 @@ jobs:
         with:
           name: cpp-test-output
           path: ${{ github.workspace }}/build/test/cpp_test/firebolt_test_output.txt
+

@@ -72,7 +72,7 @@ bool waitOnConnectionReady()
 
 int main(int argc, char** argv)
 {
-    std::string url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
+    std::string url = "";
 
     // check args for -auto option
     for (int i = 1; i < argc; ++i)
@@ -81,17 +81,26 @@ int main(int argc, char** argv)
         if (std::string(argv[i]) == "-auto")
         {
             gAutoRun = true;
-            break;
+        }
+        else if (std::string(argv[i]) == "-mock")
+        {
+            url = "ws://127.0.0.1:9998"; // Default URL for local mock server
         }
     }
 
-    // url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
-    const char* fireboltEndpoint = std::getenv("FIREBOLT_ENDPOINT");
-    if (fireboltEndpoint)
+    if (url.empty())
     {
-        url = fireboltEndpoint;
+        const char* fireboltEndpoint = std::getenv("FIREBOLT_ENDPOINT");
+        if (fireboltEndpoint)
+        {
+            url = fireboltEndpoint;
+        }
+        else
+        {
+            url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
+        }
+        std::cout << "-----Using firebolt URL: " << url << std::endl;
     }
-    std::cout << "-----Using firebolt URL: " << url << std::endl;
 
     createFireboltInstance(url);
 

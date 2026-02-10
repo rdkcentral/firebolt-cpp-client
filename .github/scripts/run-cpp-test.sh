@@ -86,9 +86,9 @@ while ! nc -z localhost $mockPort >/dev/null 2>&1; do
   sleep 1
 done
 
-echo "Starting cpp_test with -auto flag"
+echo "Starting cpp_test with -mock and -auto flags"
 cd "$(dirname "$testExe")"
-"./$(basename "$testExe")" -auto
+"./$(basename "$testExe")" -mock -auto
 exitCode=$?
 
 kill-rec $mock_pid

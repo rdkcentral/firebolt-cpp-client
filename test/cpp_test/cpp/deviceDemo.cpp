@@ -16,7 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 #include "deviceDemo.h"
 #include <iostream>
 #include <string>

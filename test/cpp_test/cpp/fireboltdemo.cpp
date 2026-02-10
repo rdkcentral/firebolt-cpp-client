@@ -16,7 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-
 #include "fireboltdemo.h"
 #include "firebolt-open-rpc_json.h"
 #include "utils.h"
@@ -128,8 +127,8 @@ std::vector<std::string> IFireboltDemo::methodsFromRpc(const std::string& interf
         if (method.contains("name") && method["name"].get<std::string>().rfind(interfaceStr, 0) == 0)
         {
 
-            names_.push_back(method["name"]); 
-            descriptions_.push_back(method["summary"]); 
+            names_.push_back(method["name"]);
+            descriptions_.push_back(method["summary"]);
             gOutput << "Found method: " << names_.back() << ":" << descriptions_.back() << std::endl;
         }
     }

@@ -17,11 +17,11 @@
  */
 #pragma once
 
+#include "fireboltdemo.h"
 #include <string>
 #include <vector>
-#include "fireboltdemo.h"
 
-class DisplayDemo : public IFireboltDemo 
+class DisplayDemo : public IFireboltDemo
 {
 public:
     DisplayDemo();

@@ -72,6 +72,7 @@ bool waitOnConnectionReady()
 
 int main(int argc, char** argv)
 {
+    std::string url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
 
     // check args for -auto option
     for (int i = 1; i < argc; ++i)

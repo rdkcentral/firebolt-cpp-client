@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include "fireboltdemo.h"
 #include <string>
 #include <vector>
-#include "fireboltdemo.h"
 
-class LifecycleDemo : public IFireboltDemo 
+class LifecycleDemo : public IFireboltDemo
 {
 public:
     LifecycleDemo();

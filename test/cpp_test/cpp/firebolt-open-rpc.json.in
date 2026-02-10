@@ -1,4 +1,4 @@
 #pragma once
 #include <string_view>
 
-constexpr std::string_view JSON_DATA = R"(@JSON_CONTENT@)";
+constexpr std::string_view JSON_DATA = R"JSON_DELIMITER(@JSON_CONTENT@)JSON_DELIMITER";

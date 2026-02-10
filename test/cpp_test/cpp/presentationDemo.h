@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include "fireboltdemo.h"
 #include <string>
 #include <vector>
-#include "fireboltdemo.h"
 
-class PresentationDemo : public IFireboltDemo 
+class PresentationDemo : public IFireboltDemo
 {
 public:
     PresentationDemo();
@@ -30,5 +30,5 @@ public:
     void runOption(const int index);
 
 private:
-   // void triggerPresentationStateChange();
+    // void triggerPresentationStateChange();
 };

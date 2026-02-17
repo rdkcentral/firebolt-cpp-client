@@ -34,6 +34,7 @@ kill-rec() {
   kill -9 "$pid"
 }
 
+protocol="rpc_v2"
 specOpenRpc=
 specAppOpenRpc=
 mockPath=
@@ -43,6 +44,7 @@ testExe=
 
 while [[ -n ${1:-} ]]; do
     case $1 in
+    --protocol) protocol="$2"; shift;;
     --mock) mockPath="$2"; shift;;
     --port) mockPort="$2"; shift;;
     --config) mockConfig="$2"; shift;;
@@ -52,10 +54,16 @@ while [[ -n ${1:-} ]]; do
     *) break;;
     esac; shift
 done
+case $protocol in
+legacy)
+  mockConfig="${mockConfig%.json}--legacy.json"
+  specOpenRpc="${specOpenRpc%.json}--legacy.json"
+  specAppOpenRpc="${specAppOpenRpc}--ignored";;
+esac
 
 [[ -e $mockPath ]] || die "mock-firebolt not installed"
 [[ -e $specOpenRpc ]] || die "OpenRPC spec '$specOpenRpc' not found"
-[[ -e $specAppOpenRpc ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
+[[ -e $specAppOpenRpc || $specAppOpenRpc == *'--ignored' ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
 [[ -e $mockConfig ]] || die "Config '$mockConfig' not found"
 [[ -e $testExe ]] || die "Executable for CT '$testExe' not found"
 

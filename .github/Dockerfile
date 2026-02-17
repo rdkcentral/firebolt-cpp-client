@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
 
 ARG NODE_VERSION="24.11.0"
 ENV NVM_DIR="/usr/local/nvm"
-RUN mkdir -p $NVM_DIR
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-RUN /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
+RUN mkdir -p $NVM_DIR \
+    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
+    && /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
 ENV NODE_PATH="$NVM_DIR/versions/node/$NODE_VERSION/lib/node_modules"
 ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
 

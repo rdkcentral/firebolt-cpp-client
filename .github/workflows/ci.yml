@@ -254,7 +254,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-    needs: [build_docker]
+    needs: [build_docker, build_project]
     runs-on: ubuntu-latest
     steps:
       - name: Log in to the Container registry
@@ -266,30 +266,29 @@ jobs:
 
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Download build directory
+        uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
+          name: build-dir
+          path: ${{ github.workspace }}/build
 
-      - name: Get version
+      - name: Install FireboltClient library
         run: |
-          VERSION=$(git describe --tags --dirty --match "v[0-9]*")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-          echo "version: $VERSION"
-
-      - name: Configure Project with Demo
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
+          docker run --rm -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
               set -e \
-              && cmake -B build -S . \
-                    -DCMAKE_BUILD_TYPE=Debug \
-                    -DENABLE_DEMO_APP=ON \
+              && cd build \
+              && cmake --install . --prefix /usr/local \
             "
 
-      - name: Build Project with cpp_test
+      - name: Build cpp_test standalone
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
               set -e \
+              && cd test/cpp_test \
+              && cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug \
               && cmake --build build --parallel \
             "
 
@@ -305,26 +304,26 @@ jobs:
 
       - name: Run Demo with mock server
         run: |
-          chmod +x ${{ github.workspace }}/build/test/cpp_test/cpp_test
+          chmod +x ${{ github.workspace }}/test/cpp_test/build/cpp_test
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
             ./.github/scripts/run-cpp-test.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
-              --test-exe /workspace/build/test/cpp_test/cpp_test
+              --test-exe /workspace/test/cpp_test/build/cpp_test
 
       - name: Upload cpp_test binary
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cpp-test-binary
-          path: ${{ github.workspace }}/build/test/cpp_test/cpp_test
+          path: ${{ github.workspace }}/test/cpp_test/build/cpp_test
 
       - name: Upload cpp_test output
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cpp-test-output
-          path: ${{ github.workspace }}/build/test/cpp_test/firebolt_test_output.txt
+          path: ${{ github.workspace }}/test/cpp_test/build/firebolt_test_output.txt
 

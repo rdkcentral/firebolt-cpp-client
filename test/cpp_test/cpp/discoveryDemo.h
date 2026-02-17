@@ -19,17 +19,13 @@
 #pragma once
 
 #include "fireboltdemo.h"
+#include <string>
+#include <vector>
 
-class ChooseInterface : public IFireboltDemo
+class DiscoveryDemo : public IFireboltDemo
 {
 public:
-    ChooseInterface();
-    ~ChooseInterface();
-    //std::vector<std::string> methods() const { return names_; }
-
+    DiscoveryDemo();
+    ~DiscoveryDemo() = default;
     void runOption(const int index);
-    void autoRun();
-
-private:
-    std::vector<IFireboltDemo*> interfaces;
 };

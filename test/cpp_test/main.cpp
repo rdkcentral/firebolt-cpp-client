@@ -16,8 +16,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <atomic>
 #include <chrono>
 #include <iostream>
+#include <stdlib.h>
 #include <string>
 #include <thread>
 #include <unistd.h>
@@ -28,13 +30,15 @@
 
 OutputStream gOutput;
 
-bool gConnected = false;
+std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
+std::vector<IFireboltDemo*> interfaces;
+
 
 void connectionChanged(const bool connected, const Firebolt::Error error)
 {
     std::cout << "Change in connection: connected: " << connected << " error: " << static_cast<int>(error) << std::endl;
-    gConnected = connected;
+    gConnected.store(connected, std::memory_order_release);
 }
 
 void createFireboltInstance(const std::string& url)
@@ -59,7 +63,7 @@ bool waitOnConnectionReady()
     static constexpr uint32_t SLEEPSLOT_TIME = 100;
 
     // Right, a wait till connection is closed is requested..
-    while ((waiting > 0) && (gConnected == false))
+    while ((waiting > 0) && !gConnected.load(std::memory_order_acquire))
     {
 
         uint32_t sleepSlot = (waiting > SLEEPSLOT_TIME ? SLEEPSLOT_TIME : waiting);
@@ -67,7 +71,7 @@ bool waitOnConnectionReady()
         std::this_thread::sleep_for(std::chrono::milliseconds(sleepSlot));
         waiting -= sleepSlot;
     }
-    return gConnected;
+    return gConnected.load(std::memory_order_acquire);
 }
 
 int main(int argc, char** argv)
@@ -117,23 +121,24 @@ int main(int argc, char** argv)
         gOutput = OutputStream("firebolt_test_output.txt");
         ChooseInterface chooseInterface;
         chooseInterface.autoRun();
-        return 0;
     }
-
-    gOutput = OutputStream();
-
-    ChooseInterface chooseInterface;
-
-    for (;;)
+    else
     {
-        int interfaceIndex = chooseInterface.chooseOption();
+        gOutput = OutputStream();
 
-        if (interfaceIndex == -1)
+        ChooseInterface chooseInterface;
+
+        for (;;)
         {
-            break; // Exit the program
-        }
+            int interfaceIndex = chooseInterface.chooseOption();
 
-        chooseInterface.runOption(interfaceIndex);
+            if (interfaceIndex == -1)
+            {
+                break; // Exit the program
+            }
+
+            chooseInterface.runOption(interfaceIndex);
+        }
     }
 
     destroyFireboltInstance();

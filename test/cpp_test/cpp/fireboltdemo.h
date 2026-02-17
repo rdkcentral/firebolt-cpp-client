@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,15 @@
 #include <string>
 #include <vector>
 
+extern bool gAutoRun;
+extern OutputStream gOutput;
+
+struct ItemDescription
+{
+    std::string name;
+    std::string description;
+};
+
 class IFireboltDemo
 {
 public:
@@ -33,8 +42,8 @@ public:
 
     int chooseOption();
     virtual void runOption(const int index) = 0;
-    int listSize() const { return static_cast<int>(names_.size()); }
-    std::vector<std::string> methods() const { return names_; }
+    int listSize() const { return static_cast<int>(itemDescriptions_.size()); }
+    std::string method(int index) const { return itemDescriptions_[index].name; }
 
 protected:
     void paramFromConsole(const std::string& name, const std::string& def, std::string& value);
@@ -51,6 +60,13 @@ protected:
 
     template <typename T> T chooseEnumFromList(const Firebolt::JSON::EnumType<T>& enumType, const std::string& prompt)
     {
+        if (gAutoRun)
+        {
+            T defaultValue = enumType.begin()->second;
+            gOutput << "Auto-selecting '" << enumType.begin()->first << "' for " << prompt << "." << std::endl;
+            return defaultValue;
+        }
+
         std::vector<std::string> options;
         for (const auto& pair : enumType)
         {
@@ -79,8 +95,9 @@ protected:
 
     static nlohmann::json json_;
 
-    std::vector<std::string> names_;
-    std::vector<std::string> descriptions_;
+    std::vector<ItemDescription> itemDescriptions_;
+    //std::vector<std::string> names_;
+    //std::vector<std::string> descriptions_;
 
     OutputStream outStream_;
 

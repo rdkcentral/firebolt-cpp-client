@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include "accessibilityDemo.h"
 #include "advertisingDemo.h"
 #include "deviceDemo.h"
+#include "discoveryDemo.h"
 #include "displayDemo.h"
 #include "lifecycleDemo.h"
 #include "localizationDemo.h"
@@ -41,13 +42,16 @@ ChooseInterface::ChooseInterface()
         std::cout << key << ": " << value << std::endl;
         if (key != "Internal")
         {
-            names_.push_back(key);
-            descriptions_.push_back(value.get<std::string>());
+            itemDescriptions_.push_back({key, value.get<std::string>()});
+            std::cout << "Added interface: " << key << std::endl;
         }
     }
 
-    interfaces = {new AccessibilityDemo(), new AdvertisingDemo(),  new DeviceDemo(),       new DisplayDemo(),
+    interfaces = {new AccessibilityDemo(), new AdvertisingDemo(),  new DeviceDemo(),  new DiscoveryDemo(),     new DisplayDemo(),
                   new LifecycleDemo(),     new LocalizationDemo(), new PresentationDemo(), new StatsDemo()};
+
+                  std::cout << interfaces.size() << " interfaces, " << itemDescriptions_.size() << " descriptions" << std::endl;
+    assert(interfaces.size() == itemDescriptions_.size());
 }
 
 ChooseInterface::~ChooseInterface()
@@ -61,7 +65,7 @@ ChooseInterface::~ChooseInterface()
 void ChooseInterface::runOption(const int index)
 {
     IFireboltDemo* selectedInterface = interfaces[index];
-    gOutput << "Running interface: " << names_[index] << std::endl;
+    gOutput << "Running interface: " << itemDescriptions_[index].name << std::endl;
 
     for (;;)
     {
@@ -85,12 +89,12 @@ void ChooseInterface::autoRun()
         {
             continue; // Skip unimplemented interfaces
         }
-        gOutput << "Auto-running interface: " << names_[i] << std::endl;
+        gOutput << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
 
         // Assuming each interface has a predefined set of methods to run
         for (int j = 0; j < selectedInterface->listSize(); ++j)
         {
-            gOutput << "Auto-running method: " << selectedInterface->methods()[j] << std::endl;
+            gOutput << "Auto-running method: " << selectedInterface->method(j) << std::endl;
             selectedInterface->runOption(j);
         }
     }

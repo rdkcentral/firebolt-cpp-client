@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,12 @@ PresentationDemo::PresentationDemo()
     : IFireboltDemo()
 {
     methodsFromRpc("Presentation");
-    names_.push_back("Trigger presentation state change");
-    descriptions_.push_back("Simulate a presentation state change event from the platform.");
+    itemDescriptions_.push_back({"Trigger presentation state change", "Simulate a presentation state change event from the platform."});
 }
 
 void PresentationDemo::runOption(const int index)
 {
-    std::string key = names_[index];
+    std::string key = itemDescriptions_[index].name;
 
     if (key == "Presentation.focused")
     {

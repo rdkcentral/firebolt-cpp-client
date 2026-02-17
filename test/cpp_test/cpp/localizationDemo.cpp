@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ LocalizationDemo::LocalizationDemo()
 
 void LocalizationDemo::runOption(const int index)
 {
-    std::string key = names_[index];
+    std::string key = itemDescriptions_[index].name;
 
     if (key == "Localization.country")
     {

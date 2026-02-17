@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <cassert>
 
 class OutputStream
 {
@@ -37,6 +38,7 @@ public:
         : file_(std::make_unique<std::ofstream>(filename)),
           out_(file_.get())
     {
+        assert(file_->is_open() && "Failed to open output file");
     }
 
     // Delete copy operations since we have a unique_ptr member

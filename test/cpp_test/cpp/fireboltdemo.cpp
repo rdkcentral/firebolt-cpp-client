@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 #include "outputstream.h"
 extern OutputStream gOutput;
 
+
 nlohmann::json IFireboltDemo::json_;
 
 #ifndef UT_OPEN_RPC_FILE
@@ -40,6 +41,12 @@ IFireboltDemo::IFireboltDemo()
 
 void IFireboltDemo::paramFromConsole(const std::string& name, const std::string& def, std::string& value)
 {
+    if (gAutoRun)
+    {
+        gOutput << "Auto-selecting " << def << " for " << name << "." << std::endl;
+        value = def;
+        return;
+    }
     gOutput << "Enter " << name << " (default: " << def << "): ";
     std::string input;
     std::getline(std::cin, input);
@@ -109,7 +116,11 @@ int IFireboltDemo::chooseFromList(const std::vector<std::string>& options, const
 
 int IFireboltDemo::chooseOption()
 {
-    return chooseFromList(names_, "Choose a method to run:");
+    std::vector<std::string> methodNames;
+    for (const auto& item : itemDescriptions_)    {
+        methodNames.push_back(item.name);
+    }
+    return chooseFromList(methodNames, "Choose a method to run:");
 }
 
 void IFireboltDemo::loadRpc()
@@ -126,10 +137,8 @@ std::vector<std::string> IFireboltDemo::methodsFromRpc(const std::string& interf
     {
         if (method.contains("name") && method["name"].get<std::string>().rfind(interfaceStr, 0) == 0)
         {
-
-            names_.push_back(method["name"]);
-            descriptions_.push_back(method["summary"]);
-            gOutput << "Found method: " << names_.back() << ":" << descriptions_.back() << std::endl;
+            itemDescriptions_.push_back({method["name"], method["summary"]});
+           // gOutput << "Found method: " << names_.back() << ":" << descriptions_.back() << std::endl;
         }
     }
 

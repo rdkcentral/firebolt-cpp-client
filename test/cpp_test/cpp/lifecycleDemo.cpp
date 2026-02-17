@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,34 +28,26 @@ using namespace Firebolt::Lifecycle;
 
 #include "outputstream.h"
 extern OutputStream gOutput;
-extern bool gAutoRun;
 
 LifecycleDemo::LifecycleDemo()
     : IFireboltDemo()
 {
     methodsFromRpc("Lifecycle2");
-    names_.push_back("Trigger lifecycle state change");
-    descriptions_.push_back("Simulate a lifecycle state change event from the platform.");
+    itemDescriptions_.push_back({"Trigger lifecycle state change", "Simulate a lifecycle state change event from the platform."});
     currentState_ = LifecycleState::INITIALIZING;
 }
 
 void LifecycleDemo::runOption(const int index)
 {
-    std::string key = names_[index];
+    std::string key = itemDescriptions_[index].name;
 
     if (key == "Lifecycle2.close")
     {
-        CloseType type = CloseType::DEACTIVATE;
-        if (gAutoRun)
-        {
-            gOutput << "Auto-selecting 'deactivate' for Close Type." << std::endl;
-        }
-        else
-        {
-            type = chooseEnumFromList(Firebolt::Lifecycle::JsonData::CloseReasonEnum, "Choose Close Type!!:");
-        }
+        CloseType type = chooseEnumFromList(Firebolt::Lifecycle::JsonData::CloseReasonEnum, "Choose Close Type:");
+                std::cout << "------" << (int)type << std::endl;
 
         Result<void> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().close(type);
+        std::cout << "------" << std::endl;
         validateResult(r);
     }
     else if (key == "Lifecycle2.state")

@@ -303,7 +303,7 @@ jobs:
           path: ${{ env.MOCK_PATH }}
           key: ${{ runner.os }}-mock-${{ steps.setup-mock.outputs.deps_cache_key }}
 
-      - name: Run cpp_test with mock server
+      - name: Run Demo with mock server
         run: |
           chmod +x ${{ github.workspace }}/build/test/cpp_test/cpp_test
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \

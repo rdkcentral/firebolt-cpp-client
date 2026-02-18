@@ -34,7 +34,6 @@ std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
 std::vector<FireboltDemoBase*> interfaces;
 
-
 void connectionChanged(const bool connected, const Firebolt::Error error)
 {
     std::cout << "Change in connection: connected: " << connected << " error: " << static_cast<int>(error) << std::endl;

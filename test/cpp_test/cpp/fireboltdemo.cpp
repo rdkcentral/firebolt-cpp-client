@@ -45,7 +45,7 @@ void FireboltDemoBase::paramFromConsole(const std::string& name, const std::stri
         value = def;
         return;
     }
-    
+
     gOutput << "Enter " << name << " (default: " << def << "): ";
     std::string input;
     std::getline(std::cin, input);
@@ -116,7 +116,8 @@ int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, co
 int FireboltDemoBase::chooseOption()
 {
     std::vector<std::string> methodNames;
-    for (const auto& item : itemDescriptions_)    {
+    for (const auto& item : itemDescriptions_)
+    {
         methodNames.push_back(item.name);
     }
     return chooseFromList(methodNames, "Choose a method to run:");
@@ -137,7 +138,7 @@ std::vector<std::string> FireboltDemoBase::methodsFromRpc(const std::string& int
         if (method.contains("name") && method["name"].get<std::string>().rfind(interfaceStr, 0) == 0)
         {
             itemDescriptions_.push_back({method["name"], method["summary"]});
-           // gOutput << "Found method: " << names_.back() << ":" << descriptions_.back() << std::endl;
+            // gOutput << "Found method: " << names_.back() << ":" << descriptions_.back() << std::endl;
         }
     }
 

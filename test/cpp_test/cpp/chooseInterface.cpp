@@ -47,10 +47,11 @@ ChooseInterface::ChooseInterface()
         }
     }
 
-    interfaces = {new AccessibilityDemo(), new AdvertisingDemo(),  new DeviceDemo(),  new DiscoveryDemo(),     new DisplayDemo(),
-                  new LifecycleDemo(),     new LocalizationDemo(), new PresentationDemo(), new StatsDemo()};
+    interfaces = {new AccessibilityDemo(), new AdvertisingDemo(),  new DeviceDemo(),
+                  new DiscoveryDemo(),     new DisplayDemo(),      new LifecycleDemo(),
+                  new LocalizationDemo(),  new PresentationDemo(), new StatsDemo()};
 
-                  std::cout << interfaces.size() << " interfaces, " << itemDescriptions_.size() << " descriptions" << std::endl;
+    std::cout << interfaces.size() << " interfaces, " << itemDescriptions_.size() << " descriptions" << std::endl;
     assert(interfaces.size() == itemDescriptions_.size());
 }
 

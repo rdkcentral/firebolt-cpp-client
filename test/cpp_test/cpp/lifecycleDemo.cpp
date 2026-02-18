@@ -33,7 +33,8 @@ LifecycleDemo::LifecycleDemo()
     : FireboltDemoBase()
 {
     methodsFromRpc("Lifecycle2");
-    itemDescriptions_.push_back({"Trigger lifecycle state change", "Simulate a lifecycle state change event from the platform."});
+    itemDescriptions_.push_back(
+        {"Trigger lifecycle state change", "Simulate a lifecycle state change event from the platform."});
     currentState_ = LifecycleState::INITIALIZING;
 }
 

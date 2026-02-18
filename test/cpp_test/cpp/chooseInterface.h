@@ -25,7 +25,7 @@ class ChooseInterface : public FireboltDemoBase
 public:
     ChooseInterface();
     ~ChooseInterface();
-    //std::vector<std::string> methods() const { return names_; }
+    // std::vector<std::string> methods() const { return names_; }
 
     void runOption(const int index);
     void autoRun();

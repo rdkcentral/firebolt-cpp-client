@@ -47,8 +47,7 @@ void DiscoveryDemo::runOption(const int index)
         paramFromConsole("entityId", "exampleEntityId", entityId);
 
         std::string progressStr;
-        paramFromConsole("progress (percentage as (0-0.999) for VOD, number of seconds for live)", "0.5",
-                         progressStr);
+        paramFromConsole("progress (percentage as (0-0.999) for VOD, number of seconds for live)", "0.5", progressStr);
         std::optional<float> progress = std::stof(progressStr);
 
         std::string completedStr;
@@ -62,14 +61,14 @@ void DiscoveryDemo::runOption(const int index)
                                                  "Choose an age policy for the watch event:");
         std::optional<AgePolicy> agePolicyOpt = agePolicy;
 
-        Result<bool> r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched(
-            entityId, progress, completed, watchedOn, agePolicyOpt);
+        Result<bool> r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched(entityId, progress,
+                                                                                              completed, watchedOn,
+                                                                                              agePolicyOpt);
         if (validateResult(r))
         {
             gOutput << "Discovery.watched result: " << (r.value() ? "true" : "false") << std::endl;
         }
     }
     {
-        
-    }   
+    }
 }

@@ -18,11 +18,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <cassert>
 
 class OutputStream
 {

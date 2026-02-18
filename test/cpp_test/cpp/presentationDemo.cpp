@@ -33,7 +33,8 @@ PresentationDemo::PresentationDemo()
     : FireboltDemoBase()
 {
     methodsFromRpc("Presentation");
-    itemDescriptions_.push_back({"Trigger presentation state change", "Simulate a presentation state change event from the platform."});
+    itemDescriptions_.push_back(
+        {"Trigger presentation state change", "Simulate a presentation state change event from the platform."});
 }
 
 void PresentationDemo::runOption(const int index)

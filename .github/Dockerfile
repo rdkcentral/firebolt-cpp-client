@@ -81,12 +81,18 @@ RUN pip install --break-system-packages gcovr
 
 # --- Transport should be always at the very end as it changes most often
 ARG DEPS_TRANSPORT_V
+ARG DEPS_TRANSPORT_PROTOCOL=rpc_v2
 RUN cd /deps \
     && dir="firebolt-cpp-transport-${DEPS_TRANSPORT_V}" \
+    && ENABLE_LEGACY_RPC_V1="OFF" \
     && i=0 && while ! curl -sL https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-cpp-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done \
+    && if [ "${DEPS_TRANSPORT_PROTOCOL}" = "legacy" ]; then \
+         ENABLE_LEGACY_RPC_V1="ON"; \
+       fi \
     && cmake -B "build/$dir" \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_SHARED_LIBS=ON \
+          -DENABLE_LEGACY_RPC_V1=$ENABLE_LEGACY_RPC_V1 \
           "$dir" \
     && cmake --build "build/$dir" --target install \
     && rm -rf "build/$dir" "$dir"

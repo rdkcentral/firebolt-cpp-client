@@ -2,6 +2,15 @@ name: CI (c++)  Build and Test
 
 on:
   workflow_dispatch:
+    inputs:
+      protocol:
+        description: 'RPC Protocol to test'
+        required: true
+        default: 'rpc_v2'
+        type: choice
+        options:
+          - rpc_v2
+          - legacy
   push:
     branches: [ main, next ]
   pull_request:
@@ -15,7 +24,7 @@ env:
   HUSKY: 0
   MOCK_PATH: ${{ github.workspace }}/mock-firebolt
   MOCK_BRANCH: topic/changes-for-bidirectional
-  MOCK_SHA1SUM: a38c77ce06ca6f6d570943b14597b2b8ebc77490
+  MOCK_SHA1SUM: 1fec7b75190e75ac8ea8ebf9f3e00c0a070b2566
 
 jobs:
   build_docker:
@@ -58,8 +67,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args:
+          build-args: |
             DEPS_TRANSPORT_V=${{ steps.transport_version.outputs.version }}
+            DEPS_TRANSPORT_PROTOCOL=${{ github.event.inputs.protocol || 'rpc_v2' }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
 
@@ -245,6 +255,7 @@ jobs:
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
             ./.github/scripts/run-component-tests.sh \
               --mock /mock \
+              --protocol ${{ github.event.inputs.protocol || 'rpc_v2' }} \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \

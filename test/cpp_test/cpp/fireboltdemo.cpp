@@ -25,21 +25,19 @@
 #include <vector>
 
 #include "outputstream.h"
-extern OutputStream gOutput;
 
-
-nlohmann::json IFireboltDemo::json_;
+nlohmann::json FireboltDemoBase::json_;
 
 #ifndef UT_OPEN_RPC_FILE
 #define UT_OPEN_RPC_FILE "firebolt-open-rpc.json"
 #endif
 
-IFireboltDemo::IFireboltDemo()
+FireboltDemoBase::FireboltDemoBase()
 {
     loadRpc();
 }
 
-void IFireboltDemo::paramFromConsole(const std::string& name, const std::string& def, std::string& value)
+void FireboltDemoBase::paramFromConsole(const std::string& name, const std::string& def, std::string& value)
 {
     if (gAutoRun)
     {
@@ -47,6 +45,7 @@ void IFireboltDemo::paramFromConsole(const std::string& name, const std::string&
         value = def;
         return;
     }
+    
     gOutput << "Enter " << name << " (default: " << def << "): ";
     std::string input;
     std::getline(std::cin, input);
@@ -101,7 +100,7 @@ int getOption(int n)
     }
 }
 
-int IFireboltDemo::chooseFromList(const std::vector<std::string>& options, const std::string& prompt)
+int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, const std::string& prompt)
 {
     std::cout << prompt << std::endl;
     for (size_t i = 0; i < options.size(); ++i)
@@ -114,7 +113,7 @@ int IFireboltDemo::chooseFromList(const std::vector<std::string>& options, const
     return choice;
 }
 
-int IFireboltDemo::chooseOption()
+int FireboltDemoBase::chooseOption()
 {
     std::vector<std::string> methodNames;
     for (const auto& item : itemDescriptions_)    {
@@ -123,12 +122,12 @@ int IFireboltDemo::chooseOption()
     return chooseFromList(methodNames, "Choose a method to run:");
 }
 
-void IFireboltDemo::loadRpc()
+void FireboltDemoBase::loadRpc()
 {
     json_ = nlohmann::json::parse(JSON_DATA);
 }
 
-std::vector<std::string> IFireboltDemo::methodsFromRpc(const std::string& interfaceName)
+std::vector<std::string> FireboltDemoBase::methodsFromRpc(const std::string& interfaceName)
 {
     std::vector<std::string> methodNames;
 

@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Advertising;
 
 AdvertisingDemo::AdvertisingDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Advertising");
 }

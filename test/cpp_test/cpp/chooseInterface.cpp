@@ -35,7 +35,7 @@
 extern OutputStream gOutput;
 
 ChooseInterface::ChooseInterface()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     for (auto& [key, value] : json_["info"]["x-module-descriptions"].items())
     {
@@ -64,7 +64,7 @@ ChooseInterface::~ChooseInterface()
 
 void ChooseInterface::runOption(const int index)
 {
-    IFireboltDemo* selectedInterface = interfaces[index];
+    FireboltDemoBase* selectedInterface = interfaces[index];
     gOutput << "Running interface: " << itemDescriptions_[index].name << std::endl;
 
     for (;;)
@@ -84,7 +84,7 @@ void ChooseInterface::autoRun()
 {
     for (int i = 0; i < (int)interfaces.size(); ++i)
     {
-        IFireboltDemo* selectedInterface = interfaces[i];
+        FireboltDemoBase* selectedInterface = interfaces[i];
         if (selectedInterface == nullptr)
         {
             continue; // Skip unimplemented interfaces

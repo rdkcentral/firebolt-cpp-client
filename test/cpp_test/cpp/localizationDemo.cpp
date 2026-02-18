@@ -28,7 +28,7 @@ using namespace Firebolt;
 using namespace Firebolt::Localization;
 
 LocalizationDemo::LocalizationDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Localization");
 }

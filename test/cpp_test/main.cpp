@@ -32,7 +32,7 @@ OutputStream gOutput = OutputStream();
 
 std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
-std::vector<IFireboltDemo*> interfaces;
+std::vector<FireboltDemoBase*> interfaces;
 
 
 void connectionChanged(const bool connected, const Firebolt::Error error)
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
     }
 
     ChooseInterface chooseInterface;
-    
+
     if (gAutoRun)
     {
         chooseInterface.autoRun();

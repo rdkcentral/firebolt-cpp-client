@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-class DiscoveryDemo : public IFireboltDemo
+class DiscoveryDemo : public FireboltDemoBase
 {
 public:
     DiscoveryDemo();

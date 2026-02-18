@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Accessibility;
 
 AccessibilityDemo::AccessibilityDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Accessibility");
 }

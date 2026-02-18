@@ -22,7 +22,7 @@
 #include <string>
 #include <vector>
 
-class LocalizationDemo : public IFireboltDemo
+class LocalizationDemo : public FireboltDemoBase
 {
 public:
     LocalizationDemo();

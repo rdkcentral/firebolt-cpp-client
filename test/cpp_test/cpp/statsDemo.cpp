@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Stats;
 
 StatsDemo::StatsDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Stats");
 }

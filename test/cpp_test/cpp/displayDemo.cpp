@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Display;
 
 DisplayDemo::DisplayDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Display");
 }

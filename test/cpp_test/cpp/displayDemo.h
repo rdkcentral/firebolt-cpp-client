@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-class DisplayDemo : public IFireboltDemo
+class DisplayDemo : public FireboltDemoBase
 {
 public:
     DisplayDemo();

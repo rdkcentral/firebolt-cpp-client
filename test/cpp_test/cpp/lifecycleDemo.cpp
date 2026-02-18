@@ -30,7 +30,7 @@ using namespace Firebolt::Lifecycle;
 extern OutputStream gOutput;
 
 LifecycleDemo::LifecycleDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Lifecycle2");
     itemDescriptions_.push_back({"Trigger lifecycle state change", "Simulate a lifecycle state change event from the platform."});
@@ -44,10 +44,7 @@ void LifecycleDemo::runOption(const int index)
     if (key == "Lifecycle2.close")
     {
         CloseType type = chooseEnumFromList(Firebolt::Lifecycle::JsonData::CloseReasonEnum, "Choose Close Type:");
-                std::cout << "------" << (int)type << std::endl;
-
         Result<void> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().close(type);
-        std::cout << "------" << std::endl;
         validateResult(r);
     }
     else if (key == "Lifecycle2.state")

@@ -34,11 +34,11 @@ struct ItemDescription
     std::string description;
 };
 
-class IFireboltDemo
+class FireboltDemoBase
 {
 public:
-    IFireboltDemo();
-    virtual ~IFireboltDemo() = default;
+    FireboltDemoBase();
+    virtual ~FireboltDemoBase() = default;
 
     int chooseOption();
     virtual void runOption(const int index) = 0;
@@ -96,8 +96,6 @@ protected:
     static nlohmann::json json_;
 
     std::vector<ItemDescription> itemDescriptions_;
-    //std::vector<std::string> names_;
-    //std::vector<std::string> descriptions_;
 
     OutputStream outStream_;
 

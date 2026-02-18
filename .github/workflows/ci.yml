@@ -281,7 +281,7 @@ jobs:
               && cd test/cpp_test \
               && cmake -B build -S . \
                     -DCMAKE_BUILD_TYPE=Debug \
-                    -DCMAKE_PREFIX_PATH=/workspace/build \
+                    -DFireboltClient_DIR=/workspace/build/src \
               && cmake --build build --parallel \
             "
 

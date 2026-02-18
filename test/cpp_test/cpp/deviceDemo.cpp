@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Device;
 
 DeviceDemo::DeviceDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Device");
 }

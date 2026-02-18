@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Presentation;
 
 PresentationDemo::PresentationDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Presentation");
     itemDescriptions_.push_back({"Trigger presentation state change", "Simulate a presentation state change event from the platform."});

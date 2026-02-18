@@ -20,7 +20,7 @@
 
 #include "fireboltdemo.h"
 
-class ChooseInterface : public IFireboltDemo
+class ChooseInterface : public FireboltDemoBase
 {
 public:
     ChooseInterface();
@@ -31,5 +31,5 @@ public:
     void autoRun();
 
 private:
-    std::vector<IFireboltDemo*> interfaces;
+    std::vector<FireboltDemoBase*> interfaces;
 };

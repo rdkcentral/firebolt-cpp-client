@@ -30,7 +30,7 @@ using namespace Firebolt;
 using namespace Firebolt::Discovery;
 
 DiscoveryDemo::DiscoveryDemo()
-    : IFireboltDemo()
+    : FireboltDemoBase()
 {
     methodsFromRpc("Discovery");
 }

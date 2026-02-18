@@ -132,6 +132,14 @@ jobs:
               && cmake --build build --parallel \
             "
 
+      - name: Install Project to build/install
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
+            bash -c " \
+              set -e \
+              && cmake --install build --prefix build/install \
+            "
+
       - name: Upload build directory
         uses: actions/upload-artifact@v4
         with:
@@ -281,7 +289,7 @@ jobs:
               && cd test/cpp_test \
               && cmake -B build -S . \
                     -DCMAKE_BUILD_TYPE=Debug \
-                    -DFireboltClient_DIR=/workspace/build/src \
+                    -DCMAKE_PREFIX_PATH=/workspace/build/install \
               && cmake --build build --parallel \
             "
 

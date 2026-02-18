@@ -47,25 +47,26 @@ ChooseInterface::ChooseInterface()
         }
     }
 
-    interfaces = {new AccessibilityDemo(), new AdvertisingDemo(),  new DeviceDemo(),
-                  new DiscoveryDemo(),     new DisplayDemo(),      new LifecycleDemo(),
-                  new LocalizationDemo(),  new PresentationDemo(), new StatsDemo()};
+    interfaces.clear();
+    interfaces.emplace_back(std::make_unique<AccessibilityDemo>());
+    interfaces.emplace_back(std::make_unique<AdvertisingDemo>());
+    interfaces.emplace_back(std::make_unique<DeviceDemo>());
+    interfaces.emplace_back(std::make_unique<DiscoveryDemo>());
+    interfaces.emplace_back(std::make_unique<DisplayDemo>());
+    interfaces.emplace_back(std::make_unique<LifecycleDemo>());
+    interfaces.emplace_back(std::make_unique<LocalizationDemo>());
+    interfaces.emplace_back(std::make_unique<PresentationDemo>());
+    interfaces.emplace_back(std::make_unique<StatsDemo>());
 
     std::cout << interfaces.size() << " interfaces, " << itemDescriptions_.size() << " descriptions" << std::endl;
     assert(interfaces.size() == itemDescriptions_.size());
 }
 
-ChooseInterface::~ChooseInterface()
-{
-    for (auto interfacePtr : interfaces)
-    {
-        delete interfacePtr;
-    }
-}
+ChooseInterface::~ChooseInterface() = default;
 
 void ChooseInterface::runOption(const int index)
 {
-    FireboltDemoBase* selectedInterface = interfaces[index];
+    FireboltDemoBase* selectedInterface = interfaces[index].get();
     gOutput << "Running interface: " << itemDescriptions_[index].name << std::endl;
 
     for (;;)
@@ -85,7 +86,7 @@ void ChooseInterface::autoRun()
 {
     for (int i = 0; i < (int)interfaces.size(); ++i)
     {
-        FireboltDemoBase* selectedInterface = interfaces[i];
+        FireboltDemoBase* selectedInterface = interfaces[i].get();
         if (selectedInterface == nullptr)
         {
             assert(("Interface not implemented for: " + itemDescriptions_[i].name).c_str());

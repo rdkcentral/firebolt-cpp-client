@@ -30,7 +30,7 @@ while [[ ! -z $1 ]]; do
     $bdir/api_test_app -mock
     exit;;
   --no-run) run=false;;
-  --release) buildTarget="Release";;
+  --release) buildType="Release";;
   --sysroot) SYSROOT_PATH="$2"; shift;;
   --) shift; break;;
   *) break;;

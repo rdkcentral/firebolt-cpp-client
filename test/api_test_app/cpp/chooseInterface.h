@@ -31,5 +31,5 @@ public:
     void autoRun();
 
 private:
-    std::vector<FireboltDemoBase*> interfaces;
+    std::vector<std::unique_ptr<FireboltDemoBase>> interfaces;
 };

@@ -62,13 +62,10 @@ void DiscoveryDemo::runOption(const int index)
         std::optional<AgePolicy> agePolicyOpt = agePolicy;
 
         Result<bool> r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched(entityId, progress,
-                                                                                              completed, watchedOn,
-                                                                                              agePolicyOpt);
+                                                                                              completed, watchedOn,                                                                            agePolicyOpt);
         if (validateResult(r))
         {
             gOutput << "Discovery.watched result: " << (r.value() ? "true" : "false") << std::endl;
         }
-    }
-    {
     }
 }

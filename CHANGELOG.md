@@ -1,9 +1,9 @@
-## [0.3.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.3...v0.3.1)
+## [0.4.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.3.0...v0.4.0)
 
 ### Changed
 - Updated Firebolt C++ Transport dependency to `v1.1.0`, which allows use of the legacy RPC-v1 protocol
 
-## [0.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2...v0.3)
+## [0.3.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.2.0...v0.3)
 
 ### Added
 - New APIs

@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "fireboltdemo.h"
+#include "fireboltDemoBase.h"
 #include "firebolt-open-rpc_json.h"
 #include <fstream>
 #include <iostream>
@@ -101,7 +101,7 @@ int getOption(int n)
 
 int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, const std::string& prompt)
 {
-    std::cout << prompt << std::endl;
+    std::cout << std::endl << prompt << std::endl;
     for (size_t i = 0; i < options.size(); ++i)
     {
         std::cout << i << ": " << options[i] << std::endl;

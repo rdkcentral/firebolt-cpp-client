@@ -17,7 +17,7 @@
  */
 
 #include "chooseInterface.h"
-#include "fireboltdemo.h"
+#include "fireboltDemoBase.h"
 
 #include "accessibilityDemo.h"
 #include "advertisingDemo.h"
@@ -88,7 +88,7 @@ void ChooseInterface::autoRun()
         FireboltDemoBase* selectedInterface = interfaces[i];
         if (selectedInterface == nullptr)
         {
-            continue; // Skip unimplemented interfaces
+            assert(("Interface not implemented for: " + itemDescriptions_[i].name).c_str());
         }
         gOutput << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
 

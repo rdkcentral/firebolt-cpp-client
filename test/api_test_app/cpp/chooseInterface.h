@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "fireboltdemo.h"
+#include "fireboltDemoBase.h"
 
 class ChooseInterface : public FireboltDemoBase
 {

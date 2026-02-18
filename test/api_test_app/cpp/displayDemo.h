@@ -17,7 +17,7 @@
  */
 #pragma once
 
-#include "fireboltdemo.h"
+#include "fireboltDemoBase.h"
 #include <string>
 #include <vector>
 

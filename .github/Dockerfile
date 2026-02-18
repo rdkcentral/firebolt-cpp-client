@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
     cmake pkg-config clang-format \
     libboost-all-dev \
     curl wget git \
-    g++-multilib gcc-multilib \
+    g++-multilib \
     libcurl4-openssl-dev \
     jq netcat-openbsd \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*

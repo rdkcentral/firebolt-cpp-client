@@ -32,7 +32,6 @@ OutputStream gOutput = OutputStream();
 
 std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
-std::vector<FireboltDemoBase*> interfaces;
 
 void connectionChanged(const bool connected, const Firebolt::Error error)
 {

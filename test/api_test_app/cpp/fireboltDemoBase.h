@@ -71,7 +71,6 @@ protected:
         for (const auto& pair : enumType)
         {
             options.push_back(pair.first);
-            std::cout << "Option: " << pair.first << std::endl;
         }
 
         int choice = chooseFromList(options, prompt);

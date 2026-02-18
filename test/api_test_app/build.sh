@@ -60,6 +60,6 @@ cmake --build $bdir
 
 if $run; then
   export LD_LIBRARY_PATH=$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH
-  $bdir/cpp_test -mock 
+  $bdir/api_test_app -mock 
 fi
 

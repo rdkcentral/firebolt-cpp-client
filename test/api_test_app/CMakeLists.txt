@@ -16,7 +16,7 @@
 
 if (NOT CMAKE_PROJECT_NAME)
     cmake_minimum_required(VERSION 3.10)
-    project(cpp_test CXX)
+    project(api_test_app CXX)
 
     # Read SYSROOT_PATH from environment if not set as CMake variable
     if (NOT SYSROOT_PATH AND DEFINED ENV{SYSROOT_PATH})
@@ -48,9 +48,9 @@ if (NOT CMAKE_PROJECT_NAME)
     )
 endif ()
 
-set(CPP_TEST_APP cpp_test)
+set(API_TEST_APP api_test_app)
 
-message("Setup ${CPP_TEST_APP}")
+message("Setup ${API_TEST_APP}")
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
@@ -64,14 +64,14 @@ configure_file(
 
 file(GLOB SOURCES CONFIGURE_DEPENDS cpp/*.cpp)
 
-add_executable(${CPP_TEST_APP}
+add_executable(${API_TEST_APP}
     main.cpp
     ${SOURCES}
 )
 
 if (ENABLE_DEMO_APP)
     # Building as part of the main project - dependencies already available
-    target_link_libraries(${CPP_TEST_APP}
+    target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltClient
             nlohmann_json::nlohmann_json
@@ -88,7 +88,7 @@ else()
     find_package(nlohmann_json_schema_validator REQUIRED)
     find_package(CURL REQUIRED)
     find_package(Threads REQUIRED)
-    target_link_libraries(${CPP_TEST_APP}
+    target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltTransport::FireboltTransport
             FireboltClient::FireboltClient
@@ -100,7 +100,7 @@ else()
        set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
 endif ()
 
-target_include_directories(${CPP_TEST_APP}
+target_include_directories(${API_TEST_APP}
     PRIVATE
 
         $<BUILD_INTERFACE:${SOURCE_ROOT}/include/>
@@ -112,12 +112,12 @@ target_include_directories(${CPP_TEST_APP}
 
 add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
-set_target_properties(${CPP_TEST_APP} PROPERTIES
+set_target_properties(${API_TEST_APP} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
 )
 
 install(
-    TARGETS ${CPP_TEST_APP}
+    TARGETS ${API_TEST_APP}
     DESTINATION bin
 )

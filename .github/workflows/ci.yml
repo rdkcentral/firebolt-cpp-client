@@ -281,12 +281,12 @@ jobs:
           name: build-dir
           path: ${{ github.workspace }}/build
 
-      - name: Build cpp_test standalone
+      - name: Build api_test_app standalone
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
               set -e \
-              && cd test/cpp_test \
+              && cd test/api_test_app \
               && cmake -B build -S . \
                     -DCMAKE_BUILD_TYPE=Debug \
                     -DCMAKE_PREFIX_PATH=/workspace/build/install \
@@ -305,26 +305,26 @@ jobs:
 
       - name: Run Demo with mock server
         run: |
-          chmod +x ${{ github.workspace }}/test/cpp_test/build/cpp_test
+          chmod +x ${{ github.workspace }}/test/api_test_app/build/api_test_app
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
             ./.github/scripts/run-cpp-test.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
-              --test-exe /workspace/test/cpp_test/build/cpp_test
+              --test-exe /workspace/test/api_test_app/build/api_test_app
 
-      - name: Upload cpp_test binary
+      - name: Upload api_test_app binary
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cpp-test-binary
-          path: ${{ github.workspace }}/test/cpp_test/build/cpp_test
+          path: ${{ github.workspace }}/test/api_test_app/build/api_test_app
 
-      - name: Upload cpp_test output
+      - name: Upload api_test_app output
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cpp-test-output
-          path: ${{ github.workspace }}/test/cpp_test/build/firebolt_test_output.txt
+          path: ${{ github.workspace }}/test/api_test_app/build/firebolt_test_output.txt
 

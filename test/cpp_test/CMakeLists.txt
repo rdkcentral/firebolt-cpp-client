@@ -63,7 +63,7 @@ configure_file(
 )
 
 file(GLOB SOURCES CONFIGURE_DEPENDS cpp/*.cpp)
-message("________ ${CMAKE_SOURCE_DIR}")
+
 add_executable(${CPP_TEST_APP}
     main.cpp
     ${SOURCES}
@@ -99,8 +99,6 @@ else()
     )
        set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
 endif ()
-
-message("________ ${SOURCE_ROOT}")
 
 target_include_directories(${CPP_TEST_APP}
     PRIVATE

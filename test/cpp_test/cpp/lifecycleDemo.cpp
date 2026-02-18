@@ -33,9 +33,6 @@ LifecycleDemo::LifecycleDemo()
     : FireboltDemoBase()
 {
     methodsFromRpc("Lifecycle2");
-    itemDescriptions_.push_back(
-        {"Trigger lifecycle state change", "Simulate a lifecycle state change event from the platform."});
-    currentState_ = LifecycleState::INITIALIZING;
 }
 
 void LifecycleDemo::runOption(const int index)
@@ -53,8 +50,8 @@ void LifecycleDemo::runOption(const int index)
         Result<LifecycleState> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().state();
         if (validateResult(r))
         {
-            currentState_ = r.value();
-            printCurrentState();
+            gOutput << "Current Lifecycle State: "
+                << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
         }
     }
     else if (key == "Lifecycle2.onStateChanged")
@@ -79,10 +76,6 @@ void LifecycleDemo::runOption(const int index)
             gOutput << "Subscribed to Lifecycle state changes with Subscription ID: " << r.value() << std::endl;
         }
     }
-    else if (key == "Trigger lifecycle state change")
-    {
-        triggerLifecycleStateChange();
-    }
     else if (key == "Lifecycle2.unsubscribe")
     {
         std::string idStr;
@@ -96,27 +89,6 @@ void LifecycleDemo::runOption(const int index)
         Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribeAll();
         gOutput << "Unsubscribed from all Lifecycle subscriptions." << std::endl;
     }
-}
-
-void LifecycleDemo::triggerLifecycleStateChange()
-{
-    LifecycleState newState = LifecycleState::ACTIVE;
-    if (gAutoRun)
-    {
-        gOutput << "Auto-selecting 'active' for new Lifecycle State." << std::endl;
-    }
-    else
-    {
-        newState = chooseEnumFromList(Firebolt::Lifecycle::JsonData::LifecycleStateEnum,
-                                      "Choose new Lifecycle State to simulate:");
-    }
-
-    nlohmann::json params;
-    params["value"] = nlohmann::json::array();
-    params["value"].push_back(
-        {{"newState", Firebolt::JSON::toString(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, newState)},
-         {"oldState", Firebolt::JSON::toString(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_)}});
-    triggerEvent("Lifecycle2.onStateChanged", params.dump());
 }
 
 void LifecycleDemo::printCurrentState()

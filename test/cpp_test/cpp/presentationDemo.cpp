@@ -21,8 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "utils.h"
-
 #include "outputstream.h"
 extern OutputStream gOutput;
 
@@ -33,8 +31,6 @@ PresentationDemo::PresentationDemo()
     : FireboltDemoBase()
 {
     methodsFromRpc("Presentation");
-    itemDescriptions_.push_back(
-        {"Trigger presentation state change", "Simulate a presentation state change event from the platform."});
 }
 
 void PresentationDemo::runOption(const int index)

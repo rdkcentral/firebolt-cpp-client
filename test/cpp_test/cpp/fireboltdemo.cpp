@@ -18,7 +18,6 @@
 
 #include "fireboltdemo.h"
 #include "firebolt-open-rpc_json.h"
-#include "utils.h"
 #include <fstream>
 #include <iostream>
 #include <string>

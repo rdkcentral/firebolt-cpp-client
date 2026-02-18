@@ -18,7 +18,6 @@
 
 #include "lifecycleDemo.h"
 #include "json_types/jsondata_lifecycle_types.h"
-#include "utils.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -51,7 +50,7 @@ void LifecycleDemo::runOption(const int index)
         if (validateResult(r))
         {
             gOutput << "Current Lifecycle State: "
-                << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
+                    << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
         }
     }
     else if (key == "Lifecycle2.onStateChanged")

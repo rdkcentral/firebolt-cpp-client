@@ -137,7 +137,6 @@ std::vector<std::string> FireboltDemoBase::methodsFromRpc(const std::string& int
         if (method.contains("name") && method["name"].get<std::string>().rfind(interfaceStr, 0) == 0)
         {
             itemDescriptions_.push_back({method["name"], method["summary"]});
-        
         }
     }
 

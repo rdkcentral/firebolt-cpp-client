@@ -273,22 +273,15 @@ jobs:
           name: build-dir
           path: ${{ github.workspace }}/build
 
-      - name: Install FireboltClient library
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
-            bash -c " \
-              set -e \
-              && cd build \
-              && cmake --install . --prefix /usr/local \
-            "
-
       - name: Build cpp_test standalone
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
               set -e \
               && cd test/cpp_test \
-              && cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug \
+              && cmake -B build -S . \
+                    -DCMAKE_BUILD_TYPE=Debug \
+                    -DCMAKE_PREFIX_PATH=/workspace/build \
               && cmake --build build --parallel \
             "
 

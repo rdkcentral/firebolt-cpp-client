@@ -28,7 +28,7 @@
 
 #include "cpp/outputstream.h"
 
-OutputStream gOutput;
+OutputStream gOutput = OutputStream();
 
 std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
@@ -116,18 +116,14 @@ int main(int argc, char** argv)
         return -1;
     }
 
+    ChooseInterface chooseInterface;
+    
     if (gAutoRun)
     {
-        gOutput = OutputStream("firebolt_test_output.txt");
-        ChooseInterface chooseInterface;
         chooseInterface.autoRun();
     }
     else
     {
-        gOutput = OutputStream();
-
-        ChooseInterface chooseInterface;
-
         for (;;)
         {
             int interfaceIndex = chooseInterface.chooseOption();

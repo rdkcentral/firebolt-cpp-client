@@ -24,7 +24,7 @@ params=
 buildType="Debug"
 cleanFirst=false
 
-while [[ ! -z $1 ]]; do
+while [ ! -z $1 ]; do
   case $1 in
   --clean) cleanFirst=true;;
   --release) buildType="Release";;
@@ -51,12 +51,12 @@ while [[ ! -z $1 ]]; do
   esac; shift
 done
 
-[[ ! -z $SYSROOT_PATH ]] || { echo "SYSROOT_PATH not set" >/dev/stderr; exit 1; }
-[[ -e $SYSROOT_PATH ]] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
+[ ! -z $SYSROOT_PATH ] || { echo "SYSROOT_PATH not set" >/dev/stderr; exit 1; }
+[ -e $SYSROOT_PATH ] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
 
 $cleanFirst && rm -rf $bdir
 
-if [[ ! -e $bdir ]]; then
+if [ ! -e $bdir ]; then
   cmake -B $bdir \
     -DCMAKE_BUILD_TYPE=$buildType \
     -DSYSROOT_PATH=$SYSROOT_PATH \
@@ -64,6 +64,6 @@ if [[ ! -e $bdir ]]; then
     "$@" || exit $?
 fi
 cmake --build $bdir --parallel || exit $?
-if $do_install && [[ $bdir == 'build' ]]; then
+if $do_install && [ $bdir = 'build' ]; then
   cmake --install $bdir || exit $?
 fi

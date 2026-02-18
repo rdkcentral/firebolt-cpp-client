@@ -50,6 +50,7 @@ std::string httpGet(const std::string& url)
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
     CURLcode res = curl_easy_perform(curl);
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
     return (res == CURLE_OK) ? response : "";
@@ -81,6 +82,7 @@ std::string httpPost(const std::string& url, const std::string& postData)
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
     CURLcode res = curl_easy_perform(curl);
+    curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
 
     return (res == CURLE_OK) ? response : "";

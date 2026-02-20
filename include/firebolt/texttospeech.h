@@ -58,15 +58,15 @@ struct TTSEnabled
 struct TTSConfiguration
 {
     bool success;
-    std::optional<std::string> ttsendpoint;
-    std::optional<std::string> ttsendpointsecured;
+    std::optional<std::string> ttsEndpoint;
+    std::optional<std::string> ttsEndpointSecured;
     std::optional<std::string> language;
     std::optional<std::string> voice;
     std::optional<int32_t> volume;
-    std::optional<int32_t> primvolduckpercent;
+    std::optional<int32_t> primVolDuckPercent;
     std::optional<int32_t> rate;
-    std::optional<SpeechRate> speechrate;
-    std::optional<FallbackText> fallbacktext;
+    std::optional<SpeechRate> speechRate;
+    std::optional<FallbackText> fallbackText;
 };
 
 struct TTSStatusResponse
@@ -122,7 +122,7 @@ public:
      *
      * @retval Returns whether the TTS engine is enabled or disabled
      */
-    virtual Result<TTSEnabled> isttsenabled() = 0;
+    virtual Result<TTSEnabled> isEnabled() = 0;
 
     /**
      * @brief Get the list of Text to speech voices supported by the platform
@@ -131,24 +131,14 @@ public:
      *
      * @retval The list of voices supported for the language
      */
-    virtual Result<ListVoicesResponse> listvoices(const std::string& language) = 0;
+    virtual Result<ListVoicesResponse> listVoices(const std::string& language) = 0;
 
     /**
      * @brief Get the TTS configuration for the platform
      *
      * @retval Settings the list of configurations
      */
-    virtual Result<TTSConfiguration> getttsconfiguration() = 0;
-
-    /**
-     * @brief Speak the uttered text using the TTS engine
-     *
-     * @param[in] text     : String to be converted to Audio for speech
-     * @param[in] callsign : App calling text to speech
-     *
-     * @retval Result for Speak
-     */
-    virtual Result<SpeechResponse> speak(const std::string& text, const std::optional<std::string>& callsign) = 0;
+    virtual Result<TTSConfiguration> getConfiguration() = 0;
 
     /**
      * @brief Set the TTS configuration for the platform
@@ -166,11 +156,21 @@ public:
      * @retval Settings the list of configurations
      */
     virtual Result<TTSStatusResponse>
-    setttsconfiguration(const std::optional<std::string>& ttsEndpoint,
-                        const std::optional<std::string>& ttsEndpointSecured, const std::optional<std::string>& language,
-                        const std::optional<std::string>& voice, const std::optional<int32_t>& volume,
-                        const std::optional<int32_t>& primVolDuckPercent, const std::optional<int32_t>& rate,
-                        const std::optional<SpeechRate>& speechRate, const std::optional<FallbackText>& fallbackText) = 0;
+    setConfiguration(const std::optional<std::string>& ttsEndpoint,
+                     const std::optional<std::string>& ttsEndpointSecured, const std::optional<std::string>& language,
+                     const std::optional<std::string>& voice, const std::optional<int32_t>& volume,
+                     const std::optional<int32_t>& primVolDuckPercent, const std::optional<int32_t>& rate,
+                     const std::optional<SpeechRate>& speechRate, const std::optional<FallbackText>& fallbackText) = 0;
+
+    /**
+     * @brief Speak the uttered text using the TTS engine
+     *
+     * @param[in] text     : String to be converted to Audio for speech
+     * @param[in] callSign : App calling text to speech
+     *
+     * @retval Result for Speak
+     */
+    virtual Result<SpeechResponse> speak(const std::string& text, const std::optional<std::string>& callSign) = 0;
 
     /**
      * @brief Pauses the speech for given speech id
@@ -206,7 +206,7 @@ public:
      *
      * @retval Result for speech state
      */
-    virtual Result<SpeechStateResponse> getspeechstate(SpeechId speechId) = 0;
+    virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) = 0;
 
     // Events
     /**
@@ -217,7 +217,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnWillspeak(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when the speech start.
@@ -226,7 +226,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnSpeechstart(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnSpeechStart(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when the ongoing speech pauses.
@@ -235,7 +235,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnSpeechpause(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnSpeechPause(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when any paused speech resumes.
@@ -244,7 +244,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnSpeechresume(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnSpeechResume(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when the speech completes.
@@ -253,7 +253,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnSpeechcomplete(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnSpeechComplete(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when the current speech is interrupted either by a next
@@ -265,7 +265,7 @@ public:
      * @retval The subscriptionId or error
      */
     virtual Result<SubscriptionId>
-    subscribeOnSpeechinterrupted(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    subscribeOnSpeechInterrupted(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when an error occurs during playback including network
@@ -275,7 +275,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnNetworkerror(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnNetworkError(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when an error occurs during playback including pipeline
@@ -285,7 +285,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnPlaybackerror(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnPlaybackError(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
      * @brief Triggered when TTS is enabled or disabled
@@ -294,7 +294,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnTTSstatechanged(std::function<void(const TTSState&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnTTSStateChanged(std::function<void(const TTSState&)>&& notification) = 0;
 
     /**
      * @brief Triggered when the configured voice changes.
@@ -303,7 +303,7 @@ public:
      *
      * @retval The subscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnVoicechanged(std::function<void(const TTSVoice&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnVoiceChanged(std::function<void(const TTSVoice&)>&& notification) = 0;
 
     /**
      * @brief Remove subscriber from subscribers list. This method is generic for

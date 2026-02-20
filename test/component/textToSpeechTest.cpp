@@ -26,9 +26,9 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(TextToSpeechTest, isTtsEnabled)
+TEST_F(TextToSpeechTest, isEnabled)
 {
-    auto ttsEnabled = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().isttsenabled();
+    auto ttsEnabled = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().isEnabled();
     ASSERT_TRUE(ttsEnabled) << "Error getting TTS enabled status";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.isttsenabled");
@@ -38,7 +38,7 @@ TEST_F(TextToSpeechTest, isTtsEnabled)
 
 TEST_F(TextToSpeechTest, listVoices)
 {
-    auto voices = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().listvoices("en-US");
+    auto voices = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().listVoices("en-US");
     ASSERT_TRUE(voices) << "Error listing voices";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.listvoices");
@@ -46,36 +46,36 @@ TEST_F(TextToSpeechTest, listVoices)
     EXPECT_EQ(voices->voices.size(), expectedValue["voices"].size());
 }
 
-TEST_F(TextToSpeechTest, getTtsConfiguration)
+TEST_F(TextToSpeechTest, getConfiguration)
 {
-    auto ttsConfiguration =
-        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().getttsconfiguration();
+    auto ttsConfiguration = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().getConfiguration();
     ASSERT_TRUE(ttsConfiguration) << "Error getting TTS configuration";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.getttsconfiguration");
     EXPECT_EQ(*ttsConfiguration, expectedValue);
 }
 
-TEST_F(TextToSpeechTest, setTtsConfiguration)
+TEST_F(TextToSpeechTest, setConfiguration)
 {
     Firebolt::TextToSpeech::TTSConfiguration config;
-    config.ttsendpoint = "http://test-tts-server.com";
+    config.ttsEndpoint = "http://test-tts-server.com";
     config.language = "en-US";
     config.voice = "carol";
     config.volume = 50;
 
-    auto result = Firebolt::IFireboltAccessor::Instance()
-                      .TextToSpeechInterface()
-                      .setttsconfiguration("http://test-tts-server.com", std::nullopt, "en-US", "carol", 50,
-                                           std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+    auto result =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().setConfiguration("http://test-tts-server.com",
+                                                                                         std::nullopt, "en-US", "carol",
+                                                                                         50, std::nullopt, std::nullopt,
+                                                                                         std::nullopt, std::nullopt);
     ASSERT_TRUE(result) << "Error setting TTS configuration";
 }
 
 TEST_F(TextToSpeechTest, speak)
 {
-    auto speakResult = Firebolt::IFireboltAccessor::Instance()
-                           .TextToSpeechInterface()
-                           .speak("I am a text waiting for speech.", "appA");
+    auto speakResult =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
+                                                                              "appA");
     ASSERT_TRUE(speakResult) << "Error on speak";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
@@ -108,7 +108,7 @@ TEST_F(TextToSpeechTest, cancel)
 TEST_F(TextToSpeechTest, getSpeechState)
 {
     int32_t speechId = 1;
-    auto speechState = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().getspeechstate(speechId);
+    auto speechState = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().getSpeechState(speechId);
     ASSERT_TRUE(speechState) << "Error getting speech state";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.getspeechstate");
@@ -123,7 +123,7 @@ TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
     std::mutex mtx;
     bool eventReceived = false;
 
-    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnWillspeak(
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnWillSpeak(
         [&](const auto& event)
         {
             EXPECT_EQ(event.speechid, 1);
@@ -150,7 +150,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
     std::mutex mtx;
     bool eventReceived = false;
 
-    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechstart(
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechStart(
         [&](const auto& event)
         {
             EXPECT_EQ(event.speechid, 1);
@@ -179,7 +179,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStartWithText)
     std::mutex mtx;
     bool eventReceived = false;
 
-    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechstart(
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechStart(
         [&](const auto& event)
         {
             EXPECT_EQ(event.speechid, 1);
@@ -208,7 +208,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
     std::mutex mtx;
     bool eventReceived = false;
 
-    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechcomplete(
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechComplete(
         [&](const auto& event)
         {
             EXPECT_EQ(event.speechid, 1);
@@ -236,7 +236,7 @@ TEST_F(TextToSpeechTest, subscribeOnTtsStateChanged)
     std::mutex mtx;
     bool eventReceived = false;
 
-    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnTTSstatechanged(
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnTTSStateChanged(
         [&](const auto& event)
         {
             EXPECT_EQ(event.state, 1);

@@ -156,11 +156,11 @@ public:
         ttsConfiguration.success = success_;
         if (ttsEndpoint_.has_value())
         {
-            ttsConfiguration.ttsendpoint = ttsEndpoint_.value();
+            ttsConfiguration.ttsEndpoint = ttsEndpoint_.value();
         }
         if (ttsEndpointSecured_.has_value())
         {
-            ttsConfiguration.ttsendpointsecured = ttsEndpointSecured_.value();
+            ttsConfiguration.ttsEndpointSecured = ttsEndpointSecured_.value();
         }
         if (language_.has_value())
         {
@@ -176,7 +176,7 @@ public:
         }
         if (primVolDuckPercent_.has_value())
         {
-            ttsConfiguration.primvolduckpercent = primVolDuckPercent_.value();
+            ttsConfiguration.primVolDuckPercent = primVolDuckPercent_.value();
         }
         if (rate_.has_value())
         {
@@ -184,11 +184,11 @@ public:
         }
         if (speechRate_.has_value())
         {
-            ttsConfiguration.speechrate = speechRate_.value();
+            ttsConfiguration.speechRate = speechRate_.value();
         }
         if (fallbackText_.has_value())
         {
-            ttsConfiguration.fallbacktext = fallbackText_.value();
+            ttsConfiguration.fallbackText = fallbackText_.value();
         }
         return ttsConfiguration;
     }
@@ -289,10 +289,7 @@ class TTSState : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::
 {
 public:
     void fromJson(const nlohmann::json& json) override { state_ = json["state"].get<bool>(); }
-    ::Firebolt::TextToSpeech::TTSState value() const override
-    {
-        return ::Firebolt::TextToSpeech::TTSState{state_};
-    }
+    ::Firebolt::TextToSpeech::TTSState value() const override { return ::Firebolt::TextToSpeech::TTSState{state_}; }
 
 private:
     bool state_;
@@ -302,10 +299,7 @@ class TTSVoice : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::
 {
 public:
     void fromJson(const nlohmann::json& json) override { voice_ = json["voice"]; }
-    ::Firebolt::TextToSpeech::TTSVoice value() const override
-    {
-        return ::Firebolt::TextToSpeech::TTSVoice{voice_};
-    }
+    ::Firebolt::TextToSpeech::TTSVoice value() const override { return ::Firebolt::TextToSpeech::TTSVoice{voice_}; }
 
 private:
     std::string voice_;

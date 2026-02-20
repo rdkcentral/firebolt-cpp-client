@@ -34,33 +34,32 @@ public:
     ~TextToSpeechImpl() override = default;
 
     // Methods
-    Result<TTSEnabled> isttsenabled() override;
-    Result<ListVoicesResponse> listvoices(const std::string& language) override;
-    Result<TTSConfiguration> getttsconfiguration() override;
-    Result<SpeechResponse> speak(const std::string& text, const std::optional<std::string>& callsign) override;
+    Result<TTSEnabled> isEnabled() override;
+    Result<ListVoicesResponse> listVoices(const std::string& language) override;
+    Result<TTSConfiguration> getConfiguration() override;
     Result<TTSStatusResponse>
-    setttsconfiguration(const std::optional<std::string>& ttsEndpoint,
-                        const std::optional<std::string>& ttsEndpointSecured,
-                        const std::optional<std::string>& language, const std::optional<std::string>& voice,
-                        const std::optional<int32_t>& volume, const std::optional<int32_t>& primVolDuckPercent,
-                        const std::optional<int32_t>& rate, const std::optional<SpeechRate>& speechRate,
-                        const std::optional<FallbackText>& fallbackText) override;
+    setConfiguration(const std::optional<std::string>& ttsEndpoint, const std::optional<std::string>& ttsEndpointSecured,
+                     const std::optional<std::string>& language, const std::optional<std::string>& voice,
+                     const std::optional<int32_t>& volume, const std::optional<int32_t>& primVolDuckPercent,
+                     const std::optional<int32_t>& rate, const std::optional<SpeechRate>& speechRate,
+                     const std::optional<FallbackText>& fallbackText) override;
+    Result<SpeechResponse> speak(const std::string& text, const std::optional<std::string>& callSign) override;
     Result<TTSStatusResponse> pause(SpeechId speechId) override;
     Result<TTSStatusResponse> resume(SpeechId speechId) override;
     Result<TTSStatusResponse> cancel(SpeechId speechId) override;
-    Result<SpeechStateResponse> getspeechstate(SpeechId speechId) override;
+    Result<SpeechStateResponse> getSpeechState(SpeechId speechId) override;
 
     // Events
-    Result<SubscriptionId> subscribeOnWillspeak(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnSpeechstart(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnSpeechpause(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnSpeechresume(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnSpeechcomplete(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnSpeechinterrupted(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnNetworkerror(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnPlaybackerror(std::function<void(const SpeechIdEvent&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnTTSstatechanged(std::function<void(const TTSState&)>&& notification) override;
-    Result<SubscriptionId> subscribeOnVoicechanged(std::function<void(const TTSVoice&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnSpeechStart(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnSpeechPause(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnSpeechResume(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnSpeechComplete(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnSpeechInterrupted(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnNetworkError(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnPlaybackError(std::function<void(const SpeechIdEvent&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnTTSStateChanged(std::function<void(const TTSState&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnVoiceChanged(std::function<void(const TTSVoice&)>&& notification) override;
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 

@@ -154,24 +154,24 @@ bool operator==(const Firebolt::TextToSpeech::TTSConfiguration& lhs, const nlohm
     }
     if (rhs.contains("ttsendpoint"))
     {
-        if (!lhs.ttsendpoint.has_value() || lhs.ttsendpoint.value() != rhs["ttsendpoint"].get<std::string>())
+        if (!lhs.ttsEndpoint.has_value() || lhs.ttsEndpoint.value() != rhs["ttsendpoint"].get<std::string>())
         {
             return false;
         }
     }
-    else if (lhs.ttsendpoint.has_value())
+    else if (lhs.ttsEndpoint.has_value())
     {
         return false;
     }
     if (rhs.contains("ttsendpointsecured"))
     {
-        if (!lhs.ttsendpointsecured.has_value() ||
-            lhs.ttsendpointsecured.value() != rhs["ttsendpointsecured"].get<std::string>())
+        if (!lhs.ttsEndpointSecured.has_value() ||
+            lhs.ttsEndpointSecured.value() != rhs["ttsendpointsecured"].get<std::string>())
         {
             return false;
         }
     }
-    else if (lhs.ttsendpointsecured.has_value())
+    else if (lhs.ttsEndpointSecured.has_value())
     {
         return false;
     }
@@ -210,13 +210,13 @@ bool operator==(const Firebolt::TextToSpeech::TTSConfiguration& lhs, const nlohm
     }
     if (rhs.contains("primvolduckpercent"))
     {
-        if (!lhs.primvolduckpercent.has_value() ||
-            lhs.primvolduckpercent.value() != rhs["primvolduckpercent"].get<int32_t>())
+        if (!lhs.primVolDuckPercent.has_value() ||
+            lhs.primVolDuckPercent.value() != rhs["primvolduckpercent"].get<int32_t>())
         {
             return false;
         }
     }
-    else if (lhs.primvolduckpercent.has_value())
+    else if (lhs.primVolDuckPercent.has_value())
     {
         return false;
     }
@@ -233,50 +233,49 @@ bool operator==(const Firebolt::TextToSpeech::TTSConfiguration& lhs, const nlohm
     }
     if (rhs.contains("speechrate"))
     {
-        if (!lhs.speechrate.has_value() ||
-            lhs.speechrate.value() !=
-                Firebolt::TextToSpeech::JsonData::SpeechRateEnum.at(rhs["speechrate"].get<std::string>()))
+        if (!lhs.speechRate.has_value() || lhs.speechRate.value() != Firebolt::TextToSpeech::JsonData::SpeechRateEnum.at(
+                                                                         rhs["speechrate"].get<std::string>()))
         {
             return false;
         }
     }
-    else if (lhs.speechrate.has_value())
+    else if (lhs.speechRate.has_value())
     {
         return false;
     }
     if (rhs.contains("fallbacktext"))
     {
-        if (!lhs.fallbacktext.has_value())
+        if (!lhs.fallbackText.has_value())
         {
             return false;
         }
         const auto& rhsFallbackText = rhs["fallbacktext"];
         if (rhsFallbackText.contains("scenario"))
         {
-            if (!lhs.fallbacktext->scenario.has_value() ||
-                lhs.fallbacktext->scenario.value() != rhsFallbackText["scenario"].get<std::string>())
+            if (!lhs.fallbackText->scenario.has_value() ||
+                lhs.fallbackText->scenario.value() != rhsFallbackText["scenario"].get<std::string>())
             {
                 return false;
             }
         }
-        else if (lhs.fallbacktext->scenario.has_value())
+        else if (lhs.fallbackText->scenario.has_value())
         {
             return false;
         }
         if (rhsFallbackText.contains("value"))
         {
-            if (!lhs.fallbacktext->value.has_value() ||
-                lhs.fallbacktext->value.value() != rhsFallbackText["value"].get<std::string>())
+            if (!lhs.fallbackText->value.has_value() ||
+                lhs.fallbackText->value.value() != rhsFallbackText["value"].get<std::string>())
             {
                 return false;
             }
         }
-        else if (lhs.fallbacktext->value.has_value())
+        else if (lhs.fallbackText->value.has_value())
         {
             return false;
         }
     }
-    else if (lhs.fallbacktext.has_value())
+    else if (lhs.fallbackText.has_value())
     {
         return false;
     }

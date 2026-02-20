@@ -29,11 +29,11 @@ protected:
     Firebolt::TextToSpeech::TextToSpeechImpl ttsImpl{mockHelper};
 };
 
-TEST_F(TextToSpeechTest, isTtsEnabled)
+TEST_F(TextToSpeechTest, isEnabled)
 {
     mock("TextToSpeech.isttsenabled");
 
-    auto ttsEnabled = ttsImpl.isttsenabled();
+    auto ttsEnabled = ttsImpl.isEnabled();
     ASSERT_TRUE(ttsEnabled);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.isttsenabled");
@@ -45,7 +45,7 @@ TEST_F(TextToSpeechTest, listVoices)
 {
     mock("TextToSpeech.listvoices");
 
-    auto voices = ttsImpl.listvoices("en-US");
+    auto voices = ttsImpl.listVoices("en-US");
     ASSERT_TRUE(voices);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.listvoices");
@@ -57,18 +57,18 @@ TEST_F(TextToSpeechTest, listVoices)
     }
 }
 
-TEST_F(TextToSpeechTest, getTtsConfiguration)
+TEST_F(TextToSpeechTest, getConfiguration)
 {
     mock("TextToSpeech.getttsconfiguration");
 
-    auto ttsConfiguration = ttsImpl.getttsconfiguration();
+    auto ttsConfiguration = ttsImpl.getConfiguration();
     ASSERT_TRUE(ttsConfiguration);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.getttsconfiguration");
     EXPECT_TRUE(*ttsConfiguration == expectedValue);
 }
 
-TEST_F(TextToSpeechTest, getTtsConfigurationCustom)
+TEST_F(TextToSpeechTest, getConfigurationCustom)
 {
     std::list<nlohmann::json> configs = {
         nlohmann::json{{"success", true},
@@ -98,7 +98,7 @@ TEST_F(TextToSpeechTest, getTtsConfigurationCustom)
     {
         mock_with_response("TextToSpeech.getttsconfiguration", config);
 
-        auto ttsConfiguration = ttsImpl.getttsconfiguration();
+        auto ttsConfiguration = ttsImpl.getConfiguration();
         ASSERT_TRUE(ttsConfiguration);
 
         EXPECT_TRUE(*ttsConfiguration == config);
@@ -118,15 +118,14 @@ TEST_F(TextToSpeechTest, speak)
     EXPECT_EQ(speak->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, setTtsConfiguration)
+TEST_F(TextToSpeechTest, setConfiguration)
 {
     mock("TextToSpeech.setttsconfiguration");
 
-    auto resp =
-        ttsImpl.setttsconfiguration("http://url_for_the_text_to_speech_processing_unit",
-                                    "https://url_for_the_text_to_speech_processing_unit", "en-US", "carol", 100, 25, 50,
-                                    Firebolt::TextToSpeech::SpeechRate::MEDIUM,
-                                    Firebolt::TextToSpeech::FallbackText{"offline", "No Internet connection"});
+    auto resp = ttsImpl.setConfiguration("http://url_for_the_text_to_speech_processing_unit",
+                                         "https://url_for_the_text_to_speech_processing_unit", "en-US", "carol", 100,
+                                         25, 50, Firebolt::TextToSpeech::SpeechRate::MEDIUM,
+                                         Firebolt::TextToSpeech::FallbackText{"offline", "No Internet connection"});
     ASSERT_TRUE(resp);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.setttsconfiguration");
@@ -174,7 +173,7 @@ TEST_F(TextToSpeechTest, getSpeechState)
 {
     mock("TextToSpeech.getspeechstate");
 
-    auto speechStateResp = ttsImpl.getspeechstate(1);
+    auto speechStateResp = ttsImpl.getSpeechState(1);
     ASSERT_TRUE(speechStateResp);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.getspeechstate");
@@ -186,9 +185,9 @@ TEST_F(TextToSpeechTest, getSpeechState)
 
 TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
 {
-    mockSubscribe("texttospeech.onWillspeak");
+    mockSubscribe("TextToSpeech.onWillspeak");
 
-    auto id = ttsImpl.subscribeOnWillspeak([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnWillSpeak([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -197,9 +196,9 @@ TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
 
 TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
 {
-    mockSubscribe("texttospeech.onSpeechstart");
+    mockSubscribe("TextToSpeech.onSpeechstart");
 
-    auto id = ttsImpl.subscribeOnSpeechstart([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechStart([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -208,9 +207,9 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
 
 TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
 {
-    mockSubscribe("texttospeech.onSpeechpause");
+    mockSubscribe("TextToSpeech.onSpeechpause");
 
-    auto id = ttsImpl.subscribeOnSpeechpause([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechPause([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -219,9 +218,9 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
 
 TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
 {
-    mockSubscribe("texttospeech.onSpeechresume");
+    mockSubscribe("TextToSpeech.onSpeechresume");
 
-    auto id = ttsImpl.subscribeOnSpeechresume([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechResume([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -230,9 +229,9 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
 
 TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
 {
-    mockSubscribe("texttospeech.onSpeechcomplete");
+    mockSubscribe("TextToSpeech.onSpeechcomplete");
 
-    auto id = ttsImpl.subscribeOnSpeechcomplete([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechComplete([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -241,9 +240,9 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
 
 TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
 {
-    mockSubscribe("texttospeech.onSpeechinterrupted");
+    mockSubscribe("TextToSpeech.onSpeechinterrupted");
 
-    auto id = ttsImpl.subscribeOnSpeechinterrupted([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechInterrupted([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -252,9 +251,9 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
 
 TEST_F(TextToSpeechTest, subscribeOnNetworkError)
 {
-    mockSubscribe("texttospeech.onNetworkerror");
+    mockSubscribe("TextToSpeech.onNetworkerror");
 
-    auto id = ttsImpl.subscribeOnNetworkerror([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnNetworkError([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -263,9 +262,9 @@ TEST_F(TextToSpeechTest, subscribeOnNetworkError)
 
 TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
 {
-    mockSubscribe("texttospeech.onPlaybackError");
+    mockSubscribe("TextToSpeech.onPlaybackError");
 
-    auto id = ttsImpl.subscribeOnPlaybackerror([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnPlaybackError([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -274,9 +273,9 @@ TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
 
 TEST_F(TextToSpeechTest, subscribeOnTtsStateChanged)
 {
-    mockSubscribe("texttospeech.onTTSstatechanged");
+    mockSubscribe("TextToSpeech.onTTSstatechanged");
 
-    auto id = ttsImpl.subscribeOnTTSstatechanged([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnTTSStateChanged([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -285,9 +284,9 @@ TEST_F(TextToSpeechTest, subscribeOnTtsStateChanged)
 
 TEST_F(TextToSpeechTest, subscribeOnVoiceChanged)
 {
-    mockSubscribe("texttospeech.onVoicechanged");
+    mockSubscribe("TextToSpeech.onVoicechanged");
 
-    auto id = ttsImpl.subscribeOnVoicechanged([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnVoiceChanged([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));

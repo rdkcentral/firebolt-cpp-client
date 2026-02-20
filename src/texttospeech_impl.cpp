@@ -28,35 +28,35 @@ TextToSpeechImpl::TextToSpeechImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<TTSEnabled> TextToSpeechImpl::isttsenabled()
+Result<TTSEnabled> TextToSpeechImpl::isEnabled()
 {
     return helper_.get<JsonData::TTSEnabled, TTSEnabled>("TextToSpeech.isttsenabled");
 }
 
-Result<ListVoicesResponse> TextToSpeechImpl::listvoices(const std::string& language)
+Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& language)
 {
     nlohmann::json params;
     params["language"] = language;
     return helper_.get<JsonData::ListVoicesResponse, ListVoicesResponse>("TextToSpeech.listvoices", params);
 }
 
-Result<TTSConfiguration> TextToSpeechImpl::getttsconfiguration()
+Result<TTSConfiguration> TextToSpeechImpl::getConfiguration()
 {
     return helper_.get<JsonData::TTSConfiguration, TTSConfiguration>("TextToSpeech.getttsconfiguration");
 }
 
-Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, const std::optional<std::string>& callsign)
+Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, const std::optional<std::string>& callSign)
 {
     nlohmann::json params;
     params["text"] = text;
-    if (callsign.has_value())
+    if (callSign.has_value())
     {
-        params["callsign"] = callsign.value();
+        params["callsign"] = callSign.value();
     }
     return helper_.get<JsonData::SpeechResponse, SpeechResponse>("TextToSpeech.speak", params);
 }
 
-Result<TTSStatusResponse> TextToSpeechImpl::setttsconfiguration(
+Result<TTSStatusResponse> TextToSpeechImpl::setConfiguration(
     const std::optional<std::string>& ttsEndpoint, const std::optional<std::string>& ttsEndpointSecured,
     const std::optional<std::string>& language, const std::optional<std::string>& voice,
     const std::optional<int32_t>& volume, const std::optional<int32_t>& primVolDuckPercent,
@@ -131,67 +131,67 @@ Result<TTSStatusResponse> TextToSpeechImpl::cancel(SpeechId speechId)
     return helper_.get<JsonData::TTSStatusResponse, TTSStatusResponse>("TextToSpeech.cancel", params);
 }
 
-Result<SpeechStateResponse> TextToSpeechImpl::getspeechstate(SpeechId speechId)
+Result<SpeechStateResponse> TextToSpeechImpl::getSpeechState(SpeechId speechId)
 {
     nlohmann::json params;
     params["speechid"] = speechId;
     return helper_.get<JsonData::SpeechStateResponse, SpeechStateResponse>("TextToSpeech.getspeechstate", params);
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnWillspeak(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onWillspeak", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onWillspeak", std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechstart(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechStart(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onSpeechstart", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onSpeechstart", std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechpause(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechPause(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onSpeechpause", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onSpeechpause", std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechresume(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechResume(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onSpeechresume",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onSpeechresume",
                                                                    std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechcomplete(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnSpeechComplete(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onSpeechcomplete",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onSpeechcomplete",
                                                                    std::move(notification));
 }
 
 Result<SubscriptionId>
-TextToSpeechImpl::subscribeOnSpeechinterrupted(std::function<void(const SpeechIdEvent&)>&& notification)
+TextToSpeechImpl::subscribeOnSpeechInterrupted(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onSpeechinterrupted",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onSpeechinterrupted",
                                                                    std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnNetworkerror(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnNetworkError(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onNetworkerror",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onNetworkerror",
                                                                    std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnPlaybackerror(std::function<void(const SpeechIdEvent&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnPlaybackError(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("texttospeech.onPlaybackError",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onPlaybackError",
                                                                    std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnTTSstatechanged(std::function<void(const TTSState&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnTTSStateChanged(std::function<void(const TTSState&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::TTSState>("texttospeech.onTTSstatechanged", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::TTSState>("TextToSpeech.onTTSstatechanged", std::move(notification));
 }
 
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnVoicechanged(std::function<void(const TTSVoice&)>&& notification)
+Result<SubscriptionId> TextToSpeechImpl::subscribeOnVoiceChanged(std::function<void(const TTSVoice&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::TTSVoice>("texttospeech.onVoicechanged", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::TTSVoice>("TextToSpeech.onVoicechanged", std::move(notification));
 }
 
 Result<void> TextToSpeechImpl::unsubscribe(SubscriptionId id)

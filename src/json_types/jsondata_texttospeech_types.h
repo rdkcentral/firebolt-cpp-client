@@ -32,39 +32,6 @@ inline const Firebolt::JSON::EnumType<Firebolt::TextToSpeech::SpeechRate> Speech
     {"fastest", ::Firebolt::TextToSpeech::SpeechRate::FASTEST},
 });
 
-class FallbackText : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::FallbackText>
-{
-public:
-    void fromJson(const nlohmann::json& json) override
-    {
-        if (json.contains("scenario"))
-        {
-            scenario_ = json["scenario"].get<std::string>();
-        }
-        if (json.contains("value"))
-        {
-            value_ = json["value"].get<std::string>();
-        }
-    }
-    ::Firebolt::TextToSpeech::FallbackText value() const override
-    {
-        ::Firebolt::TextToSpeech::FallbackText fallbackText;
-        if (scenario_.has_value())
-        {
-            fallbackText.scenario = scenario_.value();
-        }
-        if (value_.has_value())
-        {
-            fallbackText.value = value_.value();
-        }
-        return fallbackText;
-    }
-
-private:
-    std::optional<std::string> scenario_;
-    std::optional<std::string> value_;
-};
-
 class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::ListVoicesResponse>
 {
 public:
@@ -93,19 +60,14 @@ public:
     void fromJson(const nlohmann::json& json) override
     {
         speechId_ = json["speechid"].get<int32_t>();
-        if (json.contains("text"))
-        {
-            text_ = json["text"].get<std::string>();
-        }
     }
     ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
-        return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_, text_};
+        return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_};
     }
 
 private:
     int32_t speechId_;
-    std::optional<std::string> text_;
 };
 
 class SpeechResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechResponse>
@@ -133,7 +95,7 @@ class SpeechStateResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Tex
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        speechState_ = std::to_string(json["speechstate"].get<int>());
+        speechState_ = static_cast<SpeechState>(json["speechstate"].get<int>());
         ttsStatus_ = json["TTS_Status"];
         success_ = json["success"];
     }
@@ -143,7 +105,7 @@ public:
     }
 
 private:
-    std::string speechState_;
+    SpeechState speechState_;
     int32_t ttsStatus_;
     bool success_;
 };
@@ -166,23 +128,4 @@ private:
     bool success_;
 };
 
-class TTSState : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::TTSState>
-{
-public:
-    void fromJson(const nlohmann::json& json) override { state_ = json["state"].get<bool>(); }
-    ::Firebolt::TextToSpeech::TTSState value() const override { return ::Firebolt::TextToSpeech::TTSState{state_}; }
-
-private:
-    bool state_;
-};
-
-class TTSVoice : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::TTSVoice>
-{
-public:
-    void fromJson(const nlohmann::json& json) override { voice_ = json["voice"]; }
-    ::Firebolt::TextToSpeech::TTSVoice value() const override { return ::Firebolt::TextToSpeech::TTSVoice{voice_}; }
-
-private:
-    std::string voice_;
-};
 } // namespace Firebolt::TextToSpeech::JsonData

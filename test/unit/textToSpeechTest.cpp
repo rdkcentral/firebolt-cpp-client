@@ -17,11 +17,10 @@
  * limitations under the License.
  */
 
+#include "firebolt/texttospeech.h"
 #include "json_engine.h"
 #include "mock_helper.h"
 #include "texttospeech_impl.h"
-#include "utils.h"
-#include <list>
 
 class TextToSpeechTest : public ::testing::Test, protected MockBase
 {
@@ -37,7 +36,7 @@ TEST_F(TextToSpeechTest, listVoices)
     ASSERT_TRUE(voices);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.listvoices");
-    EXPECT_EQ(voices->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(voices->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(voices->voices.size(), expectedValue["voices"].size());
     for (size_t i = 0; i < voices->voices.size(); ++i)
     {
@@ -53,8 +52,8 @@ TEST_F(TextToSpeechTest, speak)
     ASSERT_TRUE(speak);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.speak");
-    EXPECT_EQ(speak->speechid, expectedValue["speechid"].get<int32_t>());
-    EXPECT_EQ(speak->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speak->speechId, expectedValue["speechid"].get<int32_t>());
+    EXPECT_EQ(speak->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(speak->success, expectedValue["success"].get<bool>());
 }
 
@@ -66,7 +65,7 @@ TEST_F(TextToSpeechTest, pause)
     ASSERT_TRUE(resp);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.pause");
-    EXPECT_EQ(resp->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(resp->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
@@ -78,7 +77,7 @@ TEST_F(TextToSpeechTest, resume)
     ASSERT_TRUE(resp);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.resume");
-    EXPECT_EQ(resp->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(resp->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
@@ -90,7 +89,7 @@ TEST_F(TextToSpeechTest, cancel)
     ASSERT_TRUE(resp);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.cancel");
-    EXPECT_EQ(resp->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(resp->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
@@ -103,8 +102,8 @@ TEST_F(TextToSpeechTest, getSpeechState)
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.getspeechstate");
 
-    EXPECT_EQ(speechStateResp->speechstate, std::to_string(expectedValue["speechstate"].get<int>()));
-    EXPECT_EQ(speechStateResp->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speechStateResp->speechState, static_cast<Firebolt::TextToSpeech::SpeechState>(expectedValue["speechstate"].get<int>()));
+    EXPECT_EQ(speechStateResp->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(speechStateResp->success, expectedValue["success"].get<bool>());
 }
 

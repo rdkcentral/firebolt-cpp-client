@@ -38,56 +38,46 @@ enum class SpeechRate
     FASTEST
 };
 
+enum class SpeechState
+{
+    PENDING = 0,
+    IN_PROGRESS = 1,
+    PAUSED = 2,
+    NOT_FOUND = 3,
+};
+
 // Types
 using TTSStatus = int32_t;
 using SpeechId = int32_t;
-using SpeechState = std::string;
-
-struct FallbackText
-{
-    std::optional<std::string> scenario;
-    std::optional<std::string> value;
-};
 
 struct TTSStatusResponse
 {
-    TTSStatus TTS_status;
+    TTSStatus ttsStatus;
     bool success;
 };
 
 struct SpeechIdEvent
 {
-    SpeechId speechid;
-    std::optional<std::string> text;
-};
-
-struct TTSState
-{
-    bool state;
-};
-
-struct TTSVoice
-{
-    std::string voice;
+    SpeechId speechId;
 };
 
 struct ListVoicesResponse
 {
-    TTSStatus TTS_status;
+    TTSStatus ttsStatus;
     std::vector<std::string> voices;
 };
 
 struct SpeechResponse
 {
-    SpeechId speechid;
-    TTSStatus TTS_status;
+    SpeechId speechId;
+    TTSStatus ttsStatus;
     bool success;
 };
 
 struct SpeechStateResponse
 {
-    SpeechState speechstate;
-    TTSStatus TTS_status;
+    SpeechState speechState;
+    TTSStatus ttsStatus;
     bool success;
 };
 

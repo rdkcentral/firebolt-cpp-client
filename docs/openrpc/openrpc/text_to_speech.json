@@ -543,7 +543,7 @@
       ]
     },
     {
-      "name": "onPlaybackError",
+      "name": "onPlaybackerror",
       "summary": "Utterance failed during playback.",
       "tags": [
         {
@@ -551,7 +551,7 @@
         },
         {
           "name": "notifier",
-          "x-event": "TextToSpeech.onPlaybackError"
+          "x-event": "TextToSpeech.onPlaybackerror"
         },
         {
           "name": "capabilities",

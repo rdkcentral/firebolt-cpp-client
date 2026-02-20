@@ -379,7 +379,7 @@
 			]
 		},
 		{
-			"name": "TextToSpeech.onPlaybackError",
+			"name": "TextToSpeech.onPlaybackerror",
 			"summary": "Utterance failed during playback.",
 			"tags": [
 				{
@@ -387,7 +387,7 @@
 				},
 				{
 					"name": "notifier",
-					"x-event": "TextToSpeech.onPlaybackError"
+					"x-event": "TextToSpeech.onPlaybackerror"
 				},
 				{
 					"name": "capabilities",

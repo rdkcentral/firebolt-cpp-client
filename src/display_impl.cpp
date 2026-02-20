@@ -26,13 +26,18 @@ DisplayImpl::DisplayImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<DisplaySize> DisplayImpl::size() const
+Result<std::string> DisplayImpl::edid() const
 {
-    return Result(helper_.get<JsonData::DisplaySizeJson, DisplaySize>("Display.size"));
+    return Result(helper_.get<Firebolt::JSON::String, std::string>("Display.edid"));
 }
 
 Result<DisplaySize> DisplayImpl::maxResolution() const
 {
     return helper_.get<JsonData::DisplaySizeJson, DisplaySize>("Display.maxResolution");
+}
+
+Result<DisplaySize> DisplayImpl::size() const
+{
+    return Result(helper_.get<JsonData::DisplaySizeJson, DisplaySize>("Display.size"));
 }
 } // namespace Firebolt::Display

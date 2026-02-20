@@ -29,18 +29,6 @@ protected:
     Firebolt::TextToSpeech::TextToSpeechImpl ttsImpl{mockHelper};
 };
 
-TEST_F(TextToSpeechTest, isEnabled)
-{
-    mock("TextToSpeech.isttsenabled");
-
-    auto ttsEnabled = ttsImpl.isEnabled();
-    ASSERT_TRUE(ttsEnabled);
-
-    nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.isttsenabled");
-    EXPECT_EQ(ttsEnabled->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
-    EXPECT_EQ(ttsEnabled->isenabled, expectedValue["isenabled"].get<bool>());
-}
-
 TEST_F(TextToSpeechTest, listVoices)
 {
     mock("TextToSpeech.listvoices");
@@ -57,80 +45,17 @@ TEST_F(TextToSpeechTest, listVoices)
     }
 }
 
-TEST_F(TextToSpeechTest, getConfiguration)
-{
-    mock("TextToSpeech.getttsconfiguration");
-
-    auto ttsConfiguration = ttsImpl.getConfiguration();
-    ASSERT_TRUE(ttsConfiguration);
-
-    nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.getttsconfiguration");
-    EXPECT_TRUE(*ttsConfiguration == expectedValue);
-}
-
-TEST_F(TextToSpeechTest, getConfigurationCustom)
-{
-    std::list<nlohmann::json> configs = {
-        nlohmann::json{{"success", true},
-                       {"ttsendpoint", "http://custom-tts-server.com"},
-                       {"ttsendpointsecured", "https://custom-tts-server.com"},
-                       {"language", "de-DE"},
-                       {"voice", "anna"},
-                       {"volume", 75},
-                       {"primvolduckpercent", 30},
-                       {"rate", 60},
-                       {"speechrate", "fast"},
-                       {"fallbacktext", {{"scenario", "custom_scenario"}, {"value", "Custom fallback message"}}}},
-        nlohmann::json{{"success", true},
-                       {"ttsendpoint", "http://custom-tts-server.com"},
-                       {"ttsendpointsecured", "https://custom-tts-server.com"},
-                       {"language", "de-DE"},
-                       {"rate", 60},
-                       {"speechrate", "fast"},
-                       {"fallbacktext",
-                        {
-                            {"scenario", "custom_scenario"},
-                        }}},
-        nlohmann::json{{"success", true}, {"fallbacktext", {{"value", "Custom fallback message"}}}},
-    };
-
-    for (const auto& config : configs)
-    {
-        mock_with_response("TextToSpeech.getttsconfiguration", config);
-
-        auto ttsConfiguration = ttsImpl.getConfiguration();
-        ASSERT_TRUE(ttsConfiguration);
-
-        EXPECT_TRUE(*ttsConfiguration == config);
-    }
-}
-
 TEST_F(TextToSpeechTest, speak)
 {
     mock("TextToSpeech.speak");
 
-    auto speak = ttsImpl.speak("I am a text waiting for speech.", "appA");
+    auto speak = ttsImpl.speak("I am a text waiting for speech.");
     ASSERT_TRUE(speak);
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.speak");
     EXPECT_EQ(speak->speechid, expectedValue["speechid"].get<int32_t>());
     EXPECT_EQ(speak->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(speak->success, expectedValue["success"].get<bool>());
-}
-
-TEST_F(TextToSpeechTest, setConfiguration)
-{
-    mock("TextToSpeech.setttsconfiguration");
-
-    auto resp = ttsImpl.setConfiguration("http://url_for_the_text_to_speech_processing_unit",
-                                         "https://url_for_the_text_to_speech_processing_unit", "en-US", "carol", 100,
-                                         25, 50, Firebolt::TextToSpeech::SpeechRate::MEDIUM,
-                                         Firebolt::TextToSpeech::FallbackText{"offline", "No Internet connection"});
-    ASSERT_TRUE(resp);
-
-    nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.setttsconfiguration");
-    EXPECT_EQ(resp->TTS_status, expectedValue["TTS_Status"].get<int32_t>());
-    EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
 TEST_F(TextToSpeechTest, pause)
@@ -265,28 +190,6 @@ TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
     mockSubscribe("TextToSpeech.onPlaybackError");
 
     auto id = ttsImpl.subscribeOnPlaybackError([](auto) { std::cout << "callback\n"; });
-    ASSERT_TRUE(id) << "error on subscribe ";
-    EXPECT_TRUE(id.has_value()) << "error on id";
-    auto result = ttsImpl.unsubscribe(id.value_or(0));
-    ASSERT_TRUE(result) << "error on unsubscribe ";
-}
-
-TEST_F(TextToSpeechTest, subscribeOnTtsStateChanged)
-{
-    mockSubscribe("TextToSpeech.onTTSstatechanged");
-
-    auto id = ttsImpl.subscribeOnTTSStateChanged([](auto) { std::cout << "callback\n"; });
-    ASSERT_TRUE(id) << "error on subscribe ";
-    EXPECT_TRUE(id.has_value()) << "error on id";
-    auto result = ttsImpl.unsubscribe(id.value_or(0));
-    ASSERT_TRUE(result) << "error on unsubscribe ";
-}
-
-TEST_F(TextToSpeechTest, subscribeOnVoiceChanged)
-{
-    mockSubscribe("TextToSpeech.onVoicechanged");
-
-    auto id = ttsImpl.subscribeOnVoiceChanged([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));

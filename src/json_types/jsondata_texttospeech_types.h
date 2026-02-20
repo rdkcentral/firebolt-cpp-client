@@ -65,24 +65,6 @@ private:
     std::optional<std::string> value_;
 };
 
-class TTSEnabled : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::TTSEnabled>
-{
-public:
-    void fromJson(const nlohmann::json& json) override
-    {
-        ttsStatus_ = json["TTS_Status"];
-        isEnabled_ = json["isenabled"];
-    }
-    ::Firebolt::TextToSpeech::TTSEnabled value() const override
-    {
-        return ::Firebolt::TextToSpeech::TTSEnabled{ttsStatus_, isEnabled_};
-    }
-
-private:
-    int32_t ttsStatus_;
-    bool isEnabled_;
-};
-
 class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::ListVoicesResponse>
 {
 public:
@@ -103,107 +85,6 @@ public:
 private:
     int32_t ttsStatus_;
     std::vector<std::string> voices_;
-};
-
-class TTSConfiguration : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::TTSConfiguration>
-{
-public:
-    void fromJson(const nlohmann::json& json) override
-    {
-        success_ = json["success"];
-        if (json.contains("ttsendpoint"))
-        {
-            ttsEndpoint_ = json["ttsendpoint"].get<std::string>();
-        }
-        if (json.contains("ttsendpointsecured"))
-        {
-            ttsEndpointSecured_ = json["ttsendpointsecured"].get<std::string>();
-        }
-        if (json.contains("language"))
-        {
-            language_ = json["language"].get<std::string>();
-        }
-        if (json.contains("voice"))
-        {
-            voice_ = json["voice"].get<std::string>();
-        }
-        if (json.contains("volume"))
-        {
-            volume_ = json["volume"].get<int32_t>();
-        }
-        if (json.contains("primvolduckpercent"))
-        {
-            primVolDuckPercent_ = json["primvolduckpercent"].get<int32_t>();
-        }
-        if (json.contains("rate"))
-        {
-            rate_ = json["rate"].get<int32_t>();
-        }
-        if (json.contains("speechrate"))
-        {
-            speechRate_ = SpeechRateEnum.at(json["speechrate"].get<std::string>());
-        }
-        if (json.contains("fallbacktext"))
-        {
-            Firebolt::TextToSpeech::JsonData::FallbackText fallbackTextJson;
-            fallbackTextJson.fromJson(json["fallbacktext"]);
-            fallbackText_ = fallbackTextJson.value();
-        }
-    }
-    ::Firebolt::TextToSpeech::TTSConfiguration value() const override
-    {
-        ::Firebolt::TextToSpeech::TTSConfiguration ttsConfiguration;
-        ttsConfiguration.success = success_;
-        if (ttsEndpoint_.has_value())
-        {
-            ttsConfiguration.ttsEndpoint = ttsEndpoint_.value();
-        }
-        if (ttsEndpointSecured_.has_value())
-        {
-            ttsConfiguration.ttsEndpointSecured = ttsEndpointSecured_.value();
-        }
-        if (language_.has_value())
-        {
-            ttsConfiguration.language = language_.value();
-        }
-        if (voice_.has_value())
-        {
-            ttsConfiguration.voice = voice_.value();
-        }
-        if (volume_.has_value())
-        {
-            ttsConfiguration.volume = volume_.value();
-        }
-        if (primVolDuckPercent_.has_value())
-        {
-            ttsConfiguration.primVolDuckPercent = primVolDuckPercent_.value();
-        }
-        if (rate_.has_value())
-        {
-            ttsConfiguration.rate = rate_.value();
-        }
-        if (speechRate_.has_value())
-        {
-            ttsConfiguration.speechRate = speechRate_.value();
-        }
-        if (fallbackText_.has_value())
-        {
-            ttsConfiguration.fallbackText = fallbackText_.value();
-        }
-        return ttsConfiguration;
-    }
-
-private:
-    bool success_;
-    std::optional<std::string> ttsEndpoint_;
-    std::optional<std::string> ttsEndpointSecured_;
-    std::optional<std::string> language_;
-    std::optional<std::string> voice_;
-    std::optional<int32_t> volume_;
-    std::optional<int32_t> primVolDuckPercent_;
-    std::optional<int32_t> rate_;
-    std::optional<::Firebolt::TextToSpeech::SpeechRate> speechRate_;
-    std::optional<::Firebolt::TextToSpeech::FallbackText> fallbackText_;
 };
 
 class SpeechIdEvent : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechIdEvent>

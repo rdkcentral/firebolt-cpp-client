@@ -28,11 +28,6 @@ TextToSpeechImpl::TextToSpeechImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<TTSEnabled> TextToSpeechImpl::isEnabled()
-{
-    return helper_.get<JsonData::TTSEnabled, TTSEnabled>("TextToSpeech.isttsenabled");
-}
-
 Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& language)
 {
     nlohmann::json params;
@@ -40,74 +35,11 @@ Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& langu
     return helper_.get<JsonData::ListVoicesResponse, ListVoicesResponse>("TextToSpeech.listvoices", params);
 }
 
-Result<TTSConfiguration> TextToSpeechImpl::getConfiguration()
-{
-    return helper_.get<JsonData::TTSConfiguration, TTSConfiguration>("TextToSpeech.getttsconfiguration");
-}
-
-Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, const std::optional<std::string>& callSign)
+Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text)
 {
     nlohmann::json params;
     params["text"] = text;
-    if (callSign.has_value())
-    {
-        params["callsign"] = callSign.value();
-    }
     return helper_.get<JsonData::SpeechResponse, SpeechResponse>("TextToSpeech.speak", params);
-}
-
-Result<TTSStatusResponse> TextToSpeechImpl::setConfiguration(
-    const std::optional<std::string>& ttsEndpoint, const std::optional<std::string>& ttsEndpointSecured,
-    const std::optional<std::string>& language, const std::optional<std::string>& voice,
-    const std::optional<int32_t>& volume, const std::optional<int32_t>& primVolDuckPercent,
-    const std::optional<int32_t>& rate, const std::optional<SpeechRate>& speechRate,
-    const std::optional<FallbackText>& fallbackText)
-{
-    nlohmann::json params;
-    if (ttsEndpoint.has_value())
-    {
-        params["ttsendpoint"] = ttsEndpoint.value();
-    }
-    if (ttsEndpointSecured.has_value())
-    {
-        params["ttsendpointsecured"] = ttsEndpointSecured.value();
-    }
-    if (language.has_value())
-    {
-        params["language"] = language.value();
-    }
-    if (voice.has_value())
-    {
-        params["voice"] = voice.value();
-    }
-    if (volume.has_value())
-    {
-        params["volume"] = volume.value();
-    }
-    if (primVolDuckPercent.has_value())
-    {
-        params["primvolduckpercent"] = primVolDuckPercent.value();
-    }
-    if (rate.has_value())
-    {
-        params["rate"] = rate.value();
-    }
-    if (speechRate.has_value())
-    {
-        params["speechrate"] = Firebolt::JSON::toString(JsonData::SpeechRateEnum, speechRate.value());
-    }
-    if (fallbackText.has_value())
-    {
-        if (fallbackText->scenario.has_value())
-        {
-            params["fallbacktext"]["scenario"] = fallbackText->scenario.value();
-        }
-        if (fallbackText->value.has_value())
-        {
-            params["fallbacktext"]["value"] = fallbackText->value.value();
-        }
-    }
-    return helper_.get<JsonData::TTSStatusResponse, TTSStatusResponse>("TextToSpeech.setttsconfiguration", params);
 }
 
 Result<TTSStatusResponse> TextToSpeechImpl::pause(SpeechId speechId)
@@ -182,16 +114,6 @@ Result<SubscriptionId> TextToSpeechImpl::subscribeOnPlaybackError(std::function<
 {
     return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onPlaybackError",
                                                                    std::move(notification));
-}
-
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnTTSStateChanged(std::function<void(const TTSState&)>&& notification)
-{
-    return subscriptionManager_.subscribe<JsonData::TTSState>("TextToSpeech.onTTSstatechanged", std::move(notification));
-}
-
-Result<SubscriptionId> TextToSpeechImpl::subscribeOnVoiceChanged(std::function<void(const TTSVoice&)>&& notification)
-{
-    return subscriptionManager_.subscribe<JsonData::TTSVoice>("TextToSpeech.onVoicechanged", std::move(notification));
 }
 
 Result<void> TextToSpeechImpl::unsubscribe(SubscriptionId id)

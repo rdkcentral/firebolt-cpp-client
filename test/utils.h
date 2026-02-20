@@ -24,9 +24,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-// For operator overloads
-#include "firebolt/texttospeech.h"
-
 std::string httpGet(const std::string& url);
 std::string httpPost(const std::string& url, const std::string& postData);
 
@@ -46,7 +43,3 @@ template <typename T> inline std::string toError(const Firebolt::Result<T>& resu
     }
     return "Error: " + std::to_string(static_cast<int>(result.error()));
 }
-namespace Firebolt::TextToSpeech
-{
-bool operator==(const Firebolt::TextToSpeech::TTSConfiguration& lhs, const nlohmann::json& rhs);
-} // namespace Firebolt::TextToSpeech

@@ -49,26 +49,6 @@ struct FallbackText
     std::optional<std::string> value;
 };
 
-struct TTSEnabled
-{
-    TTSStatus TTS_status;
-    bool isenabled;
-};
-
-struct TTSConfiguration
-{
-    bool success;
-    std::optional<std::string> ttsEndpoint;
-    std::optional<std::string> ttsEndpointSecured;
-    std::optional<std::string> language;
-    std::optional<std::string> voice;
-    std::optional<int32_t> volume;
-    std::optional<int32_t> primVolDuckPercent;
-    std::optional<int32_t> rate;
-    std::optional<SpeechRate> speechRate;
-    std::optional<FallbackText> fallbackText;
-};
-
 struct TTSStatusResponse
 {
     TTSStatus TTS_status;
@@ -116,14 +96,6 @@ class ITextToSpeech
 public:
     virtual ~ITextToSpeech() = default;
 
-    // Methods
-    /**
-     * @brief Returns whether the TTS engine is enabled or disabled
-     *
-     * @retval Returns whether the TTS engine is enabled or disabled
-     */
-    virtual Result<TTSEnabled> isEnabled() = 0;
-
     /**
      * @brief Get the list of Text to speech voices supported by the platform
      *
@@ -134,43 +106,13 @@ public:
     virtual Result<ListVoicesResponse> listVoices(const std::string& language) = 0;
 
     /**
-     * @brief Get the TTS configuration for the platform
-     *
-     * @retval Settings the list of configurations
-     */
-    virtual Result<TTSConfiguration> getConfiguration() = 0;
-
-    /**
-     * @brief Set the TTS configuration for the platform
-     *
-     * @param[in] ttsEndpoint        : URL for Text to Speech API
-     * @param[in] ttsEndpointSecured : URL for Secured Text to Speech API
-     * @param[in] language           : Language used by Text to speech
-     * @param[in] voice              : Voice used by Text to speech
-     * @param[in] volume             : Volume for Text to speech
-     * @param[in] primVolDuckPercent : Prime Volume duck percent for Text to speech
-     * @param[in] rate               : Speech rate for Text to speech
-     * @param[in] speechRate         : Rate for speech
-     * @param[in] fallbackText       : Fallback text for TTS
-     *
-     * @retval Settings the list of configurations
-     */
-    virtual Result<TTSStatusResponse>
-    setConfiguration(const std::optional<std::string>& ttsEndpoint,
-                     const std::optional<std::string>& ttsEndpointSecured, const std::optional<std::string>& language,
-                     const std::optional<std::string>& voice, const std::optional<int32_t>& volume,
-                     const std::optional<int32_t>& primVolDuckPercent, const std::optional<int32_t>& rate,
-                     const std::optional<SpeechRate>& speechRate, const std::optional<FallbackText>& fallbackText) = 0;
-
-    /**
      * @brief Speak the uttered text using the TTS engine
      *
      * @param[in] text     : String to be converted to Audio for speech
-     * @param[in] callSign : App calling text to speech
      *
      * @retval Result for Speak
      */
-    virtual Result<SpeechResponse> speak(const std::string& text, const std::optional<std::string>& callSign) = 0;
+    virtual Result<SpeechResponse> speak(const std::string& text) = 0;
 
     /**
      * @brief Pauses the speech for given speech id
@@ -208,7 +150,6 @@ public:
      */
     virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) = 0;
 
-    // Events
     /**
      * @brief Triggered when the text to speech conversion is about to start. It
      *        provides the speech ID, generated for the text input given in the speak
@@ -286,24 +227,6 @@ public:
      * @retval The subscriptionId or error
      */
     virtual Result<SubscriptionId> subscribeOnPlaybackError(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
-
-    /**
-     * @brief Triggered when TTS is enabled or disabled
-     *
-     * @param[in]  notification : The callback function
-     *
-     * @retval The subscriptionId or error
-     */
-    virtual Result<SubscriptionId> subscribeOnTTSStateChanged(std::function<void(const TTSState&)>&& notification) = 0;
-
-    /**
-     * @brief Triggered when the configured voice changes.
-     *
-     * @param[in]  notification : The callback function
-     *
-     * @retval The subscriptionId or error
-     */
-    virtual Result<SubscriptionId> subscribeOnVoiceChanged(std::function<void(const TTSVoice&)>&& notification) = 0;
 
     /**
      * @brief Remove subscriber from subscribers list. This method is generic for

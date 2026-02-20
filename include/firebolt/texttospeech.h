@@ -1,8 +1,5 @@
-/*
- * If not stated otherwise in this file or this component's LICENSE file the
- * following copyright and licenses apply:
- *
- * Copyright 2025 Sky UK
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #pragma once
@@ -22,7 +21,6 @@
 #include <firebolt/types.h>
 
 #include <functional>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -89,11 +87,11 @@ public:
     /**
      * @brief Get the list of Text to speech voices supported by the platform
      *
-     * @param[in] language : Request language in ISO 3166-1 Alpha-2
+     * @param[in] language : Request language as a BCP 47 locale tag (for example, "en-US")
      *
      * @retval The list of voices supported for the language
      */
-    virtual Result<ListVoicesResponse> listVoices(const std::string& language) = 0;
+    virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
 
     /**
      * @brief Speak the uttered text using the TTS engine
@@ -102,7 +100,7 @@ public:
      *
      * @retval Result for Speak
      */
-    virtual Result<SpeechResponse> speak(const std::string& text) = 0;
+    virtual Result<SpeechResponse> speak(const std::string& text) const = 0;
 
     /**
      * @brief Pauses the speech for given speech id
@@ -111,7 +109,7 @@ public:
      *
      * @retval Result for Pause
      */
-    virtual Result<TTSStatusResponse> pause(SpeechId speechId) = 0;
+    virtual Result<TTSStatusResponse> pause(SpeechId speechId) const = 0;
 
     /**
      * @brief Resumes the speech for given speech id
@@ -120,7 +118,7 @@ public:
      *
      * @retval Result for Resume
      */
-    virtual Result<TTSStatusResponse> resume(SpeechId speechId) = 0;
+    virtual Result<TTSStatusResponse> resume(SpeechId speechId) const = 0;
 
     /**
      * @brief Cancels the speech for given speech id
@@ -129,7 +127,7 @@ public:
      *
      * @retval Result for cancel
      */
-    virtual Result<TTSStatusResponse> cancel(SpeechId speechId) = 0;
+    virtual Result<TTSStatusResponse> cancel(SpeechId speechId) const = 0;
 
     /**
      * @brief Returns the current state of the speech request.
@@ -138,7 +136,7 @@ public:
      *
      * @retval Result for speech state
      */
-    virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) = 0;
+    virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const = 0;
 
     /**
      * @brief Triggered when the text to speech conversion is about to start. It

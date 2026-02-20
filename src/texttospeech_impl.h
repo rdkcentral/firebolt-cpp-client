@@ -1,8 +1,5 @@
-/*
- * If not stated otherwise in this file or this component's LICENSE file the
- * following copyright and licenses apply:
- *
- * Copyright 2025 Sky UK
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #pragma once
@@ -33,12 +32,12 @@ public:
 
     ~TextToSpeechImpl() override = default;
 
-    Result<ListVoicesResponse> listVoices(const std::string& language) override;
-    Result<SpeechResponse> speak(const std::string& text) override;
-    Result<TTSStatusResponse> pause(SpeechId speechId) override;
-    Result<TTSStatusResponse> resume(SpeechId speechId) override;
-    Result<TTSStatusResponse> cancel(SpeechId speechId) override;
-    Result<SpeechStateResponse> getSpeechState(SpeechId speechId) override;
+    Result<ListVoicesResponse> listVoices(const std::string& language) const override;
+    Result<SpeechResponse> speak(const std::string& text) const override;
+    Result<TTSStatusResponse> pause(SpeechId speechId) const override;
+    Result<TTSStatusResponse> resume(SpeechId speechId) const override;
+    Result<TTSStatusResponse> cancel(SpeechId speechId) const override;
+    Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const override;
 
     Result<SubscriptionId> subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification) override;
     Result<SubscriptionId> subscribeOnSpeechStart(std::function<void(const SpeechIdEvent&)>&& notification) override;

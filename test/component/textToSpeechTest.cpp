@@ -1,8 +1,5 @@
-/*
- * If not stated otherwise in this file or this component's LICENSE file the
- * following copyright and licenses apply:
- *
- * Copyright 2025 Sky UK
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
+
 #include "firebolt/texttospeech.h"
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
@@ -77,7 +77,8 @@ TEST_F(TextToSpeechTest, getSpeechState)
     ASSERT_TRUE(speechState) << "Error getting speech state";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.getspeechstate");
-    EXPECT_EQ(speechState->speechState, static_cast<Firebolt::TextToSpeech::SpeechState>(expectedValue["speechstate"].get<int>()));
+    EXPECT_EQ(speechState->speechState,
+              static_cast<Firebolt::TextToSpeech::SpeechState>(expectedValue["speechstate"].get<int>()));
     EXPECT_EQ(speechState->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(speechState->success, expectedValue["success"].get<bool>());
 }

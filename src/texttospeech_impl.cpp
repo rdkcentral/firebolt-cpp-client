@@ -1,8 +1,5 @@
-/*
- * If not stated otherwise in this file or this component's LICENSE file the
- * following copyright and licenses apply:
- *
- * Copyright 2025 Sky UK
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "texttospeech_impl.h"
@@ -28,42 +27,42 @@ TextToSpeechImpl::TextToSpeechImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& language)
+Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& language) const
 {
     nlohmann::json params;
     params["language"] = language;
     return helper_.get<JsonData::ListVoicesResponse, ListVoicesResponse>("TextToSpeech.listvoices", params);
 }
 
-Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text)
+Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text) const
 {
     nlohmann::json params;
     params["text"] = text;
     return helper_.get<JsonData::SpeechResponse, SpeechResponse>("TextToSpeech.speak", params);
 }
 
-Result<TTSStatusResponse> TextToSpeechImpl::pause(SpeechId speechId)
+Result<TTSStatusResponse> TextToSpeechImpl::pause(SpeechId speechId) const
 {
     nlohmann::json params;
     params["speechid"] = speechId;
     return helper_.get<JsonData::TTSStatusResponse, TTSStatusResponse>("TextToSpeech.pause", params);
 }
 
-Result<TTSStatusResponse> TextToSpeechImpl::resume(SpeechId speechId)
+Result<TTSStatusResponse> TextToSpeechImpl::resume(SpeechId speechId) const
 {
     nlohmann::json params;
     params["speechid"] = speechId;
     return helper_.get<JsonData::TTSStatusResponse, TTSStatusResponse>("TextToSpeech.resume", params);
 }
 
-Result<TTSStatusResponse> TextToSpeechImpl::cancel(SpeechId speechId)
+Result<TTSStatusResponse> TextToSpeechImpl::cancel(SpeechId speechId) const
 {
     nlohmann::json params;
     params["speechid"] = speechId;
     return helper_.get<JsonData::TTSStatusResponse, TTSStatusResponse>("TextToSpeech.cancel", params);
 }
 
-Result<SpeechStateResponse> TextToSpeechImpl::getSpeechState(SpeechId speechId)
+Result<SpeechStateResponse> TextToSpeechImpl::getSpeechState(SpeechId speechId) const
 {
     nlohmann::json params;
     params["speechid"] = speechId;
@@ -123,6 +122,6 @@ Result<void> TextToSpeechImpl::unsubscribe(SubscriptionId id)
 
 void TextToSpeechImpl::unsubscribeAll()
 {
-    return subscriptionManager_.unsubscribeAll();
+    subscriptionManager_.unsubscribeAll();
 }
 } // namespace Firebolt::TextToSpeech

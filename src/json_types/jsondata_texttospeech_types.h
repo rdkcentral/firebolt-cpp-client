@@ -57,10 +57,7 @@ private:
 class SpeechIdEvent : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechIdEvent>
 {
 public:
-    void fromJson(const nlohmann::json& json) override
-    {
-        speechId_ = json["speechid"].get<int32_t>();
-    }
+    void fromJson(const nlohmann::json& json) override { speechId_ = json["speechid"].get<int32_t>(); }
     ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_};

@@ -1,8 +1,5 @@
-/*
- * If not stated otherwise in this file or this component's LICENSE file the
- * following copyright and licenses apply:
- *
- * Copyright 2025 Sky UK
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 #include "firebolt/texttospeech.h"
@@ -102,7 +101,8 @@ TEST_F(TextToSpeechTest, getSpeechState)
 
     nlohmann::json expectedValue = jsonEngine.get_value("TextToSpeech.getspeechstate");
 
-    EXPECT_EQ(speechStateResp->speechState, static_cast<Firebolt::TextToSpeech::SpeechState>(expectedValue["speechstate"].get<int>()));
+    EXPECT_EQ(speechStateResp->speechState,
+              static_cast<Firebolt::TextToSpeech::SpeechState>(expectedValue["speechstate"].get<int>()));
     EXPECT_EQ(speechStateResp->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
     EXPECT_EQ(speechStateResp->success, expectedValue["success"].get<bool>());
 }
@@ -111,7 +111,7 @@ TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
 {
     mockSubscribe("TextToSpeech.onWillspeak");
 
-    auto id = ttsImpl.subscribeOnWillSpeak([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnWillSpeak([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -122,7 +122,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
 {
     mockSubscribe("TextToSpeech.onSpeechstart");
 
-    auto id = ttsImpl.subscribeOnSpeechStart([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechStart([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -133,7 +133,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
 {
     mockSubscribe("TextToSpeech.onSpeechpause");
 
-    auto id = ttsImpl.subscribeOnSpeechPause([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechPause([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -144,7 +144,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
 {
     mockSubscribe("TextToSpeech.onSpeechresume");
 
-    auto id = ttsImpl.subscribeOnSpeechResume([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechResume([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -155,7 +155,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
 {
     mockSubscribe("TextToSpeech.onSpeechcomplete");
 
-    auto id = ttsImpl.subscribeOnSpeechComplete([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechComplete([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -166,7 +166,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
 {
     mockSubscribe("TextToSpeech.onSpeechinterrupted");
 
-    auto id = ttsImpl.subscribeOnSpeechInterrupted([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnSpeechInterrupted([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -177,7 +177,7 @@ TEST_F(TextToSpeechTest, subscribeOnNetworkError)
 {
     mockSubscribe("TextToSpeech.onNetworkerror");
 
-    auto id = ttsImpl.subscribeOnNetworkError([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnNetworkError([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));
@@ -188,7 +188,7 @@ TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
 {
     mockSubscribe("TextToSpeech.onPlaybackerror");
 
-    auto id = ttsImpl.subscribeOnPlaybackError([](auto) { std::cout << "callback\n"; });
+    auto id = ttsImpl.subscribeOnPlaybackError([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
     EXPECT_TRUE(id.has_value()) << "error on id";
     auto result = ttsImpl.unsubscribe(id.value_or(0));

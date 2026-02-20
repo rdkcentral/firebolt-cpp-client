@@ -121,7 +121,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -161,7 +161,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -201,7 +201,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -241,7 +241,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -281,7 +281,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -321,7 +321,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -361,7 +361,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}
@@ -401,7 +401,7 @@
 					"name": "speechid",
 					"summary": "Identifier for the speech call",
 					"schema": {
-						"$ref": "#/components/schemas/SpeechId"
+						"$ref": "#/components/schemas/SpeechIdEvent"
 					},
 					"required": true
 				}

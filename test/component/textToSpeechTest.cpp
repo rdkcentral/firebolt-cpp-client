@@ -164,3 +164,142 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
     verifyUnsubscribeResult(result);
 }
+
+TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
+{
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived = false;
+
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechPause(
+        [&](const auto& event)
+        {
+            EXPECT_EQ(event.speechid, 1);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("TextToSpeech.onSpeechpause", R"({ "speechid": 1 })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
+{
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived = false;
+
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechResume(
+        [&](const auto& event)
+        {
+            EXPECT_EQ(event.speechid, 1);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("TextToSpeech.onSpeechresume", R"({ "speechid": 1 })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
+    verifyUnsubscribeResult(result);
+}
+TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
+{
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived = false;
+
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnSpeechInterrupted(
+        [&](const auto& event)
+        {
+            EXPECT_EQ(event.speechid, 1);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("TextToSpeech.onSpeechinterrupted", R"({ "speechid": 1 })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(TextToSpeechTest, subscribeOnNetworkError)
+{
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived = false;
+
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnNetworkError(
+        [&](const auto& event)
+        {
+            EXPECT_EQ(event.speechid, 1);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("TextToSpeech.onNetworkerror", R"({ "speechid": 1 })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
+{
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived = false;
+
+    auto id = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnPlaybackError(
+        [&](const auto& event)
+        {
+            EXPECT_EQ(event.speechid, 1);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("TextToSpeech.onPlaybackerror", R"({ "speechid": 1 })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
+    verifyUnsubscribeResult(result);
+}

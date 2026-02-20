@@ -112,7 +112,7 @@ Result<SubscriptionId> TextToSpeechImpl::subscribeOnNetworkError(std::function<v
 
 Result<SubscriptionId> TextToSpeechImpl::subscribeOnPlaybackError(std::function<void(const SpeechIdEvent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onPlaybackError",
+    return subscriptionManager_.subscribe<JsonData::SpeechIdEvent>("TextToSpeech.onPlaybackerror",
                                                                    std::move(notification));
 }
 

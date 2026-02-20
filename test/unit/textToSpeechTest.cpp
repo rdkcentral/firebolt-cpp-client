@@ -187,7 +187,7 @@ TEST_F(TextToSpeechTest, subscribeOnNetworkError)
 
 TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
 {
-    mockSubscribe("TextToSpeech.onPlaybackError");
+    mockSubscribe("TextToSpeech.onPlaybackerror");
 
     auto id = ttsImpl.subscribeOnPlaybackError([](auto) { std::cout << "callback\n"; });
     ASSERT_TRUE(id) << "error on subscribe ";

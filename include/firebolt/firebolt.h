@@ -28,6 +28,7 @@
 #include "firebolt/localization.h"
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
+#include "firebolt/texttospeech.h"
 #include <firebolt/config.h>
 #include <firebolt/types.h>
 #include <functional>
@@ -80,7 +81,6 @@ public:
      *
      * @return Reference to Accessibility interface
      */
-
     virtual Accessibility::IAccessibility& AccessibilityInterface() = 0;
 
     /**
@@ -138,5 +138,12 @@ public:
      * @return Reference to Stats interface
      */
     virtual Stats::IStats& StatsInterface() = 0;
+
+    /**
+     * @brief Returns instance of TextToSpeech interface
+     *
+     * @return Reference to TextToSpeech interface
+     */
+    virtual TextToSpeech::ITextToSpeech& TextToSpeechInterface() = 0;
 };
 } // namespace Firebolt

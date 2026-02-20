@@ -96,7 +96,7 @@ public:
     /**
      * @brief Speak the uttered text using the TTS engine
      *
-     * @param[in] text     : String to be converted to Audio for speech
+     * @param[in] text : String to be converted to Audio for speech
      *
      * @retval Result for Speak
      */

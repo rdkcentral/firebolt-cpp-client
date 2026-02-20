@@ -287,6 +287,48 @@
 			]
 		},
 		{
+			"name": "Device.onHdrChanged",
+			"summary": "Returns the HDR standards that are supported by the attached TV or the integral display",
+			"params": [
+				{
+					"name": "negotiatedHdrFormats",
+					"summary": "the negotiated HDR formats",
+					"schema": {
+						"$ref": "#/components/schemas/HDRFormatMap"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "notifier",
+					"x-notifier-for": "Device.hdr",
+					"x-event": "Device.onHdrChanged"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting the negotiated HDR formats",
+					"params": [
+						{
+							"name": "Default Result",
+							"value": {
+								"hdr10": true,
+								"hdr10Plus": true,
+								"dolbyVision": true,
+								"hlg": true
+							}
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "Localization.onCountryChanged",
 			"tags": [
 				{
@@ -478,6 +520,31 @@
 					"ifa_type",
 					"lmt"
 				]
+			},
+			"HDRFormatMap": {
+				"title": "HDRFormatMap",
+				"type": "object",
+				"properties": {
+					"hdr10": {
+						"type": "boolean"
+					},
+					"hdr10Plus": {
+						"type": "boolean"
+					},
+					"dolbyVision": {
+						"type": "boolean"
+					},
+					"hlg": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"hdr10",
+					"hdr10Plus",
+					"dolbyVision",
+					"hlg"
+				],
+				"description": "The type of HDR format"
 			},
 			"DeviceClass": {
 				"title": "DeviceClass",

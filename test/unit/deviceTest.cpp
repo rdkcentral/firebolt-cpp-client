@@ -27,7 +27,24 @@ protected:
     Firebolt::Device::DeviceImpl deviceImpl_{mockHelper};
 };
 
-TEST_F(DeviceTest, GetClass)
+TEST_F(DeviceTest, ChipsetId)
+{
+    mock("Device.chipsetId");
+    auto expectedValue = jsonEngine.get_value("Device.chipsetId");
+
+    auto result = deviceImpl_.chipsetId();
+    ASSERT_TRUE(result) << "DeviceImpl::chipsetId() returned an error";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceTest, ChipsetIdBadResponse)
+{
+    mock_with_response("Device.chipsetId", 12345);
+    ASSERT_FALSE(deviceImpl_.chipsetId()) << "DeviceImpl::chipsetId() did not return an error";
+}
+
+TEST_F(DeviceTest, DeviceClass)
 {
     mock("Device.deviceClass");
     auto expectedValue = jsonEngine.get_value("Device.deviceClass");
@@ -39,10 +56,25 @@ TEST_F(DeviceTest, GetClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
-TEST_F(DeviceTest, GetClassBadResponse_Test)
+TEST_F(DeviceTest, DeviceClassBadResponse)
 {
     mock_with_response("Device.deviceClass", "abc");
     ASSERT_FALSE(deviceImpl_.deviceClass()) << "DeviceImpl::deviceClass() NOT returned an error";
+}
+
+TEST_F(DeviceTest, Hdr)
+{
+    mock("Device.hdr");
+    auto expectedValue = jsonEngine.get_value("Device.hdr");
+
+    auto result = deviceImpl_.hdr();
+
+    ASSERT_TRUE(result) << "DeviceImpl::hdr() returned an error";
+
+    EXPECT_EQ(result->hdr10, expectedValue["hdr10"].get<bool>());
+    EXPECT_EQ(result->hdr10Plus, expectedValue["hdr10Plus"].get<bool>());
+    EXPECT_EQ(result->dolbyVision, expectedValue["dolbyVision"].get<bool>());
+    EXPECT_EQ(result->hlg, expectedValue["hlg"].get<bool>());
 }
 
 TEST_F(DeviceTest, TimeInActiveState)
@@ -62,6 +94,22 @@ TEST_F(DeviceTest, TimeInActiveStateBadResponse)
     ASSERT_FALSE(deviceImpl_.timeInActiveState()) << "DeviceImpl::timeInActiveState() did not return an error";
 }
 
+TEST_F(DeviceTest, Uid)
+{
+    mock("Device.uid");
+    auto expectedValue = jsonEngine.get_value("Device.uid");
+
+    auto result = deviceImpl_.uid();
+    ASSERT_TRUE(result) << "DeviceImpl::uid() returned an error";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceTest, UidBadResponse)
+{
+    mock_with_response("Device.uid", 67890);
+    ASSERT_FALSE(deviceImpl_.uid()) << "DeviceImpl::uid() did not return an error";
+}
 TEST_F(DeviceTest, Uptime)
 {
     mock("Device.uptime");
@@ -79,36 +127,15 @@ TEST_F(DeviceTest, UptimeBadResponse)
     ASSERT_FALSE(deviceImpl_.uptime()) << "DeviceImpl::uptime() did not return an error";
 }
 
-TEST_F(DeviceTest, ChipsetId)
+TEST_F(DeviceTest, SubscribeOnHdrChanged)
 {
-    mock("Device.chipsetId");
-    auto expectedValue = jsonEngine.get_value("Device.chipsetId");
+    nlohmann::json expectedValue = 1;
+    mockSubscribe("Device.onHdrChanged");
 
-    auto result = deviceImpl_.chipsetId();
-    ASSERT_TRUE(result) << "DeviceImpl::chipsetId() returned an error";
+    auto result = deviceImpl_.subscribeOnHdrChanged([&](const Firebolt::Device::HDRFormat& /*value*/) {});
 
+    ASSERT_TRUE(result) << "DeviceImpl::subscribeOnHdrChanged() returned an error";
     EXPECT_EQ(*result, expectedValue);
-}
 
-TEST_F(DeviceTest, ChipsetIdBadResponse)
-{
-    mock_with_response("Device.chipsetId", 12345);
-    ASSERT_FALSE(deviceImpl_.chipsetId()) << "DeviceImpl::chipsetId() did not return an error";
-}
-
-TEST_F(DeviceTest, Uid)
-{
-    mock("Device.uid");
-    auto expectedValue = jsonEngine.get_value("Device.uid");
-
-    auto result = deviceImpl_.uid();
-    ASSERT_TRUE(result) << "DeviceImpl::uid() returned an error";
-
-    EXPECT_EQ(*result, expectedValue);
-}
-
-TEST_F(DeviceTest, UidBadResponse)
-{
-    mock_with_response("Device.uid", 67890);
-    ASSERT_FALSE(deviceImpl_.uid()) << "DeviceImpl::uid() did not return an error";
+    deviceImpl_.unsubscribe(*result);
 }

@@ -35,21 +35,14 @@ class IDisplay
 {
 public:
     virtual ~IDisplay() = default;
+
     /**
-     * @brief Returns the physical dimensions of the connected or integral display, in centimeters
-
-        Returns 0, 0 on a OTT/STB device when a display is not connected over HDMI
-
-        Typical values
-
-        43" - 97, 56
-        55" - 123, 71
-        65" - 145, 83
+     * @brief Returns the EDID (and extensions) of the connected or integral display, as a Base64 encoded string
      *
      * @retval The class property or error
      */
+    virtual Result<std::string> edid() const = 0;
 
-    virtual Result<DisplaySize> size() const = 0;
     /**
      * @brief Returns the physical/native resolution of the connected or integral display, in pixels
 
@@ -63,7 +56,22 @@ public:
      *
      * @retval The uptime in seconds or error
      */
+
     virtual Result<DisplaySize> maxResolution() const = 0;
+    /**
+     * @brief Returns the physical dimensions of the connected or integral display, in centimeters
+
+        Returns 0, 0 on a OTT/STB device when a display is not connected over HDMI
+
+        Typical values
+
+        43" - 97, 56
+        55" - 123, 71
+        65" - 145, 83
+     *
+     * @retval The class property or error
+     */
+    virtual Result<DisplaySize> size() const = 0;
 };
 
 } // namespace Firebolt::Display

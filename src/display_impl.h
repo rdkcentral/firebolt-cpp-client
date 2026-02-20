@@ -31,8 +31,10 @@ public:
     DisplayImpl& operator=(const DisplayImpl&) = delete;
 
     ~DisplayImpl() override = default;
-    Result<DisplaySize> size() const override;
+
+    Result<std::string> edid() const override;
     Result<DisplaySize> maxResolution() const override;
+    Result<DisplaySize> size() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

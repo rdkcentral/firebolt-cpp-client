@@ -42,4 +42,20 @@ private:
     ::Firebolt::Device::DeviceClass deviceClass_;
 };
 
+class HDRFormat : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::HDRFormat>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        hdrFormat_.hdr10 = json["hdr10"].get<bool>();
+        hdrFormat_.hdr10Plus = json["hdr10Plus"].get<bool>();
+        hdrFormat_.dolbyVision = json["dolbyVision"].get<bool>();
+        hdrFormat_.hlg = json["hlg"].get<bool>();
+    }
+    ::Firebolt::Device::HDRFormat value() const override { return hdrFormat_; }
+
+private:
+    ::Firebolt::Device::HDRFormat hdrFormat_;
+};
+
 } // namespace Firebolt::Device::JsonData

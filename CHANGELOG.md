@@ -2,6 +2,7 @@
 
 ### Added
 - New APIs
+  - Device.hdr
   - Display.edid
   - TextToSpeech
 

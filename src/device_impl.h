@@ -32,14 +32,20 @@ public:
 
     ~DeviceImpl() override = default;
 
-    Result<DeviceClass> deviceClass() const override;
-    Result<uint32_t> uptime() const override;
-    Result<u_int32_t> timeInActiveState() const override;
     Result<std::string> chipsetId() const override;
+    Result<DeviceClass> deviceClass() const override;
+    Result<HDRFormat> hdr() const override;
+    Result<u_int32_t> timeInActiveState() const override;
     Result<std::string> uid() const override;
+    Result<uint32_t> uptime() const override;
+
+    Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) override;
+
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;
-    // Methods
+    Firebolt::Helpers::SubscriptionManager subscriptionManager_;
 };
 } // namespace Firebolt::Device

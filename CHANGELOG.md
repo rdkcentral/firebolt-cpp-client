@@ -2,6 +2,7 @@
 
 ### Added
 - New APIs
+  - Display.edid
   - TextToSpeech
 
 ## [0.4.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.3.0...v0.4.0)

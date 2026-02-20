@@ -36,7 +36,7 @@ class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Text
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        ttsStatus_ = json["TTS_Status"];
+        ttsStatus_ = json["TTS_Status"].get<int32_t>();
         voices_.clear();
         for (const auto& voice : json["voices"])
         {
@@ -71,9 +71,9 @@ class SpeechResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSp
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        speechId_ = json["speechid"];
-        ttsStatus_ = json["TTS_Status"];
-        success_ = json["success"];
+        speechId_ = json["speechid"].get<int32_t>();
+        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::SpeechResponse value() const override
     {
@@ -92,8 +92,8 @@ public:
     void fromJson(const nlohmann::json& json) override
     {
         speechState_ = static_cast<SpeechState>(json["speechstate"].get<int>());
-        ttsStatus_ = json["TTS_Status"];
-        success_ = json["success"];
+        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::SpeechStateResponse value() const override
     {
@@ -111,8 +111,8 @@ class TTSStatusResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextT
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        ttsStatus_ = json["TTS_Status"];
-        success_ = json["success"];
+        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::TTSStatusResponse value() const override
     {

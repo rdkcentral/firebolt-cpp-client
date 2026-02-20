@@ -25,6 +25,8 @@
 #include <nlohmann/json-schema.hpp>
 #include <nlohmann/json.hpp>
 
+#include "json_types/jsondata_texttospeech_types.h"
+
 constexpr std::chrono::seconds EventWaitTime = std::chrono::seconds(2);
 
 // curl http get helper function using
@@ -141,3 +143,143 @@ void verifyEventNotReceived(std::mutex& mtx, std::condition_variable& cv, bool& 
         FAIL() << "Unexpectedly received event";
     }
 }
+
+namespace Firebolt::TextToSpeech
+{
+bool operator==(const Firebolt::TextToSpeech::TTSConfiguration& lhs, const nlohmann::json& rhs)
+{
+    if (lhs.success != rhs["success"].get<bool>())
+    {
+        return false;
+    }
+    if (rhs.contains("ttsendpoint"))
+    {
+        if (!lhs.ttsendpoint.has_value() || lhs.ttsendpoint.value() != rhs["ttsendpoint"].get<std::string>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.ttsendpoint.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("ttsendpointsecured"))
+    {
+        if (!lhs.ttsendpointsecured.has_value() ||
+            lhs.ttsendpointsecured.value() != rhs["ttsendpointsecured"].get<std::string>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.ttsendpointsecured.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("language"))
+    {
+        if (!lhs.language.has_value() || lhs.language.value() != rhs["language"].get<std::string>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.language.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("voice"))
+    {
+        if (!lhs.voice.has_value() || lhs.voice.value() != rhs["voice"].get<std::string>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.voice.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("volume"))
+    {
+        if (!lhs.volume.has_value() || lhs.volume.value() != rhs["volume"].get<int32_t>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.volume.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("primvolduckpercent"))
+    {
+        if (!lhs.primvolduckpercent.has_value() ||
+            lhs.primvolduckpercent.value() != rhs["primvolduckpercent"].get<int32_t>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.primvolduckpercent.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("rate"))
+    {
+        if (!lhs.rate.has_value() || lhs.rate.value() != rhs["rate"].get<int32_t>())
+        {
+            return false;
+        }
+    }
+    else if (lhs.rate.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("speechrate"))
+    {
+        if (!lhs.speechrate.has_value() ||
+            lhs.speechrate.value() !=
+                Firebolt::TextToSpeech::JsonData::SpeechRateEnum.at(rhs["speechrate"].get<std::string>()))
+        {
+            return false;
+        }
+    }
+    else if (lhs.speechrate.has_value())
+    {
+        return false;
+    }
+    if (rhs.contains("fallbacktext"))
+    {
+        if (!lhs.fallbacktext.has_value())
+        {
+            return false;
+        }
+        const auto& rhsFallbackText = rhs["fallbacktext"];
+        if (rhsFallbackText.contains("scenario"))
+        {
+            if (!lhs.fallbacktext->scenario.has_value() ||
+                lhs.fallbacktext->scenario.value() != rhsFallbackText["scenario"].get<std::string>())
+            {
+                return false;
+            }
+        }
+        else if (lhs.fallbacktext->scenario.has_value())
+        {
+            return false;
+        }
+        if (rhsFallbackText.contains("value"))
+        {
+            if (!lhs.fallbacktext->value.has_value() ||
+                lhs.fallbacktext->value.value() != rhsFallbackText["value"].get<std::string>())
+            {
+                return false;
+            }
+        }
+        else if (lhs.fallbacktext->value.has_value())
+        {
+            return false;
+        }
+    }
+    else if (lhs.fallbacktext.has_value())
+    {
+        return false;
+    }
+    return true;
+}
+} // namespace Firebolt::TextToSpeech

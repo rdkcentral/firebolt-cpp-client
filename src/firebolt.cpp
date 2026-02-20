@@ -27,6 +27,7 @@
 #include "localization_impl.h"
 #include "presentation_impl.h"
 #include "stats_impl.h"
+#include "texttospeech_impl.h"
 #include <firebolt/gateway.h>
 
 namespace Firebolt
@@ -43,7 +44,8 @@ public:
           lifecycle_(Firebolt::Helpers::GetHelperInstance()),
           localization_(Firebolt::Helpers::GetHelperInstance()),
           presentation_(Firebolt::Helpers::GetHelperInstance()),
-          stats_(Firebolt::Helpers::GetHelperInstance())
+          stats_(Firebolt::Helpers::GetHelperInstance()),
+          textToSpeech_(Firebolt::Helpers::GetHelperInstance())
     {
     }
 
@@ -74,6 +76,7 @@ public:
     Localization::ILocalization& LocalizationInterface() override { return localization_; }
     Presentation::IPresentation& PresentationInterface() override { return presentation_; }
     Stats::IStats& StatsInterface() override { return stats_; }
+    TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
 
 private:
     void unsubscribeAll()
@@ -82,6 +85,7 @@ private:
         lifecycle_.unsubscribeAll();
         localization_.unsubscribeAll();
         presentation_.unsubscribeAll();
+        textToSpeech_.unsubscribeAll();
     }
 
 private:
@@ -94,6 +98,7 @@ private:
     Localization::LocalizationImpl localization_;
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;
+    TextToSpeech::TextToSpeechImpl textToSpeech_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

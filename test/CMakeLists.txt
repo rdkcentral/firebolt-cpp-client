@@ -32,6 +32,7 @@ file(GLOB UNIT_TESTS CONFIGURE_DEPENDS unit/*Test.cpp)
 
 add_executable(${UNIT_TESTS_APP}
     UnitTestsMain.cpp
+    "utils.cpp"
     ${UNIT_TESTS}
 )
 
@@ -44,6 +45,7 @@ target_link_libraries(${UNIT_TESTS_APP}
         $<IF:$<TARGET_EXISTS:FireboltTransport::FireboltTransport>,FireboltTransport::FireboltTransport,FireboltTransport>
         nlohmann_json::nlohmann_json
         nlohmann_json_schema_validator::validator
+        CURL::libcurl
         GTest::gtest
         GTest::gmock
 )

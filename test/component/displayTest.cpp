@@ -26,14 +26,13 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(DisplayTest, Size)
+TEST_F(DisplayTest, Edid)
 {
-    auto expectedValue = jsonEngine.get_value("Display.size");
-    auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().size();
-    ASSERT_TRUE(result) << "DisplayImpl::size() returned an error";
+    auto expectedValue = jsonEngine.get_value("Display.edid");
+    auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().edid();
+    ASSERT_TRUE(result) << "DisplayImpl::edid() returned an error";
 
-    EXPECT_EQ(result->height, expectedValue.at("height").get<uint32_t>());
-    EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());
+    EXPECT_EQ(*result, expectedValue.get<std::string>());
 }
 
 TEST_F(DisplayTest, MaxResolution)
@@ -42,6 +41,16 @@ TEST_F(DisplayTest, MaxResolution)
 
     auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().maxResolution();
     ASSERT_TRUE(result) << "DisplayImpl::maxResolution() returned an error";
+
+    EXPECT_EQ(result->height, expectedValue.at("height").get<uint32_t>());
+    EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());
+}
+
+TEST_F(DisplayTest, Size)
+{
+    auto expectedValue = jsonEngine.get_value("Display.size");
+    auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().size();
+    ASSERT_TRUE(result) << "DisplayImpl::size() returned an error";
 
     EXPECT_EQ(result->height, expectedValue.at("height").get<uint32_t>());
     EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());

@@ -79,7 +79,7 @@ public:
      *
      * @retval The uptime in seconds or error
      */
-    virtual Result<u_int32_t> timeInActiveState() const = 0;
+    virtual Result<uint32_t> timeInActiveState() const = 0;
 
     /**
      * @brief Returns a persistent unique UUID for the current app and device.  The UUID is reset when the app or device is reset

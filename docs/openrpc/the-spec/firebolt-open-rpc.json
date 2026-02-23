@@ -11,6 +11,7 @@
 			"Display": "A module for querying about the display",
 			"Lifecycle2": "Methods and events for responding to Lifecycle changes in your app.",
 			"Localization": "Methods for accessing location and language preferences.",
+			"Network": "Methods for accessing network information.",
 			"Presentation": "Methods for accessing Presentation preferences.",
 			"Stats": "Provides methods to retrieve application-level system information.",
 			"TextToSpeech": "A module for controlling and accessing Text To Speech over Firebolt."
@@ -883,6 +884,39 @@
 					"result": {
 						"name": "Default Result",
 						"value": "en-US"
+					}
+				}
+			]
+		},
+		{
+			"name": "Network.connected",
+			"summary": "Returns whether the device currently has a usable network connection.",
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:network:connected"
+					]
+				}
+			],
+			"params": [],
+			"result": {
+				"name": "success",
+				"summary": "Whether the device currently has a usable network connection.",
+				"schema": {
+					"$ref": "#/components/schemas/Connected"
+				}
+			},
+			"examples": [
+				{
+					"name": "Connected example",
+					"params": [],
+					"result": {
+						"name": "success",
+						"value": true
 					}
 				}
 			]
@@ -2091,6 +2125,52 @@
 			}
 		},
 		{
+			"name": "Network.onConnectedChanged",
+			"summary": "Returns whether the device currently has a usable network connection.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Network.onConnectedChanged",
+					"x-subscriber-for": "Network.connected"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:network:connected"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Connected example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
 			"name": "Presentation.onFocusedChanged",
 			"tags": [
 				{
@@ -2236,6 +2316,10 @@
 						"$ref": "#/components/schemas/LifecycleState"
 					}
 				}
+			},
+			"Connected": {
+				"type": "boolean",
+				"description": "Indicates whether the device currently has a usable network connection."
 			},
 			"MemoryUsage": {
 				"title": "MemoryUsage",

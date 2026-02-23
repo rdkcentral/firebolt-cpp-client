@@ -16,35 +16,34 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "presentation_impl.h"
+#include "network_impl.h"
 #include <firebolt/json_types.h>
 
-namespace Firebolt::Presentation
+namespace Firebolt::Network
 {
-PresentationImpl::PresentationImpl(Firebolt::Helpers::IHelper& helper)
+NetworkImpl::NetworkImpl(Firebolt::Helpers::IHelper& helper)
     : helper_(helper),
       subscriptionManager_(helper, this)
 {
 }
 
-Result<bool> PresentationImpl::focused() const
+Result<bool> NetworkImpl::connected() const
 {
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Presentation.focused");
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Network.connected");
 }
 
-Result<SubscriptionId> PresentationImpl::subscribeOnFocusedChanged(std::function<void(bool)>&& notification)
+Result<SubscriptionId> NetworkImpl::subscribeOnConnectedChanged(std::function<void(bool)>&& notification)
 {
-    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Presentation.onFocusedChanged",
-                                                                   std::move(notification));
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Network.onConnectedChanged", std::move(notification));
 }
 
-Result<void> PresentationImpl::unsubscribe(SubscriptionId id)
+Result<void> NetworkImpl::unsubscribe(SubscriptionId id)
 {
     return subscriptionManager_.unsubscribe(id);
 }
 
-void PresentationImpl::unsubscribeAll()
+void NetworkImpl::unsubscribeAll()
 {
     subscriptionManager_.unsubscribeAll();
 }
-} // namespace Firebolt::Presentation
+} // namespace Firebolt::Network

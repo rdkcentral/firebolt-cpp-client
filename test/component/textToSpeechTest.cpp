@@ -54,6 +54,9 @@ TEST_F(TextToSpeechTest, pause)
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().pause(speechId);
     ASSERT_TRUE(result) << "Error on pause";
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.pause");
+    EXPECT_EQ(result->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
 TEST_F(TextToSpeechTest, resume)
@@ -61,6 +64,9 @@ TEST_F(TextToSpeechTest, resume)
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().resume(speechId);
     ASSERT_TRUE(result) << "Error on resume";
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.pause");
+    EXPECT_EQ(result->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
 TEST_F(TextToSpeechTest, cancel)
@@ -68,6 +74,9 @@ TEST_F(TextToSpeechTest, cancel)
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().cancel(speechId);
     ASSERT_TRUE(result) << "Error on cancel";
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.pause");
+    EXPECT_EQ(result->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
 TEST_F(TextToSpeechTest, getSpeechState)

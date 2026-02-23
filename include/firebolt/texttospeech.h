@@ -149,7 +149,7 @@ public:
     virtual Result<SubscriptionId> subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
-     * @brief Triggered when the speech start.
+     * @brief Triggered when the speech starts.
      *
      * @param[in]  notification : The callback function
      *

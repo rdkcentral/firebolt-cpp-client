@@ -42,9 +42,9 @@ Result<HDRFormat> DeviceImpl::hdr() const
     return Result(helper_.get<JsonData::HDRFormat, HDRFormat>("Device.hdr"));
 }
 
-Result<u_int32_t> DeviceImpl::timeInActiveState() const
+Result<uint32_t> DeviceImpl::timeInActiveState() const
 {
-    return helper_.get<Firebolt::JSON::Unsigned, u_int32_t>("Device.timeInActiveState");
+    return helper_.get<Firebolt::JSON::Unsigned, uint32_t>("Device.timeInActiveState");
 }
 
 Result<std::string> DeviceImpl::uid() const

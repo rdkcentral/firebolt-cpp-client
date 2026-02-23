@@ -26,6 +26,7 @@
 #include "firebolt/display.h"
 #include "firebolt/lifecycle.h"
 #include "firebolt/localization.h"
+#include "firebolt/network.h"
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
 #include "firebolt/texttospeech.h"
@@ -124,6 +125,13 @@ public:
      * @return Reference to Localization interface
      */
     virtual Localization::ILocalization& LocalizationInterface() = 0;
+
+    /**
+     * @brief Returns instance of Network interface
+     *
+     * @return Reference to Network interface
+     */
+    virtual Network::INetwork& NetworkInterface() = 0;
 
     /**
      * @brief Returns instance of Presentation interface

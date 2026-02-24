@@ -53,11 +53,11 @@ while [[ -n ${1:-} ]]; do
     esac; shift
 done
 
-[[ -e $mockPath ]] || die "mock-firebolt not installed"
-[[ -e $specOpenRpc ]] || die "OpenRPC spec '$specOpenRpc' not found"
-[[ -e $specAppOpenRpc ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
-[[ -e $mockConfig ]] || die "Config '$mockConfig' not found"
-[[ -e $testExe ]] || die "Executable for cpp_test '$testExe' not found"
+[[ -e "$mockPath" ]] || die "mock-firebolt not installed"
+[[ -e "$specOpenRpc" ]] || die "OpenRPC spec '$specOpenRpc' not found"
+[[ -e "$specAppOpenRpc" ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
+[[ -e "$mockConfig" ]] || die "Config '$mockConfig' not found"
+[[ -e "$testExe" ]] || die "Executable for cpp_test '$testExe' not found"
 
 cfgFile=$mockPath/server/src/.mf.config.json
 

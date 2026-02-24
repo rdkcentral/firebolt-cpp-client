@@ -100,6 +100,5 @@ endif()
 
 if (ENABLE_TESTS)
     add_subdirectory(test)
-    add_subdirectory()
 endif()
 

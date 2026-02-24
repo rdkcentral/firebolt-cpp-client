@@ -22,6 +22,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cctype>
 
 nlohmann::json FireboltDemoBase::json_;
 

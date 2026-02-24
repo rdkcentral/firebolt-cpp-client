@@ -26,8 +26,10 @@
 #include "firebolt/display.h"
 #include "firebolt/lifecycle.h"
 #include "firebolt/localization.h"
+#include "firebolt/network.h"
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
+#include "firebolt/texttospeech.h"
 #include <firebolt/config.h>
 #include <firebolt/types.h>
 #include <functional>
@@ -80,7 +82,6 @@ public:
      *
      * @return Reference to Accessibility interface
      */
-
     virtual Accessibility::IAccessibility& AccessibilityInterface() = 0;
 
     /**
@@ -126,6 +127,13 @@ public:
     virtual Localization::ILocalization& LocalizationInterface() = 0;
 
     /**
+     * @brief Returns instance of Network interface
+     *
+     * @return Reference to Network interface
+     */
+    virtual Network::INetwork& NetworkInterface() = 0;
+
+    /**
      * @brief Returns instance of Presentation interface
      *
      * @return Reference to Presentation interface
@@ -138,5 +146,12 @@ public:
      * @return Reference to Stats interface
      */
     virtual Stats::IStats& StatsInterface() = 0;
+
+    /**
+     * @brief Returns instance of TextToSpeech interface
+     *
+     * @return Reference to TextToSpeech interface
+     */
+    virtual TextToSpeech::ITextToSpeech& TextToSpeechInterface() = 0;
 };
 } // namespace Firebolt

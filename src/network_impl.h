@@ -18,26 +18,29 @@
 
 #pragma once
 
-#include "firebolt/display.h"
+#include "firebolt/network.h"
 #include <firebolt/helpers.h>
 
-namespace Firebolt::Display
+namespace Firebolt::Network
 {
-class DisplayImpl : public IDisplay
+class NetworkImpl : public INetwork
 {
 public:
-    explicit DisplayImpl(Firebolt::Helpers::IHelper& helper);
-    DisplayImpl(const DisplayImpl&) = delete;
-    DisplayImpl& operator=(const DisplayImpl&) = delete;
+    explicit NetworkImpl(Firebolt::Helpers::IHelper& helper);
+    NetworkImpl(const NetworkImpl&) = delete;
+    NetworkImpl& operator=(const NetworkImpl&) = delete;
 
-    ~DisplayImpl() override = default;
+    ~NetworkImpl() override = default;
 
-    Result<std::string> edid() const override;
-    Result<DisplaySize> maxResolution() const override;
-    Result<DisplaySize> size() const override;
+    Result<bool> connected() const override;
+
+    Result<SubscriptionId> subscribeOnConnectedChanged(std::function<void(bool)>&& notification) override;
+
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;
-    // Methods
+    Firebolt::Helpers::SubscriptionManager subscriptionManager_;
 };
-} // namespace Firebolt::Display
+} // namespace Firebolt::Network

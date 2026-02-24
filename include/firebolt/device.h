@@ -19,6 +19,7 @@
 #pragma once
 
 #include <firebolt/types.h>
+#include <functional>
 #include <string>
 
 namespace Firebolt::Device
@@ -36,16 +37,56 @@ enum class DeviceClass
 
 // Types
 
+/**
+ * @brief The type of HDR format
+ */
+struct HDRFormat
+{
+    bool hdr10;
+    bool hdr10Plus;
+    bool dolbyVision;
+    bool hlg;
+};
+
 class IDevice
 {
 public:
     virtual ~IDevice() = default;
+
+    /**
+     * @brief Returns chipset ID as a printable string, e.g. "BCM72180"
+     *
+     * @retval The chipset id string or error
+     */
+    virtual Result<std::string> chipsetId() const = 0;
+
     /**
      * @brief Get the class of the device
      *
      * @retval The class property or error
      */
     virtual Result<DeviceClass> deviceClass() const = 0;
+
+    /**
+     * @brief Returns the HDR standards that are supported by the attached TV or the integral display
+     *
+     * @retval The HDR format capabilities or error
+     */
+    virtual Result<HDRFormat> hdr() const = 0;
+
+    /**
+     * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
+     *
+     * @retval The uptime in seconds or error
+     */
+    virtual Result<uint32_t> timeInActiveState() const = 0;
+
+    /**
+     * @brief Returns a persistent unique UUID for the current app and device.  The UUID is reset when the app or device is reset
+     *
+     * @retval The uid string or error
+     */
+    virtual Result<std::string> uid() const = 0;
 
     /**
      * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
@@ -55,25 +96,26 @@ public:
     virtual Result<uint32_t> uptime() const = 0;
 
     /**
-     * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
+     * @brief Subscribe to HDR format changes
      *
-     * @retval The uptime in seconds or error
+     * @retval SubscriptionId or error
      */
-    virtual Result<u_int32_t> timeInActiveState() const = 0;
+    virtual Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) = 0;
 
     /**
-     * @brief Returns chipset ID as a printable string, e.g. "BCM72180"
+     * @brief Remove subscriber from subscribers list. This method is generic for
+     *        all subscriptions
      *
-     * @retval The uid string or error
+     * @param[in] id : The subscription id
+     *
+     * @retval The status
      */
-    virtual Result<std::string> chipsetId() const = 0;
+    virtual Result<void> unsubscribe(SubscriptionId id) = 0;
 
     /**
-     * @brief Returns a persistent unique UUID for the current app and device.  The UUID is reset when the app or device is reset
-     *
-     * @retval The uid string or error
+     * @brief Remove all active subscriptions from subscribers list.
      */
-    virtual Result<std::string> uid() const = 0;
+    virtual void unsubscribeAll() = 0;
 };
 
 } // namespace Firebolt::Device

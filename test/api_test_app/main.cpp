@@ -40,8 +40,11 @@ void paramFromConsole(const std::string& name, const std::string& def, std::stri
     }
 
     std::cout << "Enter " << name << " (default: " << def << "): ";
+
     std::string input;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::getline(std::cin, input);
+
     if (input.empty())
     {
         value = def;

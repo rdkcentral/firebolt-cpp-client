@@ -26,8 +26,10 @@
 #include "displayDemo.h"
 #include "lifecycleDemo.h"
 #include "localizationDemo.h"
+#include "networkDemo.h"
 #include "presentationDemo.h"
 #include "statsDemo.h"
+#include "texttospeechDemo.h"
 
 #include <iostream>
 
@@ -52,8 +54,10 @@ ChooseInterface::ChooseInterface()
     interfaces.emplace_back(std::make_unique<DisplayDemo>());
     interfaces.emplace_back(std::make_unique<LifecycleDemo>());
     interfaces.emplace_back(std::make_unique<LocalizationDemo>());
+    interfaces.emplace_back(std::make_unique<NetworkDemo>());
     interfaces.emplace_back(std::make_unique<PresentationDemo>());
     interfaces.emplace_back(std::make_unique<StatsDemo>());
+    interfaces.emplace_back(std::make_unique<TextToSpeechDemo>());
 
     std::cout << interfaces.size() << " interfaces, " << itemDescriptions_.size() << " descriptions" << std::endl;
     assert(interfaces.size() == itemDescriptions_.size());

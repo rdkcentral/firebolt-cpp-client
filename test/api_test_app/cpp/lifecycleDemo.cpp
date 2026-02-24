@@ -46,6 +46,7 @@ void LifecycleDemo::runOption(const int index)
         Result<LifecycleState> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().state();
         if (validateResult(r))
         {
+            currentState_ = r.value();
             std::cout << "Current Lifecycle State: "
                       << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
         }
@@ -85,10 +86,4 @@ void LifecycleDemo::runOption(const int index)
         Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribeAll();
         std::cout << "Unsubscribed from all Lifecycle subscriptions." << std::endl;
     }
-}
-
-void LifecycleDemo::printCurrentState()
-{
-    std::cout << "Current Lifecycle State: "
-              << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
 }

@@ -30,6 +30,5 @@ public:
     void runOption(const int index);
 
 private:
-    void printCurrentState();
     Firebolt::Lifecycle::LifecycleState currentState_;
 };

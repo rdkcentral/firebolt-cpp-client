@@ -21,11 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
-// #include "json_types/jsondata_device_types.h"
-
 using namespace Firebolt;
 using namespace Firebolt::Advertising;
 
@@ -45,9 +40,9 @@ void AdvertisingDemo::runOption(const int index)
         if (validateResult(result))
         {
             Ifa ifa = result.value();
-            gOutput << "IFA: " << ifa.ifa << std::endl;
-            gOutput << "IFA Type: " << ifa.ifa_type << std::endl;
-            gOutput << "LMT: " << ifa.lmt << std::endl;
+            std::cout << "IFA: " << ifa.ifa << std::endl;
+            std::cout << "IFA Type: " << ifa.ifa_type << std::endl;
+            std::cout << "LMT: " << ifa.lmt << std::endl;
         }
     }
 }

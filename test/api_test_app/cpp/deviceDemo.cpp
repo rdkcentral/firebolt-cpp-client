@@ -23,9 +23,6 @@
 
 #include "json_types/jsondata_device_types.h"
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Device;
 
@@ -39,15 +36,15 @@ void DeviceDemo::runOption(const int index)
 {
     std::string key = itemDescriptions_[index].name;
 
-    outStream_ << "Running Device method: " << key << std::endl;
+    std::cout << "Running Device method: " << key << std::endl;
 
     if (key == "Device.class")
     {
         Result<DeviceClass> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().deviceClass();
         if (validateResult(r))
         {
-            gOutput << "Device Class: " << stringFromEnum(Firebolt::Device::JsonData::DeviceClassEnum, r.value())
-                    << std::endl;
+            std::cout << "Device Class: " << stringFromEnum(Firebolt::Device::JsonData::DeviceClassEnum, r.value())
+                      << std::endl;
         }
     }
     else if (key == "Device.uptime")
@@ -55,7 +52,7 @@ void DeviceDemo::runOption(const int index)
         Result<uint32_t> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().uptime();
         if (validateResult(r))
         {
-            gOutput << "Device Uptime (seconds): " << r.value() << std::endl;
+            std::cout << "Device Uptime (seconds): " << r.value() << std::endl;
         }
     }
     else if (key == "Device.timeInActiveState")
@@ -63,7 +60,7 @@ void DeviceDemo::runOption(const int index)
         Result<uint32_t> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().timeInActiveState();
         if (validateResult(r))
         {
-            gOutput << "Device Time In Active State (seconds): " << r.value() << std::endl;
+            std::cout << "Device Time In Active State (seconds): " << r.value() << std::endl;
         }
     }
     else if (key == "Device.chipsetId")
@@ -71,7 +68,7 @@ void DeviceDemo::runOption(const int index)
         Result<std::string> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().chipsetId();
         if (validateResult(r))
         {
-            gOutput << "Device Chipset ID: " << r.value() << std::endl;
+            std::cout << "Device Chipset ID: " << r.value() << std::endl;
         }
     }
     else if (key == "Device.uid")
@@ -79,7 +76,7 @@ void DeviceDemo::runOption(const int index)
         Result<std::string> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().uid();
         if (validateResult(r))
         {
-            gOutput << "Device UID: " << r.value() << std::endl;
+            std::cout << "Device UID: " << r.value() << std::endl;
         }
     }
 }

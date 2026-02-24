@@ -31,9 +31,6 @@
 
 #include <iostream>
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 ChooseInterface::ChooseInterface()
     : FireboltDemoBase()
 {
@@ -67,7 +64,7 @@ ChooseInterface::~ChooseInterface() = default;
 void ChooseInterface::runOption(const int index)
 {
     FireboltDemoBase* selectedInterface = interfaces[index].get();
-    gOutput << "Running interface: " << itemDescriptions_[index].name << std::endl;
+    std::cout << "Running interface: " << itemDescriptions_[index].name << std::endl;
 
     for (;;)
     {
@@ -91,12 +88,12 @@ void ChooseInterface::autoRun()
         {
             assert(("Interface not implemented for: " + itemDescriptions_[i].name).c_str());
         }
-        gOutput << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
+        std::cout << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
 
         // Assuming each interface has a predefined set of methods to run
         for (int j = 0; j < selectedInterface->listSize(); ++j)
         {
-            gOutput << "Auto-running method: " << selectedInterface->method(j) << std::endl;
+            std::cout << "Auto-running method: " << selectedInterface->method(j) << std::endl;
             selectedInterface->runOption(j);
         }
     }

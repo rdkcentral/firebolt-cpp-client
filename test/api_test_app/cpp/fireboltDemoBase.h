@@ -19,14 +19,16 @@
 #pragma once
 
 #include "firebolt/firebolt.h"
-#include "outputstream.h"
+
 #include <firebolt/json_types.h>
 #include <iostream>
 #include <string>
 #include <vector>
 
 extern bool gAutoRun;
-extern OutputStream gOutput;
+extern int getOption(int n);
+
+extern void paramFromConsole(const std::string& name, const std::string& def, std::string& value);
 
 struct ItemDescription
 {
@@ -40,15 +42,14 @@ public:
     FireboltDemoBase();
     virtual ~FireboltDemoBase() = default;
 
-    int chooseOption();
     virtual void runOption(const int index) = 0;
     int listSize() const { return static_cast<int>(itemDescriptions_.size()); }
     std::string method(int index) const { return itemDescriptions_[index].name; }
 
-protected:
-    void paramFromConsole(const std::string& name, const std::string& def, std::string& value);
-    int chooseFromList(const std::vector<std::string>& options, const std::string& prompt);
+    int chooseOption();
 
+protected:
+    int chooseFromList(const std::vector<std::string>& options, const std::string& prompt);
     void loadRpc();
 
     template <typename T> bool validateResult(const Firebolt::Result<T>& result) const
@@ -63,7 +64,7 @@ protected:
         if (gAutoRun)
         {
             T defaultValue = enumType.begin()->second;
-            gOutput << "Auto-selecting '" << enumType.begin()->first << "' for " << prompt << "." << std::endl;
+            std::cout << "Auto-selecting '" << enumType.begin()->first << "' for " << prompt << "." << std::endl;
             return defaultValue;
         }
 
@@ -90,13 +91,11 @@ protected:
         return {};
     }
 
-    std::vector<std::string> methodsFromRpc(const std::string& interfaceName);
+    void methodsFromRpc(const std::string& interfaceName);
 
     static nlohmann::json json_;
 
     std::vector<ItemDescription> itemDescriptions_;
-
-    OutputStream outStream_;
 
 private:
     bool doValidateResult(Firebolt::Error error) const

@@ -21,9 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Localization;
 
@@ -42,7 +39,7 @@ void LocalizationDemo::runOption(const int index)
         Result<std::string> result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().country();
         if (validateResult(result))
         {
-            gOutput << "Country: " << result.value() << std::endl;
+            std::cout << "Country: " << result.value() << std::endl;
         }
     }
     else if (key == "Localization.preferredAudioLanguages")
@@ -51,12 +48,12 @@ void LocalizationDemo::runOption(const int index)
             Firebolt::IFireboltAccessor::Instance().LocalizationInterface().preferredAudioLanguages();
         if (validateResult(result))
         {
-            gOutput << "Preferred Audio Languages: ";
+            std::cout << "Preferred Audio Languages: ";
             for (const auto& lang : result.value())
             {
-                gOutput << lang << " ";
+                std::cout << lang << " ";
             }
-            gOutput << std::endl;
+            std::cout << std::endl;
         }
     }
     else if (key == "Localization.presentationLanguage")
@@ -65,7 +62,7 @@ void LocalizationDemo::runOption(const int index)
             Firebolt::IFireboltAccessor::Instance().LocalizationInterface().presentationLanguage();
         if (validateResult(result))
         {
-            gOutput << "Presentation Language: " << result.value() << std::endl;
+            std::cout << "Presentation Language: " << result.value() << std::endl;
         }
     }
 }

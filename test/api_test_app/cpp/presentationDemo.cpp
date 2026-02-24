@@ -21,9 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Presentation;
 
@@ -42,7 +39,7 @@ void PresentationDemo::runOption(const int index)
         Result<bool> r = Firebolt::IFireboltAccessor::Instance().PresentationInterface().focused();
         if (validateResult(r))
         {
-            gOutput << "Presentation focused: " << (r.value() ? "true" : "false") << std::endl;
+            std::cout << "Presentation focused: " << (r.value() ? "true" : "false") << std::endl;
         }
     }
     else if (key == "Presentation.onFocusedChanged")
@@ -50,11 +47,11 @@ void PresentationDemo::runOption(const int index)
         auto subscriptionResult =
             Firebolt::IFireboltAccessor::Instance().PresentationInterface().subscribeOnFocusedChanged(
                 [&](bool focused)
-                { gOutput << "Presentation focus changed: " << (focused ? "true" : "false") << std::endl; });
+                { std::cout << "Presentation focus changed: " << (focused ? "true" : "false") << std::endl; });
         if (validateResult(subscriptionResult))
         {
             SubscriptionId subId = subscriptionResult.value();
-            gOutput << "Subscribed to Presentation.onFocusedChanged with SubscriptionId: " << subId << std::endl;
+            std::cout << "Subscribed to Presentation.onFocusedChanged with SubscriptionId: " << subId << std::endl;
         }
     }
 }

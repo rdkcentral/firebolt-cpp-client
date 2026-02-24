@@ -71,31 +71,62 @@ add_executable(${API_TEST_APP}
 
 if (ENABLE_DEMO_APP)
     # Building as part of the main project - dependencies already available
+    if(TARGET nlohmann_json_schema_validator::validator)
+        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator::validator)
+    else()
+        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator)
+    endif()
+    if(TARGET CURL::libcurl)
+        set(CURL_TARGET CURL::libcurl)
+    else()
+        set(CURL_TARGET curl)
+    endif()
+    if(TARGET Threads::Threads)
+        set(THREADS_TARGET Threads::Threads)
+    else()
+        set(THREADS_TARGET pthread)
+    endif()
     target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltClient
             nlohmann_json::nlohmann_json
-            nlohmann_json_schema_validator::validator
-            CURL::libcurl
-            Threads::Threads
+            ${NLOHMANN_VALIDATOR_TARGET}
+            ${CURL_TARGET}
+            ${THREADS_TARGET}
     )
     set(SOURCE_ROOT ${CMAKE_SOURCE_DIR})
+     target_link_directories(${API_TEST_APP} PRIVATE $ENV{SYSROOT_PATH}/usr/lib)
 else()
     # Building standalone - find all installed dependencies
     find_package(FireboltTransport CONFIG REQUIRED)
     find_package(FireboltClient CONFIG REQUIRED)
     find_package(nlohmann_json REQUIRED)
-    find_package(nlohmann_json_schema_validator REQUIRED)
+    find_package(nlohmann_json_schema_validator CONFIG REQUIRED)
     find_package(CURL REQUIRED)
     find_package(Threads REQUIRED)
+    if(TARGET nlohmann_json_schema_validator::validator)
+        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator::validator)
+    else()
+        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator)
+    endif()
+    if(TARGET CURL::libcurl)
+        set(CURL_TARGET CURL::libcurl)
+    else()
+        set(CURL_TARGET curl)
+    endif()
+    if(TARGET Threads::Threads)
+        set(THREADS_TARGET Threads::Threads)
+    else()
+        set(THREADS_TARGET pthread)
+    endif()
     target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltTransport::FireboltTransport
             FireboltClient::FireboltClient
             nlohmann_json::nlohmann_json
-            nlohmann_json_schema_validator::validator
-            CURL::libcurl
-            Threads::Threads
+            ${NLOHMANN_VALIDATOR_TARGET}
+            ${CURL_TARGET}
+            ${THREADS_TARGET}
     )
        set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
 endif ()
@@ -115,6 +146,8 @@ add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 set_target_properties(${API_TEST_APP} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
+    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
+    INSTALL_RPATH "$ORIGIN/../src"
 )
 
 install(

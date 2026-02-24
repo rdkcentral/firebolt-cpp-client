@@ -23,9 +23,6 @@
 
 #include "json_types/jsondata_device_types.h"
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Accessibility;
 
@@ -39,7 +36,7 @@ void AccessibilityDemo::runOption(const int index)
 {
     std::string key = itemDescriptions_[index].name;
 
-    outStream_ << "Running Accessibility method: " << key << std::endl;
+    std::cout << "Running Accessibility method: " << key << std::endl;
 
     if (key == "Accessibility.closedCaptionsSettings")
     {
@@ -48,7 +45,7 @@ void AccessibilityDemo::runOption(const int index)
         if (validateResult(r))
         {
             ClosedCaptionsSettings settings = r.value();
-            gOutput << "Closed Captions Settings - Enabled: " << (settings.enabled ? "true" : "false") << std::endl;
+            std::cout << "Closed Captions Settings - Enabled: " << (settings.enabled ? "true" : "false") << std::endl;
         }
     }
     else if (key == "Accessibility.audioDescription")
@@ -57,7 +54,7 @@ void AccessibilityDemo::runOption(const int index)
         if (validateResult(r))
         {
             bool enabled = r.value();
-            gOutput << "Audio Description Enabled: " << (enabled ? "true" : "false") << std::endl;
+            std::cout << "Audio Description Enabled: " << (enabled ? "true" : "false") << std::endl;
         }
     }
     else if (key == "Accessibility.highContrastUI")
@@ -67,7 +64,7 @@ void AccessibilityDemo::runOption(const int index)
         {
             bool enabled = r.value();
 
-            gOutput << "High Contrast UI Enabled: " << (enabled ? "true" : "false") << std::endl;
+            std::cout << "High Contrast UI Enabled: " << (enabled ? "true" : "false") << std::endl;
         }
     }
     else if (key == "Accessibility.voiceGuidanceSettings")
@@ -77,8 +74,8 @@ void AccessibilityDemo::runOption(const int index)
         if (validateResult(r))
         {
             VoiceGuidanceSettings settings = r.value();
-            gOutput << "Voice Guidance Settings - Enabled: " << (settings.enabled ? "true" : "false")
-                    << ", Rate: " << settings.rate << std::endl;
+            std::cout << "Voice Guidance Settings - Enabled: " << (settings.enabled ? "true" : "false")
+                      << ", Rate: " << settings.rate << std::endl;
         }
     }
 }

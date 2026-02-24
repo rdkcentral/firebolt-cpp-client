@@ -26,12 +26,72 @@
 
 #include "cpp/chooseInterface.h"
 
-#include "cpp/outputstream.h"
-
-OutputStream gOutput = OutputStream();
-
 std::atomic<bool> gConnected{false};
 bool gAutoRun = false;
+
+//---------------
+void paramFromConsole(const std::string& name, const std::string& def, std::string& value)
+{
+    if (gAutoRun)
+    {
+        std::cout << "Auto-selecting " << def << " for " << name << "." << std::endl;
+        value = def;
+        return;
+    }
+
+    std::cout << "Enter " << name << " (default: " << def << "): ";
+    std::string input;
+    std::getline(std::cin, input);
+    if (input.empty())
+    {
+        value = def;
+    }
+    else
+    {
+        value = input;
+    }
+}
+
+int getOption(int n)
+{
+    std::string input;
+
+    while (true)
+    {
+        std::cout << "Select option or 'q' to go back: ";
+        std::cin >> input;
+
+        // Check if user wants to quit
+        if (input.length() == 1 && std::tolower(input[0]) == 'q')
+        {
+            return -1;
+        }
+
+        // Try to convert to integer
+        try
+        {
+            int num = std::stoi(input);
+
+            // Check if number is in valid range
+            if (num >= 0 && num <= n)
+            {
+                return num;
+            }
+            else
+            {
+                std::cout << "Please enter a number between 0 and " << n << "." << std::endl;
+            }
+        }
+        catch (const std::invalid_argument&)
+        {
+            std::cout << "Invalid input. Please enter a number or 'q'." << std::endl;
+        }
+        catch (const std::out_of_range&)
+        {
+            std::cout << "Number too large. Please enter a number between 0 and " << n << "." << std::endl;
+        }
+    }
+}
 
 void connectionChanged(const bool connected, const Firebolt::Error error)
 {

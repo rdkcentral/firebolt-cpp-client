@@ -23,9 +23,6 @@
 
 #include "json_types/jsondata_discovery.h"
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Discovery;
 
@@ -39,7 +36,7 @@ void DiscoveryDemo::runOption(const int index)
 {
     std::string key = itemDescriptions_[index].name;
 
-    outStream_ << "Running Discovery method: " << key << std::endl;
+    std::cout << "Running Discovery method: " << key << std::endl;
 
     if (key == "Discovery.watched")
     {
@@ -62,10 +59,11 @@ void DiscoveryDemo::runOption(const int index)
         std::optional<AgePolicy> agePolicyOpt = agePolicy;
 
         Result<bool> r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched(entityId, progress,
-                                                                                              completed, watchedOn,                                                                            agePolicyOpt);
+                                                                                              completed, watchedOn,
+                                                                                              agePolicyOpt);
         if (validateResult(r))
         {
-            gOutput << "Discovery.watched result: " << (r.value() ? "true" : "false") << std::endl;
+            std::cout << "Discovery.watched result: " << (r.value() ? "true" : "false") << std::endl;
         }
     }
 }

@@ -23,9 +23,6 @@
 
 #include "json_types/jsondata_device_types.h"
 
-#include "outputstream.h"
-extern OutputStream gOutput;
-
 using namespace Firebolt;
 using namespace Firebolt::Stats;
 
@@ -39,15 +36,15 @@ void StatsDemo::runOption(const int index)
 {
     std::string key = itemDescriptions_[index].name;
 
-    outStream_ << "Running Stats method: " << key << std::endl;
+    std::cout << "Running Stats method: " << key << std::endl;
     if (key == "Stats.memoryUsage")
     {
         Result<MemoryInfo> r = Firebolt::IFireboltAccessor::Instance().StatsInterface().memoryUsage();
         if (validateResult(r))
         {
             MemoryInfo memInfo = r.value();
-            gOutput << "User Memory Used: " << memInfo.userMemoryUsed << " / " << memInfo.userMemoryLimit << std::endl;
-            gOutput << "GPU Memory Used: " << memInfo.gpuMemoryUsed << " / " << memInfo.gpuMemoryLimit << std::endl;
+            std::cout << "User Memory Used: " << memInfo.userMemoryUsed << " / " << memInfo.userMemoryLimit << std::endl;
+            std::cout << "GPU Memory Used: " << memInfo.gpuMemoryUsed << " / " << memInfo.gpuMemoryLimit << std::endl;
         }
     }
 }

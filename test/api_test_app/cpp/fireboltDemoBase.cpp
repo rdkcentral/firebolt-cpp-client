@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-#include "outputstream.h"
-
 nlohmann::json FireboltDemoBase::json_;
 
 #ifndef UT_OPEN_RPC_FILE
@@ -34,69 +32,6 @@ nlohmann::json FireboltDemoBase::json_;
 FireboltDemoBase::FireboltDemoBase()
 {
     loadRpc();
-}
-
-void FireboltDemoBase::paramFromConsole(const std::string& name, const std::string& def, std::string& value)
-{
-    if (gAutoRun)
-    {
-        gOutput << "Auto-selecting " << def << " for " << name << "." << std::endl;
-        value = def;
-        return;
-    }
-
-    gOutput << "Enter " << name << " (default: " << def << "): ";
-    std::string input;
-    std::getline(std::cin, input);
-    if (input.empty())
-    {
-        value = def;
-    }
-    else
-    {
-        value = input;
-    }
-}
-
-int getOption(int n)
-{
-    std::string input;
-
-    while (true)
-    {
-        std::cout << "Select option or 'q' to go back: ";
-        std::cin >> input;
-
-        // Check if user wants to quit
-        if (input.length() == 1 && std::tolower(input[0]) == 'q')
-        {
-            return -1;
-        }
-
-        // Try to convert to integer
-        try
-        {
-            int num = std::stoi(input);
-
-            // Check if number is in valid range
-            if (num >= 0 && num <= n)
-            {
-                return num;
-            }
-            else
-            {
-                gOutput << "Please enter a number between 0 and " << n << "." << std::endl;
-            }
-        }
-        catch (const std::invalid_argument&)
-        {
-            std::cout << "Invalid input. Please enter a number or 'q'." << std::endl;
-        }
-        catch (const std::out_of_range&)
-        {
-            std::cout << "Number too large. Please enter a number between 0 and " << n << "." << std::endl;
-        }
-    }
 }
 
 int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, const std::string& prompt)
@@ -127,7 +62,7 @@ void FireboltDemoBase::loadRpc()
     json_ = nlohmann::json::parse(JSON_DATA);
 }
 
-std::vector<std::string> FireboltDemoBase::methodsFromRpc(const std::string& interfaceName)
+void FireboltDemoBase::methodsFromRpc(const std::string& interfaceName)
 {
     std::vector<std::string> methodNames;
 
@@ -139,6 +74,4 @@ std::vector<std::string> FireboltDemoBase::methodsFromRpc(const std::string& int
             itemDescriptions_.push_back({method["name"], method["summary"]});
         }
     }
-
-    return methodNames;
 }

@@ -3,7 +3,7 @@ name: CI (c++) Build and Test
 on:
   workflow_dispatch:
   push:
-    branches: [ main, next, feat/cpp_test ]
+    branches: [ main, next ]
   pull_request:
     branches: [ main, next ]
 
@@ -314,17 +314,5 @@ jobs:
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
               --test-exe /workspace/test/api_test_app/build/api_test_app
 
-      - name: Upload api_test_app binary
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: cpp-test-binary
-          path: ${{ github.workspace }}/test/api_test_app/build/api_test_app
-
-      - name: Upload api_test_app output
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: cpp-test-output
-          path: ${{ github.workspace }}/test/api_test_app/build/firebolt_test_output.txt
+      # Removed artifact upload step for api_test_app binary as per PR feedback
 

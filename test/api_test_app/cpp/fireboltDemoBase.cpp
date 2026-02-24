@@ -18,11 +18,11 @@
 
 #include "fireboltDemoBase.h"
 #include "firebolt-open-rpc_json.h"
+#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cctype>
 
 nlohmann::json FireboltDemoBase::json_;
 

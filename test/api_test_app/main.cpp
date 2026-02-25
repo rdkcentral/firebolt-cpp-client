@@ -42,12 +42,13 @@ void paramFromConsole(const std::string& name, const std::string& def, std::stri
     std::cout << "Enter " << name << " (default: " << def << "): ";
 
     std::string input;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
     std::getline(std::cin, input);
 
     if (input.empty())
     {
         value = def;
+        std::cout << "Using default value: " << def << std::endl;
     }
     else
     {
@@ -55,17 +56,25 @@ void paramFromConsole(const std::string& name, const std::string& def, std::stri
     }
 }
 
-int getOption(int n)
+int getOption(int n, bool allowCancel)
 {
     std::string input;
 
     while (true)
     {
-        std::cout << "Select option or 'q' to go back: ";
+        std::cout << "Select option";
+        if (allowCancel)
+        {
+            std::cout << " or 'q' to go back";
+        }
+        std::cout << ": ";
         std::cin >> input;
 
+        //eat the rest of the line to avoid affecting the next input
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
         // Check if user wants to quit
-        if (input.length() == 1 && std::tolower(input[0]) == 'q')
+        if (allowCancel && input.length() == 1 && std::tolower(input[0]) == 'q')
         {
             return -1;
         }
@@ -87,7 +96,12 @@ int getOption(int n)
         }
         catch (const std::invalid_argument&)
         {
-            std::cout << "Invalid input. Please enter a number or 'q'." << std::endl;
+            std::cout << "Invalid input. Please enter a number";
+            if (allowCancel)
+            {
+                std::cout << " or 'q'";
+            }
+            std::cout << "." << std::endl;
         }
         catch (const std::out_of_range&)
         {

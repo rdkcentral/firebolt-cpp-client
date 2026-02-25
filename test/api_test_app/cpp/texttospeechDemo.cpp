@@ -35,7 +35,7 @@ TextToSpeechDemo::TextToSpeechDemo()
 SpeechId TextToSpeechDemo::chooseSpeechIdFromConsole()
 {
     std::string sId;
-    ;
+
     std::string savedId = std::to_string(speechId_);
 
     paramFromConsole("speech ID to pause", savedId, sId);

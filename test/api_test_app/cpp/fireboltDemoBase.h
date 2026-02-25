@@ -26,7 +26,7 @@
 #include <vector>
 
 extern bool gAutoRun;
-extern int getOption(int n);
+extern int getOption(int n, bool allowCancel = false);
 
 extern void paramFromConsole(const std::string& name, const std::string& def, std::string& value);
 
@@ -49,7 +49,7 @@ public:
     int chooseOption();
 
 protected:
-    int chooseFromList(const std::vector<std::string>& options, const std::string& prompt);
+    int chooseFromList(const std::vector<std::string>& options, const std::string& prompt, bool allowCancel = false);
     void loadRpc();
 
     template <typename T> bool validateResult(const Firebolt::Result<T>& result) const
@@ -74,7 +74,7 @@ protected:
             options.push_back(pair.first);
         }
 
-        int choice = chooseFromList(options, prompt);
+        int choice = chooseFromList(options, prompt, false);
 
         return enumType.at(options[choice]);
     }

@@ -35,7 +35,7 @@ FireboltDemoBase::FireboltDemoBase()
     loadRpc();
 }
 
-int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, const std::string& prompt)
+int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, const std::string& prompt, bool allowCancel)
 {
     std::cout << std::endl << prompt << std::endl;
     for (size_t i = 0; i < options.size(); ++i)
@@ -43,7 +43,7 @@ int FireboltDemoBase::chooseFromList(const std::vector<std::string>& options, co
         std::cout << i << ": " << options[i] << std::endl;
     }
 
-    int choice = getOption(static_cast<int>(options.size() - 1));
+    int choice = getOption(static_cast<int>(options.size() - 1), allowCancel);
 
     return choice;
 }
@@ -55,7 +55,7 @@ int FireboltDemoBase::chooseOption()
     {
         methodNames.push_back(item.name);
     }
-    return chooseFromList(methodNames, "Choose a method to run:");
+    return chooseFromList(methodNames, "Choose a method to run:", true);
 }
 
 void FireboltDemoBase::loadRpc()

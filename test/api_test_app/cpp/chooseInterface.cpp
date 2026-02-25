@@ -32,6 +32,7 @@
 #include "texttospeechDemo.h"
 
 #include <iostream>
+#include <cassert>
 
 ChooseInterface::ChooseInterface()
     : FireboltDemoBase()
@@ -90,7 +91,8 @@ void ChooseInterface::autoRun()
         FireboltDemoBase* selectedInterface = interfaces[i].get();
         if (selectedInterface == nullptr)
         {
-            assert(false, ("Interface not implemented for: " + itemDescriptions_[i].name).c_str());
+            std::cerr << "Interface not implemented for: " << itemDescriptions_[i].name << std::endl;
+            std::abort();
         }
         std::cout << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
 

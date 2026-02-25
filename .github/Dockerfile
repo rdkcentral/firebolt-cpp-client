@@ -16,12 +16,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ARG NODE_VERSION="24.11.0"
-ENV NVM_DIR="/usr/local/nvm"
-RUN mkdir -p $NVM_DIR \
-    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
-    && /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
-ENV NODE_PATH="$NVM_DIR/versions/node/$NODE_VERSION/lib/node_modules"
-ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"
+ARG NODE_DISTRO="linux-x64"
+RUN curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" -o /tmp/node.tar.xz \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o /tmp/SHASUMS256.txt \
+    && grep "node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" /tmp/SHASUMS256.txt | sha256sum -c - \
+    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
+    && rm /tmp/node.tar.xz /tmp/SHASUMS256.txt
+ENV NODE_PATH="/usr/local/lib/node_modules"
+ENV PATH="/usr/local/bin:$PATH"
 
 RUN mkdir -p /deps
 

@@ -90,7 +90,7 @@ void ChooseInterface::autoRun()
         FireboltDemoBase* selectedInterface = interfaces[i].get();
         if (selectedInterface == nullptr)
         {
-            assert(("Interface not implemented for: " + itemDescriptions_[i].name).c_str());
+            assert(false, ("Interface not implemented for: " + itemDescriptions_[i].name).c_str());
         }
         std::cout << "Auto-running interface: " << itemDescriptions_[i].name << std::endl;
 

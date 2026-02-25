@@ -22,11 +22,11 @@ bdir="build"
 run=true
 buildType="Debug"
 
-while [[ ! -z $1 ]]; do
+while [ ! -z "$1" ]; do
   case $1 in
   --clean) rm -rf $bdir;;
   --just-run)
-    export LD_LIBRARY_PATH=$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH="$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH"
     $bdir/api_test_app -mock
     exit;;
   --no-run) run=false;;
@@ -60,6 +60,6 @@ cmake --build $bdir
 
 if $run; then
   export LD_LIBRARY_PATH=$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH
-  $bdir/api_test_app -mock 
+  $bdir/api_test_app -mock
 fi
 

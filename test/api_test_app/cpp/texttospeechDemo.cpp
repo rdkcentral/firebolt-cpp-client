@@ -38,7 +38,7 @@ SpeechId TextToSpeechDemo::chooseSpeechIdFromConsole()
 
     std::string savedId = std::to_string(speechId_);
 
-    paramFromConsole("speech ID to pause", savedId, sId);
+    paramFromConsole("speech ID", savedId, sId);
     SpeechId speechId = std::stoi(sId);
     return speechId;
 }
@@ -122,10 +122,10 @@ void TextToSpeechDemo::runOption(const int index)
             IFireboltAccessor::Instance().TextToSpeechInterface().subscribeOnWillSpeak(std::move(callback));
         if (validateResult(r))
         {
-            std::cout << "Subscribed to OnWillSpeak with Subscription ID: " << r.value() << std::endl;
+            std::cout << "Subscribed to onWillSpeak with Subscription ID: " << r.value() << std::endl;
         }
     }
-    else if (key == "TextToSpeech.subscribeOnSpeechStart")
+    else if (key == "TextToSpeech.onSpeechStart")
     {
         auto callback = [&](const SpeechIdEvent& event)
         { std::cout << "Speech Start notification received for Speech ID: " << event.speechId << std::endl; };
@@ -136,7 +136,7 @@ void TextToSpeechDemo::runOption(const int index)
             std::cout << "Subscribed to OnSpeechStart with Subscription ID: " << r.value() << std::endl;
         }
     }
-    else if (key == "TextToSpeech.subscribeOnSpeechPause")
+    else if (key == "TextToSpeech.onSpeechPause")
     {
         auto callback = [&](const SpeechIdEvent& event)
         { std::cout << "Speech Pause notification received for Speech ID: " << event.speechId << std::endl; };
@@ -147,7 +147,7 @@ void TextToSpeechDemo::runOption(const int index)
             std::cout << "Subscribed to OnSpeechPause with Subscription ID: " << r.value() << std::endl;
         }
     }
-    else if (key == "TextToSpeech.subscribeOnSpeechResume")
+    else if (key == "TextToSpeech.onSpeechResume")
     {
         auto callback = [&](const SpeechIdEvent& event)
         { std::cout << "Speech Resume notification received for Speech ID: " << event.speechId << std::endl; };

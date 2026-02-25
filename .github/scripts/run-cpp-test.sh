@@ -61,7 +61,7 @@ done
 
 cfgFile=$mockPath/server/src/.mf.config.json
 
-source $NVM_DIR/nvm.sh
+source "$NVM_DIR/nvm.sh"
 
 echo "Updating config for mock, $cfgFile"
 jq '

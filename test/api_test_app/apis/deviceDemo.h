@@ -18,14 +18,13 @@
 
 #pragma once
 
-#include "fireboltDemoBase.h"
+#include "utils.h"
 #include <string>
-#include <vector>
 
-class DeviceDemo : public FireboltDemoBase
+class DeviceDemo : public DemoBase
 {
 public:
     DeviceDemo();
     ~DeviceDemo() = default;
-    void runOption(const int index);
+    void runOption(const std::string& method) override;
 };

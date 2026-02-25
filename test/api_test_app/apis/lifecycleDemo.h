@@ -15,16 +15,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
 #pragma once
 
-#include "fireboltDemoBase.h"
+#include "utils.h"
+#include <firebolt/lifecycle.h>
 #include <string>
-#include <vector>
 
-class DisplayDemo : public FireboltDemoBase
+class LifecycleDemo : public DemoBase
 {
 public:
-    DisplayDemo();
-    ~DisplayDemo() = default;
-    void runOption(const int index);
+    LifecycleDemo();
+    ~LifecycleDemo() = default;
+    void runOption(const std::string& method) override;
+
+private:
+    Firebolt::Lifecycle::LifecycleState currentState_;
 };

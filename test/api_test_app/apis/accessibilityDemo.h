@@ -18,19 +18,13 @@
 
 #pragma once
 
-#include "fireboltDemoBase.h"
+#include "utils.h"
 #include <string>
-#include <vector>
 
-using namespace Firebolt::TextToSpeech;
-class TextToSpeechDemo : public FireboltDemoBase
+class AccessibilityDemo : public DemoBase
 {
 public:
-    TextToSpeechDemo();
-    ~TextToSpeechDemo() = default;
-    void runOption(const int index);
-
-private:
-    SpeechId chooseSpeechIdFromConsole();
-    SpeechId speechId_ = 0;
+    AccessibilityDemo();
+    ~AccessibilityDemo() = default;
+    void runOption(const std::string& method) override;
 };

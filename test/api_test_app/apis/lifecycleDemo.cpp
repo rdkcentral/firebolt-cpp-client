@@ -18,6 +18,8 @@
 
 #include "lifecycleDemo.h"
 #include "json_types/jsondata_lifecycle_types.h"
+#include "utils.h"
+#include <firebolt/firebolt.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,32 +28,33 @@ using namespace Firebolt;
 using namespace Firebolt::Lifecycle;
 
 LifecycleDemo::LifecycleDemo()
-    : FireboltDemoBase()
+    : DemoBase("Lifecycle")
 {
-    methodsFromRpc("Lifecycle2");
+    methods_.push_back("Lifecycle2.close");
+    methods_.push_back("Lifecycle2.state");
+    methods_.push_back("Lifecycle2.onStateChanged");
+    methods_.push_back("Lifecycle2.unsubscribe");
+    methods_.push_back("Lifecycle2.unsubscribeAll");
 }
 
-void LifecycleDemo::runOption(const int index)
+void LifecycleDemo::runOption(const std::string& method)
 {
-    std::string key = itemDescriptions_[index].name;
-
-    if (key == "Lifecycle2.close")
+    if (method == "Lifecycle2.close")
     {
         CloseType type = chooseEnumFromList(Firebolt::Lifecycle::JsonData::CloseReasonEnum, "Choose Close Type:");
-        Result<void> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().close(type);
-        validateResult(r);
+        auto r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().close(type);
+        succeed(r);
     }
-    else if (key == "Lifecycle2.state")
+    else if (method == "Lifecycle2.state")
     {
-        Result<LifecycleState> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().state();
-        if (validateResult(r))
+        auto r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().state();
+        if (succeed(r))
         {
-            currentState_ = r.value();
             std::cout << "Current Lifecycle State: "
-                      << stringFromEnum(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, currentState_) << std::endl;
+                      << Firebolt::JSON::toString(Firebolt::Lifecycle::JsonData::LifecycleStateEnum, *r) << std::endl;
         }
     }
-    else if (key == "Lifecycle2.onStateChanged")
+    else if (method == "Lifecycle2.onStateChanged")
     {
         auto callback = [&](const std::vector<StateChange>& changes)
         {
@@ -66,22 +69,27 @@ void LifecycleDemo::runOption(const int index)
                 currentState_ = change.newState;
             }
         };
-        Result<SubscriptionId> r =
+        auto r =
             Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(std::move(callback));
-        if (validateResult(r))
+        if (succeed(r))
         {
-            std::cout << "Subscribed to Lifecycle state changes with Subscription ID: " << r.value() << std::endl;
+            std::cout << "Subscribed to Lifecycle state changes with Subscription ID: " << *r << std::endl;
         }
     }
-    else if (key == "Lifecycle2.unsubscribe")
+    else if (method == "Lifecycle2.unsubscribe")
     {
-        std::string idStr;
-        paramFromConsole("Subscription ID to unsubscribe", "0", idStr);
-        SubscriptionId id = static_cast<SubscriptionId>(std::stoul(idStr));
-        Result<void> r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id);
-        validateResult(r);
+        SubscriptionId id = 0;
+        try
+        {
+            id = static_cast<SubscriptionId>(std::stoul(paramFromConsole("Subscription ID to unsubscribe", "0")));
+        }
+        catch (const std::exception&)
+        {
+        }
+        auto r = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id);
+        succeed(r);
     }
-    else if (key == "Lifecycle2.unsubscribeAll")
+    else if (method == "Lifecycle2.unsubscribeAll")
     {
         Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribeAll();
         std::cout << "Unsubscribed from all Lifecycle subscriptions." << std::endl;

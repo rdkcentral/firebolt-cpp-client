@@ -17,34 +17,29 @@
  */
 
 #include "statsDemo.h"
+#include <firebolt/firebolt.h>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "json_types/jsondata_device_types.h"
-
 using namespace Firebolt;
-using namespace Firebolt::Stats;
 
 StatsDemo::StatsDemo()
-    : FireboltDemoBase()
+    : DemoBase("Stats")
 {
-    methodsFromRpc("Stats");
+    methods_.push_back("Stats.memoryUsage");
 }
 
-void StatsDemo::runOption(const int index)
+void StatsDemo::runOption(const std::string& method)
 {
-    std::string key = itemDescriptions_[index].name;
-
-    std::cout << "Running Stats method: " << key << std::endl;
-    if (key == "Stats.memoryUsage")
+    std::cout << "Running Stats method: " << method << std::endl;
+    if (method == "Stats.memoryUsage")
     {
-        Result<MemoryInfo> r = Firebolt::IFireboltAccessor::Instance().StatsInterface().memoryUsage();
-        if (validateResult(r))
+        auto r = Firebolt::IFireboltAccessor::Instance().StatsInterface().memoryUsage();
+        if (succeed(r))
         {
-            MemoryInfo memInfo = r.value();
-            std::cout << "User Memory Used: " << memInfo.userMemoryUsed << " / " << memInfo.userMemoryLimit << std::endl;
-            std::cout << "GPU Memory Used: " << memInfo.gpuMemoryUsed << " / " << memInfo.gpuMemoryLimit << std::endl;
+            std::cout << "User Memory Used: " << r->userMemoryUsed << " / " << r->userMemoryLimit << std::endl;
+            std::cout << "GPU Memory Used: " << r->gpuMemoryUsed << " / " << r->gpuMemoryLimit << std::endl;
         }
     }
 }

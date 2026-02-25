@@ -22,12 +22,12 @@ bdir="build"
 run=true
 buildType="Debug"
 
-while [ ! -z "$1" ]; do
+while [[ -n $1 ]]; do
   case $1 in
   --clean) rm -rf $bdir;;
   --just-run)
     export LD_LIBRARY_PATH="$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH"
-    $bdir/api_test_app -mock
+    $bdir/api-test-app --mock
     exit;;
   --no-run) run=false;;
   --release) buildType="Release";;
@@ -37,8 +37,8 @@ while [ ! -z "$1" ]; do
   esac; shift
 done
 
-[ ! -z "$SYSROOT_PATH" ] || { echo "SYSROOT_PATH not set" >/dev/stderr; exit 1; }
-[ -e "$SYSROOT_PATH" ] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
+[[ -n "$SYSROOT_PATH" ]] || { echo "SYSROOT_PATH not set" >/dev/stderr; exit 1; }
+[[ -e "$SYSROOT_PATH" ]] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
 
 if [[ ! -e "$bdir" ]]; then
   cmake -B $bdir \
@@ -59,7 +59,7 @@ fi
 cmake --build $bdir
 
 if $run; then
-  export LD_LIBRARY_PATH=$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH
-  $bdir/api_test_app -mock
+  export LD_LIBRARY_PATH="$bdir/src:$SYSROOT_PATH/usr/lib:$LD_LIBRARY_PATH"
+  $bdir/api-test-app --mock
 fi
 

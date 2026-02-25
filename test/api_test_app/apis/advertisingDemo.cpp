@@ -17,6 +17,7 @@
  */
 
 #include "advertisingDemo.h"
+#include <firebolt/firebolt.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -25,24 +26,21 @@ using namespace Firebolt;
 using namespace Firebolt::Advertising;
 
 AdvertisingDemo::AdvertisingDemo()
-    : FireboltDemoBase()
+    : DemoBase("Advertising")
 {
-    methodsFromRpc("Advertising");
+    methods_.push_back("Advertising.advertisingId");
 }
 
-void AdvertisingDemo::runOption(const int index)
+void AdvertisingDemo::runOption(const std::string& method)
 {
-    std::string key = itemDescriptions_[index].name;
-
-    if (key == "Advertising.advertisingId")
+    if (method == "Advertising.advertisingId")
     {
-        Result<Ifa> result = Firebolt::IFireboltAccessor::Instance().AdvertisingInterface().advertisingId();
-        if (validateResult(result))
+        auto r = Firebolt::IFireboltAccessor::Instance().AdvertisingInterface().advertisingId();
+        if (succeed(r))
         {
-            Ifa ifa = result.value();
-            std::cout << "IFA: " << ifa.ifa << std::endl;
-            std::cout << "IFA Type: " << ifa.ifa_type << std::endl;
-            std::cout << "LMT: " << ifa.lmt << std::endl;
+            std::cout << "IFA: " << r->ifa << std::endl;
+            std::cout << "IFA Type: " << r->ifa_type << std::endl;
+            std::cout << "LMT: " << r->lmt << std::endl;
         }
     }
 }

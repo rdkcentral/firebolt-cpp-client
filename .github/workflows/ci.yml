@@ -269,7 +269,7 @@ jobs:
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
               --test-exe /workspace/build/test/ctApp
 
-  cpp_demo_tests:
+  api_test_app:
     permissions:
       contents: read
       packages: read
@@ -292,7 +292,7 @@ jobs:
           name: build-dir
           path: ${{ github.workspace }}/build
 
-      - name: Build api_test_app standalone
+      - name: Build api-test-app standalone
         run: |
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
             bash -c " \
@@ -314,16 +314,13 @@ jobs:
           path: ${{ env.MOCK_PATH }}
           key: ${{ runner.os }}-mock-${{ steps.setup-mock.outputs.deps_cache_key }}
 
-      - name: Run Demo with mock server
+      - name: Run api-test-app with mock server
         run: |
-          chmod +x ${{ github.workspace }}/test/api_test_app/build/api_test_app
+          chmod +x ${{ github.workspace }}/test/api_test_app/build/api-test-app
           docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
-            ./.github/scripts/run-cpp-test.sh \
+            ./.github/scripts/run-api-test-app.sh \
               --mock /mock \
               --config /workspace/.github/mock-firebolt/config.json \
               --openrpc /workspace/docs/openrpc/the-spec/firebolt-open-rpc.json \
               --app-openrpc /workspace/docs/openrpc/the-spec/firebolt-app-open-rpc.json \
-              --test-exe /workspace/test/api_test_app/build/api_test_app
-
-      # Removed artifact upload step for api_test_app binary as per PR feedback
-
+              --test-exe /workspace/test/api_test_app/build/api-test-app

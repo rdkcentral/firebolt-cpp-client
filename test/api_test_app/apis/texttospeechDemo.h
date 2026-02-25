@@ -18,17 +18,18 @@
 
 #pragma once
 
-#include "fireboltDemoBase.h"
+#include "utils.h"
+#include <firebolt/firebolt.h>
 #include <string>
-#include <vector>
 
-class LifecycleDemo : public FireboltDemoBase
+class TextToSpeechDemo : public DemoBase
 {
 public:
-    LifecycleDemo();
-    ~LifecycleDemo() = default;
-    void runOption(const int index);
+    TextToSpeechDemo();
+    ~TextToSpeechDemo() = default;
+    void runOption(const std::string& method) override;
 
 private:
-    Firebolt::Lifecycle::LifecycleState currentState_;
+    Firebolt::TextToSpeech::SpeechId chooseSpeechIdFromConsole();
+    Firebolt::TextToSpeech::SpeechId speechId_ = 0;
 };

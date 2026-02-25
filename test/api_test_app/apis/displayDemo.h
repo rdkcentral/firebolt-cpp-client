@@ -18,18 +18,13 @@
 
 #pragma once
 
-#include "fireboltDemoBase.h"
-#include <limits>
+#include "utils.h"
+#include <string>
 
-class ChooseInterface : public FireboltDemoBase
+class DisplayDemo : public DemoBase
 {
 public:
-    ChooseInterface();
-    ~ChooseInterface();
-
-    void runOption(const int index);
-    void autoRun();
-
-private:
-    std::vector<std::unique_ptr<FireboltDemoBase>> interfaces;
+    DisplayDemo();
+    ~DisplayDemo() = default;
+    void runOption(const std::string& method) override;
 };

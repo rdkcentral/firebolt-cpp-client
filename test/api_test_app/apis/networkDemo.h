@@ -18,14 +18,13 @@
 
 #pragma once
 
-#include "fireboltDemoBase.h"
+#include "utils.h"
 #include <string>
-#include <vector>
 
-class LocalizationDemo : public FireboltDemoBase
+class NetworkDemo : public DemoBase
 {
 public:
-    LocalizationDemo();
-    ~LocalizationDemo() = default;
-    void runOption(const int index);
+    NetworkDemo();
+    ~NetworkDemo() = default;
+    void runOption(const std::string& method) override;
 };

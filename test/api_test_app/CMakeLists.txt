@@ -16,7 +16,7 @@
 
 if (NOT CMAKE_PROJECT_NAME)
     cmake_minimum_required(VERSION 3.10)
-    project(api_test_app CXX)
+    project(api-test-app CXX)
 
     # Read SYSROOT_PATH from environment if not set as CMake variable
     if (NOT SYSROOT_PATH AND DEFINED ENV{SYSROOT_PATH})
@@ -30,7 +30,7 @@ if (NOT CMAKE_PROJECT_NAME)
 
     # Add paths for finding installed packages
     if (SYSROOT_PATH)
-        list(APPEND CMAKE_PREFIX_PATH 
+        list(APPEND CMAKE_PREFIX_PATH
             "${SYSROOT_PATH}/usr/lib/cmake"
             "${SYSROOT_PATH}/usr/share/cmake"
         )
@@ -40,114 +40,50 @@ if (NOT CMAKE_PROJECT_NAME)
             "${SYSROOT_PATH}/tools/cmake"
         )
     endif()
-    
-    # Add standard system paths for finding packages
-    list(APPEND CMAKE_PREFIX_PATH
-        "/usr/local"
-        "/usr"
-    )
+
 endif ()
 
-set(API_TEST_APP api_test_app)
+set(API_TEST_APP api-test-app)
 
 message("Setup ${API_TEST_APP}")
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-# Generate header file with embedded JSON content
-file(READ "../../docs/openrpc/the-spec/firebolt-open-rpc.json" JSON_CONTENT)
-configure_file(
-    cpp/firebolt-open-rpc.json.in
-    "${CMAKE_BINARY_DIR}/generated/firebolt-open-rpc_json.h"
-    @ONLY
-)
-
-file(GLOB SOURCES CONFIGURE_DEPENDS cpp/*.cpp)
+file(GLOB SOURCES CONFIGURE_DEPENDS apis/*.cpp)
 
 add_executable(${API_TEST_APP}
     main.cpp
+    utils.cpp
     ${SOURCES}
 )
 
 if (ENABLE_DEMO_APP)
-    # Building as part of the main project - dependencies already available
-    if(TARGET nlohmann_json_schema_validator::validator)
-        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator::validator)
-    else()
-        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator)
-    endif()
-    if(TARGET CURL::libcurl)
-        set(CURL_TARGET CURL::libcurl)
-    else()
-        set(CURL_TARGET curl)
-    endif()
-    if(TARGET Threads::Threads)
-        set(THREADS_TARGET Threads::Threads)
-    else()
-        set(THREADS_TARGET pthread)
-    endif()
     target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltClient
             nlohmann_json::nlohmann_json
-            ${NLOHMANN_VALIDATOR_TARGET}
-            ${CURL_TARGET}
-            ${THREADS_TARGET}
     )
-    set(SOURCE_ROOT ${CMAKE_SOURCE_DIR})
-     target_link_directories(${API_TEST_APP} PRIVATE $ENV{SYSROOT_PATH}/usr/lib)
 else()
-    # Building standalone - find all installed dependencies
     find_package(FireboltTransport CONFIG REQUIRED)
     find_package(FireboltClient CONFIG REQUIRED)
-    find_package(nlohmann_json REQUIRED)
-    find_package(nlohmann_json_schema_validator CONFIG REQUIRED)
-    find_package(CURL REQUIRED)
-    find_package(Threads REQUIRED)
-    if(TARGET nlohmann_json_schema_validator::validator)
-        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator::validator)
-    else()
-        set(NLOHMANN_VALIDATOR_TARGET nlohmann_json_schema_validator)
-    endif()
-    if(TARGET CURL::libcurl)
-        set(CURL_TARGET CURL::libcurl)
-    else()
-        set(CURL_TARGET curl)
-    endif()
-    if(TARGET Threads::Threads)
-        set(THREADS_TARGET Threads::Threads)
-    else()
-        set(THREADS_TARGET pthread)
-    endif()
     target_link_libraries(${API_TEST_APP}
         PRIVATE
             FireboltTransport::FireboltTransport
             FireboltClient::FireboltClient
-            nlohmann_json::nlohmann_json
-            ${NLOHMANN_VALIDATOR_TARGET}
-            ${CURL_TARGET}
-            ${THREADS_TARGET}
     )
-    set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
-endif ()
+endif()
 
 target_include_directories(${API_TEST_APP}
     PRIVATE
-
-        $<BUILD_INTERFACE:${SOURCE_ROOT}/include/>
-        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src/>
-        $<BUILD_INTERFACE:${SOURCE_ROOT}/test/>
-        $<BUILD_INTERFACE:${SOURCE_ROOT}/src/>
-        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/generated>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../src>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/apis>
 )
-
-add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
 
 set_target_properties(${API_TEST_APP} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
-    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
-    INSTALL_RPATH "$ORIGIN/../src"
 )
 
 install(

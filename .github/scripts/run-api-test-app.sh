@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: ts=4
 
-# Copyright 2025 Comcast Cable Communications Management, LLC
+# Copyright 2026 Comcast Cable Communications Management, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ done
 [[ -e "$specOpenRpc" ]] || die "OpenRPC spec '$specOpenRpc' not found"
 [[ -e "$specAppOpenRpc" ]] || die "OpenRPC App spec '$specAppOpenRpc' not found"
 [[ -e "$mockConfig" ]] || die "Config '$mockConfig' not found"
-[[ -e "$testExe" ]] || die "Executable for cpp_test '$testExe' not found"
+[[ -e "$testExe" ]] || die "Executable '$testExe' not found"
 
 cfgFile=$mockPath/server/src/.mf.config.json
 
@@ -93,13 +93,10 @@ while ! nc -z localhost $mockPort >/dev/null 2>&1; do
   sleep 1
 done
 
-echo "Starting cpp_test with -mock and -auto flags"
+echo "Starting '$(basename "$testExe") --mock --auto'"
 cd "$(dirname "$testExe")"
-
-# Capture exit code without triggering set -e
 set +e
-"./$(basename "$testExe")" -mock -auto
+"./$(basename "$testExe")" --mock --auto
 exitCode=$?
-set -e
 
 exit $exitCode

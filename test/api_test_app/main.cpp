@@ -16,154 +16,60 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <atomic>
-#include <chrono>
-#include <iostream>
-#include <stdlib.h>
-#include <string>
-#include <thread>
-#include <unistd.h>
+#include "accessibilityDemo.h"
+#include "advertisingDemo.h"
+#include "deviceDemo.h"
+#include "discoveryDemo.h"
+#include "displayDemo.h"
+#include "lifecycleDemo.h"
+#include "localizationDemo.h"
+#include "networkDemo.h"
+#include "presentationDemo.h"
+#include "statsDemo.h"
+#include "texttospeechDemo.h"
 
-#include "cpp/chooseInterface.h"
+#include "utils.h"
 
-std::atomic<bool> gConnected{false};
-bool gAutoRun = false;
-
-//---------------
-void paramFromConsole(const std::string& name, const std::string& def, std::string& value)
-{
-    if (gAutoRun)
-    {
-        std::cout << "Auto-selecting " << def << " for " << name << "." << std::endl;
-        value = def;
-        return;
-    }
-
-    std::cout << "Enter " << name << " (default: " << def << "): ";
-
-    std::string input;
-
-    std::getline(std::cin, input);
-
-    if (input.empty())
-    {
-        value = def;
-        std::cout << "Using default value: " << def << std::endl;
-    }
-    else
-    {
-        value = input;
-    }
-}
-
-int getOption(int n, bool allowCancel)
-{
-    std::string input;
-
-    while (true)
-    {
-        std::cout << "Select option";
-        if (allowCancel)
-        {
-            std::cout << " or 'q' to go back";
-        }
-        std::cout << ": ";
-        std::cin >> input;
-
-        // eat the rest of the line to avoid affecting the next input
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        // Check if user wants to quit
-        if (allowCancel && input.length() == 1 && std::tolower(input[0]) == 'q')
-        {
-            return -1;
-        }
-
-        // Try to convert to integer
-        try
-        {
-            int num = std::stoi(input);
-
-            // Check if number is in valid range
-            if (num >= 0 && num <= n)
-            {
-                return num;
-            }
-            else
-            {
-                std::cout << "Please enter a number between 0 and " << n << "." << std::endl;
-            }
-        }
-        catch (const std::invalid_argument&)
-        {
-            std::cout << "Invalid input. Please enter a number";
-            if (allowCancel)
-            {
-                std::cout << " or 'q'";
-            }
-            std::cout << "." << std::endl;
-        }
-        catch (const std::out_of_range&)
-        {
-            std::cout << "Number too large. Please enter a number between 0 and " << n << "." << std::endl;
-        }
-    }
-}
-
-void connectionChanged(const bool connected, const Firebolt::Error error)
-{
-    std::cout << "Change in connection: connected: " << connected << " error: " << static_cast<int>(error) << std::endl;
-    gConnected.store(connected, std::memory_order_release);
-}
-
-void createFireboltInstance(const std::string& url)
-{
-    Firebolt::Config config;
-    config.wsUrl = url;
-    config.waitTime_ms = 1000;
-    config.log.level = Firebolt::LogLevel::Debug;
-
-    gConnected = false;
-    Firebolt::IFireboltAccessor::Instance().Connect(config, connectionChanged);
-}
-
-void destroyFireboltInstance()
-{
-    Firebolt::IFireboltAccessor::Instance().Disconnect();
-}
-
-bool waitOnConnectionReady()
-{
-    uint32_t waiting = 10000;
-    static constexpr uint32_t SLEEPSLOT_TIME = 100;
-
-    // Right, a wait till connection is closed is requested..
-    while ((waiting > 0) && !gConnected.load(std::memory_order_acquire))
-    {
-
-        uint32_t sleepSlot = (waiting > SLEEPSLOT_TIME ? SLEEPSLOT_TIME : waiting);
-        // Right, lets sleep in slices of 100 ms
-        std::this_thread::sleep_for(std::chrono::milliseconds(sleepSlot));
-        waiting -= sleepSlot;
-    }
-    return gConnected.load(std::memory_order_acquire);
-}
+#include <cstdlib>
+#include <future>
+#include <ios>
 
 int main(int argc, char** argv)
 {
-    std::string url = "";
+    auto& appConfig = GetAppConfig();
 
-    // check args for -auto option
+    Firebolt::LogLevel logLevel = Firebolt::LogLevel::Notice;
+    std::string url;
+
     for (int i = 1; i < argc; ++i)
     {
-        std::cout << "Arg: " << argv[i] << std::endl;
-        if (std::string(argv[i]) == "-auto")
+        if (std::string(argv[i]) == "--auto")
         {
-            gAutoRun = true;
+            appConfig.autoRun = true;
         }
-        else if (std::string(argv[i]) == "-mock")
+        else if (std::string(argv[i]) == "--mock")
         {
-            url = "ws://127.0.0.1:9998"; // Default URL for local mock server
+            url = "ws://127.0.0.1:9998/";
+        }
+        else if (std::string(argv[i]) == "--platform")
+        {
+            url = "ws://127.0.0.1:3474/";
+        }
+        else if (std::string(argv[i]) == "--dbg")
+        {
+            logLevel = Firebolt::LogLevel::Debug;
+        }
+        else if (std::string(argv[i]) == "--help")
+        {
+            /* clang-format off */
+            std::cout << "Usage: " << argv[0] << " [--auto] [--mock] [--platform] [--dbg] [--help]" << std::endl;
+            std::cout << "  --auto       Automatically run all methods for all interfaces without user input." << std::endl;
+            std::cout << "  --mock       Connect to a local mock server instead of the default Firebolt Demo Service." << std::endl;
+            std::cout << "  --platform   Connect to the platform's Firebolt service (default if available)." << std::endl;
+            std::cout << "  --dbg        Enable debug logging." << std::endl;
+            std::cout << "  --help       Show this help message." << std::endl;
+            /* clang-format on */
+            return 0;
         }
     }
 
@@ -176,43 +82,105 @@ int main(int argc, char** argv)
         }
         else
         {
-            url = "ws://127.0.0.1:3474"; // Default URL for RDK Central's Firebolt Demo Service
+            url = "ws://127.0.0.1:9998/";
         }
-        std::cout << "-----Using firebolt URL: " << url << std::endl;
+    }
+    std::cout << "Using firebolt URL: " << url << std::endl;
+
+    Firebolt::Config config;
+    config.wsUrl = url;
+    config.waitTime_ms = 1000;
+    config.log.level = logLevel;
+
+    std::promise<bool> connectionPromise;
+    std::once_flag connectionOnce;
+    auto future = connectionPromise.get_future();
+
+    /* clang-format off */
+    auto result = Firebolt::IFireboltAccessor::Instance().Connect(
+        config,
+        [&](const bool connected, const Firebolt::Error error)
+        {
+            std::cout << "Change in connection: connected: " << std::boolalpha << connected << ", error: " << static_cast<int>(error) << std::endl;
+            std::call_once(connectionOnce, [&] { connectionPromise.set_value(connected); });
+        });
+    /* clang-format on */
+
+    if (result != Firebolt::Error::None)
+    {
+        std::cout << "Connection call failed" << std::endl;
+        return 1;
+    }
+    if (future.wait_for(std::chrono::seconds(2)) == std::future_status::timeout)
+    {
+        std::cout << "Connection timed out" << std::endl;
+        return 1;
+    }
+    if (!future.get())
+    {
+        std::cout << "Failed to connect" << std::endl;
+        return 1;
     }
 
-    createFireboltInstance(url);
+    std::vector<std::unique_ptr<DemoBase>> interfaces;
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    interfaces.emplace_back(std::make_unique<AccessibilityDemo>());
+    interfaces.emplace_back(std::make_unique<AdvertisingDemo>());
+    interfaces.emplace_back(std::make_unique<DeviceDemo>());
+    interfaces.emplace_back(std::make_unique<DiscoveryDemo>());
+    interfaces.emplace_back(std::make_unique<DisplayDemo>());
+    interfaces.emplace_back(std::make_unique<LifecycleDemo>());
+    interfaces.emplace_back(std::make_unique<LocalizationDemo>());
+    interfaces.emplace_back(std::make_unique<NetworkDemo>());
+    interfaces.emplace_back(std::make_unique<PresentationDemo>());
+    interfaces.emplace_back(std::make_unique<StatsDemo>());
+    interfaces.emplace_back(std::make_unique<TextToSpeechDemo>());
 
-    if (!waitOnConnectionReady())
+    if (appConfig.autoRun)
     {
-        std::cout << "Test not able to connect with server..." << std::endl;
-        return -1;
-    }
+        for (auto& interface : interfaces)
+        {
+            std::cout << "Auto-running interface: " << interface->name() << std::endl;
 
-    ChooseInterface chooseInterface;
-
-    if (gAutoRun)
-    {
-        chooseInterface.autoRun();
+            for (auto& method : interface->methods())
+            {
+                std::cout << "Auto-running method: " << method << std::endl;
+                interface->runOption(method);
+            }
+        }
     }
     else
     {
-        for (;;)
+        std::vector<std::string> interfaceNames;
+        for (const auto& interface : interfaces)
         {
-            int interfaceIndex = chooseInterface.chooseOption();
-
+            interfaceNames.push_back(interface->name());
+        }
+        while (true)
+        {
+            int interfaceIndex = chooseFromList(interfaceNames, "Select an interface to test:");
             if (interfaceIndex == -1)
             {
-                break; // Exit the program
+                break;
             }
-
-            chooseInterface.runOption(interfaceIndex);
+            auto& selectedInterface = interfaces[interfaceIndex];
+            std::cout << "Selected interface: " << selectedInterface->name() << std::endl;
+            std::vector<std::string> methodNames = selectedInterface->methods();
+            while (true)
+            {
+                int methodIndex = chooseFromList(methodNames, "Select a method to run:");
+                if (methodIndex == -1)
+                {
+                    break;
+                }
+                const std::string& methodName = methodNames[methodIndex];
+                std::cout << "Selected method: " << methodName << std::endl;
+                selectedInterface->runOption(methodName);
+            }
         }
     }
 
-    destroyFireboltInstance();
+    Firebolt::IFireboltAccessor::Instance().Disconnect();
 
     return 0;
 }

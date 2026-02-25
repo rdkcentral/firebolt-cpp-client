@@ -17,52 +17,50 @@
  */
 
 #include "localizationDemo.h"
+#include <firebolt/firebolt.h>
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace Firebolt;
-using namespace Firebolt::Localization;
 
 LocalizationDemo::LocalizationDemo()
-    : FireboltDemoBase()
+    : DemoBase("Localization")
 {
-    methodsFromRpc("Localization");
+    methods_.push_back("Localization.country");
+    methods_.push_back("Localization.preferredAudioLanguages");
+    methods_.push_back("Localization.presentationLanguage");
 }
 
-void LocalizationDemo::runOption(const int index)
+void LocalizationDemo::runOption(const std::string& method)
 {
-    std::string key = itemDescriptions_[index].name;
-
-    if (key == "Localization.country")
+    if (method == "Localization.country")
     {
-        Result<std::string> result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().country();
-        if (validateResult(result))
+        auto r = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().country();
+        if (succeed(r))
         {
-            std::cout << "Country: " << result.value() << std::endl;
+            std::cout << "Country: " << *r << std::endl;
         }
     }
-    else if (key == "Localization.preferredAudioLanguages")
+    else if (method == "Localization.preferredAudioLanguages")
     {
-        Result<std::vector<std::string>> result =
-            Firebolt::IFireboltAccessor::Instance().LocalizationInterface().preferredAudioLanguages();
-        if (validateResult(result))
+        auto r = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().preferredAudioLanguages();
+        if (succeed(r))
         {
             std::cout << "Preferred Audio Languages: ";
-            for (const auto& lang : result.value())
+            for (const auto& lang : *r)
             {
                 std::cout << lang << " ";
             }
             std::cout << std::endl;
         }
     }
-    else if (key == "Localization.presentationLanguage")
+    else if (method == "Localization.presentationLanguage")
     {
-        Result<std::string> result =
-            Firebolt::IFireboltAccessor::Instance().LocalizationInterface().presentationLanguage();
-        if (validateResult(result))
+        auto r = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().presentationLanguage();
+        if (succeed(r))
         {
-            std::cout << "Presentation Language: " << result.value() << std::endl;
+            std::cout << "Presentation Language: " << *r << std::endl;
         }
     }
 }

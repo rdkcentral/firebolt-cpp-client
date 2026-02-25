@@ -16,16 +16,31 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#pragma once
-
-#include "fireboltDemoBase.h"
+#include "networkDemo.h"
+#include <firebolt/firebolt.h>
+#include <ios>
+#include <iostream>
 #include <string>
 #include <vector>
 
-class DiscoveryDemo : public FireboltDemoBase
+using namespace Firebolt;
+
+NetworkDemo::NetworkDemo()
+    : DemoBase("Network")
 {
-public:
-    DiscoveryDemo();
-    ~DiscoveryDemo() = default;
-    void runOption(const int index);
-};
+    methods_.push_back("Network.connected");
+}
+
+void NetworkDemo::runOption(const std::string& method)
+{
+    std::cout << "Running Network method: " << method << std::endl;
+
+    if (method == "Network.connected")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().NetworkInterface().connected();
+        if (succeed(r))
+        {
+            std::cout << "Network Connected: " << std::boolalpha << *r << std::endl;
+        }
+    }
+}

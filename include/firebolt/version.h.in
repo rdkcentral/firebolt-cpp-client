@@ -17,10 +17,11 @@
  */
 
 #pragma once
+#include <cstdint>
 
 namespace Firebolt::Version {
-    constexpr int Major = @PROJECT_VERSION_MAJOR@;
-    constexpr int Minor = @PROJECT_VERSION_MINOR@;
-    constexpr int Patch = @PROJECT_VERSION_PATCH@;
+    constexpr uint32_t Major = @PROJECT_VERSION_MAJOR@;
+    constexpr uint32_t Minor = @PROJECT_VERSION_MINOR@;
+    constexpr uint32_t Patch = @PROJECT_VERSION_PATCH@;
     constexpr const char* String = "@PROJECT_VERSION@";
 }

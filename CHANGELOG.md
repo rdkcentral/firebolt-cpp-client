@@ -1,3 +1,8 @@
+## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.0...main)
+
+### Changed
+- Corrected type from integer to unsigned in TTS (uint32_t)
+
 ## [0.5.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...v0.5.0)
 
 ### Added

@@ -17,11 +17,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
 
 ARG NODE_VERSION="24.11.0"
 ARG NODE_DISTRO="linux-x64"
-RUN curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" -o /tmp/node.tar.xz \
-    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o /tmp/SHASUMS256.txt \
-    && grep "node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" /tmp/SHASUMS256.txt | sha256sum -c - \
-    && tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 \
-    && rm /tmp/node.tar.xz /tmp/SHASUMS256.txt
+RUN cd /tmp \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" -o node.tar.xz \
+    && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o SHASUMS256.txt \
+    && grep "node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" SHASUMS256.txt | sha256sum -c - \
+    && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
+    && rm node.tar.xz SHASUMS256.txt
 ENV NODE_PATH="/usr/local/lib/node_modules"
 ENV PATH="/usr/local/bin:$PATH"
 

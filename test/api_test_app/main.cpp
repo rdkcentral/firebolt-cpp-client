@@ -70,7 +70,7 @@ int getOption(int n, bool allowCancel)
         std::cout << ": ";
         std::cin >> input;
 
-        //eat the rest of the line to avoid affecting the next input
+        // eat the rest of the line to avoid affecting the next input
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
         // Check if user wants to quit

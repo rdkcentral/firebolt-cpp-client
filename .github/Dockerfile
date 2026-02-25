@@ -16,13 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends --fix-missing \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 ARG NODE_VERSION="24.11.0"
-ARG NVM_VERSION="v0.39.0"
 ENV NVM_DIR="/usr/local/nvm"
 RUN mkdir -p $NVM_DIR \
-    && curl -fsSL -o /tmp/nvm-install.sh "https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh" \
-    && echo "f1f1e0f0d7c5aa21a76b11e44cebd0839e0d3c24d1cddd85bfa1b1d5e87a5c25  /tmp/nvm-install.sh" | sha256sum -c - \
-    && bash /tmp/nvm-install.sh \
-    && rm /tmp/nvm-install.sh \
+    && curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
     && /bin/bash -c "source $NVM_DIR/nvm.sh && nvm install $NODE_VERSION && nvm use --delete-prefix $NODE_VERSION"
 ENV NODE_PATH="$NVM_DIR/versions/node/$NODE_VERSION/lib/node_modules"
 ENV PATH="$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH"

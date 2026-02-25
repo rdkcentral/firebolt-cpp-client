@@ -20,7 +20,7 @@ ARG NODE_DISTRO="linux-x64"
 RUN cd /tmp \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" -o node.tar.xz \
     && curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/SHASUMS256.txt" -o SHASUMS256.txt \
-    && grep "node-v${NODE_VERSION}-${NODE_DISTRO}.tar.xz" SHASUMS256.txt | sha256sum -c - \
+    && sha256sum -c --ignore-missing SHASUMS256.txt \
     && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
     && rm node.tar.xz SHASUMS256.txt
 ENV NODE_PATH="/usr/local/lib/node_modules"

@@ -28,7 +28,4 @@ public:
     PresentationDemo();
     ~PresentationDemo() = default;
     void runOption(const int index);
-
-private:
-    // void triggerPresentationStateChange();
 };

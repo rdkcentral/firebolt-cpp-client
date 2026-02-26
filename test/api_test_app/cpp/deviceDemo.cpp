@@ -38,7 +38,7 @@ void DeviceDemo::runOption(const int index)
 
     std::cout << "Running Device method: " << key << std::endl;
 
-    if (key == "Device.class")
+    if (key == "Device.deviceClass")
     {
         Result<DeviceClass> r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().deviceClass();
         if (validateResult(r))

@@ -104,17 +104,7 @@ void TextToSpeechDemo::runOption(const int index)
             std::cout << "Current state for speech ID '" << speechId << "': " << (int)state << std::endl;
         }
     }
-    else if (key == "TextToSpeech.speechRate")
-    {
-        SpeechId speechId = chooseSpeechIdFromConsole();
-        Result<SpeechStateResponse> r = IFireboltAccessor::Instance().TextToSpeechInterface().getSpeechState(speechId);
-        if (validateResult(r))
-        {
-            const auto& ttsStatus = r.value().ttsStatus;
-            std::cout << "Current TTS status for speech ID '" << speechId << "': " << ttsStatus << std::endl;
-        }
-    }
-    else if (key == "TextToSpeech.subscribeOnWillSpeak")
+    else if (key == "TextToSpeech.onWillSpeak")
     {
         auto callback = [&](const TextToSpeech::SpeechIdEvent& event)
         { std::cout << "Will Speak notification received for Speech ID: " << event.speechId << std::endl; };

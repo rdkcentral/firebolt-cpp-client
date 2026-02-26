@@ -76,6 +76,13 @@ npm start &
 mock_pid=$!
 echo "Mock started at pid: $mock_pid"
 
+# Setup cleanup trap to ensure mock server is always stopped
+cleanup() {
+  echo "Cleaning up mock server (pid: $mock_pid)"
+  kill-rec $mock_pid 2>/dev/null || true
+}
+trap cleanup EXIT
+
 sleep 1
 try=0
 maxTries=10
@@ -88,9 +95,11 @@ done
 
 echo "Starting cpp_test with -mock and -auto flags"
 cd "$(dirname "$testExe")"
+
+# Capture exit code without triggering set -e
+set +e
 "./$(basename "$testExe")" -mock -auto
 exitCode=$?
-
-kill-rec $mock_pid
+set -e
 
 exit $exitCode

@@ -128,7 +128,7 @@ else()
             ${CURL_TARGET}
             ${THREADS_TARGET}
     )
-       set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
+    set(SOURCE_ROOT ${CMAKE_SOURCE_DIR}/../..)
 endif ()
 
 target_include_directories(${API_TEST_APP}

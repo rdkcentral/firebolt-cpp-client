@@ -36,7 +36,7 @@ class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Text
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         voices_.clear();
         for (const auto& voice : json["voices"])
         {
@@ -49,21 +49,21 @@ public:
     }
 
 private:
-    int32_t ttsStatus_;
+    uint32_t ttsStatus_;
     std::vector<std::string> voices_;
 };
 
 class SpeechIdEvent : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechIdEvent>
 {
 public:
-    void fromJson(const nlohmann::json& json) override { speechId_ = json["speechid"].get<int32_t>(); }
+    void fromJson(const nlohmann::json& json) override { speechId_ = json["speechid"].get<uint32_t>(); }
     ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_};
     }
 
 private:
-    int32_t speechId_;
+    uint32_t speechId_;
 };
 
 class SpeechResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechResponse>
@@ -71,8 +71,8 @@ class SpeechResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSp
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        speechId_ = json["speechid"].get<int32_t>();
-        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        speechId_ = json["speechid"].get<uint32_t>();
+        ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::SpeechResponse value() const override
@@ -81,8 +81,8 @@ public:
     }
 
 private:
-    int32_t speechId_;
-    int32_t ttsStatus_;
+    uint32_t speechId_;
+    uint32_t ttsStatus_;
     bool success_;
 };
 
@@ -91,8 +91,8 @@ class SpeechStateResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Tex
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        speechState_ = static_cast<SpeechState>(json["speechstate"].get<int>());
-        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        speechState_ = static_cast<SpeechState>(json["speechstate"].get<uint32_t>());
+        ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::SpeechStateResponse value() const override
@@ -102,7 +102,7 @@ public:
 
 private:
     SpeechState speechState_;
-    int32_t ttsStatus_;
+    uint32_t ttsStatus_;
     bool success_;
 };
 
@@ -111,7 +111,7 @@ class TTSStatusResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextT
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        ttsStatus_ = json["TTS_Status"].get<int32_t>();
+        ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
     ::Firebolt::TextToSpeech::TTSStatusResponse value() const override
@@ -120,7 +120,7 @@ public:
     }
 
 private:
-    int32_t ttsStatus_;
+    uint32_t ttsStatus_;
     bool success_;
 };
 

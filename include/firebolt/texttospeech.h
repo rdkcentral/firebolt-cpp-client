@@ -45,8 +45,8 @@ enum class SpeechState
 };
 
 // Types
-using TTSStatus = int32_t;
-using SpeechId = int32_t;
+using TTSStatus = uint32_t;
+using SpeechId = uint32_t;
 
 struct TTSStatusResponse
 {

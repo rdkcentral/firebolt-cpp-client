@@ -31,8 +31,8 @@
 #include "statsDemo.h"
 #include "texttospeechDemo.h"
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 ChooseInterface::ChooseInterface()
     : FireboltDemoBase()

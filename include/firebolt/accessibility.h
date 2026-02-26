@@ -35,7 +35,7 @@ struct ClosedCaptionsSettings
 struct VoiceGuidanceSettings
 {
     bool enabled;
-    float rate;
+    double rate;
     bool navigationHints;
 };
 

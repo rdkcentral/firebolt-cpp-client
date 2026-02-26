@@ -42,10 +42,10 @@ void DiscoveryDemo::runOption(const std::string& method)
     if (method == "Discovery.watched")
     {
         std::string entityId = paramFromConsole("entityId", "exampleEntityId");
-        std::optional<float> progress = 0.5;
+        std::optional<double> progress = 0.5;
         try
         {
-            progress = std::stof(
+            progress = std::stod(
                 paramFromConsole("progress (percentage as (0-0.999) for VOD, number of seconds for live)", "0.5"));
         }
         catch (const std::exception&)

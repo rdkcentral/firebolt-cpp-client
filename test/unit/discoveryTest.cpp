@@ -31,7 +31,7 @@ TEST_F(DiscoveryTest, watched)
 {
     mock("Discovery.watched");
     std::string entityId = "content123";
-    std::optional<float> progress = 0.75f;
+    std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::Discovery::AgePolicy> agePolicy = Firebolt::Discovery::AgePolicy::ADULT;
@@ -60,7 +60,7 @@ TEST_F(DiscoveryTest, watched_payload)
                 return Firebolt::Result<nlohmann::json>{res};
             }));
     std::string entityId = "content123";
-    std::optional<float> progress = 0.75f;
+    std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::Discovery::AgePolicy> agePolicy = Firebolt::Discovery::AgePolicy::ADULT;

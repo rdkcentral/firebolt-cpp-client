@@ -48,7 +48,7 @@ public:
     void fromJson(const nlohmann::json& json) override
     {
         enabled_ = json["enabled"].get<bool>();
-        rate_ = json["rate"].get<float>();
+        rate_ = json["rate"].get<double>();
         navigationHints_ = json["navigationHints"].get<bool>();
     }
     ::Firebolt::Accessibility::VoiceGuidanceSettings value() const override
@@ -58,7 +58,7 @@ public:
 
 private:
     bool enabled_;
-    float rate_;
+    double rate_;
     bool navigationHints_;
 };
 

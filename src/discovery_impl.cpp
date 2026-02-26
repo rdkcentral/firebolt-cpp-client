@@ -27,7 +27,7 @@ DiscoveryImpl::DiscoveryImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<bool> DiscoveryImpl::watched(const std::string& entityId, std::optional<float> progress,
+Result<bool> DiscoveryImpl::watched(const std::string& entityId, std::optional<double> progress,
                                     std::optional<bool> completed, std::optional<std::string> watchedOn,
                                     std::optional<AgePolicy> agePolicy) const
 {

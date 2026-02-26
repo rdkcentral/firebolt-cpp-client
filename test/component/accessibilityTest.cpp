@@ -152,7 +152,7 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettings)
 
     ASSERT_TRUE(result) << "AccessibilityImpl::voiceGuidanceSettings() returned an error";
     EXPECT_EQ((*result).enabled, expectedValue.at("enabled").get<bool>());
-    EXPECT_EQ((*result).rate, expectedValue.at("rate").get<float>());
+    EXPECT_EQ((*result).rate, expectedValue.at("rate").get<double>());
     EXPECT_EQ((*result).navigationHints, expectedValue.at("navigationHints").get<bool>());
 }
 
@@ -164,7 +164,7 @@ TEST_F(AccessibilityTest, SubscribeOnVoiceGuidanceSettingsChanged)
             std::cout << "[Subscription] Accessibility voice guidance settings changed" << std::endl;
 
             EXPECT_EQ(settings.enabled, true);
-            EXPECT_EQ(settings.rate, 0.8f);
+            EXPECT_EQ(settings.rate, 0.8);
             EXPECT_EQ(settings.navigationHints, true);
 
             {

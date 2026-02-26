@@ -131,7 +131,7 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettings)
 
     ASSERT_TRUE(result) << "AccessibilityImpl::voiceGuidanceSettings() returned an error";
     EXPECT_EQ((*result).enabled, expectedValue["enabled"].get<bool>());
-    EXPECT_EQ((*result).rate, expectedValue["rate"].get<float>());
+    EXPECT_EQ((*result).rate, expectedValue["rate"].get<double>());
     EXPECT_EQ((*result).navigationHints, expectedValue["navigationHints"].get<bool>());
 }
 

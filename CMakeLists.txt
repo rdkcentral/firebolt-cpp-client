@@ -95,9 +95,10 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 add_subdirectory(src)
 
 if (ENABLE_DEMO_APP)
-    add_subdirectory(demo)
+    add_subdirectory(test/api_test_app)
 endif()
 
 if (ENABLE_TESTS)
     add_subdirectory(test)
 endif()
+

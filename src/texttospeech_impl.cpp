@@ -17,7 +17,7 @@
  */
 
 #include "texttospeech_impl.h"
-#include "jsondata_texttospeech_types.h"
+#include "json_types/texttospeech.h"
 
 namespace Firebolt::TextToSpeech
 {

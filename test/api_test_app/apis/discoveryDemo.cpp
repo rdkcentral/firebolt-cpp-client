@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "json_types/jsondata_common.h"
+#include "json_types/common.h"
 
 using namespace Firebolt;
 using namespace Firebolt::Discovery;

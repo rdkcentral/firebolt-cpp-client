@@ -17,7 +17,7 @@
  */
 
 #include "stats_impl.h"
-#include "jsondata_stats_types.h"
+#include "json_types/stats.h"
 #include <cctype>
 #include <nlohmann/json.hpp>
 #include <string>

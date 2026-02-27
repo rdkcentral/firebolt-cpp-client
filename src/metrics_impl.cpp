@@ -17,8 +17,8 @@
  */
 
 #include "metrics_impl.h"
-#include "jsondata_common.h"
-#include "jsondata_metrics_types.h"
+#include "json_types/common.h"
+#include "json_types/metrics.h"
 #include <firebolt/json_types.h>
 
 namespace Firebolt::Metrics

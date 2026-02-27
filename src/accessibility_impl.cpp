@@ -17,7 +17,7 @@
  */
 
 #include "accessibility_impl.h"
-#include "jsondata_accessibility_types.h"
+#include "json_types/accessibility.h"
 
 namespace Firebolt::Accessibility
 {

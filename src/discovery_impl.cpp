@@ -17,7 +17,7 @@
  */
 
 #include "discovery_impl.h"
-#include "jsondata_common.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 
 namespace Firebolt::Discovery

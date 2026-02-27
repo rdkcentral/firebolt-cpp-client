@@ -17,7 +17,7 @@
  */
 
 #include "display_impl.h"
-#include "jsondata_display_types.h"
+#include "json_types/display.h"
 
 namespace Firebolt::Display
 {

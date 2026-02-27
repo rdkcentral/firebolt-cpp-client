@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "json_types/jsondata_device_types.h"
+#include "json_types/device.h"
 
 using namespace Firebolt;
 using namespace Firebolt::Device;

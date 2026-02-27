@@ -16,9 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/device.h"
 #include "device_impl.h"
 #include "json_engine.h"
-#include "json_types/jsondata_device_types.h"
 #include "mock_helper.h"
 
 class DeviceTest : public ::testing::Test, protected MockBase

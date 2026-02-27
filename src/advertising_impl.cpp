@@ -17,7 +17,7 @@
  */
 
 #include "advertising_impl.h"
-#include "jsondata_advertising_types.h"
+#include "json_types/advertising.h"
 
 namespace Firebolt::Advertising
 {

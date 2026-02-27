@@ -17,7 +17,7 @@
  */
 
 #include "lifecycle_impl.h"
-#include "jsondata_lifecycle_types.h"
+#include "json_types/lifecycle.h"
 #include <cctype>
 #include <nlohmann/json.hpp>
 #include <string>

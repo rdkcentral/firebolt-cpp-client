@@ -16,9 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/device.h"
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
-#include "json_types/jsondata_device_types.h"
 #include "utils.h"
 #include <gtest/gtest.h>
 #include <iostream>

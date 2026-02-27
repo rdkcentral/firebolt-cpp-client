@@ -17,7 +17,7 @@
  */
 
 #include "lifecycleDemo.h"
-#include "json_types/jsondata_lifecycle_types.h"
+#include "json_types/lifecycle.h"
 #include "utils.h"
 #include <firebolt/firebolt.h>
 #include <iostream>

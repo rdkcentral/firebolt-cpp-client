@@ -17,7 +17,7 @@
  */
 
 #include "discovery_impl.h"
-#include "jsondata_discovery.h"
+#include "jsondata_common.h"
 #include <firebolt/json_types.h>
 
 namespace Firebolt::Discovery
@@ -29,25 +29,25 @@ DiscoveryImpl::DiscoveryImpl(Firebolt::Helpers::IHelper& helper)
 
 Result<bool> DiscoveryImpl::watched(const std::string& entityId, std::optional<double> progress,
                                     std::optional<bool> completed, std::optional<std::string> watchedOn,
-                                    std::optional<AgePolicy> agePolicy) const
+                                    std::optional<Firebolt::AgePolicy> agePolicy) const
 {
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
-    if (progress.has_value())
+    if (progress)
     {
-        parameters["progress"] = progress.value();
+        parameters["progress"] = *progress;
     }
-    if (completed.has_value())
+    if (completed)
     {
-        parameters["completed"] = completed.value();
+        parameters["completed"] = *completed;
     }
-    if (watchedOn.has_value())
+    if (watchedOn)
     {
-        parameters["watchedOn"] = watchedOn.value();
+        parameters["watchedOn"] = *watchedOn;
     }
-    if (agePolicy.has_value())
+    if (agePolicy)
     {
-        parameters["agePolicy"] = Firebolt::JSON::toString(JsonData::AgePolicyEnum, agePolicy.value());
+        parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
 
     Result<bool> result = helper_.get<Firebolt::JSON::Boolean, bool>("Discovery.watched", parameters);

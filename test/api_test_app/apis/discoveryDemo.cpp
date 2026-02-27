@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "json_types/jsondata_discovery.h"
+#include "json_types/jsondata_common.h"
 
 using namespace Firebolt;
 using namespace Firebolt::Discovery;
@@ -54,8 +54,8 @@ void DiscoveryDemo::runOption(const std::string& method)
         std::optional<bool> completed = paramFromConsole("completed (true/false)", "false") == "true";
         std::string watchedOn = paramFromConsole("watchedOn (ISO 8601 timestamp)", "2024-01-01T00:00:00Z");
 
-        std::optional<AgePolicy> agePolicyOpt = chooseEnumFromList(Firebolt::Discovery::JsonData::AgePolicyEnum,
-                                                                   "Choose an age policy for the watch event:");
+        std::optional<Firebolt::AgePolicy> agePolicyOpt =
+            chooseEnumFromList(Firebolt::JsonData::AgePolicyEnum, "Choose an age policy for the watch event:");
 
         auto r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched(entityId, progress, completed,
                                                                                       watchedOn, agePolicyOpt);

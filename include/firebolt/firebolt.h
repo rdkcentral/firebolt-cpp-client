@@ -26,6 +26,7 @@
 #include "firebolt/display.h"
 #include "firebolt/lifecycle.h"
 #include "firebolt/localization.h"
+#include "firebolt/metrics.h"
 #include "firebolt/network.h"
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
@@ -125,6 +126,13 @@ public:
      * @return Reference to Localization interface
      */
     virtual Localization::ILocalization& LocalizationInterface() = 0;
+
+    /**
+     * @brief Returns instance of Metrics interface
+     *
+     * @return Reference to Metrics interface
+     */
+    virtual Metrics::IMetrics& MetricsInterface() = 0;
 
     /**
      * @brief Returns instance of Network interface

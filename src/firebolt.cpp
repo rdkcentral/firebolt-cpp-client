@@ -25,6 +25,7 @@
 #include "firebolt/client_version.h"
 #include "lifecycle_impl.h"
 #include "localization_impl.h"
+#include "metrics_impl.h"
 #include "network_impl.h"
 #include "presentation_impl.h"
 #include "stats_impl.h"
@@ -44,6 +45,7 @@ public:
           display_(Firebolt::Helpers::GetHelperInstance()),
           lifecycle_(Firebolt::Helpers::GetHelperInstance()),
           localization_(Firebolt::Helpers::GetHelperInstance()),
+          metrics_(Firebolt::Helpers::GetHelperInstance()),
           network_(Firebolt::Helpers::GetHelperInstance()),
           presentation_(Firebolt::Helpers::GetHelperInstance()),
           stats_(Firebolt::Helpers::GetHelperInstance()),
@@ -76,6 +78,7 @@ public:
     Display::IDisplay& DisplayInterface() override { return display_; }
     Lifecycle::ILifecycle& LifecycleInterface() override { return lifecycle_; }
     Localization::ILocalization& LocalizationInterface() override { return localization_; }
+    Metrics::IMetrics& MetricsInterface() override { return metrics_; }
     Network::INetwork& NetworkInterface() override { return network_; }
     Presentation::IPresentation& PresentationInterface() override { return presentation_; }
     Stats::IStats& StatsInterface() override { return stats_; }
@@ -100,6 +103,7 @@ private:
     Display::DisplayImpl display_;
     Lifecycle::LifecycleImpl lifecycle_;
     Localization::LocalizationImpl localization_;
+    Metrics::MetricsImpl metrics_;
     Network::NetworkImpl network_;
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;

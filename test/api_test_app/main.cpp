@@ -23,6 +23,7 @@
 #include "displayDemo.h"
 #include "lifecycleDemo.h"
 #include "localizationDemo.h"
+#include "metricsDemo.h"
 #include "networkDemo.h"
 #include "presentationDemo.h"
 #include "statsDemo.h"
@@ -132,6 +133,7 @@ int main(int argc, char** argv)
     interfaces.emplace_back(std::make_unique<DisplayDemo>());
     interfaces.emplace_back(std::make_unique<LifecycleDemo>());
     interfaces.emplace_back(std::make_unique<LocalizationDemo>());
+    interfaces.emplace_back(std::make_unique<MetricsDemo>());
     interfaces.emplace_back(std::make_unique<NetworkDemo>());
     interfaces.emplace_back(std::make_unique<PresentationDemo>());
     interfaces.emplace_back(std::make_unique<StatsDemo>());

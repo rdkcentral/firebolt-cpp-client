@@ -19,25 +19,13 @@
 #pragma once
 
 #include "firebolt/common_types.h"
-#include "firebolt/discovery.h"
-#include <firebolt/helpers.h>
+#include <firebolt/json_types.h>
 
-namespace Firebolt::Discovery
+namespace Firebolt::JsonData
 {
-class DiscoveryImpl : public IDiscovery
-{
-public:
-    explicit DiscoveryImpl(Firebolt::Helpers::IHelper& helper);
-    DiscoveryImpl(const DiscoveryImpl&) = delete;
-    DiscoveryImpl& operator=(const DiscoveryImpl&) = delete;
-
-    ~DiscoveryImpl() override = default;
-
-    Result<bool> watched(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
-                         std::optional<std::string> watchedOn,
-                         std::optional<Firebolt::AgePolicy> agePolicy) const override;
-
-private:
-    Firebolt::Helpers::IHelper& helper_;
-};
-} // namespace Firebolt::Discovery
+inline const Firebolt::JSON::EnumType<::Firebolt::AgePolicy> AgePolicyEnum({
+    {"app:adult", ::Firebolt::AgePolicy::ADULT},
+    {"app:child", ::Firebolt::AgePolicy::CHILD},
+    {"app:teen", ::Firebolt::AgePolicy::TEEN},
+});
+} // namespace Firebolt::JsonData

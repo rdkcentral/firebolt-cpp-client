@@ -1,5 +1,5 @@
 /**
- * Copyright 2026 Comcast Cable Communications Management, LLC
+ * Copyright 2025 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#pragma once
+#include "metrics_impl.h"
+#include "mock_helper.h"
 
-#include "firebolt/discovery.h"
-#include <firebolt/json_types.h>
-
-namespace Firebolt::Discovery::JsonData
+class MetricsTest : public ::testing::Test, protected MockBase
 {
-inline const Firebolt::JSON::EnumType<::Firebolt::Discovery::AgePolicy> AgePolicyEnum({
-    {"app:adult", ::Firebolt::Discovery::AgePolicy::ADULT},
-    {"app:child", ::Firebolt::Discovery::AgePolicy::CHILD},
-    {"app:teen", ::Firebolt::Discovery::AgePolicy::TEEN},
-});
-} // namespace Firebolt::Discovery::JsonData
+protected:
+    Firebolt::Metrics::MetricsImpl metricsImpl_{mockHelper};
+};

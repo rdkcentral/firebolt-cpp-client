@@ -18,17 +18,11 @@
 
 #pragma once
 
+#include "firebolt/common_types.h"
 #include <firebolt/types.h>
 
 namespace Firebolt::Discovery
 {
-enum class AgePolicy
-{
-    ADULT,
-    CHILD,
-    TEEN,
-};
-
 class IDiscovery
 {
 public:
@@ -49,6 +43,6 @@ public:
      */
     virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,
-                                 std::optional<AgePolicy> agePolicy) const = 0;
+                                 std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 };
 } // namespace Firebolt::Discovery

@@ -949,6 +949,57 @@
 					}
 				}
 			},
+			"MediaPosition": {
+				"title": "MediaPosition",
+				"description": "Represents a position inside playback content, as a decimal percentage (0-0.999) for content with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.",
+				"oneOf": [
+					{
+						"const": 0
+					},
+					{
+						"type": "number",
+						"exclusiveMinimum": 0,
+						"exclusiveMaximum": 1
+					},
+					{
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 86400
+					}
+				]
+			},
+			"ErrorType": {
+				"title": "ErrorType",
+				"type": "string",
+				"enum": [
+					"network",
+					"media",
+					"restriction",
+					"entitlement",
+					"other"
+				]
+			},
+			"EventObjectPrimitives": {
+				"title": "EventObjectPrimitives",
+				"anyOf": [
+					{
+						"type": "string",
+						"maxLength": 256
+					},
+					{
+						"type": "number"
+					},
+					{
+						"type": "integer"
+					},
+					{
+						"type": "boolean"
+					},
+					{
+						"type": "null"
+					}
+				]
+			},
 			"Connected": {
 				"type": "boolean",
 				"description": "Indicates whether the device currently has a usable network connection."
@@ -1327,6 +1378,25 @@
 						]
 					}
 				]
+			}
+		},
+		"Types": {
+			"uri": "https://meta.comcast.com/firebolt/types",
+			"FlatMap": {
+				"type": "object",
+				"additionalProperties": {
+					"oneOf": [
+						{
+							"type": "string"
+						},
+						{
+							"type": "number"
+						},
+						{
+							"type": "boolean"
+						}
+					]
+				}
 			}
 		}
 	}

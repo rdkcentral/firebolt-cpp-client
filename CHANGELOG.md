@@ -1,19 +1,18 @@
-## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.0...main)
+## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...main)
+
+### Added
+- New APIs
+  - Device.hdr
+  - Display.edid
+  - Metrics
+  - Network
+  - TextToSpeech
 
 ### Changed
 - **Breaking**: Aligned types with the latest specification updates:
   - `integer` changed to unsigned (`uint32_t`)
   - `float` changed to `double`
 - Specify the build version and ABI version
-
-## [0.5.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...v0.5.0)
-
-### Added
-- New APIs
-  - Device.hdr
-  - Display.edid
-  - Network
-  - TextToSpeech
 
 ## [0.4.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.3.0...v0.4.0)
 

@@ -34,7 +34,7 @@ TEST_F(DiscoveryTest, watched)
     std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
-    std::optional<Firebolt::Discovery::AgePolicy> agePolicy = Firebolt::Discovery::AgePolicy::ADULT;
+    std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
     Firebolt::JSON::Boolean boolJson;
@@ -63,7 +63,7 @@ TEST_F(DiscoveryTest, watched_payload)
     std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
-    std::optional<Firebolt::Discovery::AgePolicy> agePolicy = Firebolt::Discovery::AgePolicy::ADULT;
+    std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
     EXPECT_EQ(true, *result);

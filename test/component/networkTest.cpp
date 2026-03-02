@@ -57,7 +57,7 @@ TEST_F(NetworkTest, SubscribeOnConnectedChanged)
         });
 
     verifyEventSubscription(id);
-    triggerEvent("Network.onConnectedChanged", "true");
+    triggerEvent("Network.onConnectedChanged", R"({ "value": true })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 

@@ -21,6 +21,7 @@
 #include "utils.h"
 #include <condition_variable>
 #include <gtest/gtest.h>
+#include <iostream>
 #include <mutex>
 
 class PresentationTest : public ::testing::Test
@@ -63,4 +64,30 @@ TEST_F(PresentationTest, subscribeOnFocusedChanged)
     verifyEventReceived(mtx, cv, eventReceived);
     auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
+}
+
+TEST_F(PresentationTest, unsubscribeInCallback)
+{
+    Firebolt::SubscriptionId subscriptionId;
+    Firebolt::Result<Firebolt::SubscriptionId> id =
+        Firebolt::IFireboltAccessor::Instance().PresentationInterface().subscribeOnFocusedChanged(
+            [&](const bool& /* focus */)
+            {
+                std::cout << "In the callback, unsubscribing from the event" << subscriptionId << std::endl;
+                auto result = Firebolt::IFireboltAccessor::Instance().PresentationInterface().unsubscribe(subscriptionId);
+                verifyUnsubscribeResult(result);
+                {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    eventReceived = true;
+                }
+                cv.notify_one();
+            });
+    verifyEventSubscription(id);
+    subscriptionId = *id;
+
+    triggerEvent("Presentation.onFocusedChanged", R"({ "value": true })");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+    auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(*id);
+    ASSERT_FALSE(result) << "Unsubscribe should have failed since we already unsubscribed in the callback";
 }

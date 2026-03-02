@@ -24,7 +24,7 @@ params=
 buildType="Debug"
 cleanFirst=false
 
-while [ -n "${1:-}" ]; do
+while [[ -n "${1:-}" ]]; do
   case $1 in
   --clean) cleanFirst=true;;
   --release) buildType="Release";;

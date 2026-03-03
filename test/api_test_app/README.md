@@ -1,6 +1,3 @@
-# firebolt-cpp-client
-
-
 # API Test App
 
 `api-test-app` is a CLI demo/test utility for exercising Firebolt C++ client APIs.
@@ -9,7 +6,7 @@ It can be run in either interactive or auto mode.
 In interactive mode, the user can select which APIs to call via a menu system.
 In auto mode, every API method is called sequentially, with no input from the user.
 
-All output is to std::stdout
+All output is to stdout.
 
 ## Executable Name
 
@@ -26,19 +23,19 @@ api-test-app [--auto] [--mock] [--platform] [--dbg] [--help]
 ### Options
 
 - `--auto`  
-	Run all methods for all interfaces automatically.
+ Run all methods for all interfaces automatically.
 
 - `--mock`  
-	Use local mock endpoint: `ws://127.0.0.1:9998/`.
+ Use local mock endpoint: `ws://127.0.0.1:9998/`.
 
 - `--platform`  
-	Use platform endpoint: `ws://127.0.0.1:3474/`.
+ Use platform endpoint: `ws://127.0.0.1:3474/`.
 
 - `--dbg`  
-	Enable debug logging.
+ Enable debug logging.
 
 - `--help`  
-	Print usage and exit.
+ Print usage and exit.
 
 ## Endpoint Selection Priority
 

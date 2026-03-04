@@ -1,4 +1,4 @@
-## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...main)
+## [0.5.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...v0.5.0)
 
 ### Added
 - New APIs
@@ -13,6 +13,7 @@
   - `integer` changed to unsigned (`uint32_t`)
   - `float` changed to `double`
 - Specify the build version and ABI version
+- Updated Firebolt C++ Transport dependency to `v1.1.2`
 
 ## [0.4.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.3.0...v0.4.0)
 

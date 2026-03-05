@@ -31,6 +31,10 @@ class DisplaySizeJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Display
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"width", "height"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         width_ = json["width"].get<uint32_t>();
         height_ = json["height"].get<uint32_t>();
     }

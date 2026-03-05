@@ -30,6 +30,10 @@ class IfaJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Advertising::If
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"ifa", "ifa_type", "lmt"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         ifa = json["ifa"].get<std::string>();
         ifa_type = json["ifa_type"].get<std::string>();
         lmt = json["lmt"].get<std::string>();

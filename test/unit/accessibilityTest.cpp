@@ -135,6 +135,14 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettings)
     EXPECT_EQ((*result).navigationHints, expectedValue["navigationHints"].get<bool>());
 }
 
+TEST_F(AccessibilityTest, VoiceGuidanceSettingsPartial)
+{
+    mock_with_response("Accessibility.voiceGuidanceSettings", nlohmann::json::parse("{ \"enabled\": true }"));
+    auto result = accessibilityImpl_.voiceGuidanceSettings();
+    ASSERT_FALSE(result) << "AccessibilityImpl::voiceGuidanceSettings() did not return an error for partial response";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(AccessibilityTest, VoiceGuidanceSettingsBadResponse)
 {
     mock_with_response("Accessibility.voiceGuidanceSettings", "invalid_response");

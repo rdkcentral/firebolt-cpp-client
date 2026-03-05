@@ -80,7 +80,7 @@ else()
         FetchContent_Declare(
             FireboltTransport
             URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
-            URL_HASH "SHA256=892f08b1c532fc5ac0029d759612dd2dc1b521d43882a0f70c22a02ff6ca05e7"
+            URL_HASH "SHA256=0a0c9394395a514d3ba6931a6c656886523c6b3f038b0cb991c27c837f0e506e"
             DOWNLOAD_EXTRACT_TIMESTAMP true
         )
         set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})

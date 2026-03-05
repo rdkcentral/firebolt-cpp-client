@@ -29,6 +29,10 @@ class ClosedCaptionsSettings : public Firebolt::JSON::NL_Json_Basic<::Firebolt::
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"enabled", "preferredLanguages"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         enabled_ = json["enabled"].get<bool>();
         preferredLanguages_ = json["preferredLanguages"].get<std::vector<std::string>>();
     }
@@ -47,6 +51,10 @@ class VoiceGuidanceSettings : public Firebolt::JSON::NL_Json_Basic<::Firebolt::A
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"enabled", "rate", "navigationHints"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         enabled_ = json["enabled"].get<bool>();
         rate_ = json["rate"].get<double>();
         navigationHints_ = json["navigationHints"].get<bool>();

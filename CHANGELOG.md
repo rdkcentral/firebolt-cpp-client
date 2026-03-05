@@ -1,8 +1,10 @@
 ## [0.5.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.0...v0.5.1)
 
 ### Changed
-- **Breaking**: In v0.5.0, `AgePolicy` was moved to the `Firebolt` namespace and to the `common_types.h` header file. References must be changed
-  from `Firebolt::Discovery::AgePolicy` to `Firebolt::AgePolicy`, and the include must be added (`#include <firebolt/common_types.h>`).
+- Updated Firebolt C++ Transport dependency to `v1.1.3`
+
+### Fixed
+- Prevented a crash when a mandatory field was missing from the JSON payload
 
 ## [0.5.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...v0.5.0)
 
@@ -18,6 +20,8 @@
 - **Breaking**: Aligned types with the latest specification updates:
   - `integer` changed to unsigned (`uint32_t`)
   - `float` changed to `double`
+- **Breaking**: `AgePolicy` was moved to the `Firebolt` namespace and to the `common_types.h` header file. References must be changed
+  from `Firebolt::Discovery::AgePolicy` to `Firebolt::AgePolicy`, and the include must be added (`#include <firebolt/common_types.h>`).
 - Specify the build version and ABI version
 - Updated Firebolt C++ Transport dependency to `v1.1.2`
 

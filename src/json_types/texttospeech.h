@@ -36,6 +36,10 @@ class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Text
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"TTS_Status", "voices"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         voices_.clear();
         for (const auto& voice : json["voices"])
@@ -56,7 +60,14 @@ private:
 class SpeechIdEvent : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::SpeechIdEvent>
 {
 public:
-    void fromJson(const nlohmann::json& json) override { speechId_ = json["speechid"].get<uint32_t>(); }
+    void fromJson(const nlohmann::json& json) override
+    {
+        if (!checkRequiredFields(json, {"speechid"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
+        speechId_ = json["speechid"].get<uint32_t>();
+    }
     ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_};
@@ -71,6 +82,10 @@ class SpeechResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSp
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"speechid", "TTS_Status", "success"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         speechId_ = json["speechid"].get<uint32_t>();
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
@@ -91,6 +106,10 @@ class SpeechStateResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Tex
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"speechstate", "TTS_Status", "success"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         speechState_ = static_cast<SpeechState>(json["speechstate"].get<uint32_t>());
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
@@ -111,6 +130,10 @@ class TTSStatusResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextT
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"TTS_Status", "success"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }

@@ -1,3 +1,9 @@
+## [0.5.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.0...v0.5.1)
+
+### Changed
+- **Breaking**: In v0.5.0, `AgePolicy` was moved to the `Firebolt` namespace and to the `common_types.h` header file. References must be changed
+  from `Firebolt::Discovery::AgePolicy` to `Firebolt::AgePolicy`, and the include must be added (`#include <firebolt/common_types.h>`).
+
 ## [0.5.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.4.0...v0.5.0)
 
 ### Added

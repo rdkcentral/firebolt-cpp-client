@@ -17,31 +17,34 @@ The app binary name is:
 ## Command Line Usage
 
 ```bash
-api-test-app [--auto] [--mock] [--platform] [--dbg] [--help]
+api-test-app [--auto] [--mock] [--platform] [--url <URL>] [--dbg] [--help]
 ```
 
 ### Options
 
-- `--auto`  
+- `--auto`
  Run all methods for all interfaces automatically.
 
-- `--mock`  
+- `--mock`
  Use local mock endpoint: `ws://127.0.0.1:9998/`.
 
-- `--platform`  
+- `--platform`
  Use platform endpoint: `ws://127.0.0.1:3474/`.
 
-- `--dbg`  
+- `--url URL`
+ Set the WebSocket endpoint to the specified URL.
+
+- `--dbg`
  Enable debug logging.
 
-- `--help`  
+- `--help`
  Print usage and exit.
 
 ## Endpoint Selection Priority
 
 The app chooses the WebSocket endpoint in this order:
 
-1. `--mock` or `--platform` (if provided)
+1. `--mock` or `--platform` or `--url URL` (if provided)
 2. `FIREBOLT_ENDPOINT` environment variable (if set)
 3. Default fallback: `ws://127.0.0.1:9998/`
 

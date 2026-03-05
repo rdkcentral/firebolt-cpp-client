@@ -57,6 +57,15 @@ int main(int argc, char** argv)
         {
             url = "ws://127.0.0.1:3474/";
         }
+        else if (std::string(argv[i]) == "--url")
+        {
+            if (i + 1 >= argc)
+            {
+                std::cerr << "Error: --url option requires a URL argument. Use --help to see usage" << std::endl;
+                return 1;
+            }
+            url = argv[++i];
+        }
         else if (std::string(argv[i]) == "--dbg")
         {
             logLevel = Firebolt::LogLevel::Debug;
@@ -64,12 +73,16 @@ int main(int argc, char** argv)
         else if (std::string(argv[i]) == "--help")
         {
             /* clang-format off */
-            std::cout << "Usage: " << argv[0] << " [--auto] [--mock] [--platform] [--dbg] [--help]" << std::endl;
-            std::cout << "  --auto       Automatically run all methods for all interfaces without user input." << std::endl;
-            std::cout << "  --mock       Connect to a local mock server instead of the default Firebolt Demo Service." << std::endl;
-            std::cout << "  --platform   Connect to the platform's Firebolt service (default if available)." << std::endl;
-            std::cout << "  --dbg        Enable debug logging." << std::endl;
-            std::cout << "  --help       Show this help message." << std::endl;
+            std::cout << "SYNOPSIS" << std::endl;
+            std::cout << "  " << argv[0] << " [<options>]" << std::endl;
+            std::cout << std::endl;
+            std::cout << "OPTIONS" << std::endl;
+            std::cout << "  --auto       Automatically run all methods for all interfaces without user input" << std::endl;
+            std::cout << "  --mock       Connect to a local mock server instead of the default Firebolt Demo Service" << std::endl;
+            std::cout << "  --platform   Connect to the platform's Firebolt service (default if available)" << std::endl;
+            std::cout << "  --url <URL>  Specify a custom URL for the Firebolt service" << std::endl;
+            std::cout << "  --dbg        Enable debug logging" << std::endl;
+            std::cout << "  --help       Show this help message" << std::endl;
             /* clang-format on */
             return 0;
         }

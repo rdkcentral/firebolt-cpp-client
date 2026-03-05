@@ -2,6 +2,7 @@
 
 ### Changed
 - Updated Firebolt C++ Transport dependency to `v1.1.3`
+- In API Test App, URL can be specified on command line: `--url URL`
 
 ### Fixed
 - Prevented a crash when a mandatory field was missing from the JSON payload

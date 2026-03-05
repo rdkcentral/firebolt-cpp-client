@@ -47,6 +47,10 @@ class HDRFormat : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::HDRFo
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"hdr10", "hdr10Plus", "dolbyVision", "hlg"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         hdrFormat_.hdr10 = json["hdr10"].get<bool>();
         hdrFormat_.hdr10Plus = json["hdr10Plus"].get<bool>();
         hdrFormat_.dolbyVision = json["dolbyVision"].get<bool>();

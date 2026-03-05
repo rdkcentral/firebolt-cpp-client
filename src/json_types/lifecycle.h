@@ -55,6 +55,10 @@ class StateChange : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Lifecycle::
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        if (!checkRequiredFields(json, {"oldState", "newState"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
         oldState_ = LifecycleStateEnum.at(json["oldState"]);
         newState_ = LifecycleStateEnum.at(json["newState"]);
     }

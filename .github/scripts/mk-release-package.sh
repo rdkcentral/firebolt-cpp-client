@@ -23,7 +23,7 @@ version="0.1.0-unknown"
 sub_path=
 dst=
 
-while [[ -n $1 ]]; do
+while [[ ! -z $1 ]]; do
   case $1 in
   --package) package="$2"; shift;;
   --version) version="$2"; shift;;
@@ -47,11 +47,11 @@ else
   git ls-files $sub_path | git checkout-index --stdin -qf --prefix="$dist_path.tmp/"
   mv -T "$dist_path.tmp/$sub_path/" "$dist_path/"
 fi
-echo "$version" >$dist_path/.version
+rm -rf "$dist_path/.github"
+echo "$version" >"$dist_path/.version"
 tar -czf "build/$dist_name.tar.gz" -C "build" "$dist_name"
 
-if [[ -n "$dst" ]]; then
+if [[ ! -z "$dst" ]]; then
   mkdir -p "$dst"
   cp "build/$dist_name.tar.gz" "$dst/"
 fi
-

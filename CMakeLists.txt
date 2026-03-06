@@ -16,20 +16,11 @@
 
 cmake_minimum_required(VERSION 3.12)
 
-include(FetchContent)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 project(FireboltClient)
 
 include(version)
-
-if(EXISTS "${CMAKE_SOURCE_DIR}/.transport.version")
-    file(READ "${CMAKE_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION)
-    string(STRIP ${FIREBOLT_TRANSPORT_VERSION} FIREBOLT_TRANSPORT_VERSION)
-else()
-    message(FATAL_ERROR "Could not determine firebolt-cpp-transport version from .transport.version")
-endif()
 
 message(STATUS "Project version: ${PROJECT_VERSION}")
 
@@ -53,42 +44,15 @@ list(APPEND CMAKE_MODULE_PATH
     "${SYSROOT_PATH}/usr/lib/cmake"
 )
 
-if(NOT TARGET nlohmann_json::nlohmann_json)
-    find_package(nlohmann_json REQUIRED)
-endif()
+find_package(nlohmann_json CONFIG REQUIRED)
 
-if(NOT TARGET websocketpp::websocketpp)
-    find_package(websocketpp REQUIRED)
-endif()
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION_RAW)
+string(STRIP "${FIREBOLT_TRANSPORT_VERSION_RAW}" FIREBOLT_TRANSPORT_VERSION)
+string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1" FIREBOLT_TRANSPORT_MAJOR_VERSION "${FIREBOLT_TRANSPORT_VERSION}")
 
-find_package(FireboltTransport CONFIG QUIET)
+find_package(FireboltTransport ${FIREBOLT_TRANSPORT_MAJOR_VERSION} CONFIG REQUIRED)
 
-if(FireboltTransport_FOUND)
-    check_version_compatibility(FireboltTransport_VERSION_OK "${FireboltTransport_VERSION}" "${FIREBOLT_TRANSPORT_VERSION}")
-else()
-    set(FireboltTransport_VERSION_OK FALSE)
-endif()
-
-if(FireboltTransport_VERSION_OK)
-    message(STATUS "Installed FireboltTransport, ${FireboltTransport_VERSION}, matches expected version: ${FIREBOLT_TRANSPORT_VERSION}")
-else()
-    message(STATUS "FireboltTransport version mismatch or not found, expected '${FIREBOLT_TRANSPORT_VERSION}' but found '${FireboltTransport_VERSION}'")
-    if (BUILD_WITH_INSTALLED_TRANSPORT AND FireboltTransport_FOUND)
-        message(WARNING "Using installed FireboltTransport version '${FireboltTransport_VERSION}' even though it does not match expected version '${FIREBOLT_TRANSPORT_VERSION}'")
-    else()
-        message(STATUS "Will try to fetch it.")
-        FetchContent_Declare(
-            FireboltTransport
-            URL "https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${FIREBOLT_TRANSPORT_VERSION}/firebolt-cpp-transport-${FIREBOLT_TRANSPORT_VERSION}.tar.gz"
-            URL_HASH "SHA256=0a0c9394395a514d3ba6931a6c656886523c6b3f038b0cb991c27c837f0e506e"
-            DOWNLOAD_EXTRACT_TIMESTAMP true
-        )
-        set(ENABLE_TESTS_ORIG ${ENABLE_TESTS})
-        set(ENABLE_TESTS OFF)
-        FetchContent_MakeAvailable(FireboltTransport)
-        set(ENABLE_TESTS ${ENABLE_TESTS_ORIG})
-    endif()
-endif()
+message(STATUS "Transport: installed version: ${FireboltTransport_VERSION}, expected: ${FIREBOLT_TRANSPORT_VERSION}")
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 

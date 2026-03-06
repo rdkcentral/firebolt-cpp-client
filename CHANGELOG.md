@@ -1,3 +1,8 @@
+## [0.5.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.1...v0.5.2)
+
+### Changed
+- **Breaking**: Removed `FetchContent` from the build system. The Firebolt C++ Transport must now be installed separately (along with other dependencies) before building the project.
+
 ## [0.5.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.0...v0.5.1)
 
 ### Changed

@@ -17,7 +17,7 @@ The app binary name is:
 ## Command Line Usage
 
 ```bash
-api-test-app [--auto] [--mock] [--platform] [--url <URL>] [--dbg] [--help]
+api-test-app [--auto] [--mock] [--platform] [--url <URL>] [--legacy | --rpc-v2] [--dbg] [--help]
 ```
 
 ### Options
@@ -33,6 +33,12 @@ api-test-app [--auto] [--mock] [--platform] [--url <URL>] [--dbg] [--help]
 
 - `--url URL`
  Set the WebSocket endpoint to the specified URL.
+
+- `--legacy`
+ Override default protocol communication to legacy.
+
+- `--rpc-v2`
+ Override default protocol communication to JSON-RPC compliant.
 
 - `--dbg`
  Enable debug logging.

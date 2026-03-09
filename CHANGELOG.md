@@ -1,3 +1,8 @@
+## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.2...main)
+
+### Changed
+- Added protocol selection to the API Test App: `[--legacy | --rpc-v2]`
+
 ## [0.5.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.1...v0.5.2)
 
 ### Changed

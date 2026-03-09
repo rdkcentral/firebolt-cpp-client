@@ -34,7 +34,9 @@
 #include <cstdlib>
 #include <future>
 #include <ios>
+#include <optional>
 #include <unistd.h>
+#include <vector>
 
 int main(int argc, char** argv)
 {
@@ -42,6 +44,7 @@ int main(int argc, char** argv)
 
     Firebolt::LogLevel logLevel = Firebolt::LogLevel::Notice;
     std::string url;
+    std::optional<bool> legacyRPCv1;
 
     for (int i = 1; i < argc; ++i)
     {
@@ -66,6 +69,14 @@ int main(int argc, char** argv)
             }
             url = argv[++i];
         }
+        else if (std::string(argv[i]) == "--legacy")
+        {
+            legacyRPCv1 = true;
+        }
+        else if (std::string(argv[i]) == "--rpc-v2")
+        {
+            legacyRPCv1 = false;
+        }
         else if (std::string(argv[i]) == "--dbg")
         {
             logLevel = Firebolt::LogLevel::Debug;
@@ -81,6 +92,8 @@ int main(int argc, char** argv)
             std::cout << "  --mock       Connect to a local mock server instead of the default Firebolt Demo Service" << std::endl;
             std::cout << "  --platform   Connect to the platform's Firebolt service (default if available)" << std::endl;
             std::cout << "  --url <URL>  Specify a custom URL for the Firebolt service" << std::endl;
+            std::cout << "  --legacy     Use legacy communication" << std::endl;
+            std::cout << "  --rpc-v2     Use JSON-RPC compliant communication" << std::endl;
             std::cout << "  --dbg        Enable debug logging" << std::endl;
             std::cout << "  --help       Show this help message" << std::endl;
             /* clang-format on */
@@ -106,6 +119,10 @@ int main(int argc, char** argv)
     config.wsUrl = url;
     config.waitTime_ms = 1000;
     config.log.level = logLevel;
+    if (legacyRPCv1.has_value())
+    {
+        config.legacyRPCv1 = legacyRPCv1.value();
+    }
 
     std::promise<bool> connectionPromise;
     std::once_flag connectionOnce;

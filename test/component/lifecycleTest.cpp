@@ -29,7 +29,6 @@ class LifecycleTest : public ::testing::Test
 protected:
     void SetUp() override { eventReceived = false; }
 
-    // Create a condition variable and mutex to wait for the events to be received
     std::condition_variable cv;
     std::mutex mtx;
     bool eventReceived;
@@ -55,7 +54,7 @@ TEST_F(LifecycleTest, state)
     EXPECT_EQ(*result, Firebolt::Lifecycle::LifecycleState::ACTIVE);
 }
 
-TEST_F(LifecycleTest, subscribeOnState)
+TEST_F(LifecycleTest, subscribeOnState_JSON_RPC_compliant)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
         [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
@@ -75,7 +74,6 @@ TEST_F(LifecycleTest, subscribeOnState)
         });
     verifyEventSubscription(id);
 
-    // Trigger the event from the mock server
     triggerEvent("Lifecycle2.onStateChanged", R"({"value":[{"newState":"paused","oldState":"initializing"}]})");
 
     verifyEventReceived(mtx, cv, eventReceived);
@@ -84,7 +82,53 @@ TEST_F(LifecycleTest, subscribeOnState)
     triggerEvent("Lifecycle2.onStateChanged", R"([{"newState":"paused","oldState":"badstate"}])");
     verifyEventNotReceived(mtx, cv, eventReceived);
 
-    // Unsubscribe from the event
+    auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(LifecycleTest, subscribeOnState_noValue)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
+        [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
+        {
+            EXPECT_TRUE(changes.size() > 0);
+            std::cout << "[Subscription] Lifecycle state changed: " << static_cast<int>(changes[0].newState)
+                      << ", old state: " << static_cast<int>(changes[0].oldState) << std::endl;
+
+            EXPECT_EQ(changes[0].newState, Firebolt::Lifecycle::LifecycleState::PAUSED);
+            EXPECT_EQ(changes[0].oldState, Firebolt::Lifecycle::LifecycleState::INITIALIZING);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+    verifyEventSubscription(id);
+
+    Firebolt::Config config;
+    if (config.legacyRPCv1)
+    {
+        std::cout << "Commented out as it cannot be tested in CI/CI due to unknown 'id' value" << std::endl;
+        /*
+        nlohmann::json p;
+        p["id"] = 30;
+        p["result"] = {{{"newState", "paused"}, {"oldState", "initializing"}}};
+        triggerRaw(p.dump());
+        */
+    }
+    else
+    {
+        triggerRaw(
+            R"({ "method": "Lifecycle2.onStateChanged", "params": [{"newState":"paused","oldState":"initializing"}]})");
+    }
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    SetUp();
+    triggerEvent("Lifecycle2.onStateChanged", R"([{"newState":"paused","oldState":"badstate"}])");
+    verifyEventNotReceived(mtx, cv, eventReceived);
+
     auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }

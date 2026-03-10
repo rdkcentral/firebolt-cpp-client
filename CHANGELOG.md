@@ -1,7 +1,9 @@
-## [Unreleased](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.2...main)
+## [0.5.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.2...0.5.3)
 
 ### Changed
 - Added protocol selection to the API Test App: `[--legacy | --rpc-v2]`
+- Updated Firebolt C++ Transport dependency to `v1.1.5`: in legacy protocol result in event payload
+  can be an array
 
 ## [0.5.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.1...v0.5.2)
 

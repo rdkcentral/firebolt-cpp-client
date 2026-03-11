@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/texttospeech.h"
 #include "firebolt/texttospeech.h"
 #include "json_engine.h"
 #include "mock_helper.h"
@@ -26,6 +27,11 @@ class TextToSpeechTest : public ::testing::Test, protected MockBase
 protected:
     Firebolt::TextToSpeech::TextToSpeechImpl ttsImpl{mockHelper};
 };
+
+TEST_F(TextToSpeechTest, checkEnums)
+{
+    validate_enum("SpeechRate", Firebolt::TextToSpeech::JsonData::SpeechRateEnum);
+}
 
 TEST_F(TextToSpeechTest, listVoices)
 {

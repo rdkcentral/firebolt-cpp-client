@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/metrics.h"
 #include "metrics_impl.h"
 #include "mock_helper.h"
 
@@ -24,6 +25,11 @@ class MetricsTest : public ::testing::Test, protected MockBase
 protected:
     Firebolt::Metrics::MetricsImpl metricsImpl_{mockHelper};
 };
+
+TEST_F(MetricsTest, checkEnums)
+{
+    validate_enum("ErrorType", Firebolt::Metrics::JsonData::ErrorTypeEnum);
+}
 
 TEST_F(MetricsTest, Ready)
 {

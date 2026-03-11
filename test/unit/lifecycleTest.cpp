@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/lifecycle.h"
 #include "lifecycle_impl.h"
 #include "mock_helper.h"
 
@@ -36,6 +37,12 @@ protected:
 
     Firebolt::Lifecycle::LifecycleImpl lifecycleImpl_{mockHelper};
 };
+
+TEST_F(LifecycleTest, checkEnums)
+{
+    validate_enum("CloseType", Firebolt::Lifecycle::JsonData::CloseReasonEnum);
+    validate_enum("LifecycleState", Firebolt::Lifecycle::JsonData::LifecycleStateEnum);
+}
 
 TEST_F(LifecycleTest, close)
 {

@@ -19,7 +19,9 @@
 #pragma once
 
 #include "json_engine.h"
+#include <algorithm>
 #include <firebolt/helpers.h>
+#include <firebolt/json_types.h>
 #include <gmock/gmock.h>
 
 class MockHelper : public Firebolt::Helpers::IHelper
@@ -46,6 +48,30 @@ public:
 class MockBase
 {
 protected:
+    template <typename T>
+    void validate_enum(const std::string& enumName, const nlohmann::json& enums,
+                       const Firebolt::JSON::EnumType<T>& enumType)
+    {
+        for (const auto& expectedValue : enumType)
+        {
+            EXPECT_TRUE(std::find(enums.begin(), enums.end(), expectedValue.first) != enums.end())
+                << "Expected enum value: " << expectedValue.first
+                << " not found in OpenRPC schema for enum: " << enumName;
+        }
+        for (const auto& enumValue : enums)
+        {
+            auto it = std::find_if(enumType.begin(), enumType.end(), [&enumValue](const auto& pair)
+                                   { return pair.first == enumValue.get<std::string>(); });
+            EXPECT_TRUE(it != enumType.end())
+                << "An enum: " << enumValue.get<std::string>() << " from OpenRPC schema for enum: " << enumName
+                << " is not defined in sources";
+        }
+    }
+    template <typename T> void validate_enum(const std::string& enumName, const Firebolt::JSON::EnumType<T>& enumType)
+    {
+        validate_enum(enumName, jsonEngine["components"]["schemas"][enumName]["enum"], enumType);
+    }
+
     Firebolt::Result<nlohmann::json> getter(const std::string& methodName, const nlohmann::json& parameters)
     {
         nlohmann::json message;

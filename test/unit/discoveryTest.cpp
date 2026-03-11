@@ -18,6 +18,7 @@
 
 #include "discovery_impl.h"
 #include "json_engine.h"
+#include "json_types/common.h"
 #include "mock_helper.h"
 #include <firebolt/json_types.h>
 
@@ -26,6 +27,12 @@ class DiscoveryTest : public ::testing::Test, protected MockBase
 protected:
     Firebolt::Discovery::DiscoveryImpl discoveryImpl_{mockHelper};
 };
+
+TEST_F(DiscoveryTest, checkEnums)
+{
+    validate_enum("AgePolicy", jsonEngine["x-schemas"]["Policies"]["AgePolicy"]["anyOf"][1]["enum"],
+                  Firebolt::JsonData::AgePolicyEnum);
+}
 
 TEST_F(DiscoveryTest, watched)
 {

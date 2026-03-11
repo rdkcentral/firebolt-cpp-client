@@ -27,8 +27,8 @@ namespace Firebolt::Lifecycle::JsonData
 inline const Firebolt::JSON::EnumType<::Firebolt::Lifecycle::CloseType> CloseReasonEnum({
     {"deactivate", ::Firebolt::Lifecycle::CloseType::DEACTIVATE},
     {"unload", ::Firebolt::Lifecycle::CloseType::UNLOAD},
-    {"kill_reload", ::Firebolt::Lifecycle::CloseType::KILL_RELOAD},
-    {"kill_reactivate", ::Firebolt::Lifecycle::CloseType::KILL_REACTIVATE},
+    {"killReload", ::Firebolt::Lifecycle::CloseType::KILL_RELOAD},
+    {"killReactivate", ::Firebolt::Lifecycle::CloseType::KILL_REACTIVATE},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::Lifecycle::LifecycleState> LifecycleStateEnum({

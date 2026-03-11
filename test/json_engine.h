@@ -17,9 +17,9 @@
  */
 #pragma once
 
-#include "gtest/gtest.h"
 #include <firebolt/types.h>
 #include <fstream>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <nlohmann/json-schema.hpp>
 #include <nlohmann/json.hpp>
@@ -65,6 +65,8 @@ public:
         }
         return nlohmann::json{};
     }
+
+    const nlohmann::json operator[](const std::string& key) { return _data[key]; }
 
     nlohmann::json read_json_from_file()
     {

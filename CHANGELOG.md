@@ -1,4 +1,9 @@
-## [0.5.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.2...0.5.3)
+## [0.5.4](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.3...v0.5.4)
+
+### Fixed
+- Enums for Lifecycle.CloseType were not aligned with the spec: `killReload`, `killReactivate`
+
+## [0.5.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.2...v0.5.3)
 
 ### Changed
 - Added protocol selection to the API Test App: `[--legacy | --rpc-v2]`

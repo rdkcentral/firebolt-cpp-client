@@ -24,7 +24,7 @@
 #include <iostream>
 #include <mutex>
 
-class LifecycleTest : public ::testing::Test
+class LifecycleCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -36,7 +36,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(LifecycleTest, close)
+TEST_F(LifecycleCTest, close)
 
 {
     auto result =
@@ -44,7 +44,7 @@ TEST_F(LifecycleTest, close)
     ASSERT_TRUE(result) << "Error on calling LifecycleInterface.close() method";
 }
 
-TEST_F(LifecycleTest, state)
+TEST_F(LifecycleCTest, state)
 {
     Firebolt::Result<Firebolt::Lifecycle::LifecycleState> result =
         Firebolt::IFireboltAccessor::Instance().LifecycleInterface().state();
@@ -54,7 +54,7 @@ TEST_F(LifecycleTest, state)
     EXPECT_EQ(*result, Firebolt::Lifecycle::LifecycleState::ACTIVE);
 }
 
-TEST_F(LifecycleTest, subscribeOnState_JSON_RPC_compliant)
+TEST_F(LifecycleCTest, subscribeOnState_JSON_RPC_compliant)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
         [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
@@ -86,7 +86,7 @@ TEST_F(LifecycleTest, subscribeOnState_JSON_RPC_compliant)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(LifecycleTest, subscribeOnState_noValue)
+TEST_F(LifecycleCTest, subscribeOnState_noValue)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
         [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)

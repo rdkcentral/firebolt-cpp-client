@@ -20,14 +20,14 @@
 #include "json_engine.h"
 #include <gtest/gtest.h>
 
-class AdvertisingTest : public ::testing::Test
+class AdvertisingCTest : public ::testing::Test
 {
 
 protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(AdvertisingTest, AdvertisingId)
+TEST_F(AdvertisingCTest, AdvertisingId)
 {
     auto expectedValue = jsonEngine.get_value("Advertising.advertisingId");
     auto result = Firebolt::IFireboltAccessor::Instance().AdvertisingInterface().advertisingId();

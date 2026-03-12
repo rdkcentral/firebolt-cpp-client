@@ -20,13 +20,13 @@
 #include "json_engine.h"
 #include <gtest/gtest.h>
 
-class DisplayTest : public ::testing::Test
+class DisplayCTest : public ::testing::Test
 {
 protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(DisplayTest, Edid)
+TEST_F(DisplayCTest, Edid)
 {
     auto expectedValue = jsonEngine.get_value("Display.edid");
     auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().edid();
@@ -35,7 +35,7 @@ TEST_F(DisplayTest, Edid)
     EXPECT_EQ(*result, expectedValue.get<std::string>());
 }
 
-TEST_F(DisplayTest, MaxResolution)
+TEST_F(DisplayCTest, MaxResolution)
 {
     auto expectedValue = jsonEngine.get_value("Display.maxResolution");
 
@@ -46,7 +46,7 @@ TEST_F(DisplayTest, MaxResolution)
     EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());
 }
 
-TEST_F(DisplayTest, Size)
+TEST_F(DisplayCTest, Size)
 {
     auto expectedValue = jsonEngine.get_value("Display.size");
     auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().size();

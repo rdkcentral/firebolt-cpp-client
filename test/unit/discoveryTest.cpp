@@ -22,19 +22,19 @@
 #include "mock_helper.h"
 #include <firebolt/json_types.h>
 
-class DiscoveryTest : public ::testing::Test, protected MockBase
+class DiscoveryUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Discovery::DiscoveryImpl discoveryImpl_{mockHelper};
 };
 
-TEST_F(DiscoveryTest, checkEnums)
+TEST_F(DiscoveryUTest, checkEnums)
 {
     validate_enum("AgePolicy", jsonEngine["x-schemas"]["Policies"]["AgePolicy"]["anyOf"][1]["enum"],
                   Firebolt::JsonData::AgePolicyEnum);
 }
 
-TEST_F(DiscoveryTest, watched)
+TEST_F(DiscoveryUTest, watched)
 {
     mock("Discovery.watched");
     std::string entityId = "content123";
@@ -49,7 +49,7 @@ TEST_F(DiscoveryTest, watched)
     EXPECT_EQ(boolJson.value(), *result);
 }
 
-TEST_F(DiscoveryTest, watched_payload)
+TEST_F(DiscoveryUTest, watched_payload)
 {
     nlohmann::json expected;
     expected["entityId"] = "content123";

@@ -21,7 +21,7 @@
 #include "utils.h"
 #include <gtest/gtest.h>
 
-class AccessibilityTest : public ::testing::Test
+class AccessibilityCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -34,7 +34,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(AccessibilityTest, AudioDescription)
+TEST_F(AccessibilityCTest, AudioDescription)
 {
     auto expectedValue = jsonEngine.get_value("Accessibility.audioDescription");
     auto result = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().audioDescription();
@@ -44,7 +44,7 @@ TEST_F(AccessibilityTest, AudioDescription)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(AccessibilityTest, SubscribeOnAudioDescriptionChanged)
+TEST_F(AccessibilityCTest, SubscribeOnAudioDescriptionChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnAudioDescriptionChanged(
 
@@ -69,7 +69,7 @@ TEST_F(AccessibilityTest, SubscribeOnAudioDescriptionChanged)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(AccessibilityTest, ClosedCaptionsSettings)
+TEST_F(AccessibilityCTest, ClosedCaptionsSettings)
 {
     auto expectedValue = jsonEngine.get_value("Accessibility.closedCaptionsSettings");
     auto result = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().closedCaptionsSettings();
@@ -78,7 +78,7 @@ TEST_F(AccessibilityTest, ClosedCaptionsSettings)
     EXPECT_EQ((*result).preferredLanguages, expectedValue.at("preferredLanguages").get<std::vector<std::string>>());
 }
 
-TEST_F(AccessibilityTest, SubscribeOnClosedCaptionsSettingsChanged)
+TEST_F(AccessibilityCTest, SubscribeOnClosedCaptionsSettingsChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnClosedCaptionsSettingsChanged(
         [&](const Firebolt::Accessibility::ClosedCaptionsSettings& settings)
@@ -112,7 +112,7 @@ TEST_F(AccessibilityTest, SubscribeOnClosedCaptionsSettingsChanged)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(AccessibilityTest, HighContrastUI)
+TEST_F(AccessibilityCTest, HighContrastUI)
 {
     auto expectedValue = jsonEngine.get_value("Accessibility.highContrastUI");
     auto result = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().highContrastUI();
@@ -121,7 +121,7 @@ TEST_F(AccessibilityTest, HighContrastUI)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(AccessibilityTest, SubscribeOnHighContrastUIChanged)
+TEST_F(AccessibilityCTest, SubscribeOnHighContrastUIChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnHighContrastUIChanged(
         [&](const bool& enabled)
@@ -145,7 +145,7 @@ TEST_F(AccessibilityTest, SubscribeOnHighContrastUIChanged)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(AccessibilityTest, VoiceGuidanceSettings)
+TEST_F(AccessibilityCTest, VoiceGuidanceSettings)
 {
     auto expectedValue = jsonEngine.get_value("Accessibility.voiceGuidanceSettings");
     auto result = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().voiceGuidanceSettings();
@@ -156,7 +156,7 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettings)
     EXPECT_EQ((*result).navigationHints, expectedValue.at("navigationHints").get<bool>());
 }
 
-TEST_F(AccessibilityTest, SubscribeOnVoiceGuidanceSettingsChanged)
+TEST_F(AccessibilityCTest, SubscribeOnVoiceGuidanceSettingsChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnVoiceGuidanceSettingsChanged(
         [&](const Firebolt::Accessibility::VoiceGuidanceSettings& settings)

@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-class NetworkTest : public ::testing::Test
+class NetworkCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -34,7 +34,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(NetworkTest, Connected)
+TEST_F(NetworkCTest, Connected)
 {
     auto expectedValue = jsonEngine.get_value("Network.connected");
     auto result = Firebolt::IFireboltAccessor::Instance().NetworkInterface().connected();
@@ -42,7 +42,7 @@ TEST_F(NetworkTest, Connected)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
-TEST_F(NetworkTest, SubscribeOnConnectedChanged)
+TEST_F(NetworkCTest, SubscribeOnConnectedChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().NetworkInterface().subscribeOnConnectedChanged(
         [&](const bool& value)

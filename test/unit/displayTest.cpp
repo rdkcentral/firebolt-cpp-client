@@ -20,13 +20,13 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
-class DisplayTest : public ::testing::Test, protected MockBase
+class DisplayUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Display::DisplayImpl displayImpl_{mockHelper};
 };
 
-TEST_F(DisplayTest, Edid)
+TEST_F(DisplayUTest, Edid)
 {
     mock("Display.edid");
     auto expectedValue = jsonEngine.get_value("Display.edid");
@@ -36,7 +36,7 @@ TEST_F(DisplayTest, Edid)
     EXPECT_EQ(*result, expectedValue.get<std::string>());
 }
 
-TEST_F(DisplayTest, MaxResolution)
+TEST_F(DisplayUTest, MaxResolution)
 {
     mock("Display.maxResolution");
     auto expectedValue = jsonEngine.get_value("Display.maxResolution");
@@ -48,13 +48,13 @@ TEST_F(DisplayTest, MaxResolution)
     EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());
 }
 
-TEST_F(DisplayTest, MaxResolutionBadResponse)
+TEST_F(DisplayUTest, MaxResolutionBadResponse)
 {
     mock_with_response("Display.maxResolution", "bad_response");
     ASSERT_FALSE(displayImpl_.maxResolution()) << "DisplayImpl::maxResolution() did not return an error";
 }
 
-TEST_F(DisplayTest, Size)
+TEST_F(DisplayUTest, Size)
 {
     mock("Display.size");
     auto expectedValue = jsonEngine.get_value("Display.size");
@@ -65,7 +65,7 @@ TEST_F(DisplayTest, Size)
     EXPECT_EQ(result->width, expectedValue.at("width").get<uint32_t>());
 }
 
-TEST_F(DisplayTest, SizeBadResponse)
+TEST_F(DisplayUTest, SizeBadResponse)
 {
     mock_with_response("Display.size", "bad_response");
     ASSERT_FALSE(displayImpl_.size()) << "DisplayImpl::size() did not return an error";

@@ -21,13 +21,13 @@
 #include "json_engine.h"
 #include "utils.h"
 
-class TextToSpeechTest : public ::testing::Test
+class TextToSpeechCTest : public ::testing::Test
 {
 protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(TextToSpeechTest, listVoices)
+TEST_F(TextToSpeechCTest, listVoices)
 {
     auto voices = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().listVoices("en-US");
     ASSERT_TRUE(voices) << "Error listing voices";
@@ -37,7 +37,7 @@ TEST_F(TextToSpeechTest, listVoices)
     EXPECT_EQ(voices->voices.size(), expectedValue["voices"].size());
 }
 
-TEST_F(TextToSpeechTest, speak)
+TEST_F(TextToSpeechCTest, speak)
 {
     auto speakResult =
         Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.");
@@ -49,7 +49,7 @@ TEST_F(TextToSpeechTest, speak)
     EXPECT_EQ(speakResult->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, pause)
+TEST_F(TextToSpeechCTest, pause)
 {
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().pause(speechId);
@@ -59,7 +59,7 @@ TEST_F(TextToSpeechTest, pause)
     EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, resume)
+TEST_F(TextToSpeechCTest, resume)
 {
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().resume(speechId);
@@ -69,7 +69,7 @@ TEST_F(TextToSpeechTest, resume)
     EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, cancel)
+TEST_F(TextToSpeechCTest, cancel)
 {
     int32_t speechId = 1;
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().cancel(speechId);
@@ -79,7 +79,7 @@ TEST_F(TextToSpeechTest, cancel)
     EXPECT_EQ(result->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, getSpeechState)
+TEST_F(TextToSpeechCTest, getSpeechState)
 {
     int32_t speechId = 1;
     auto speechState = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().getSpeechState(speechId);
@@ -92,7 +92,7 @@ TEST_F(TextToSpeechTest, getSpeechState)
     EXPECT_EQ(speechState->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
+TEST_F(TextToSpeechCTest, subscribeOnWillSpeak)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -119,7 +119,7 @@ TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
+TEST_F(TextToSpeechCTest, subscribeOnSpeechStart)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -147,7 +147,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
+TEST_F(TextToSpeechCTest, subscribeOnSpeechComplete)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -175,7 +175,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
+TEST_F(TextToSpeechCTest, subscribeOnSpeechPause)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -203,7 +203,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
+TEST_F(TextToSpeechCTest, subscribeOnSpeechResume)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -230,7 +230,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
     auto result = Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().unsubscribe(id.value_or(0));
     verifyUnsubscribeResult(result);
 }
-TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
+TEST_F(TextToSpeechCTest, subscribeOnSpeechInterrupted)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -258,7 +258,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnNetworkError)
+TEST_F(TextToSpeechCTest, subscribeOnNetworkError)
 {
     std::condition_variable cv;
     std::mutex mtx;
@@ -286,7 +286,7 @@ TEST_F(TextToSpeechTest, subscribeOnNetworkError)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
+TEST_F(TextToSpeechCTest, subscribeOnPlaybackError)
 {
     std::condition_variable cv;
     std::mutex mtx;

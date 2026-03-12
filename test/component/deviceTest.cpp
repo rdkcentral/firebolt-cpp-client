@@ -23,7 +23,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
-class DeviceTest : public ::testing::Test
+class DeviceCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -35,7 +35,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(DeviceTest, ChipsetId)
+TEST_F(DeviceCTest, ChipsetId)
 {
     auto expectedValue = jsonEngine.get_value("Device.chipsetId");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().chipsetId();
@@ -43,7 +43,7 @@ TEST_F(DeviceTest, ChipsetId)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, DeviceClass)
+TEST_F(DeviceCTest, DeviceClass)
 {
     auto expectedValue = jsonEngine.get_value("Device.deviceClass");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().deviceClass();
@@ -51,7 +51,7 @@ TEST_F(DeviceTest, DeviceClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
-TEST_F(DeviceTest, Hdr)
+TEST_F(DeviceCTest, Hdr)
 {
     auto expectedValue = jsonEngine.get_value("Device.hdr");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().hdr();
@@ -62,7 +62,7 @@ TEST_F(DeviceTest, Hdr)
     EXPECT_EQ(result->hlg, expectedValue["hlg"].get<bool>());
 }
 
-TEST_F(DeviceTest, TimeInActiveState)
+TEST_F(DeviceCTest, TimeInActiveState)
 {
     auto expectedValue = jsonEngine.get_value("Device.timeInActiveState");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().timeInActiveState();
@@ -75,7 +75,7 @@ TEST_F(DeviceTest, TimeInActiveState)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, Uid)
+TEST_F(DeviceCTest, Uid)
 {
     auto expectedValue = jsonEngine.get_value("Device.uid");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().uid();
@@ -83,7 +83,7 @@ TEST_F(DeviceTest, Uid)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, Uptime)
+TEST_F(DeviceCTest, Uptime)
 {
     auto expectedValue = jsonEngine.get_value("Device.uptime");
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().uptime();
@@ -96,7 +96,7 @@ TEST_F(DeviceTest, Uptime)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, SubscribeOnHdrChanged)
+TEST_F(DeviceCTest, SubscribeOnHdrChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnHdrChanged(
         [&](const Firebolt::Device::HDRFormat& value)

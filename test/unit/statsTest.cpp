@@ -20,13 +20,13 @@
 #include "mock_helper.h"
 #include "stats_impl.h"
 
-class StatsTest : public ::testing::Test, protected MockBase
+class StatsUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Stats::StatsImpl statsImpl_{mockHelper};
 };
 
-TEST_F(StatsTest, MemoryUsage)
+TEST_F(StatsUTest, MemoryUsage)
 {
     mock("Stats.memoryUsage");
     auto expectedValue = jsonEngine.get_value("Stats.memoryUsage");
@@ -41,7 +41,7 @@ TEST_F(StatsTest, MemoryUsage)
     EXPECT_EQ(result->gpuMemoryLimit, expectedValue.at("gpuMemoryLimitKiB").get<uint32_t>());
 }
 
-TEST_F(StatsTest, MemoryUsageBadResponse)
+TEST_F(StatsUTest, MemoryUsageBadResponse)
 {
     mock_with_response("Stats.memoryUsage", "bad_response");
     ASSERT_FALSE(statsImpl_.memoryUsage()) << "StatsImpl::memoryUsage() did not return an error";

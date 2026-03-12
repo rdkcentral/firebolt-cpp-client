@@ -20,13 +20,13 @@
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
 
-class DiscoveryTest : public ::testing::Test
+class DiscoveryCTest : public ::testing::Test
 {
 protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(DiscoveryTest, Watched)
+TEST_F(DiscoveryCTest, Watched)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched("entity123", 0.75f, true,
                                                                                        "2024-10-01T12:00:00Z",

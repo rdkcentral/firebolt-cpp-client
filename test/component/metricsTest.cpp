@@ -21,7 +21,7 @@
 #include "utils.h"
 #include <gtest/gtest.h>
 
-class MetricsTest : public ::testing::Test
+class MetricsCTest : public ::testing::Test
 {
 protected:
     void SetUp() override {}
@@ -29,7 +29,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(MetricsTest, Ready)
+TEST_F(MetricsCTest, Ready)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.ready");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().ready();
@@ -37,7 +37,7 @@ TEST_F(MetricsTest, Ready)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, SignIn)
+TEST_F(MetricsCTest, SignIn)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.signIn");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().signIn();
@@ -45,7 +45,7 @@ TEST_F(MetricsTest, SignIn)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, SignOut)
+TEST_F(MetricsCTest, SignOut)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.signOut");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().signOut();
@@ -53,7 +53,7 @@ TEST_F(MetricsTest, SignOut)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, StartContent)
+TEST_F(MetricsCTest, StartContent)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.startContent");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().startContent("entity123",
@@ -62,7 +62,7 @@ TEST_F(MetricsTest, StartContent)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, StopContent)
+TEST_F(MetricsCTest, StopContent)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.stopContent");
     auto result =
@@ -71,7 +71,7 @@ TEST_F(MetricsTest, StopContent)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, Page)
+TEST_F(MetricsCTest, Page)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.page");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().page("homePage", Firebolt::AgePolicy::ADULT);
@@ -79,7 +79,7 @@ TEST_F(MetricsTest, Page)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, Error)
+TEST_F(MetricsCTest, Error)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.error");
     auto result = Firebolt::IFireboltAccessor::Instance()
@@ -91,7 +91,7 @@ TEST_F(MetricsTest, Error)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, ErrorNoParameters)
+TEST_F(MetricsCTest, ErrorNoParameters)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.error");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().error(Firebolt::Metrics::ErrorType::Network,
@@ -102,7 +102,7 @@ TEST_F(MetricsTest, ErrorNoParameters)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, ErrorNoAgePolicy)
+TEST_F(MetricsCTest, ErrorNoAgePolicy)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.error");
     auto result = Firebolt::IFireboltAccessor::Instance()
@@ -114,7 +114,7 @@ TEST_F(MetricsTest, ErrorNoAgePolicy)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaLoadStart)
+TEST_F(MetricsCTest, MediaLoadStart)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaLoadStart");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaLoadStart("mediaEntity123",
@@ -123,7 +123,7 @@ TEST_F(MetricsTest, MediaLoadStart)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaPlay)
+TEST_F(MetricsCTest, MediaPlay)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaPlay");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPlay("mediaEntity123",
@@ -132,7 +132,7 @@ TEST_F(MetricsTest, MediaPlay)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaPlaying)
+TEST_F(MetricsCTest, MediaPlaying)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaPlaying");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPlaying("mediaEntity123",
@@ -141,7 +141,7 @@ TEST_F(MetricsTest, MediaPlaying)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaPause)
+TEST_F(MetricsCTest, MediaPause)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaPause");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPause("mediaEntity123",
@@ -150,7 +150,7 @@ TEST_F(MetricsTest, MediaPause)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaWaiting)
+TEST_F(MetricsCTest, MediaWaiting)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaWaiting");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaWaiting("mediaEntity123",
@@ -159,7 +159,7 @@ TEST_F(MetricsTest, MediaWaiting)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaSeeking)
+TEST_F(MetricsCTest, MediaSeeking)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaSeeking");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeking("mediaEntity123", 0.5,
@@ -168,7 +168,7 @@ TEST_F(MetricsTest, MediaSeeking)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaSeekingInt)
+TEST_F(MetricsCTest, MediaSeekingInt)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaSeeking");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeking("mediaEntity123", 500,
@@ -177,7 +177,7 @@ TEST_F(MetricsTest, MediaSeekingInt)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaSeeked)
+TEST_F(MetricsCTest, MediaSeeked)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaSeeked");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeked("mediaEntity123", 0.5,
@@ -186,7 +186,7 @@ TEST_F(MetricsTest, MediaSeeked)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaSeekedInt)
+TEST_F(MetricsCTest, MediaSeekedInt)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaSeeked");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeked("mediaEntity123", 500,
@@ -195,7 +195,7 @@ TEST_F(MetricsTest, MediaSeekedInt)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaRateChanged)
+TEST_F(MetricsCTest, MediaRateChanged)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaRateChanged");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaRateChanged("mediaEntity123", 1.5,
@@ -204,7 +204,7 @@ TEST_F(MetricsTest, MediaRateChanged)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaRenditionChanged)
+TEST_F(MetricsCTest, MediaRenditionChanged)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaRenditionChanged");
     auto result =
@@ -215,7 +215,7 @@ TEST_F(MetricsTest, MediaRenditionChanged)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaRenditionChangedNoProfile)
+TEST_F(MetricsCTest, MediaRenditionChangedNoProfile)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaRenditionChanged");
     auto result =
@@ -226,7 +226,7 @@ TEST_F(MetricsTest, MediaRenditionChangedNoProfile)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaRenditionChangedNoAgePolicy)
+TEST_F(MetricsCTest, MediaRenditionChangedNoAgePolicy)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaRenditionChanged");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaRenditionChanged("mediaEntity123",
@@ -237,7 +237,7 @@ TEST_F(MetricsTest, MediaRenditionChangedNoAgePolicy)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, MediaEnded)
+TEST_F(MetricsCTest, MediaEnded)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.mediaEnded");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaEnded("mediaEntity123",
@@ -246,7 +246,7 @@ TEST_F(MetricsTest, MediaEnded)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, Event)
+TEST_F(MetricsCTest, Event)
 {
     auto expectedValue = jsonEngine.get_value("Metrics.event");
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().event("https://com.example.event",
@@ -256,7 +256,7 @@ TEST_F(MetricsTest, Event)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(MetricsTest, AppInfo)
+TEST_F(MetricsCTest, AppInfo)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().appInfo("1.0.0");
     ASSERT_TRUE(result) << "MetricsImpl::appInfo() returned an error";

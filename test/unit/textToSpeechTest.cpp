@@ -22,18 +22,18 @@
 #include "mock_helper.h"
 #include "texttospeech_impl.h"
 
-class TextToSpeechTest : public ::testing::Test, protected MockBase
+class TextToSpeechUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::TextToSpeech::TextToSpeechImpl ttsImpl{mockHelper};
 };
 
-TEST_F(TextToSpeechTest, checkEnums)
+TEST_F(TextToSpeechUTest, checkEnums)
 {
     validate_enum("SpeechRate", Firebolt::TextToSpeech::JsonData::SpeechRateEnum);
 }
 
-TEST_F(TextToSpeechTest, listVoices)
+TEST_F(TextToSpeechUTest, listVoices)
 {
     mock("TextToSpeech.listvoices");
 
@@ -49,7 +49,7 @@ TEST_F(TextToSpeechTest, listVoices)
     }
 }
 
-TEST_F(TextToSpeechTest, speak)
+TEST_F(TextToSpeechUTest, speak)
 {
     mock("TextToSpeech.speak");
 
@@ -62,7 +62,7 @@ TEST_F(TextToSpeechTest, speak)
     EXPECT_EQ(speak->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, pause)
+TEST_F(TextToSpeechUTest, pause)
 {
     mock("TextToSpeech.pause");
 
@@ -74,7 +74,7 @@ TEST_F(TextToSpeechTest, pause)
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, resume)
+TEST_F(TextToSpeechUTest, resume)
 {
     mock("TextToSpeech.resume");
 
@@ -86,7 +86,7 @@ TEST_F(TextToSpeechTest, resume)
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, cancel)
+TEST_F(TextToSpeechUTest, cancel)
 {
     mock("TextToSpeech.cancel");
 
@@ -98,7 +98,7 @@ TEST_F(TextToSpeechTest, cancel)
     EXPECT_EQ(resp->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, getSpeechState)
+TEST_F(TextToSpeechUTest, getSpeechState)
 {
     mock("TextToSpeech.getspeechstate");
 
@@ -113,7 +113,7 @@ TEST_F(TextToSpeechTest, getSpeechState)
     EXPECT_EQ(speechStateResp->success, expectedValue["success"].get<bool>());
 }
 
-TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
+TEST_F(TextToSpeechUTest, subscribeOnWillSpeak)
 {
     mockSubscribe("TextToSpeech.onWillspeak");
 
@@ -124,7 +124,7 @@ TEST_F(TextToSpeechTest, subscribeOnWillSpeak)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
+TEST_F(TextToSpeechUTest, subscribeOnSpeechStart)
 {
     mockSubscribe("TextToSpeech.onSpeechstart");
 
@@ -135,7 +135,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechStart)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
+TEST_F(TextToSpeechUTest, subscribeOnSpeechPause)
 {
     mockSubscribe("TextToSpeech.onSpeechpause");
 
@@ -146,7 +146,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechPause)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
+TEST_F(TextToSpeechUTest, subscribeOnSpeechResume)
 {
     mockSubscribe("TextToSpeech.onSpeechresume");
 
@@ -157,7 +157,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechResume)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
+TEST_F(TextToSpeechUTest, subscribeOnSpeechComplete)
 {
     mockSubscribe("TextToSpeech.onSpeechcomplete");
 
@@ -168,7 +168,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechComplete)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
+TEST_F(TextToSpeechUTest, subscribeOnSpeechInterrupted)
 {
     mockSubscribe("TextToSpeech.onSpeechinterrupted");
 
@@ -179,7 +179,7 @@ TEST_F(TextToSpeechTest, subscribeOnSpeechInterrupted)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnNetworkError)
+TEST_F(TextToSpeechUTest, subscribeOnNetworkError)
 {
     mockSubscribe("TextToSpeech.onNetworkerror");
 
@@ -190,7 +190,7 @@ TEST_F(TextToSpeechTest, subscribeOnNetworkError)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(TextToSpeechTest, subscribeOnPlaybackError)
+TEST_F(TextToSpeechUTest, subscribeOnPlaybackError)
 {
     mockSubscribe("TextToSpeech.onPlaybackerror");
 

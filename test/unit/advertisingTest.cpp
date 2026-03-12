@@ -20,13 +20,13 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
-class AdvertisingTest : public ::testing::Test, protected MockBase
+class AdvertisingUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Advertising::AdvertisingImpl advertisingImpl_{mockHelper};
 };
 
-TEST_F(AdvertisingTest, advertisingId)
+TEST_F(AdvertisingUTest, advertisingId)
 {
     mock("Advertising.advertisingId");
     auto expectedValue = jsonEngine.get_value("Advertising.advertisingId");
@@ -39,7 +39,7 @@ TEST_F(AdvertisingTest, advertisingId)
     EXPECT_EQ(result->lmt, expectedValue["lmt"].get<std::string>());
 }
 
-TEST_F(AdvertisingTest, advertisingTestBadResponse)
+TEST_F(AdvertisingUTest, advertisingTestBadResponse)
 {
     mock_with_response("Advertising.advertisingId", "bad_response");
     ASSERT_FALSE(advertisingImpl_.advertisingId()) << "AdvertisingImpl::advertisingId() did not return an error";

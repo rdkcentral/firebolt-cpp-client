@@ -24,7 +24,7 @@
 #include <iostream>
 #include <mutex>
 
-class PresentationTest : public ::testing::Test
+class PresentationCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -36,7 +36,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(PresentationTest, focused)
+TEST_F(PresentationCTest, focused)
 {
     auto expectedValue = jsonEngine.get_value("Presentation.focused");
     auto result = Firebolt::IFireboltAccessor::Instance().PresentationInterface().focused();
@@ -45,7 +45,7 @@ TEST_F(PresentationTest, focused)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
-TEST_F(PresentationTest, subscribeOnFocusedChanged)
+TEST_F(PresentationCTest, subscribeOnFocusedChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().PresentationInterface().subscribeOnFocusedChanged(
         [&](const bool& focus)
@@ -66,7 +66,7 @@ TEST_F(PresentationTest, subscribeOnFocusedChanged)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(PresentationTest, unsubscribeInCallback)
+TEST_F(PresentationCTest, unsubscribeInCallback)
 {
     Firebolt::SubscriptionId subscriptionId;
     Firebolt::Result<Firebolt::SubscriptionId> id =

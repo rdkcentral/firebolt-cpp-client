@@ -20,13 +20,13 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
-class AccessibilityTest : public ::testing::Test, protected MockBase
+class AccessibilityUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Accessibility::AccessibilityImpl accessibilityImpl_{mockHelper};
 };
 
-TEST_F(AccessibilityTest, AudioDescription)
+TEST_F(AccessibilityUTest, AudioDescription)
 {
     mock("Accessibility.audioDescription");
     auto expectedValue = jsonEngine.get_value("Accessibility.audioDescription");
@@ -38,14 +38,14 @@ TEST_F(AccessibilityTest, AudioDescription)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
-TEST_F(AccessibilityTest, AudioDescriptionBadResponse)
+TEST_F(AccessibilityUTest, AudioDescriptionBadResponse)
 {
     mock_with_response("Accessibility.audioDescription", "invalid_response");
     ASSERT_FALSE(accessibilityImpl_.audioDescription())
         << "AccessibilityImpl::audioDescription() did not return an error";
 }
 
-TEST_F(AccessibilityTest, SubscribeOnAudioDescriptionChanged)
+TEST_F(AccessibilityUTest, SubscribeOnAudioDescriptionChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Accessibility.onAudioDescriptionChanged");
@@ -58,7 +58,7 @@ TEST_F(AccessibilityTest, SubscribeOnAudioDescriptionChanged)
     accessibilityImpl_.unsubscribe(*result);
 }
 
-TEST_F(AccessibilityTest, ClosedCaptionsSettings)
+TEST_F(AccessibilityUTest, ClosedCaptionsSettings)
 {
     mock("Accessibility.closedCaptionsSettings");
     auto expectedValue = jsonEngine.get_value("Accessibility.closedCaptionsSettings");
@@ -70,14 +70,14 @@ TEST_F(AccessibilityTest, ClosedCaptionsSettings)
     EXPECT_EQ((*result).preferredLanguages, expectedValue["preferredLanguages"].get<std::vector<std::string>>());
 }
 
-TEST_F(AccessibilityTest, ClosedCaptionsSettingsBadResponse)
+TEST_F(AccessibilityUTest, ClosedCaptionsSettingsBadResponse)
 {
     mock_with_response("Accessibility.closedCaptionsSettings", "invalid_response");
     ASSERT_FALSE(accessibilityImpl_.closedCaptionsSettings())
         << "AccessibilityImpl::closedCaptionsSettings() did not return an error";
 }
 
-TEST_F(AccessibilityTest, SubscribeOnClosedCaptionsSettingsChanged)
+TEST_F(AccessibilityUTest, SubscribeOnClosedCaptionsSettingsChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Accessibility.onClosedCaptionsSettingsChanged");
@@ -91,7 +91,7 @@ TEST_F(AccessibilityTest, SubscribeOnClosedCaptionsSettingsChanged)
     accessibilityImpl_.unsubscribe(*result);
 }
 
-TEST_F(AccessibilityTest, HighContrastUI)
+TEST_F(AccessibilityUTest, HighContrastUI)
 {
     mock("Accessibility.highContrastUI");
     auto expectedValue = jsonEngine.get_value("Accessibility.highContrastUI");
@@ -103,13 +103,13 @@ TEST_F(AccessibilityTest, HighContrastUI)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(AccessibilityTest, HighContrastUIBadResponse)
+TEST_F(AccessibilityUTest, HighContrastUIBadResponse)
 {
     mock_with_response("Accessibility.highContrastUI", "invalid_response");
     ASSERT_FALSE(accessibilityImpl_.highContrastUI()) << "AccessibilityImpl::highContrastUI() did not return an error";
 }
 
-TEST_F(AccessibilityTest, SubscribeOnHighContrastUIChanged)
+TEST_F(AccessibilityUTest, SubscribeOnHighContrastUIChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Accessibility.onHighContrastUIChanged");
@@ -122,7 +122,7 @@ TEST_F(AccessibilityTest, SubscribeOnHighContrastUIChanged)
     accessibilityImpl_.unsubscribe(*result);
 }
 
-TEST_F(AccessibilityTest, VoiceGuidanceSettings)
+TEST_F(AccessibilityUTest, VoiceGuidanceSettings)
 {
     mock("Accessibility.voiceGuidanceSettings");
     auto expectedValue = jsonEngine.get_value("Accessibility.voiceGuidanceSettings");
@@ -135,7 +135,7 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettings)
     EXPECT_EQ((*result).navigationHints, expectedValue["navigationHints"].get<bool>());
 }
 
-TEST_F(AccessibilityTest, VoiceGuidanceSettingsPartial)
+TEST_F(AccessibilityUTest, VoiceGuidanceSettingsPartial)
 {
     mock_with_response("Accessibility.voiceGuidanceSettings", nlohmann::json::parse("{ \"enabled\": true }"));
     auto result = accessibilityImpl_.voiceGuidanceSettings();
@@ -143,14 +143,14 @@ TEST_F(AccessibilityTest, VoiceGuidanceSettingsPartial)
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
-TEST_F(AccessibilityTest, VoiceGuidanceSettingsBadResponse)
+TEST_F(AccessibilityUTest, VoiceGuidanceSettingsBadResponse)
 {
     mock_with_response("Accessibility.voiceGuidanceSettings", "invalid_response");
     ASSERT_FALSE(accessibilityImpl_.voiceGuidanceSettings())
         << "AccessibilityImpl::voiceGuidanceSettings() did not return an error";
 }
 
-TEST_F(AccessibilityTest, SubscribeOnVoiceGuidanceSettingsChanged)
+TEST_F(AccessibilityUTest, SubscribeOnVoiceGuidanceSettingsChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Accessibility.onVoiceGuidanceSettingsChanged");

@@ -20,13 +20,13 @@
 #include "mock_helper.h"
 #include "presentation_impl.h"
 
-class PresentationTest : public ::testing::Test, protected MockBase
+class PresentationUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Presentation::PresentationImpl presentationImpl{mockHelper};
 };
 
-TEST_F(PresentationTest, Focused)
+TEST_F(PresentationUTest, Focused)
 {
     mock("Presentation.focused");
     auto expectedValue = jsonEngine.get_value("Presentation.focused");
@@ -38,13 +38,13 @@ TEST_F(PresentationTest, Focused)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
-TEST_F(PresentationTest, FocusedBadResponse)
+TEST_F(PresentationUTest, FocusedBadResponse)
 {
     mock_with_response("Presentation.focused", "invalid_response");
     ASSERT_FALSE(presentationImpl.focused()) << "Presentation::focused() did not return an error";
 }
 
-TEST_F(PresentationTest, SubscribeOnFocusedChanged)
+TEST_F(PresentationUTest, SubscribeOnFocusedChanged)
 {
     mockSubscribe("Presentation.onFocusedChanged");
 

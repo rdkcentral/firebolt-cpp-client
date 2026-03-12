@@ -24,7 +24,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
 
-class LifecycleTest : public ::testing::Test, protected MockBase
+class LifecycleUTest : public ::testing::Test, protected MockBase
 {
 protected:
     void SetUp() override {}
@@ -38,13 +38,13 @@ protected:
     Firebolt::Lifecycle::LifecycleImpl lifecycleImpl_{mockHelper};
 };
 
-TEST_F(LifecycleTest, checkEnums)
+TEST_F(LifecycleUTest, checkEnums)
 {
     validate_enum("CloseType", Firebolt::Lifecycle::JsonData::CloseReasonEnum);
     validate_enum("LifecycleState", Firebolt::Lifecycle::JsonData::LifecycleStateEnum);
 }
 
-TEST_F(LifecycleTest, close)
+TEST_F(LifecycleUTest, close)
 {
     nlohmann::json expectedParams;
     expectedParams["type"] = "deactivate";
@@ -56,7 +56,7 @@ TEST_F(LifecycleTest, close)
     ASSERT_TRUE(result) << "Error on invoke";
 }
 
-TEST_F(LifecycleTest, state)
+TEST_F(LifecycleUTest, state)
 {
     mock_with_response("Lifecycle2.state", "initializing");
     Firebolt::Result<Firebolt::Lifecycle::LifecycleState> result = lifecycleImpl_.state();
@@ -64,14 +64,14 @@ TEST_F(LifecycleTest, state)
     EXPECT_EQ(*result, Firebolt::Lifecycle::LifecycleState::INITIALIZING);
 }
 
-TEST_F(LifecycleTest, stateBadResponse)
+TEST_F(LifecycleUTest, stateBadResponse)
 {
     mock_with_response("Lifecycle2.state", "invalid_response");
     Firebolt::Result<Firebolt::Lifecycle::LifecycleState> result = lifecycleImpl_.state();
     ASSERT_FALSE(result) << "LifecycleImpl::state() did not return an error";
 }
 
-TEST_F(LifecycleTest, subscribeOnStateChanged)
+TEST_F(LifecycleUTest, subscribeOnStateChanged)
 {
     EXPECT_CALL(mockHelper, subscribe(_, "Lifecycle2.onStateChanged", _, _))
         .WillOnce(Invoke([&](void* /*owner*/, const std::string& /*eventName*/, std::any&& /*notification*/,

@@ -19,13 +19,13 @@
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
 
-class StatsTest : public ::testing::Test
+class StatsCTest : public ::testing::Test
 {
 protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(StatsTest, MemoryUsage)
+TEST_F(StatsCTest, MemoryUsage)
 {
     auto expectedValue = jsonEngine.get_value("Stats.memoryUsage");
 

@@ -20,13 +20,13 @@
 #include "mock_helper.h"
 #include "network_impl.h"
 
-class NetworkTest : public ::testing::Test, protected MockBase
+class NetworkUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Network::NetworkImpl networkImpl_{mockHelper};
 };
 
-TEST_F(NetworkTest, Connected)
+TEST_F(NetworkUTest, Connected)
 {
     mock("Network.connected");
     auto expectedValue = jsonEngine.get_value("Network.connected");
@@ -37,7 +37,7 @@ TEST_F(NetworkTest, Connected)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
-TEST_F(NetworkTest, SubscribeOnConnectedChanged)
+TEST_F(NetworkUTest, SubscribeOnConnectedChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Network.onConnectedChanged");

@@ -21,13 +21,13 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
-class DeviceTest : public ::testing::Test, protected MockBase
+class DeviceUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Device::DeviceImpl deviceImpl_{mockHelper};
 };
 
-TEST_F(DeviceTest, ChipsetId)
+TEST_F(DeviceUTest, ChipsetId)
 {
     mock("Device.chipsetId");
     auto expectedValue = jsonEngine.get_value("Device.chipsetId");
@@ -38,13 +38,13 @@ TEST_F(DeviceTest, ChipsetId)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, ChipsetIdBadResponse)
+TEST_F(DeviceUTest, ChipsetIdBadResponse)
 {
     mock_with_response("Device.chipsetId", 12345);
     ASSERT_FALSE(deviceImpl_.chipsetId()) << "DeviceImpl::chipsetId() did not return an error";
 }
 
-TEST_F(DeviceTest, DeviceClass)
+TEST_F(DeviceUTest, DeviceClass)
 {
     mock("Device.deviceClass");
     auto expectedValue = jsonEngine.get_value("Device.deviceClass");
@@ -56,13 +56,13 @@ TEST_F(DeviceTest, DeviceClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
-TEST_F(DeviceTest, DeviceClassBadResponse)
+TEST_F(DeviceUTest, DeviceClassBadResponse)
 {
     mock_with_response("Device.deviceClass", "abc");
     ASSERT_FALSE(deviceImpl_.deviceClass()) << "DeviceImpl::deviceClass() didn't returned an error";
 }
 
-TEST_F(DeviceTest, Hdr)
+TEST_F(DeviceUTest, Hdr)
 {
     mock("Device.hdr");
     auto expectedValue = jsonEngine.get_value("Device.hdr");
@@ -77,7 +77,7 @@ TEST_F(DeviceTest, Hdr)
     EXPECT_EQ(result->hlg, expectedValue["hlg"].get<bool>());
 }
 
-TEST_F(DeviceTest, TimeInActiveState)
+TEST_F(DeviceUTest, TimeInActiveState)
 {
     mock("Device.timeInActiveState");
     auto expectedValue = jsonEngine.get_value("Device.timeInActiveState");
@@ -88,13 +88,13 @@ TEST_F(DeviceTest, TimeInActiveState)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, TimeInActiveStateBadResponse)
+TEST_F(DeviceUTest, TimeInActiveStateBadResponse)
 {
     mock_with_response("Device.timeInActiveState", "invalid_response");
     ASSERT_FALSE(deviceImpl_.timeInActiveState()) << "DeviceImpl::timeInActiveState() did not return an error";
 }
 
-TEST_F(DeviceTest, Uid)
+TEST_F(DeviceUTest, Uid)
 {
     mock("Device.uid");
     auto expectedValue = jsonEngine.get_value("Device.uid");
@@ -105,12 +105,12 @@ TEST_F(DeviceTest, Uid)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, UidBadResponse)
+TEST_F(DeviceUTest, UidBadResponse)
 {
     mock_with_response("Device.uid", 67890);
     ASSERT_FALSE(deviceImpl_.uid()) << "DeviceImpl::uid() did not return an error";
 }
-TEST_F(DeviceTest, Uptime)
+TEST_F(DeviceUTest, Uptime)
 {
     mock("Device.uptime");
     auto expectedValue = jsonEngine.get_value("Device.uptime");
@@ -121,13 +121,13 @@ TEST_F(DeviceTest, Uptime)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(DeviceTest, UptimeBadResponse)
+TEST_F(DeviceUTest, UptimeBadResponse)
 {
     mock_with_response("Device.uptime", "invalid_response");
     ASSERT_FALSE(deviceImpl_.uptime()) << "DeviceImpl::uptime() did not return an error";
 }
 
-TEST_F(DeviceTest, SubscribeOnHdrChanged)
+TEST_F(DeviceUTest, SubscribeOnHdrChanged)
 {
     nlohmann::json expectedValue = 1;
     mockSubscribe("Device.onHdrChanged");

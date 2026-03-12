@@ -21,7 +21,7 @@
 #include "utils.h"
 #include "gtest/gtest.h"
 
-class LocalizationTest : public ::testing::Test
+class LocalizationCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -34,7 +34,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(LocalizationTest, CountryCode)
+TEST_F(LocalizationCTest, CountryCode)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().country();
     ASSERT_TRUE(result) << "error on get";
@@ -43,7 +43,7 @@ TEST_F(LocalizationTest, CountryCode)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(LocalizationTest, PreferredAudioLanguages)
+TEST_F(LocalizationCTest, PreferredAudioLanguages)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().preferredAudioLanguages();
     ASSERT_TRUE(result) << "error on get";
@@ -54,7 +54,7 @@ TEST_F(LocalizationTest, PreferredAudioLanguages)
     EXPECT_EQ(resultSet, expectedSet);
 }
 
-TEST_F(LocalizationTest, PresentationLanguage)
+TEST_F(LocalizationCTest, PresentationLanguage)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().presentationLanguage();
     ASSERT_TRUE(result) << "error on get";
@@ -63,7 +63,7 @@ TEST_F(LocalizationTest, PresentationLanguage)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(LocalizationTest, subscribeOnCountryCodeChanged)
+TEST_F(LocalizationCTest, subscribeOnCountryCodeChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnCountryChanged(
         [&](const std::string& code)
@@ -91,7 +91,7 @@ TEST_F(LocalizationTest, subscribeOnCountryCodeChanged)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(LocalizationTest, subscribeOnPreferredAudioLanguagesChanged)
+TEST_F(LocalizationCTest, subscribeOnPreferredAudioLanguagesChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnPreferredAudioLanguagesChanged(
         [&](const std::vector<std::string>& languages)
@@ -122,7 +122,7 @@ TEST_F(LocalizationTest, subscribeOnPreferredAudioLanguagesChanged)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(LocalizationTest, subscribeOnPreferredPresentationLanguageChanged)
+TEST_F(LocalizationCTest, subscribeOnPreferredPresentationLanguageChanged)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnPresentationLanguageChanged(
         [&](const std::string& language)

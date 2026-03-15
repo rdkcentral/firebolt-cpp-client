@@ -30,6 +30,7 @@ option(DISCOVER_UT "Discover all Unit Tests" ON)
 option(DISCOVER_CT "Discover all Component Tests" OFF)
 option(ENABLE_DEMO_APP "Build demo app" OFF)
 option(BUILD_WITH_INSTALLED_TRANSPORT "Build the library with the transport that is installed, even if its version mismatches" ON)
+option(DISABLE_SO_VERSION "Disable SONAME/SOVERSION of shared library" OFF)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${SYSROOT_PATH}/usr" CACHE INTERNAL "" FORCE)

@@ -1,3 +1,8 @@
+## [0.5.5](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.4...v0.5.5)
+
+### Changed
+- Allow building without a SONAME
+
 ## [0.5.4](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.3...v0.5.4)
 
 ### Fixed

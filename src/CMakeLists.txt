@@ -54,7 +54,7 @@ target_link_libraries(${TARGET}
     PRIVATE
         nlohmann_json::nlohmann_json
     PUBLIC
-        $<IF:$<TARGET_EXISTS:FireboltTransport::FireboltTransport>,FireboltTransport::FireboltTransport,FireboltTransport>
+        FireboltTransport::FireboltTransport
 )
 
 target_include_directories(${TARGET}
@@ -69,10 +69,20 @@ target_include_directories(${TARGET}
 set_target_properties(${TARGET} PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
-    VERSION ${PROJECT_VERSION}
-    SOVERSION ${PROJECT_VERSION_MAJOR}
     POSITION_INDEPENDENT_CODE ON
 )
+if(DISABLE_SO_VERSION)
+    set_target_properties(${TARGET} PROPERTIES
+        NO_SONAME ON
+        VERSION ""
+        SOVERSION ""
+    )
+else()
+    set_target_properties(${TARGET} PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+    )
+endif()
 
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"

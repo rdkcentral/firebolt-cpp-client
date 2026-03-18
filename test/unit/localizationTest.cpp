@@ -20,13 +20,13 @@
 #include "localization_impl.h"
 #include "mock_helper.h"
 
-class LocalizationTest : public ::testing::Test, protected MockBase
+class LocalizationUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Localization::LocalizationImpl localizationImpl_{mockHelper};
 };
 
-TEST_F(LocalizationTest, Country)
+TEST_F(LocalizationUTest, Country)
 {
     auto expectedValue = jsonEngine.get_value("Localization.country").get<std::string>();
     mock("Localization.country");
@@ -37,13 +37,13 @@ TEST_F(LocalizationTest, Country)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(LocalizationTest, CountryBadResponse)
+TEST_F(LocalizationUTest, CountryBadResponse)
 {
     mock_with_response("Localization.country", 12345);
     ASSERT_FALSE(localizationImpl_.country()) << "LocalizationImpl::country() did not return an error";
 }
 
-TEST_F(LocalizationTest, PreferredAudioLanguages)
+TEST_F(LocalizationUTest, PreferredAudioLanguages)
 {
     mock("Localization.preferredAudioLanguages");
 
@@ -56,14 +56,14 @@ TEST_F(LocalizationTest, PreferredAudioLanguages)
     EXPECT_EQ(resultSet, expectedSet);
 }
 
-TEST_F(LocalizationTest, PreferredAudioLanguagesBadResponse)
+TEST_F(LocalizationUTest, PreferredAudioLanguagesBadResponse)
 {
     mock_with_response("Localization.preferredAudioLanguages", 12345);
     ASSERT_FALSE(localizationImpl_.preferredAudioLanguages())
         << "LocalizationImpl::preferredAudioLanguages() did not return an error";
 }
 
-TEST_F(LocalizationTest, PresentationLanguage)
+TEST_F(LocalizationUTest, PresentationLanguage)
 {
     auto expectedValue = jsonEngine.get_value("Localization.presentationLanguage").get<std::string>();
     mock("Localization.presentationLanguage");
@@ -74,14 +74,14 @@ TEST_F(LocalizationTest, PresentationLanguage)
     EXPECT_EQ(*result, expectedValue);
 }
 
-TEST_F(LocalizationTest, PresentationLanguageBadResponse)
+TEST_F(LocalizationUTest, PresentationLanguageBadResponse)
 {
     mock_with_response("Localization.presentationLanguage", 67890);
     ASSERT_FALSE(localizationImpl_.presentationLanguage())
         << "LocalizationImpl::presentationLanguage() did not return an error";
 }
 
-TEST_F(LocalizationTest, subscribeOnCountryChanged)
+TEST_F(LocalizationUTest, subscribeOnCountryChanged)
 {
     mockSubscribe("Localization.onCountryChanged");
 
@@ -92,7 +92,7 @@ TEST_F(LocalizationTest, subscribeOnCountryChanged)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(LocalizationTest, subscribeOnPreferredAudioLanguagesChanged)
+TEST_F(LocalizationUTest, subscribeOnPreferredAudioLanguagesChanged)
 {
     mockSubscribe("Localization.onPreferredAudioLanguagesChanged");
 
@@ -103,7 +103,7 @@ TEST_F(LocalizationTest, subscribeOnPreferredAudioLanguagesChanged)
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
 
-TEST_F(LocalizationTest, subscribeOnPresentationLanguageChanged)
+TEST_F(LocalizationUTest, subscribeOnPresentationLanguageChanged)
 {
     mockSubscribe("Localization.onPresentationLanguageChanged");
 

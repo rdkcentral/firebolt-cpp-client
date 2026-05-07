@@ -104,6 +104,13 @@ protected:
                              { return Firebolt::Result<nlohmann::json>{response}; }));
     }
 
+    void mockInvoke(const std::string& methodName)
+    {
+        EXPECT_CALL(mockHelper, invoke(methodName, _))
+            .WillOnce(Invoke([](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                             { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+    }
+
     void mockSubscribe(const std::string& eventName)
     {
         EXPECT_CALL(mockHelper, subscribe(_, eventName, _, _))

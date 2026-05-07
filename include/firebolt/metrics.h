@@ -45,21 +45,21 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> ready() const = 0;
+    virtual Result<void> ready() const = 0;
 
     /**
      * @brief Logs a sign in event
      *
      * @retval The success state or error
      */
-    virtual Result<bool> signIn() const = 0;
+    virtual Result<void> signIn() const = 0;
 
     /**
      * @brief Logs a sign out event
      *
      * @retval The success state or error
      */
-    virtual Result<bool> signOut() const = 0;
+    virtual Result<void> signOut() const = 0;
 
     /**
      * @brief Informs the platform that your user has started content
@@ -70,7 +70,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> startContent(const std::optional<std::string>& entityId,
+    virtual Result<void> startContent(const std::optional<std::string>& entityId,
                                       const std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
@@ -82,7 +82,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> stopContent(const std::optional<std::string>& entityId,
+    virtual Result<void> stopContent(const std::optional<std::string>& entityId,
                                      const std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
@@ -94,7 +94,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+    virtual Result<void> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Informs the platform of an error that has occurred in your app
@@ -109,7 +109,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> error(const ErrorType type, const std::string& code, const std::string& description,
+    virtual Result<void> error(const ErrorType type, const std::string& code, const std::string& description,
                                const bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
                                const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
@@ -122,7 +122,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaLoadStart(const std::string& entityId,
+    virtual Result<void> mediaLoadStart(const std::string& entityId,
                                         const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -135,7 +135,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaPlaying(const std::string& entityId,
+    virtual Result<void> mediaPlaying(const std::string& entityId,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -147,7 +147,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaPlay(const std::string& entityId,
+    virtual Result<void> mediaPlay(const std::string& entityId,
                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -159,7 +159,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaPause(const std::string& entityId,
+    virtual Result<void> mediaPause(const std::string& entityId,
                                     const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -171,7 +171,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaWaiting(const std::string& entityId,
+    virtual Result<void> mediaWaiting(const std::string& entityId,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -185,7 +185,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaSeeking(const std::string& entityId, const double target,
+    virtual Result<void> mediaSeeking(const std::string& entityId, const double target,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -200,7 +200,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaSeeked(const std::string& entityId, const double position,
+    virtual Result<void> mediaSeeked(const std::string& entityId, const double position,
                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -213,7 +213,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaRateChanged(const std::string& entityId, const double rate,
+    virtual Result<void> mediaRateChanged(const std::string& entityId, const double rate,
                                           const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -229,7 +229,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
+    virtual Result<void> mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
                                                const unsigned height, const std::optional<std::string>& profile,
                                                const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
@@ -242,7 +242,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> mediaEnded(const std::string& entityId,
+    virtual Result<void> mediaEnded(const std::string& entityId,
                                     const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
@@ -255,7 +255,7 @@ public:
      *
      * @retval The success state or error
      */
-    virtual Result<bool> event(const std::string& schema, const std::string& data,
+    virtual Result<void> event(const std::string& schema, const std::string& data,
                                const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**

@@ -33,49 +33,49 @@ TEST_F(MetricsUTest, checkEnums)
 
 TEST_F(MetricsUTest, Ready)
 {
-    mock("Metrics.ready");
+    mockInvoke("Metrics.ready");
     auto result = metricsImpl_.ready();
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, SignIn)
 {
-    mock("Metrics.signIn");
+    mockInvoke("Metrics.signIn");
     auto result = metricsImpl_.signIn();
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, SignOut)
 {
-    mock("Metrics.signOut");
+    mockInvoke("Metrics.signOut");
     auto result = metricsImpl_.signOut();
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, StartContent)
 {
-    mock("Metrics.startContent");
+    mockInvoke("Metrics.startContent");
     auto result = metricsImpl_.startContent("entity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, StopContent)
 {
-    mock("Metrics.stopContent");
+    mockInvoke("Metrics.stopContent");
     auto result = metricsImpl_.stopContent("entity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, Page)
 {
-    mock("Metrics.page");
+    mockInvoke("Metrics.page");
     auto result = metricsImpl_.page("homePage", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, Error)
 {
-    mock("Metrics.error");
+    mockInvoke("Metrics.error");
     auto result = metricsImpl_.error(Firebolt::Metrics::ErrorType::Network, "ERR001", "Network error occurred", true,
                                      std::map<std::string, std::string>{{"param1", "value1"}, {"param2", "value2"}},
                                      Firebolt::AgePolicy::ADULT);
@@ -84,7 +84,7 @@ TEST_F(MetricsUTest, Error)
 
 TEST_F(MetricsUTest, ErrorNoParameters)
 {
-    mock("Metrics.error");
+    mockInvoke("Metrics.error");
     auto result = metricsImpl_.error(Firebolt::Metrics::ErrorType::Network, "ERR001", "Network error occurred", true,
                                      std::nullopt, Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
@@ -92,7 +92,7 @@ TEST_F(MetricsUTest, ErrorNoParameters)
 
 TEST_F(MetricsUTest, ErrorNoAgePolicy)
 {
-    mock("Metrics.error");
+    mockInvoke("Metrics.error");
     auto result = metricsImpl_.error(Firebolt::Metrics::ErrorType::Network, "ERR001", "Network error occurred", true,
                                      std::map<std::string, std::string>{{"param1", "value1"}, {"param2", "value2"}},
                                      std::nullopt);
@@ -101,63 +101,63 @@ TEST_F(MetricsUTest, ErrorNoAgePolicy)
 
 TEST_F(MetricsUTest, MediaLoadStart)
 {
-    mock("Metrics.mediaLoadStart");
+    mockInvoke("Metrics.mediaLoadStart");
     auto result = metricsImpl_.mediaLoadStart("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaPlay)
 {
-    mock("Metrics.mediaPlay");
+    mockInvoke("Metrics.mediaPlay");
     auto result = metricsImpl_.mediaPlay("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaPlaying)
 {
-    mock("Metrics.mediaPlaying");
+    mockInvoke("Metrics.mediaPlaying");
     auto result = metricsImpl_.mediaPlaying("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaPause)
 {
-    mock("Metrics.mediaPause");
+    mockInvoke("Metrics.mediaPause");
     auto result = metricsImpl_.mediaPause("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaWaiting)
 {
-    mock("Metrics.mediaWaiting");
+    mockInvoke("Metrics.mediaWaiting");
     auto result = metricsImpl_.mediaWaiting("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaSeeking)
 {
-    mock("Metrics.mediaSeeking");
+    mockInvoke("Metrics.mediaSeeking");
     auto result = metricsImpl_.mediaSeeking("mediaEntity123", 0.5, Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaSeeked)
 {
-    mock("Metrics.mediaSeeked");
+    mockInvoke("Metrics.mediaSeeked");
     auto result = metricsImpl_.mediaSeeked("mediaEntity123", 0.5, Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaRateChanged)
 {
-    mock("Metrics.mediaRateChanged");
+    mockInvoke("Metrics.mediaRateChanged");
     auto result = metricsImpl_.mediaRateChanged("mediaEntity123", 1.5, Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, MediaRenditionChanged)
 {
-    mock("Metrics.mediaRenditionChanged");
+    mockInvoke("Metrics.mediaRenditionChanged");
     auto result =
         metricsImpl_.mediaRenditionChanged("mediaEntity123", 3000, 1920, 1080, "HDR", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
@@ -165,14 +165,14 @@ TEST_F(MetricsUTest, MediaRenditionChanged)
 
 TEST_F(MetricsUTest, MediaEnded)
 {
-    mock("Metrics.mediaEnded");
+    mockInvoke("Metrics.mediaEnded");
     auto result = metricsImpl_.mediaEnded("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 
 TEST_F(MetricsUTest, Event)
 {
-    mock("Metrics.event");
+    mockInvoke("Metrics.event");
     auto result = metricsImpl_.event("https://com.example.schema", "{\"key\":\"value\"}", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }

@@ -28,22 +28,22 @@ MetricsImpl::MetricsImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<bool> MetricsImpl::ready() const
+Result<void> MetricsImpl::ready() const
 {
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.ready");
+    return helper_.invoke("Metrics.ready", nlohmann::json({}));
 }
 
-Result<bool> MetricsImpl::signIn() const
+Result<void> MetricsImpl::signIn() const
 {
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.signIn");
+    return helper_.invoke("Metrics.signIn", nlohmann::json({}));
 }
 
-Result<bool> MetricsImpl::signOut() const
+Result<void> MetricsImpl::signOut() const
 {
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.signOut");
+    return helper_.invoke("Metrics.signOut", nlohmann::json({}));
 }
 
-Result<bool> MetricsImpl::startContent(const std::optional<std::string>& entityId,
+Result<void> MetricsImpl::startContent(const std::optional<std::string>& entityId,
                                        const std::optional<Firebolt::AgePolicy> agePolicy) const
 {
     nlohmann::json parameters;
@@ -55,10 +55,10 @@ Result<bool> MetricsImpl::startContent(const std::optional<std::string>& entityI
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.startContent", parameters);
+    return helper_.invoke("Metrics.startContent", parameters);
 }
 
-Result<bool> MetricsImpl::stopContent(const std::optional<std::string>& entityId,
+Result<void> MetricsImpl::stopContent(const std::optional<std::string>& entityId,
                                       const std::optional<Firebolt::AgePolicy> agePolicy) const
 {
     nlohmann::json parameters;
@@ -70,10 +70,10 @@ Result<bool> MetricsImpl::stopContent(const std::optional<std::string>& entityId
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.stopContent", parameters);
+    return helper_.invoke("Metrics.stopContent", parameters);
 }
 
-Result<bool> MetricsImpl::page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
+Result<void> MetricsImpl::page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
     parameters["pageId"] = pageId;
@@ -81,10 +81,10 @@ Result<bool> MetricsImpl::page(const std::string& pageId, const std::optional<Fi
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.page", parameters);
+    return helper_.invoke("Metrics.page", parameters);
 }
 
-Result<bool> MetricsImpl::error(const ErrorType type, const std::string& code, const std::string& description,
+Result<void> MetricsImpl::error(const ErrorType type, const std::string& code, const std::string& description,
                                 const bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
@@ -106,10 +106,10 @@ Result<bool> MetricsImpl::error(const ErrorType type, const std::string& code, c
     {
         jsonParameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.error", jsonParameters);
+    return helper_.invoke("Metrics.error", jsonParameters);
 }
 
-Result<bool> MetricsImpl::mediaLoadStart(const std::string& entityId,
+Result<void> MetricsImpl::mediaLoadStart(const std::string& entityId,
                                          const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -118,10 +118,10 @@ Result<bool> MetricsImpl::mediaLoadStart(const std::string& entityId,
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaLoadStart", parameters);
+    return helper_.invoke("Metrics.mediaLoadStart", parameters);
 }
 
-Result<bool> MetricsImpl::mediaPlay(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
+Result<void> MetricsImpl::mediaPlay(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
@@ -129,10 +129,10 @@ Result<bool> MetricsImpl::mediaPlay(const std::string& entityId, const std::opti
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaPlay", parameters);
+    return helper_.invoke("Metrics.mediaPlay", parameters);
 }
 
-Result<bool> MetricsImpl::mediaPlaying(const std::string& entityId,
+Result<void> MetricsImpl::mediaPlaying(const std::string& entityId,
                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -141,10 +141,10 @@ Result<bool> MetricsImpl::mediaPlaying(const std::string& entityId,
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaPlaying", parameters);
+    return helper_.invoke("Metrics.mediaPlaying", parameters);
 }
 
-Result<bool> MetricsImpl::mediaPause(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
+Result<void> MetricsImpl::mediaPause(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
@@ -152,10 +152,10 @@ Result<bool> MetricsImpl::mediaPause(const std::string& entityId, const std::opt
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaPause", parameters);
+    return helper_.invoke("Metrics.mediaPause", parameters);
 }
 
-Result<bool> MetricsImpl::mediaWaiting(const std::string& entityId,
+Result<void> MetricsImpl::mediaWaiting(const std::string& entityId,
                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -164,10 +164,10 @@ Result<bool> MetricsImpl::mediaWaiting(const std::string& entityId,
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaWaiting", parameters);
+    return helper_.invoke("Metrics.mediaWaiting", parameters);
 }
 
-Result<bool> MetricsImpl::mediaSeeking(const std::string& entityId, const double target,
+Result<void> MetricsImpl::mediaSeeking(const std::string& entityId, const double target,
                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -177,10 +177,10 @@ Result<bool> MetricsImpl::mediaSeeking(const std::string& entityId, const double
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaSeeking", parameters);
+    return helper_.invoke("Metrics.mediaSeeking", parameters);
 }
 
-Result<bool> MetricsImpl::mediaSeeked(const std::string& entityId, const double position,
+Result<void> MetricsImpl::mediaSeeked(const std::string& entityId, const double position,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -190,10 +190,10 @@ Result<bool> MetricsImpl::mediaSeeked(const std::string& entityId, const double 
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaSeeked", parameters);
+    return helper_.invoke("Metrics.mediaSeeked", parameters);
 }
 
-Result<bool> MetricsImpl::mediaRateChanged(const std::string& entityId, const double rate,
+Result<void> MetricsImpl::mediaRateChanged(const std::string& entityId, const double rate,
                                            const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -203,10 +203,10 @@ Result<bool> MetricsImpl::mediaRateChanged(const std::string& entityId, const do
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaRateChanged", parameters);
+    return helper_.invoke("Metrics.mediaRateChanged", parameters);
 }
 
-Result<bool> MetricsImpl::mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
+Result<void> MetricsImpl::mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
                                                 const unsigned height, const std::optional<std::string>& profile,
                                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
@@ -223,10 +223,10 @@ Result<bool> MetricsImpl::mediaRenditionChanged(const std::string& entityId, con
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaRenditionChanged", parameters);
+    return helper_.invoke("Metrics.mediaRenditionChanged", parameters);
 }
 
-Result<bool> MetricsImpl::mediaEnded(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
+Result<void> MetricsImpl::mediaEnded(const std::string& entityId, const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
@@ -234,10 +234,10 @@ Result<bool> MetricsImpl::mediaEnded(const std::string& entityId, const std::opt
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.mediaEnded", parameters);
+    return helper_.invoke("Metrics.mediaEnded", parameters);
 }
 
-Result<bool> MetricsImpl::event(const std::string& schema, const std::string& data,
+Result<void> MetricsImpl::event(const std::string& schema, const std::string& data,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
     nlohmann::json parameters;
@@ -247,7 +247,7 @@ Result<bool> MetricsImpl::event(const std::string& schema, const std::string& da
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
-    return helper_.get<Firebolt::JSON::Boolean, bool>("Metrics.event", parameters);
+    return helper_.invoke("Metrics.event", parameters);
 }
 
 Result<void> MetricsImpl::appInfo(const std::string& build) const

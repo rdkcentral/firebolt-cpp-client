@@ -56,7 +56,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().ready();
         if (succeed(r))
         {
-            std::cout << "Metrics Ready: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Ready: Success" << std::endl;
         }
     }
     else if (method == "Metrics.signIn")
@@ -64,7 +64,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().signIn();
         if (succeed(r))
         {
-            std::cout << "Metrics Sign In: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Sign In: Success" << std::endl;
         }
     }
     else if (method == "Metrics.signOut")
@@ -72,7 +72,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().signOut();
         if (succeed(r))
         {
-            std::cout << "Metrics Sign Out: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Sign Out: Success" << std::endl;
         }
     }
     else if (method == "Metrics.startContent")
@@ -80,7 +80,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().startContent("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Start Content: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Start Content: Success" << std::endl;
         }
     }
     else if (method == "Metrics.stopContent")
@@ -88,7 +88,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().stopContent("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Stop Content: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Stop Content: Success" << std::endl;
         }
     }
     else if (method == "Metrics.page")
@@ -96,7 +96,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().page("page123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Page: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Page: Success" << std::endl;
         }
     }
     else if (method == "Metrics.error")
@@ -106,7 +106,7 @@ void MetricsDemo::runOption(const std::string& method)
                                                                                   std::nullopt, std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Error: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Error: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaLoadStart")
@@ -114,7 +114,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaLoadStart("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Load Start: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Load Start: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaPlay")
@@ -122,7 +122,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPlay("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Play: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Play: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaPlaying")
@@ -130,7 +130,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPlaying("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Playing: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Playing: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaPause")
@@ -138,7 +138,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaPause("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Pause: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Pause: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaWaiting")
@@ -146,7 +146,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaWaiting("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Waiting: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Waiting: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaSeeking")
@@ -154,7 +154,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeking("entity123", 0.5, std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Seeking: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Seeking: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaSeeked")
@@ -162,7 +162,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaSeeked("entity123", 0.5, std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Seeked: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Seeked: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaRateChanged")
@@ -171,7 +171,7 @@ void MetricsDemo::runOption(const std::string& method)
             Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaRateChanged("entity123", 1.5, std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Rate Changed: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Rate Changed: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaRenditionChanged")
@@ -181,7 +181,7 @@ void MetricsDemo::runOption(const std::string& method)
                                                                                                   std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Rendition Changed: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Rendition Changed: Success" << std::endl;
         }
     }
     else if (method == "Metrics.mediaEnded")
@@ -189,7 +189,7 @@ void MetricsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().MetricsInterface().mediaEnded("entity123", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Media Ended: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Media Ended: Success" << std::endl;
         }
     }
     else if (method == "Metrics.event")
@@ -198,7 +198,7 @@ void MetricsDemo::runOption(const std::string& method)
                                                                                   "{\"key\":\"value\"}", std::nullopt);
         if (succeed(r))
         {
-            std::cout << "Metrics Event: " << std::boolalpha << *r << std::endl;
+            std::cout << "Metrics Event: Success" << std::endl;
         }
     }
     else if (method == "Metrics.appInfo")

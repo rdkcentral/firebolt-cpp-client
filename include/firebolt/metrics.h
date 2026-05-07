@@ -43,21 +43,21 @@ public:
     /**
      * @brief Informs the platform that the app is minimally usable
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> ready() const = 0;
 
     /**
      * @brief Logs a sign in event
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> signIn() const = 0;
 
     /**
      * @brief Logs a sign out event
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> signOut() const = 0;
 
@@ -68,7 +68,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> startContent(const std::optional<std::string>& entityId,
                                       const std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
@@ -80,7 +80,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> stopContent(const std::optional<std::string>& entityId,
                                      const std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
@@ -92,7 +92,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
@@ -107,7 +107,7 @@ public:
      * @param[in] agePolicy   : The age policy to associate with the metrics event, the age policy describes the age
      *                          group to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> error(const ErrorType type, const std::string& code, const std::string& description,
                                const bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
@@ -120,7 +120,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaLoadStart(const std::string& entityId,
                                         const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -133,7 +133,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaPlaying(const std::string& entityId,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -145,7 +145,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaPlay(const std::string& entityId,
                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -157,7 +157,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaPause(const std::string& entityId,
                                     const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -169,7 +169,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaWaiting(const std::string& entityId,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -183,7 +183,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaSeeking(const std::string& entityId, const double target,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -198,7 +198,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaSeeked(const std::string& entityId, const double position,
                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -211,7 +211,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaRateChanged(const std::string& entityId, const double rate,
                                           const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -227,7 +227,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
                                                const unsigned height, const std::optional<std::string>& profile,
@@ -240,7 +240,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> mediaEnded(const std::string& entityId,
                                     const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -253,7 +253,7 @@ public:
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval The success state or error
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> event(const std::string& schema, const std::string& data,
                                const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
@@ -263,7 +263,7 @@ public:
      *
      * @param[in] build : The build / version of this app
      *
-     * @retval The status
+     * @retval An ok Result on success, or an error; no value is returned
      */
     virtual Result<void> appInfo(const std::string& build) const = 0;
 };

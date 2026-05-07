@@ -19,9 +19,9 @@
       "summary": "Inform the platform that your app is minimally usable. This method is called automatically by `Lifecycle.ready()`",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -51,9 +51,9 @@
       "summary": "Log a sign in event, called by Discovery.signIn().",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -83,9 +83,9 @@
       "summary": "Log a sign out event, called by Discovery.signOut().",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -128,9 +128,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -203,9 +203,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -261,9 +261,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -356,9 +356,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -418,9 +418,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -468,9 +468,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -518,9 +518,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -568,9 +568,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -618,9 +618,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -676,9 +676,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -691,7 +691,7 @@
             },
             {
               "name": "target",
-              "value": 0.50
+              "value": 0.5
             }
           ],
           "result": {
@@ -738,9 +738,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -800,9 +800,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -886,9 +886,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -952,9 +952,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -1013,7 +1013,7 @@
       "result": {
         "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [

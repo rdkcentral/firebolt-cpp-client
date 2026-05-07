@@ -29,8 +29,8 @@
           "name": "Send ready metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -61,8 +61,8 @@
           "name": "Send signIn metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -93,8 +93,8 @@
           "name": "Send signOut metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -138,8 +138,8 @@
           "name": "Send startContent metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -151,8 +151,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -168,8 +168,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -213,8 +213,8 @@
           "name": "Send stopContent metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -226,8 +226,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -276,8 +276,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -289,8 +289,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -383,8 +383,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -433,8 +433,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -483,8 +483,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -533,8 +533,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -583,8 +583,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -633,8 +633,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -695,8 +695,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -757,8 +757,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -819,8 +819,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -917,8 +917,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -967,8 +967,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -1031,7 +1031,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         }
       ]

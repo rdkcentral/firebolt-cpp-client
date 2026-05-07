@@ -88,8 +88,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -117,8 +117,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]

@@ -27,39 +27,19 @@ DeviceImpl::DeviceImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<std::string> DeviceImpl::chipsetId() const
-{
-    return helper_.get<Firebolt::JSON::String, std::string>("Device.chipsetId");
-}
-
-Result<DeviceClass> DeviceImpl::deviceClass() const
-{
-    return Result(helper_.get<JsonData::DeviceClassJson, DeviceClass>("Device.deviceClass"));
-}
-
-Result<HDRFormat> DeviceImpl::hdr() const
-{
-    return Result(helper_.get<JsonData::HDRFormat, HDRFormat>("Device.hdr"));
-}
-
-Result<uint32_t> DeviceImpl::timeInActiveState() const
-{
-    return helper_.get<Firebolt::JSON::Unsigned, uint32_t>("Device.timeInActiveState");
-}
-
 Result<std::string> DeviceImpl::uid() const
 {
     return helper_.get<Firebolt::JSON::String, std::string>("Device.uid");
 }
 
-Result<uint32_t> DeviceImpl::uptime() const
+Result<HDRFormatMap> DeviceImpl::hdr() const
 {
-    return helper_.get<Firebolt::JSON::Unsigned, uint32_t>("Device.uptime");
+    return Result(helper_.get<JsonData::HDRFormatMap, HDRFormatMap>("Device.hdr"));
 }
 
-Result<SubscriptionId> DeviceImpl::subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification)
+Result<SubscriptionId> DeviceImpl::subscribeOnHdr(std::function<void(const HDRFormatMap&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::HDRFormat>("Device.onHdrChanged", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::HDRFormatMap>("Device.onHdr", std::move(notification));
 }
 
 Result<void> DeviceImpl::unsubscribe(SubscriptionId id)

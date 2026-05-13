@@ -32,10 +32,14 @@ public:
 
     ~DeviceImpl() override = default;
 
+    Result<std::string> chipsetId() const override;
+    Result<DeviceClass> deviceClass() const override;
+    Result<HDRFormat> hdr() const override;
+    Result<uint32_t> timeInActiveState() const override;
     Result<std::string> uid() const override;
+    Result<uint32_t> uptime() const override;
 
-    Result<HDRFormatMap> hdr() const override;
-    Result<SubscriptionId> subscribeOnHdr(std::function<void(const HDRFormatMap&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;

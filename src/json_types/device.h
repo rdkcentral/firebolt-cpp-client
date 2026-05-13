@@ -25,7 +25,22 @@
 namespace Firebolt::Device::JsonData
 {
 
-class HDRFormatMap : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::HDRFormatMap>
+inline const Firebolt::JSON::EnumType<::Firebolt::Device::DeviceClass> DeviceClassEnum({
+    {"stb", ::Firebolt::Device::DeviceClass::STB},
+    {"ott", ::Firebolt::Device::DeviceClass::OTT},
+    {"tv",  ::Firebolt::Device::DeviceClass::TV},
+});
+
+class DeviceClass : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::DeviceClass>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { deviceClass_ = DeviceClassEnum.at(json.get<std::string>()); }
+    ::Firebolt::Device::DeviceClass value() const override { return deviceClass_; }
+private:
+    ::Firebolt::Device::DeviceClass deviceClass_{};
+};
+
+class HDRFormat : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device::HDRFormat>
 {
 public:
     void fromJson(const nlohmann::json& json) override
@@ -34,15 +49,15 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        hdrFormatMap_.hdr10        = json["hdr10"].get<bool>();
-        hdrFormatMap_.hdr10Plus    = json["hdr10Plus"].get<bool>();
-        hdrFormatMap_.dolbyVision  = json["dolbyVision"].get<bool>();
-        hdrFormatMap_.hlg          = json["hlg"].get<bool>();
+        hdrFormat_.hdr10        = json["hdr10"].get<bool>();
+        hdrFormat_.hdr10Plus    = json["hdr10Plus"].get<bool>();
+        hdrFormat_.dolbyVision  = json["dolbyVision"].get<bool>();
+        hdrFormat_.hlg          = json["hlg"].get<bool>();
     }
-    ::Firebolt::Device::HDRFormatMap value() const override { return hdrFormatMap_; }
+    ::Firebolt::Device::HDRFormat value() const override { return hdrFormat_; }
 
 private:
-    ::Firebolt::Device::HDRFormatMap hdrFormatMap_;
+    ::Firebolt::Device::HDRFormat hdrFormat_{};
 };
 
 } // namespace Firebolt::Device::JsonData

@@ -33,7 +33,7 @@ public:
 
     ~DiscoveryImpl() override = default;
 
-    Result<bool> watched(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
+    Result<void> watched(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
                          std::optional<std::string> watchedOn,
                          std::optional<Firebolt::AgePolicy> agePolicy) const override;
 

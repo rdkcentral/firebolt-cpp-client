@@ -40,4 +40,18 @@ Result<DisplaySize> DisplayImpl::size() const
 {
     return helper_.get<JsonData::DisplaySizeJson, DisplaySize>("Display.size");
 }
+
+Result<std::vector<VideoResolution>> DisplayImpl::videoResolutions() const
+{
+    return helper_.get<
+        Firebolt::JSON::NL_Json_Array<JsonData::VideoResolutionJson, VideoResolution>,
+        std::vector<VideoResolution>>("Display.videoResolutions");
+}
+
+Result<std::vector<ColorimetryStandard>> DisplayImpl::colorimetry() const
+{
+    return helper_.get<
+        Firebolt::JSON::NL_Json_Array<JsonData::ColorimetryStandardJson, ColorimetryStandard>,
+        std::vector<ColorimetryStandard>>("Display.colorimetry");
+}
 } // namespace Firebolt::Display

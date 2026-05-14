@@ -35,6 +35,8 @@ public:
     Result<std::string> edid() const override;
     Result<DisplaySize> maxResolution() const override;
     Result<DisplaySize> size() const override;
+    Result<std::vector<VideoResolution>> videoResolutions() const override;
+    Result<std::vector<ColorimetryStandard>> colorimetry() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

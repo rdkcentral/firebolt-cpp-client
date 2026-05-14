@@ -19,17 +19,30 @@
 #pragma once
 
 #include <firebolt/types.h>
+#include <vector>
 
 namespace Firebolt::Display
 {
-// Enums
+
+enum class VideoResolution {
+    R720p50,
+    R720p60,
+    R1080p50,
+    R1080p60,
+    R2160p50,
+    R2160p60,
+};
+
+enum class ColorimetryStandard {
+    Bt709,
+    Bt2020,
+};
 
 struct DisplaySize
 {
     uint32_t width;
     uint32_t height;
 };
-// Types
 
 class IDisplay
 {
@@ -72,6 +85,20 @@ public:
      * @retval The class property or error
      */
     virtual Result<DisplaySize> size() const = 0;
+
+    /**
+     * @brief Returns an unordered list of HD video resolutions/formats supported by the connected
+     *        or integral display. Returns an empty list when no HDMI display is connected.
+     * @retval The list of supported video resolutions or error
+     */
+    virtual Result<std::vector<VideoResolution>> videoResolutions() const = 0;
+
+    /**
+     * @brief Returns the SDR and HDR colorimetry standards supported by the connected or integral
+     *        display. Returns an empty list when no HDMI display is connected.
+     * @retval The list of supported colorimetry standards or error
+     */
+    virtual Result<std::vector<ColorimetryStandard>> colorimetry() const = 0;
 };
 
 } // namespace Firebolt::Display

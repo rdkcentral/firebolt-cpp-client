@@ -45,4 +45,37 @@ private:
     uint32_t height_;
 };
 
+
+inline const Firebolt::JSON::EnumType<::Firebolt::Display::VideoResolution> VideoResolutionEnum({
+    {"720p50",  ::Firebolt::Display::VideoResolution::R720p50},
+    {"720p60",  ::Firebolt::Display::VideoResolution::R720p60},
+    {"1080p50", ::Firebolt::Display::VideoResolution::R1080p50},
+    {"1080p60", ::Firebolt::Display::VideoResolution::R1080p60},
+    {"2160p50", ::Firebolt::Display::VideoResolution::R2160p50},
+    {"2160p60", ::Firebolt::Display::VideoResolution::R2160p60},
+});
+
+class VideoResolutionJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Display::VideoResolution>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { value_ = VideoResolutionEnum.at(json); }
+    ::Firebolt::Display::VideoResolution value() const override { return value_; }
+private:
+    ::Firebolt::Display::VideoResolution value_{};
+};
+
+inline const Firebolt::JSON::EnumType<::Firebolt::Display::ColorimetryStandard> ColorimetryStandardEnum({
+    {"bt709",  ::Firebolt::Display::ColorimetryStandard::Bt709},
+    {"bt2020", ::Firebolt::Display::ColorimetryStandard::Bt2020},
+});
+
+class ColorimetryStandardJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Display::ColorimetryStandard>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { value_ = ColorimetryStandardEnum.at(json); }
+    ::Firebolt::Display::ColorimetryStandard value() const override { return value_; }
+private:
+    ::Firebolt::Display::ColorimetryStandard value_{};
+};
+
 } // namespace Firebolt::Display::JsonData

@@ -20,6 +20,7 @@
 
 #include "firebolt/accessibility.h"
 #include "firebolt/advertising.h"
+#include "firebolt/actions.h"
 #include "firebolt/client_export.h"
 #include "firebolt/device.h"
 #include "firebolt/discovery.h"
@@ -91,6 +92,13 @@ public:
      * @return Reference to Advertising interface
      */
     virtual Advertising::IAdvertising& AdvertisingInterface() = 0;
+
+    /**
+     * @brief Returns instance of Actions interface
+     *
+     * @return Reference to Actions interface
+     */
+    virtual Actions::IActions& ActionsInterface() = 0;
 
     /**
      * @brief Returns instance of Device interface

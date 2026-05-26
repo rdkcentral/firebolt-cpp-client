@@ -19,6 +19,7 @@
 #include "firebolt/firebolt.h"
 #include "accessibility_impl.h"
 #include "advertising_impl.h"
+#include "actions_impl.h"
 #include "device_impl.h"
 #include "discovery_impl.h"
 #include "display_impl.h"
@@ -40,6 +41,7 @@ public:
     FireboltAccessorImpl()
         : accessibility_(Firebolt::Helpers::GetHelperInstance()),
           advertising_(Firebolt::Helpers::GetHelperInstance()),
+                    actions_(Firebolt::Helpers::GetHelperInstance()),
           device_(Firebolt::Helpers::GetHelperInstance()),
           discovery_(Firebolt::Helpers::GetHelperInstance()),
           display_(Firebolt::Helpers::GetHelperInstance()),
@@ -73,6 +75,7 @@ public:
 
     Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
     Advertising::IAdvertising& AdvertisingInterface() override { return advertising_; }
+    Actions::IActions& ActionsInterface() override { return actions_; }
     Device::IDevice& DeviceInterface() override { return device_; }
     Discovery::IDiscovery& DiscoveryInterface() override { return discovery_; }
     Display::IDisplay& DisplayInterface() override { return display_; }
@@ -88,6 +91,7 @@ private:
     void unsubscribeAll()
     {
         accessibility_.unsubscribeAll();
+        actions_.unsubscribeAll();
         lifecycle_.unsubscribeAll();
         localization_.unsubscribeAll();
         network_.unsubscribeAll();
@@ -98,6 +102,7 @@ private:
 private:
     Accessibility::AccessibilityImpl accessibility_;
     Advertising::AdvertisingImpl advertising_;
+    Actions::ActionsImpl actions_;
     Device::DeviceImpl device_;
     Discovery::DiscoveryImpl discovery_;
     Display::DisplayImpl display_;

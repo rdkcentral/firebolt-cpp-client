@@ -51,8 +51,12 @@ while [[ ! -z $1 ]]; do
   esac; shift
 done
 
-[[ ! -z $SYSROOT_PATH ]] || { echo "SYSROOT_PATH not set" >/dev/stderr; exit 1; }
-[[ -e $SYSROOT_PATH ]] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
+if [[ -n "$SYSROOT_PATH" ]]; then
+  [[ -e "$SYSROOT_PATH" ]] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
+  params+=" -DSYSROOT_PATH=$SYSROOT_PATH"
+else
+  echo "SYSROOT_PATH not set; building without SYSROOT_PATH override"
+fi
 
 $cleanFirst && rm -rf $bdir
 
@@ -61,7 +65,6 @@ if [[ ! -e "$bdir" || -n "$@" ]]; then
   command -v ccache >/dev/null 2>&1 && params+=" -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
   cmake -B $bdir \
     -DCMAKE_BUILD_TYPE=$buildType \
-    -DSYSROOT_PATH=$SYSROOT_PATH \
     $params \
     "$@" || exit $?
 fi

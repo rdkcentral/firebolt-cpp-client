@@ -22,7 +22,7 @@ include(GoogleTest)
 
 enable_testing()
 
-add_compile_definitions(UT_OPEN_RPC_FILE="firebolt-open-rpc.json")
+add_compile_definitions(UT_OPEN_RPC_FILE="${CMAKE_SOURCE_DIR}/docs/openrpc/the-spec/firebolt-open-rpc.json")
 
 set(UNIT_TESTS_APP utApp)
 

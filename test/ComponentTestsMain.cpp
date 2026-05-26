@@ -18,6 +18,7 @@
 
 #include "firebolt/firebolt.h"
 #include "gtest/gtest.h"
+#include <cstdlib>
 #include <firebolt/config.h>
 #include <iostream>
 #include <string>
@@ -68,7 +69,9 @@ bool waitOnConnectionReady()
 
 int main(int argc, char** argv)
 {
-    string url = "ws://127.0.0.1:9998/";
+    const char* endpoint = std::getenv("FIREBOLT_ENDPOINT");
+    string url = (endpoint && endpoint[0] != '\0') ? endpoint : "ws://127.0.0.1:3474/";
+    cout << "Using Firebolt endpoint: " << url << endl;
     createFireboltInstance(url);
 
     std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -70,7 +70,7 @@ bool waitOnConnectionReady()
 int main(int argc, char** argv)
 {
     const char* endpoint = std::getenv("FIREBOLT_ENDPOINT");
-    string url = (endpoint && endpoint[0] != '\0') ? endpoint : "ws://127.0.0.1:3474/";
+    string url = (endpoint && endpoint[0] != '\0') ? endpoint : "ws://127.0.0.1:9998/";
     cout << "Using Firebolt endpoint: " << url << endl;
     createFireboltInstance(url);
 

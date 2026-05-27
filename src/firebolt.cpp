@@ -41,7 +41,7 @@ public:
     FireboltAccessorImpl()
         : accessibility_(Firebolt::Helpers::GetHelperInstance()),
           advertising_(Firebolt::Helpers::GetHelperInstance()),
-                    actions_(Firebolt::Helpers::GetHelperInstance()),
+          actions_(Firebolt::Helpers::GetHelperInstance()),
           device_(Firebolt::Helpers::GetHelperInstance()),
           discovery_(Firebolt::Helpers::GetHelperInstance()),
           display_(Firebolt::Helpers::GetHelperInstance()),

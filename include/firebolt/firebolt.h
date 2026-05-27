@@ -94,13 +94,6 @@ public:
     virtual Advertising::IAdvertising& AdvertisingInterface() = 0;
 
     /**
-     * @brief Returns instance of Actions interface
-     *
-     * @return Reference to Actions interface
-     */
-    virtual Actions::IActions& ActionsInterface() = 0;
-
-    /**
      * @brief Returns instance of Device interface
      *
      * @return Reference to Device interface
@@ -169,5 +162,12 @@ public:
      * @return Reference to TextToSpeech interface
      */
     virtual TextToSpeech::ITextToSpeech& TextToSpeechInterface() = 0;
+
+    /**
+     * @brief Returns instance of Actions interface
+     *
+     * @return Reference to Actions interface
+     */
+    virtual Actions::IActions& ActionsInterface() = 0;
 };
 } // namespace Firebolt

@@ -75,7 +75,6 @@ public:
 
     Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
     Advertising::IAdvertising& AdvertisingInterface() override { return advertising_; }
-    Actions::IActions& ActionsInterface() override { return actions_; }
     Device::IDevice& DeviceInterface() override { return device_; }
     Discovery::IDiscovery& DiscoveryInterface() override { return discovery_; }
     Display::IDisplay& DisplayInterface() override { return display_; }
@@ -86,6 +85,7 @@ public:
     Presentation::IPresentation& PresentationInterface() override { return presentation_; }
     Stats::IStats& StatsInterface() override { return stats_; }
     TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
+    Actions::IActions& ActionsInterface() override { return actions_; }
 
 private:
     void unsubscribeAll()

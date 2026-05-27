@@ -13,10 +13,10 @@ ActionsImpl::ActionsImpl(Firebolt::Helpers::IHelper& helper)
     , subscriptionManager_(helper, this)
 {}
 
-Result<void> ActionsImpl::start(const std::string& intent) const {
+Result<void> ActionsImpl::intent(const std::string& intent) const {
     nlohmann::json params;
     params["intent"] = intent;
-    return helper_.invoke("Actions.start", params);
+    return helper_.invoke("Actions.intent", params);
 }
 
 Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification) {

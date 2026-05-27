@@ -17,7 +17,7 @@ class IActions {
 public:
     virtual ~IActions() = default;
 
-    virtual Result<void> start(const std::string& intent) const = 0;
+    virtual Result<void> intent(const std::string& intent) const = 0;
 
     virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) = 0;
     virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const std::string&)>&& notification) {

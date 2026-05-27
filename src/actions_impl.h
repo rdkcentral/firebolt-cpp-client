@@ -14,7 +14,7 @@ public:
     explicit ActionsImpl(Firebolt::Helpers::IHelper& helper);
     ~ActionsImpl() override = default;
 
-    Result<void> start(const std::string& intent) const override;
+    Result<void> intent(const std::string& intent) const override;
 
     Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) override;
 

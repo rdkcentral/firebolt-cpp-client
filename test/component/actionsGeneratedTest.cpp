@@ -19,10 +19,10 @@
 #include "firebolt/actions.h"
 #include <gtest/gtest.h>
 
-TEST(ActionsGeneratedCTest, InterfaceSurfaceHasstart)
+TEST(ActionsGeneratedCTest, InterfaceSurfaceHasintent)
 {
     using Interface = Firebolt::Actions::IActions;
-    auto ptr = &Interface::start;
+    auto ptr = &Interface::intent;
     (void)ptr;
     SUCCEED();
 }

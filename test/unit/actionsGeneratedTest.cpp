@@ -42,16 +42,16 @@ TEST_F(ActionsGeneratedUTest, UnsubscribeForwardsToHelper)
 }
 
 
-TEST_F(ActionsGeneratedUTest, ForwardsstartTransportErrors)
+TEST_F(ActionsGeneratedUTest, ForwardsintentTransportErrors)
 {
-    EXPECT_CALL(mockHelper, invoke("Actions.start", ::testing::_))
+    EXPECT_CALL(mockHelper, invoke("Actions.intent", ::testing::_))
         .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& params) {
             EXPECT_TRUE(params.is_object()) << "Expected params object for method call";
             EXPECT_TRUE(params.contains("intent")) << "Missing expected param key: intent";
             return Firebolt::Result<void>{Firebolt::Error::General};
         }));
 
-    auto result = impl.start({});
+    auto result = impl.intent({});
     EXPECT_FALSE(result) << "Expected error propagation when helper invoke fails";
 }
 

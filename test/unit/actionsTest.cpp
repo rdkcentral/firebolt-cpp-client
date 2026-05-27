@@ -30,11 +30,11 @@ TEST_F(ActionsUTest, Start)
 {
     nlohmann::json expectedParams;
     expectedParams["intent"] = "launch";
-    EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
+    EXPECT_CALL(mockHelper, invoke("Actions.intent", expectedParams))
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.start("launch");
+    auto result = actionsImpl_.intent("launch");
     EXPECT_TRUE(result);
 }
 

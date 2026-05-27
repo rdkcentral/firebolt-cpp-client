@@ -18,12 +18,10 @@
 
 #include "firebolt/discovery.h"
 #include "firebolt/firebolt.h"
-#include "json_engine.h"
+#include <gtest/gtest.h>
 
 class DiscoveryCTest : public ::testing::Test
 {
-protected:
-    JsonEngine jsonEngine;
 };
 
 TEST_F(DiscoveryCTest, Watched)
@@ -32,7 +30,4 @@ TEST_F(DiscoveryCTest, Watched)
                                                                                        "2024-10-01T12:00:00Z",
                                                                                        Firebolt::AgePolicy::ADULT);
     ASSERT_TRUE(result) << "Failed to call watched";
-
-    auto expectedValue = jsonEngine.get_value("Discovery.watched");
-    EXPECT_EQ(*result, expectedValue.get<bool>());
 }

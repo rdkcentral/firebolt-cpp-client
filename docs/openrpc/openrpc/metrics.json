@@ -19,9 +19,9 @@
       "summary": "Inform the platform that your app is minimally usable. This method is called automatically by `Lifecycle.ready()`",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -29,8 +29,8 @@
           "name": "Send ready metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -51,9 +51,9 @@
       "summary": "Log a sign in event, called by Discovery.signIn().",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -61,8 +61,8 @@
           "name": "Send signIn metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -83,9 +83,9 @@
       "summary": "Log a sign out event, called by Discovery.signOut().",
       "params": [],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -93,8 +93,8 @@
           "name": "Send signOut metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -128,9 +128,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -138,8 +138,8 @@
           "name": "Send startContent metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -151,8 +151,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -168,8 +168,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -203,9 +203,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -213,8 +213,8 @@
           "name": "Send stopContent metric",
           "params": [],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -226,8 +226,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -261,9 +261,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -276,8 +276,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         },
         {
@@ -289,8 +289,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -356,9 +356,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -383,8 +383,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -418,9 +418,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -433,8 +433,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -468,9 +468,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -483,8 +483,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -518,9 +518,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -533,8 +533,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -568,9 +568,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -583,8 +583,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -618,9 +618,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -633,8 +633,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -676,9 +676,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -691,12 +691,12 @@
             },
             {
               "name": "target",
-              "value": 0.50
+              "value": 0.5
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -738,9 +738,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -757,8 +757,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -800,9 +800,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -819,8 +819,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -886,9 +886,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -917,8 +917,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -952,9 +952,9 @@
         }
       ],
       "result": {
-        "name": "success",
+        "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -967,8 +967,8 @@
             }
           ],
           "result": {
-            "name": "success",
-            "value": true
+            "name": "result",
+            "value": null
           }
         }
       ]
@@ -1013,7 +1013,7 @@
       "result": {
         "name": "result",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -1031,7 +1031,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         }
       ]

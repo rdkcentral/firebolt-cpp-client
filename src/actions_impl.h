@@ -12,11 +12,9 @@ namespace Firebolt::Actions {
 class ActionsImpl : public IActions {
 public:
     explicit ActionsImpl(Firebolt::Helpers::IHelper& helper);
-    ActionsImpl(const ActionsImpl&) = delete;
-    ActionsImpl& operator=(const ActionsImpl&) = delete;
     ~ActionsImpl() override = default;
 
-    Result<std::string> intent() const override;
+    Result<void> start(const std::string& intent) const override;
 
     Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) override;
 

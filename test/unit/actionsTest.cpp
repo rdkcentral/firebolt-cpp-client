@@ -26,24 +26,16 @@ protected:
     Firebolt::Actions::ActionsImpl actionsImpl_{mockHelper};
 };
 
-TEST_F(ActionsUTest, Intent)
+TEST_F(ActionsUTest, Start)
 {
-    const std::string expectedValue = "{\"intent\":\"launch\"}";
-    mock_with_response("actions.intent", expectedValue);
+    nlohmann::json expectedParams;
+    expectedParams["intent"] = "launch";
+    EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.intent();
-
-    ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
-    EXPECT_EQ(*result, expectedValue);
-}
-
-TEST_F(ActionsUTest, IntentBadResponse)
-{
-    mock_with_response("actions.intent", true);
-
-    auto result = actionsImpl_.intent();
-
-    ASSERT_FALSE(result) << "ActionsImpl::intent() did not return an error";
+    auto result = actionsImpl_.start("launch");
+    EXPECT_TRUE(result);
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)
@@ -56,5 +48,7 @@ TEST_F(ActionsUTest, SubscribeOnIntent)
     ASSERT_TRUE(result) << "ActionsImpl::subscribeOnIntent() returned an error";
     EXPECT_EQ(*result, expectedValue);
 
-    actionsImpl_.unsubscribe(*result);
+    auto unsubResult = actionsImpl_.unsubscribe(*result);
+    ASSERT_TRUE(unsubResult) << "ActionsImpl::unsubscribe() returned an error";
 }
+

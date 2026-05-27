@@ -17,15 +17,15 @@ class IActions {
 public:
     virtual ~IActions() = default;
 
-    virtual Result<std::string> intent() const = 0;
+    virtual Result<void> start(const std::string& intent) const = 0;
 
     virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const std::string&)>&& notification) {
+        return subscribeOnIntent(std::move(notification));
+    }
 
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
-
-    // Factory
-    static IActions* create();
 
 };  // class IActions
 

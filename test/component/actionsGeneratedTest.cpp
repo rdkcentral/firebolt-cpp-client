@@ -49,6 +49,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
             cv.notify_one();
         });
 
+    ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
     triggerEvent("Actions.onIntent", R"({"value":"launch"})");

@@ -115,10 +115,12 @@ while [[ $# -gt 0 ]]; do
       RUN_CLANG_FORMAT=false
       ;;
     --tidy-only)
+      RUN_CLANG_FORMAT=false
       RUN_CLANG_TIDY=true
       RUN_CPPCHECK=false
       ;;
     --cppcheck-only)
+      RUN_CLANG_FORMAT=false
       RUN_CLANG_TIDY=false
       RUN_CPPCHECK=true
       ;;

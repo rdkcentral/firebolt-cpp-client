@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
       NO_BUILD=true
       ;;
     --build-dir)
-      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+      if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
         echo "Missing value for --build-dir" >&2
         usage
         exit 1
@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --tidy-path)
-      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+      if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
         echo "Missing value for --tidy-path" >&2
         usage
         exit 1
@@ -105,6 +105,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 cd "$ROOT_DIR"
+
+if [[ "$NO_BUILD" == false && "$BUILD_DIR" != "build-dev" ]]; then
+  echo "--build-dir is only supported with --no-build (build step always uses build-dev)." >&2
+  exit 1
+fi
 
 if [[ "$RUN_CLANG_TIDY" == false && "$RUN_CPPCHECK" == false ]]; then
   echo "Nothing to run: both clang-tidy and cppcheck are disabled." >&2

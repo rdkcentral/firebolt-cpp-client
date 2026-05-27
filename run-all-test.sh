@@ -63,7 +63,7 @@ while [[ $# -gt 0 ]]; do
 			RUN_UNIT=false
 			;;
 		--unit-filter)
-			if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+			if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
 				echo "Missing value for --unit-filter" >&2
 				usage
 				exit 1
@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
 			shift
 			;;
 		--component-filter)
-			if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+			if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
 				echo "Missing value for --component-filter" >&2
 				usage
 				exit 1

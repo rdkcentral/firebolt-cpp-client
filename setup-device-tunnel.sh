@@ -123,11 +123,9 @@ SSH_ARGS=(-N -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ExitOnForwa
 echo "Opening SSH tunnel: localhost:${LOCAL_PORT} -> ${REMOTE_BIND_ADDR}:${REMOTE_PORT} on ${TARGET}"
 
 if [[ "$BACKGROUND" == true ]]; then
-  LOG_FILE="${TMPDIR:-/tmp}/firebolt-tunnel-${LOCAL_PORT}.log"
-  nohup ssh "${SSH_ARGS[@]}" >"$LOG_FILE" 2>&1 &
-  SSH_PID=$!
-  echo "Tunnel PID: ${SSH_PID}"
-  echo "Tunnel log: ${LOG_FILE}"
+  # -f backgrounds only after authentication and forwarding are set up.
+  ssh -f "${SSH_ARGS[@]}"
+  echo "Tunnel established in background mode."
   exit 0
 fi
 

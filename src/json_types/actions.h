@@ -12,6 +12,10 @@
 
 namespace Firebolt::Actions {
 
+namespace JsonData {
+
+} // namespace JsonData
+
 } // namespace Firebolt::Actions
 
 #endif // FIREBOLT_ACTIONS_JSON_H

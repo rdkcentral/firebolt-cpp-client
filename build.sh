@@ -55,6 +55,10 @@ if [[ -n "$SYSROOT_PATH" ]]; then
   [[ -e "$SYSROOT_PATH" ]] || { echo "SYSROOT_PATH not exist ($SYSROOT_PATH)" >/dev/stderr; exit 1; }
   params+=" -DSYSROOT_PATH=$SYSROOT_PATH"
 else
+  if $do_install; then
+    echo "--install requires --sysroot to be set; refusing to install without SYSROOT_PATH" >/dev/stderr
+    exit 1
+  fi
   echo "SYSROOT_PATH not set; building without SYSROOT_PATH override"
 fi
 

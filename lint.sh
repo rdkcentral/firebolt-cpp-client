@@ -63,10 +63,20 @@ while [[ $# -gt 0 ]]; do
       NO_BUILD=true
       ;;
     --build-dir)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --build-dir" >&2
+        usage
+        exit 1
+      fi
       BUILD_DIR="${2:-}"
       shift
       ;;
     --tidy-path)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --tidy-path" >&2
+        usage
+        exit 1
+      fi
       CLANG_TIDY_PATHS+=("${2:-}")
       shift
       ;;

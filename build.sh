@@ -58,6 +58,11 @@ else
   echo "SYSROOT_PATH not set; building without SYSROOT_PATH override"
 fi
 
+if [[ "$do_install" == true && "$bdir" == "build" && -z "${SYSROOT_PATH:-}" ]]; then
+  echo "Refusing --install without --sysroot to avoid host install into /usr" >&2
+  exit 1
+fi
+
 $cleanFirst && rm -rf $bdir
 
 if [[ ! -e "$bdir" || -n "$@" ]]; then

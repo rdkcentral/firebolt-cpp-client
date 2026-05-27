@@ -56,6 +56,11 @@ while [[ $# -gt 0 ]]; do
       NO_BUILD=true
       ;;
     --unit-filter)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --unit-filter" >&2
+        usage
+        exit 1
+      fi
       UNIT_FILTER="${2:-}"
       shift
       ;;

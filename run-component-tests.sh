@@ -56,6 +56,11 @@ while [[ $# -gt 0 ]]; do
       NO_BUILD=true
       ;;
     --component-filter)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --component-filter" >&2
+        usage
+        exit 1
+      fi
       COMPONENT_FILTER="${2:-}"
       shift
       ;;

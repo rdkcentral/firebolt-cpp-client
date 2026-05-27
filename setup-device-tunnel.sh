@@ -70,14 +70,29 @@ EOF
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --local-port)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --local-port" >&2
+        usage
+        exit 1
+      fi
       LOCAL_PORT="${2:-}"
       shift
       ;;
     --remote-port)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --remote-port" >&2
+        usage
+        exit 1
+      fi
       REMOTE_PORT="${2:-}"
       shift
       ;;
     --remote-bind)
+      if [[ $# -lt 2 || -z "${2:-}" || "${2:0:1}" == "-" ]]; then
+        echo "Missing value for --remote-bind" >&2
+        usage
+        exit 1
+      fi
       REMOTE_BIND_ADDR="${2:-}"
       shift
       ;;

@@ -16,9 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "actions_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
-#include "actions_impl.h"
 
 class ActionsUTest : public ::testing::Test, protected MockBase
 {
@@ -51,4 +51,3 @@ TEST_F(ActionsUTest, SubscribeOnIntent)
     auto unsubResult = actionsImpl_.unsubscribe(*result);
     ASSERT_TRUE(unsubResult) << "ActionsImpl::unsubscribe() returned an error";
 }
-

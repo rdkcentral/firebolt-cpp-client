@@ -25,9 +25,11 @@
 #include "firebolt/actions.h"
 #include <firebolt/helpers.h>
 
-namespace Firebolt::Actions {
+namespace Firebolt::Actions
+{
 
-class ActionsImpl : public IActions {
+class ActionsImpl : public IActions
+{
 public:
     explicit ActionsImpl(Firebolt::Helpers::IHelper& helper);
     ActionsImpl(const ActionsImpl&) = delete;

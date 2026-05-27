@@ -18,8 +18,8 @@
 
 #include "firebolt/firebolt.h"
 #include "accessibility_impl.h"
-#include "advertising_impl.h"
 #include "actions_impl.h"
+#include "advertising_impl.h"
 #include "device_impl.h"
 #include "discovery_impl.h"
 #include "display_impl.h"

@@ -57,4 +57,3 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
-

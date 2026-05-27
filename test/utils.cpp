@@ -125,7 +125,7 @@ void verifyUnsubscribeResult(const Firebolt::Result<void>& result)
         FAIL() << "Unsubscribe failed." + toError(result);
     }
 }
-void verifyEventReceived(std::mutex& mtx, std::condition_variable& cv, bool& eventReceived)
+void verifyEventReceived(std::mutex& mtx, std::condition_variable& cv, const bool& eventReceived)
 {
     std::unique_lock<std::mutex> lock(mtx);
     if (!cv.wait_for(lock, EventWaitTime, [&] { return eventReceived; }))
@@ -134,7 +134,7 @@ void verifyEventReceived(std::mutex& mtx, std::condition_variable& cv, bool& eve
     }
 }
 
-void verifyEventNotReceived(std::mutex& mtx, std::condition_variable& cv, bool& eventReceived)
+void verifyEventNotReceived(std::mutex& mtx, std::condition_variable& cv, const bool& eventReceived)
 {
     // Wait for the event to be received or timeout after 5 seconds
     std::unique_lock<std::mutex> lock(mtx);

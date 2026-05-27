@@ -19,8 +19,8 @@
 #pragma once
 
 #include "firebolt/accessibility.h"
-#include "firebolt/advertising.h"
 #include "firebolt/actions.h"
+#include "firebolt/advertising.h"
 #include "firebolt/client_export.h"
 #include "firebolt/device.h"
 #include "firebolt/discovery.h"

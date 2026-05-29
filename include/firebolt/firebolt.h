@@ -19,6 +19,7 @@
 #pragma once
 
 #include "firebolt/accessibility.h"
+#include "firebolt/actions.h"
 #include "firebolt/advertising.h"
 #include "firebolt/client_export.h"
 #include "firebolt/device.h"
@@ -161,5 +162,12 @@ public:
      * @return Reference to TextToSpeech interface
      */
     virtual TextToSpeech::ITextToSpeech& TextToSpeechInterface() = 0;
+
+    /**
+     * @brief Returns instance of Actions interface
+     *
+     * @return Reference to Actions interface
+     */
+    virtual Actions::IActions& ActionsInterface() = 0;
 };
 } // namespace Firebolt

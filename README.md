@@ -30,3 +30,14 @@ Examples:
 - `./lint.sh --tidy-only`
 - `./lint.sh --tidy-only --fix`
 - `./lint.sh --cppcheck-only`
+
+## Client Versioning
+
+`Firebolt.clientVersion` is resolved at configure/build time with this precedence:
+
+1. `FIREBOLT_CLIENT_VERSION` environment variable
+2. `.client-version` file in the repository/source root
+3. current git short SHA
+4. `unknown`
+
+For source-distribution releases (where git metadata may be unavailable), bake the release version into `.client-version` before creating the tarball.

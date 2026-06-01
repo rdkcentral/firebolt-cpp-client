@@ -2,11 +2,11 @@
 
 ### Added
 - New APIs
-  - Actions.intent()
-  - Actions.onIntent event
+  - `Actions.intent()`
+  - `Actions.onIntent` event
 
 ### Changed
-- **Breaking**: `Discovery.watched` and `Metrics` methods return type changed from `bool` to `void`
+- **Breaking**: `Discovery.watched` and `Metrics` methods return type changed from `Result<bool>` to `Result<void>`
 
 ## [0.5.5](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.4...v0.5.5)
 

@@ -42,7 +42,7 @@ TEST_F(ActionsGeneratedUTest, UnsubscribeForwardsToHelper)
 }
 
 
-TEST_F(ActionsGeneratedUTest, ForwardsintentTransportErrors)
+TEST_F(ActionsGeneratedUTest, ForwardsIntentTransportErrors)
 {
     EXPECT_CALL(mockHelper, getJson("Actions.intent", ::testing::_))
         .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& /*params*/) {

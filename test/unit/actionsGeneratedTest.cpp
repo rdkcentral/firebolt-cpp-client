@@ -43,8 +43,13 @@ TEST_F(ActionsGeneratedUTest, UnsubscribeForwardsToHelper)
 TEST_F(ActionsGeneratedUTest, ForwardsIntentTransportErrors)
 {
     EXPECT_CALL(mockHelper, getJson("Actions.intent", ::testing::_))
-        .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& /*params*/)
-                                    { return Firebolt::Result<nlohmann::json>{Firebolt::Error::General}; }));
+        .WillOnce(::testing::Invoke(
+            [](const std::string& /*method*/, const nlohmann::json& params)
+            {
+                EXPECT_TRUE(params.is_null() || (params.is_object() && params.empty()))
+                    << "Actions.intent getter should not send request params";
+                return Firebolt::Result<nlohmann::json>{Firebolt::Error::General};
+            }));
 
     auto result = impl.intent();
     EXPECT_FALSE(result) << "Expected error propagation when helper getJson fails";

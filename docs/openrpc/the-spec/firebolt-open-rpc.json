@@ -26,9 +26,6 @@
 			"params": [],
 			"tags": [
 				{
-					"name": "property:readonly"
-				},
-				{
 					"name": "capabilities",
 					"x-uses": [
 						"xrn:firebolt:capability:rpc:discover"
@@ -57,14 +54,16 @@
 			"summary": "Returns the current intent.",
 			"tags": [
 				{
+					"name": "property:readonly"
+				},
+				{
 					"name": "capabilities",
 					"x-uses": [
 						"xrn:firebolt:capability:actions:intent"
 					]
 				}
 			],
-			"params": [
-			],
+			"params": [],
 			"result": {
 				"name": "intent",
 				"summary": "The current intent.",

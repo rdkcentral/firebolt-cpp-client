@@ -111,7 +111,7 @@ docker run --rm --user "$(id -u):$(id -g)" \
         https://github.com/rdkcentral/mock-firebolt.git /mock-host
     fi
     cd /mock-host
-    git fetch --shallow-since=2026-01-01
+    git fetch --depth 1 origin '"$MOCK_SHA1SUM"'
     git -c advice.detachedHead=false checkout '"$MOCK_SHA1SUM"'
     source /usr/local/nvm/nvm.sh
     nvm use --delete-prefix '"$NODE_VERSION"' >/dev/null

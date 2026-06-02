@@ -23,7 +23,6 @@
 #include "json_types/actions.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
-#include <regex>
 
 namespace Firebolt::Actions {
 

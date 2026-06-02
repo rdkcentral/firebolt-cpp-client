@@ -12,9 +12,9 @@ on:
           - rpc_v2
           - legacy
   push:
-    branches: [ main, next ]
+    branches: [ main, develop,  next ]
   pull_request:
-    branches: [ main, next ]
+    branches: [ main, develop,  next ]
 
 defaults:
   run:

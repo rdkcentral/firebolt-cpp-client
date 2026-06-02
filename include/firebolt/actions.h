@@ -22,31 +22,34 @@
 #ifndef FIREBOLT_ACTIONS_H
 #define FIREBOLT_ACTIONS_H
 
+#include <firebolt/types.h>
 #include <functional>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <firebolt/types.h>
 
-namespace Firebolt::Actions {
+namespace Firebolt::Actions
+{
 
-class IActions {
+class IActions
+{
 public:
     virtual ~IActions() = default;
 
     virtual Result<std::string> intent() const = 0;
 
     virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) = 0;
-    virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const std::string&)>&& notification) {
+    virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const std::string&)>&& notification)
+    {
         return subscribeOnIntent(std::move(notification));
     }
 
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-};  // class IActions
+}; // class IActions
 
 } // namespace Firebolt::Actions
 

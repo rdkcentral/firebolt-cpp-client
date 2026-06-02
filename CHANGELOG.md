@@ -2,7 +2,7 @@
 
 ### Added
 - New APIs
-  - `Actions.intent`
+  - `Actions.intent` (no parameters, returns string)
   - `Actions.onIntent` event
 
 ### Changed

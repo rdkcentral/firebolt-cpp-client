@@ -23,16 +23,14 @@
 #define FIREBOLT_ACTIONS_JSON_H
 
 #pragma once
-#include "firebolt/actions.h"
-#include <firebolt/json_types.h>
-#include <nlohmann/json.hpp>
 #include <type_traits>
+#include <nlohmann/json.hpp>
+#include <firebolt/json_types.h>
+#include "firebolt/actions.h"
 
-namespace Firebolt::Actions
-{
+namespace Firebolt::Actions {
 
-namespace JsonData
-{
+namespace JsonData {
 
 } // namespace JsonData
 

@@ -32,8 +32,9 @@ protected:
 
 TEST_F(ActionsGeneratedCTest, Intent)
 {
-    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent("launch");
-    EXPECT_TRUE(result) << toError(result);
+    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
+    ASSERT_TRUE(result) << toError(result);
+    EXPECT_EQ(*result, "launch");
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
@@ -52,7 +53,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
-    triggerEvent("Actions.onIntent", R"({"value":"launch"})");
+    triggerEvent("Actions.onIntent", R"("launch")");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());

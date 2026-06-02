@@ -28,14 +28,11 @@ protected:
 
 TEST_F(ActionsUTest, Start)
 {
-    nlohmann::json expectedParams;
-    expectedParams["intent"] = "launch";
-    EXPECT_CALL(mockHelper, invoke("Actions.intent", expectedParams))
-        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
-                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+    mock_with_response("Actions.intent", "launch");
 
-    auto result = actionsImpl_.intent("launch");
-    EXPECT_TRUE(result);
+    auto result = actionsImpl_.intent();
+    ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
+    EXPECT_EQ(*result, "launch");
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)

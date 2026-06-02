@@ -5,6 +5,7 @@
 		"version": "",
 		"x-module-descriptions": {
 			"Accessibility": "The `Accessibility` module provides access to the user/device settings for closed captioning and voice guidance.\n\nApps **SHOULD** attempt o respect these settings, rather than manage and persist seprate settings, which would be different per-app.",
+			"Actions": "Methods for setting and observing app intents.",
 			"Advertising": "A module for platform provided advertising settings and functionality.",
 			"Device": "A module for querying about the device and it's capabilities.",
 			"Discovery": "Your App likely wants to integrate with the Platform's discovery capabilities. For example to add a \"Watch Next\" tile that links to your app from the platform's home screen.\n\nGetting access to this information requires to connect to lower level APIs made available by the platform. Since implementations differ between operators and platforms, the Firebolt SDK offers a Discovery module, that exposes a generic, agnostic interface to the developer.\n\nUnder the hood, an underlaying transport layer will then take care of calling the right APIs for the actual platform implementation that your App is running on.\n\nThe Discovery plugin is used to _send_ information to the Platform.\n\n### Localization\nApps should provide all user-facing strings in the device's language, as specified by the Firebolt `Localization.language` property.\n\nApps should provide prices in the same currency presented in the app. If multiple currencies are supported in the app, the app should provide prices in the user's current default currency.",
@@ -44,6 +45,83 @@
 					"result": {
 						"name": "schema",
 						"value": {}
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.intent",
+			"summary": "Returns the current intent.",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"params": [
+			],
+			"result": {
+				"name": "intent",
+				"summary": "The current intent.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Get the current intent",
+					"result": {
+						"name": "Default Result",
+						"value": "launch"
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.onIntent",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Actions.onIntent",
+					"x-subscriber-for": "Actions.intent"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"summary": "Notifies when the current intent changes.",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"result": {
+				"name": "intent",
+				"summary": "The current intent.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Listen for intent changes",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": "launch"
 					}
 				}
 			]

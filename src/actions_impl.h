@@ -36,7 +36,7 @@ public:
     ActionsImpl& operator=(const ActionsImpl&) = delete;
     ~ActionsImpl() override = default;
 
-    Result<void> intent(const std::string& intent) const override;
+    Result<std::string> intent() const override;
 
     Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) override;
 

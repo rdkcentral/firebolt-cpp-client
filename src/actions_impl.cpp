@@ -33,11 +33,9 @@ ActionsImpl::ActionsImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<void> ActionsImpl::intent(const std::string& intent) const
+Result<std::string> ActionsImpl::intent() const
 {
-    nlohmann::json params;
-    params["intent"] = intent;
-    return helper_.invoke("Actions.intent", params);
+    return helper_.get<Firebolt::JSON::String, std::string>("Actions.intent");
 }
 
 Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification)

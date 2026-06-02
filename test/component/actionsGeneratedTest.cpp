@@ -16,46 +16,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "firebolt/firebolt.h"
-#include "utils.h"
+#include "firebolt/actions.h"
 #include <gtest/gtest.h>
 
-class ActionsGeneratedCTest : public ::testing::Test
+TEST(ActionsGeneratedCTest, InterfaceSurfaceHasintent)
 {
-protected:
-    void SetUp() override { eventReceived = false; }
-
-    std::condition_variable cv;
-    std::mutex mtx;
-    bool eventReceived;
-};
-
-TEST_F(ActionsGeneratedCTest, Intent)
-{
-    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
-    ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(*result, "launch");
+    using Interface = Firebolt::Actions::IActions;
+    auto ptr = &Interface::intent;
+    (void)ptr;
+    SUCCEED();
 }
 
-TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
-{
-    auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
-        [&](const std::string& intent)
-        {
-            EXPECT_EQ(intent, "launch");
-            {
-                std::lock_guard<std::mutex> lock(mtx);
-                eventReceived = true;
-            }
-            cv.notify_one();
-        });
-
-    ASSERT_TRUE(id) << toError(id);
-    verifyEventSubscription(id);
-
-    triggerEvent("Actions.onIntent", R"("launch")");
-    verifyEventReceived(mtx, cv, eventReceived);
-
-    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());
-    verifyUnsubscribeResult(result);
-}

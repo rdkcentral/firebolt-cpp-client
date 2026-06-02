@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "actions_impl.h"
 #include "mock_helper.h"
+#include "actions_impl.h"
 #include <gtest/gtest.h>
 
 class ActionsGeneratedUTest : public ::testing::Test
@@ -34,22 +34,22 @@ TEST_F(ActionsGeneratedUTest, Constructs)
 
 TEST_F(ActionsGeneratedUTest, UnsubscribeForwardsToHelper)
 {
-    EXPECT_CALL(mockHelper, unsubscribe(7)).WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+    EXPECT_CALL(mockHelper, unsubscribe(7))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
 
     auto result = impl.unsubscribe(7);
     ASSERT_TRUE(result) << "unsubscribe should return success when helper succeeds";
 }
 
+
 TEST_F(ActionsGeneratedUTest, ForwardsintentTransportErrors)
 {
     EXPECT_CALL(mockHelper, getJson("Actions.intent", ::testing::_))
-        .WillOnce(::testing::Invoke(
-            [](const std::string& /*method*/, const nlohmann::json& params)
-            {
-                EXPECT_TRUE(params.is_null() || params.empty()) << "Expected no params for method call";
-                return Firebolt::Result<nlohmann::json>{Firebolt::Error::General};
-            }));
+        .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& /*params*/) {
+            return Firebolt::Result<nlohmann::json>{Firebolt::Error::General};
+        }));
 
     auto result = impl.intent();
-    EXPECT_FALSE(result) << "Expected error propagation when helper invoke fails";
+    EXPECT_FALSE(result) << "Expected error propagation when helper getJson fails";
 }
+

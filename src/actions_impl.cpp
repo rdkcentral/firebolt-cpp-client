@@ -23,33 +23,28 @@
 #include "json_types/actions.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
+#include <regex>
 
-namespace Firebolt::Actions
-{
+namespace Firebolt::Actions {
 
 ActionsImpl::ActionsImpl(Firebolt::Helpers::IHelper& helper)
-    : helper_(helper),
-      subscriptionManager_(helper, this)
-{
-}
+    : helper_(helper)
+    , subscriptionManager_(helper, this)
+{}
 
-Result<std::string> ActionsImpl::intent() const
-{
+Result<std::string> ActionsImpl::intent() const {
     return helper_.get<Firebolt::JSON::String, std::string>("Actions.intent");
 }
 
-Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification)
-{
+Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification) {
     return subscriptionManager_.subscribe<Firebolt::JSON::String>("Actions.onIntent", std::move(notification));
 }
 
-Result<void> ActionsImpl::unsubscribe(SubscriptionId id)
-{
+Result<void> ActionsImpl::unsubscribe(SubscriptionId id) {
     return subscriptionManager_.unsubscribe(id);
 }
 
-void ActionsImpl::unsubscribeAll()
-{
+void ActionsImpl::unsubscribeAll() {
     subscriptionManager_.unsubscribeAll();
 }
 

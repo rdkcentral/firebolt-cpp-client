@@ -11,7 +11,7 @@ SKIP_IMAGE_BUILD="false"
 
 usage() {
   cat <<EOF
-Usage: ./run-component-tests-docker.sh [options]
+Usage: ./run-component-tests-local.sh [options]
 
 One-shot Docker flow:
 1) Build CI image (unless --skip-image-build)
@@ -29,9 +29,9 @@ Options:
   --help                       Show this help
 
 Examples:
-  ./run-component-tests-docker.sh
-  ./run-component-tests-docker.sh --protocol legacy
-  ./run-component-tests-docker.sh --skip-image-build --image-tag firebolt-client-ci:local
+  ./run-component-tests-local.sh
+  ./run-component-tests-local.sh --protocol legacy
+  ./run-component-tests-local.sh --skip-image-build --image-tag firebolt-client-ci:local
 EOF
 }
 

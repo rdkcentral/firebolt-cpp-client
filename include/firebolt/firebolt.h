@@ -25,6 +25,7 @@
 #include "firebolt/device.h"
 #include "firebolt/discovery.h"
 #include "firebolt/display.h"
+#include "firebolt/firebolt_module.h"
 #include "firebolt/lifecycle.h"
 #include "firebolt/localization.h"
 #include "firebolt/metrics.h"
@@ -113,6 +114,13 @@ public:
      * @return Reference to Display interface
      */
     virtual Display::IDisplay& DisplayInterface() = 0;
+
+    /**
+     * @brief Returns instance of Firebolt interface
+     *
+     * @return Reference to Firebolt interface
+     */
+    virtual FireboltModule::IFirebolt& FireboltInterface() = 0;
 
     /**
      * @brief Returns instance of Lifecycle interface

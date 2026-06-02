@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#pragma once
-#include <cstdint>
+#include "firebolt/firebolt_module.h"
+#include <gtest/gtest.h>
 
-namespace Firebolt::Version {
-    constexpr uint32_t Major = @PROJECT_VERSION_MAJOR@;
-    constexpr uint32_t Minor = @PROJECT_VERSION_MINOR@;
-    constexpr uint32_t Patch = @PROJECT_VERSION_PATCH@;
-    constexpr const char* String = "@PROJECT_VERSION@";
-    constexpr const char* ClientString = "@CLIENT_VERSION_STRING@";
+TEST(FireboltGeneratedCTest, InterfaceSurfaceHasserverVersion)
+{
+    using Interface = Firebolt::FireboltModule::IFirebolt;
+    auto ptr = &Interface::serverVersion;
+    (void)ptr;
+    SUCCEED();
 }
+

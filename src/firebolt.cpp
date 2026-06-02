@@ -23,6 +23,7 @@
 #include "device_impl.h"
 #include "discovery_impl.h"
 #include "display_impl.h"
+#include "firebolt_module_impl.h"
 #include "firebolt/client_version.h"
 #include "lifecycle_impl.h"
 #include "localization_impl.h"
@@ -45,6 +46,7 @@ public:
           device_(Firebolt::Helpers::GetHelperInstance()),
           discovery_(Firebolt::Helpers::GetHelperInstance()),
           display_(Firebolt::Helpers::GetHelperInstance()),
+          firebolt_(Firebolt::Helpers::GetHelperInstance()),
           lifecycle_(Firebolt::Helpers::GetHelperInstance()),
           localization_(Firebolt::Helpers::GetHelperInstance()),
           metrics_(Firebolt::Helpers::GetHelperInstance()),
@@ -78,6 +80,7 @@ public:
     Device::IDevice& DeviceInterface() override { return device_; }
     Discovery::IDiscovery& DiscoveryInterface() override { return discovery_; }
     Display::IDisplay& DisplayInterface() override { return display_; }
+    FireboltModule::IFirebolt& FireboltInterface() override { return firebolt_; }
     Lifecycle::ILifecycle& LifecycleInterface() override { return lifecycle_; }
     Localization::ILocalization& LocalizationInterface() override { return localization_; }
     Metrics::IMetrics& MetricsInterface() override { return metrics_; }
@@ -92,6 +95,7 @@ private:
     {
         accessibility_.unsubscribeAll();
         actions_.unsubscribeAll();
+        firebolt_.unsubscribeAll();
         lifecycle_.unsubscribeAll();
         localization_.unsubscribeAll();
         network_.unsubscribeAll();
@@ -106,6 +110,7 @@ private:
     Device::DeviceImpl device_;
     Discovery::DiscoveryImpl discovery_;
     Display::DisplayImpl display_;
+    FireboltModule::FireboltImpl firebolt_;
     Lifecycle::LifecycleImpl lifecycle_;
     Localization::LocalizationImpl localization_;
     Metrics::MetricsImpl metrics_;

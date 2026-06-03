@@ -5,6 +5,7 @@
 		"version": "",
 		"x-module-descriptions": {
 			"Accessibility": "The `Accessibility` module provides access to the user/device settings for closed captioning and voice guidance.\n\nApps **SHOULD** attempt o respect these settings, rather than manage and persist seprate settings, which would be different per-app.",
+			"Actions": "Methods for getting and observing app intents.",
 			"Advertising": "A module for platform provided advertising settings and functionality.",
 			"Device": "A module for querying about the device and it's capabilities.",
 			"Discovery": "Your App likely wants to integrate with the Platform's discovery capabilities. For example to add a \"Watch Next\" tile that links to your app from the platform's home screen.\n\nGetting access to this information requires to connect to lower level APIs made available by the platform. Since implementations differ between operators and platforms, the Firebolt SDK offers a Discovery module, that exposes a generic, agnostic interface to the developer.\n\nUnder the hood, an underlaying transport layer will then take care of calling the right APIs for the actual platform implementation that your App is running on.\n\nThe Discovery plugin is used to _send_ information to the Platform.\n\n### Localization\nApps should provide all user-facing strings in the device's language, as specified by the Firebolt `Localization.language` property.\n\nApps should provide prices in the same currency presented in the app. If multiple currencies are supported in the app, the app should provide prices in the user's current default currency.",
@@ -44,6 +45,85 @@
 					"result": {
 						"name": "schema",
 						"value": {}
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.intent",
+			"summary": "Returns the current intent.",
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"params": [],
+			"result": {
+				"name": "intent",
+				"summary": "The current intent.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Get the current intent",
+					"result": {
+						"name": "Default Result",
+						"value": "launch"
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.onIntent",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Actions.onIntent",
+					"x-subscriber-for": "Actions.intent"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"summary": "Notifies when the current intent changes.",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"result": {
+				"name": "intent",
+				"summary": "The current intent.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Listen for intent changes",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": "launch"
 					}
 				}
 			]
@@ -502,10 +582,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
-				"summary": "whether the call was successful or not",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -530,8 +609,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				},
 				{
@@ -559,8 +638,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -902,9 +981,9 @@
 			"summary": "Inform the platform that your app is minimally usable. This method is called automatically by `Lifecycle.ready()`",
 			"params": [],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -912,8 +991,8 @@
 					"name": "Send ready metric",
 					"params": [],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -934,9 +1013,9 @@
 			"summary": "Log a sign in event, called by Discovery.signIn().",
 			"params": [],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -944,8 +1023,8 @@
 					"name": "Send signIn metric",
 					"params": [],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -966,9 +1045,9 @@
 			"summary": "Log a sign out event, called by Discovery.signOut().",
 			"params": [],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -976,8 +1055,8 @@
 					"name": "Send signOut metric",
 					"params": [],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1011,9 +1090,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1021,8 +1100,8 @@
 					"name": "Send startContent metric",
 					"params": [],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				},
 				{
@@ -1034,8 +1113,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				},
 				{
@@ -1051,8 +1130,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1086,9 +1165,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1096,8 +1175,8 @@
 					"name": "Send stopContent metric",
 					"params": [],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				},
 				{
@@ -1109,8 +1188,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1144,9 +1223,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1159,8 +1238,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				},
 				{
@@ -1172,8 +1251,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1239,9 +1318,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1266,8 +1345,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1301,9 +1380,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1316,8 +1395,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1351,9 +1430,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1366,8 +1445,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1401,9 +1480,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1416,8 +1495,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1451,9 +1530,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1466,8 +1545,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1501,9 +1580,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1516,8 +1595,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1559,9 +1638,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1578,8 +1657,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1621,9 +1700,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1640,8 +1719,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1683,9 +1762,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1702,8 +1781,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1769,9 +1848,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1800,8 +1879,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1835,9 +1914,9 @@
 				}
 			],
 			"result": {
-				"name": "success",
+				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1850,8 +1929,8 @@
 						}
 					],
 					"result": {
-						"name": "success",
-						"value": true
+						"name": "result",
+						"value": null
 					}
 				}
 			]
@@ -1896,7 +1975,7 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -1914,7 +1993,7 @@
 					],
 					"result": {
 						"name": "result",
-						"value": true
+						"value": null
 					}
 				}
 			]

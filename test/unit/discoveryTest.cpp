@@ -36,7 +36,7 @@ TEST_F(DiscoveryUTest, checkEnums)
 
 TEST_F(DiscoveryUTest, watched)
 {
-    mock("Discovery.watched");
+    mockInvoke("Discovery.watched");
     std::string entityId = "content123";
     std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
@@ -44,9 +44,6 @@ TEST_F(DiscoveryUTest, watched)
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
-    Firebolt::JSON::Boolean boolJson;
-    boolJson.fromJson(jsonEngine.get_value("Discovery.watched"));
-    EXPECT_EQ(boolJson.value(), *result);
 }
 
 TEST_F(DiscoveryUTest, watched_payload)
@@ -57,14 +54,13 @@ TEST_F(DiscoveryUTest, watched_payload)
     expected["completed"] = true;
     expected["watchedOn"] = "2024-06-01T12:00:00Z";
     expected["agePolicy"] = "app:adult";
-    EXPECT_CALL(mockHelper, getJson("Discovery.watched", _))
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _))
         .WillOnce(Invoke(
             [&](const std::string& /* methodName */, const nlohmann::json& parameters)
             {
-                bool res = parameters == expected;
                 EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
                                                 << " but got: " << parameters.dump();
-                return Firebolt::Result<nlohmann::json>{res};
+                return Firebolt::Result<void>{Firebolt::Error::None};
             }));
     std::string entityId = "content123";
     std::optional<double> progress = 0.75f;
@@ -73,5 +69,4 @@ TEST_F(DiscoveryUTest, watched_payload)
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
-    EXPECT_EQ(true, *result);
 }

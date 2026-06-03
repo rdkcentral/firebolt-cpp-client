@@ -30,17 +30,17 @@ MetricsImpl::MetricsImpl(Firebolt::Helpers::IHelper& helper)
 
 Result<void> MetricsImpl::ready() const
 {
-    return helper_.invoke("Metrics.ready", nlohmann::json({}));
+    return helper_.invoke("Metrics.ready", nlohmann::json());
 }
 
 Result<void> MetricsImpl::signIn() const
 {
-    return helper_.invoke("Metrics.signIn", nlohmann::json({}));
+    return helper_.invoke("Metrics.signIn", nlohmann::json());
 }
 
 Result<void> MetricsImpl::signOut() const
 {
-    return helper_.invoke("Metrics.signOut", nlohmann::json({}));
+    return helper_.invoke("Metrics.signOut", nlohmann::json());
 }
 
 Result<void> MetricsImpl::startContent(const std::optional<std::string>& entityId,

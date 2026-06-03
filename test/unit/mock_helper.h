@@ -107,8 +107,23 @@ protected:
     void mockInvoke(const std::string& methodName)
     {
         EXPECT_CALL(mockHelper, invoke(methodName, _))
-            .WillOnce(Invoke([](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
-                             { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+            .WillOnce(Invoke(
+                [&](const std::string& invokedMethodName, const nlohmann::json& parameters)
+                {
+                    nlohmann::json message = {
+                        {"jsonrpc", "2.0"},
+                        {"id", "0"},
+                        {"method", invokedMethodName},
+                    };
+
+                    if (!parameters.is_null())
+                    {
+                        message["params"] = parameters;
+                    }
+
+                    Firebolt::Error err = jsonEngine.MockResponse(message);
+                    return Firebolt::Result<void>{err};
+                }));
     }
 
     void mockSubscribe(const std::string& eventName)

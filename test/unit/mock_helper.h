@@ -108,12 +108,12 @@ protected:
     {
         EXPECT_CALL(mockHelper, invoke(methodName, _))
             .WillOnce(Invoke(
-                [&](const std::string& methodName, const nlohmann::json& parameters)
+                [&](const std::string& invokedMethodName, const nlohmann::json& parameters)
                 {
                     nlohmann::json message = {
                         {"jsonrpc", "2.0"},
                         {"id", "0"},
-                        {"method", methodName},
+                        {"method", invokedMethodName},
                     };
 
                     if (!parameters.is_null())

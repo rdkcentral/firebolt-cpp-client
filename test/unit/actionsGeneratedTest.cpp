@@ -41,7 +41,6 @@ TEST_F(ActionsGeneratedUTest, UnsubscribeForwardsToHelper)
     ASSERT_TRUE(result) << "unsubscribe should return success when helper succeeds";
 }
 
-
 TEST_F(ActionsGeneratedUTest, ForwardsIntentTransportErrors)
 {
     EXPECT_CALL(mockHelper, getJson("Actions.intent", ::testing::_))

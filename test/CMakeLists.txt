@@ -21,18 +21,29 @@ set(FIREBOLT_GTEST_PREFIXES
     $ENV{HOME}/.local
 )
 
-set(FIREBOLT_GTEST_LOCAL_PREFIX "")
+set(FIREBOLT_GTEST_CMAKE_SUBDIRS
+    lib/cmake/GTest
+    lib64/cmake/GTest
+    share/cmake/GTest
+)
+
+set(FIREBOLT_GTEST_LOCAL_GTEST_DIR "")
 if(NOT SYSROOT_PATH AND NOT CMAKE_CROSSCOMPILING)
     foreach(prefix IN LISTS FIREBOLT_GTEST_PREFIXES)
-        if(EXISTS "${prefix}/include/gtest/gtest.h" AND EXISTS "${prefix}/lib/cmake/GTest/GTestConfig.cmake")
-            set(FIREBOLT_GTEST_LOCAL_PREFIX "${prefix}")
+        foreach(subdir IN LISTS FIREBOLT_GTEST_CMAKE_SUBDIRS)
+            if(EXISTS "${prefix}/include/gtest/gtest.h" AND EXISTS "${prefix}/${subdir}/GTestConfig.cmake")
+                set(FIREBOLT_GTEST_LOCAL_GTEST_DIR "${prefix}/${subdir}")
+                break()
+            endif()
+        endforeach()
+        if(FIREBOLT_GTEST_LOCAL_GTEST_DIR)
             break()
         endif()
     endforeach()
 endif()
 
-if(FIREBOLT_GTEST_LOCAL_PREFIX AND NOT DEFINED GTest_DIR AND NOT SYSROOT_PATH)
-    find_package(GTest CONFIG REQUIRED PATHS "${FIREBOLT_GTEST_LOCAL_PREFIX}" NO_DEFAULT_PATH)
+if(FIREBOLT_GTEST_LOCAL_GTEST_DIR AND NOT DEFINED GTest_DIR AND NOT SYSROOT_PATH)
+    find_package(GTest CONFIG REQUIRED PATHS "${FIREBOLT_GTEST_LOCAL_GTEST_DIR}" NO_DEFAULT_PATH)
 else()
     find_package(GTest CONFIG REQUIRED)
 endif()

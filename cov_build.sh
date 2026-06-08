@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# cov_build.sh — configure and build firebolt-cpp-transport
+# cov_build.sh — configure and build firebolt-cpp-client
 #
 # Run from the repo root after build_dependencies.sh has prepared the
 # environment.  Produces a Debug build with tests enabled so that
 # Coverity can intercept the full compilation including test code.
 #
-# Usage: sh cov_build.sh
+# Usage: ./cov_build.sh
+set -euo pipefail
 set -x
-set -e
 
 GITHUB_WORKSPACE="${GITHUB_WORKSPACE:-${PWD}}"
 cd "${GITHUB_WORKSPACE}"

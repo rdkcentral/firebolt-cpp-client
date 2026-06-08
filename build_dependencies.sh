@@ -60,7 +60,7 @@ WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
 dir="googletest-${DEPS_GOOGLETEST_V}"
-curl -sL "https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/${dir}.tar.gz" \
+curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/${dir}.tar.gz" \
     | tar xzf - -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \

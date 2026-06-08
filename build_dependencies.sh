@@ -30,6 +30,12 @@
 #        (run as root, or with sudo, from any directory)
 set -euo pipefail
 set -x
+
+if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
+    echo "This script must be run as root (try: sudo ./build_dependencies.sh)" >&2
+    exit 1
+fi
+
 DEPS_GOOGLETEST_V="1.15.2"
 DEPS_NLOHMANN_JSON_V="3.11.3"
 DEPS_JSON_SCHEMA_VALIDATOR_V="2.3.0"

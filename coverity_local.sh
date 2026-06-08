@@ -5,7 +5,7 @@
 # environment.  Produces a Debug build with tests enabled so that
 # Coverity can intercept the full compilation including test code.
 #
-# Usage: sh cov_build.sh
+# Usage: ./coverity_local.sh
 set -x
 set -e
 

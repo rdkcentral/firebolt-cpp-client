@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Copyright 2026 Comcast Cable Communications Management, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,20 +15,12 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-# coverity_local.sh — configure and build firebolt-cpp-client
+# coverity_local.sh - local wrapper for Coverity build prep.
 #
-# Run from the repo root after build_dependencies.sh has prepared the
-# environment.  Produces a Debug build with tests enabled so that
-# Coverity can intercept the full compilation including test code.
-#
-# Usage: ./coverity_local.sh
+# Delegates to cov_build.sh so there is a single source of truth for
+# CMake configuration flags and build behavior.
+
 set -euo pipefail
-set -x
-GITHUB_WORKSPACE="${GITHUB_WORKSPACE:-${PWD}}"
-cd "${GITHUB_WORKSPACE}"
 
-cmake -B build-dev -S . \
-    -DCMAKE_BUILD_TYPE=Debug \
-    -DENABLE_TESTS=ON
-
-cmake --build build-dev --parallel
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "${SCRIPT_DIR}/cov_build.sh"

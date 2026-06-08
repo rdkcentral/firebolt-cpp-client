@@ -24,7 +24,8 @@ apt-get install -y --no-install-recommends --fix-missing \
     build-essential ca-certificates \
     cmake pkg-config clang-format \
     libboost-all-dev \
-    curl wget git \
+    libcurl4-openssl-dev \
+    curl wget git jq netcat-openbsd \
     python3-pip
 
 if python3 -m pip help install | grep -q -- '--break-system-packages'; then

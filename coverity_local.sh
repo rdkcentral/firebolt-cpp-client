@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# cov_build.sh — configure and build firebolt-cpp-transport
+# coverity_local.sh — configure and build firebolt-cpp-client
 #
 # Run from the repo root after build_dependencies.sh has prepared the
 # environment.  Produces a Debug build with tests enabled so that

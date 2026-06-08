@@ -15,7 +15,26 @@
 # SPDX-License-Identifier: Apache-2.0
 
 find_package(Curl REQUIRED )
-find_package(GTest CONFIG REQUIRED)
+
+set(FIREBOLT_GTEST_PREFIXES
+    /usr/local
+    $ENV{HOME}/.local
+)
+
+set(FIREBOLT_GTEST_LOCAL_PREFIX "")
+foreach(prefix IN LISTS FIREBOLT_GTEST_PREFIXES)
+    if(EXISTS "${prefix}/include/gtest/gtest.h" AND EXISTS "${prefix}/lib/cmake/GTest/GTestConfig.cmake")
+        set(FIREBOLT_GTEST_LOCAL_PREFIX "${prefix}")
+        break()
+    endif()
+endforeach()
+
+if(FIREBOLT_GTEST_LOCAL_PREFIX)
+    find_package(GTest CONFIG REQUIRED PATHS "${FIREBOLT_GTEST_LOCAL_PREFIX}" NO_DEFAULT_PATH)
+else()
+    find_package(GTest CONFIG REQUIRED)
+endif()
+
 find_package(nlohmann_json_schema_validator CONFIG REQUIRED)
 
 include(GoogleTest)

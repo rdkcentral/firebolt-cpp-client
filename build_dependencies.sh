@@ -65,9 +65,19 @@ fi
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
+download_archive() {
+    local url="$1"
+    local archive_path="$2"
+
+    curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused \
+        --output "$archive_path" \
+        "$url"
+}
+
 dir="googletest-${DEPS_GOOGLETEST_V}"
-curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/${dir}.tar.gz" \
-    | tar xzf - -C "$WORK_DIR"
+archive="$WORK_DIR/${dir}.tar.gz"
+download_archive "https://github.com/google/googletest/releases/download/v${DEPS_GOOGLETEST_V}/${dir}.tar.gz" "$archive"
+tar xzf "$archive" -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS=ON \
@@ -91,8 +101,9 @@ cmake --build "$WORK_DIR/build/${dir}" --target install
 # 4. json-schema-validator
 # ---------------------------------------------------------------------------
 dir="json-schema-validator-${DEPS_JSON_SCHEMA_VALIDATOR_V}"
-curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz" \
-    | tar xzf - -C "$WORK_DIR"
+archive="$WORK_DIR/${dir}.tar.gz"
+download_archive "https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz" "$archive"
+tar xzf "$archive" -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS=ON \
@@ -105,8 +116,9 @@ cmake --build "$WORK_DIR/build/${dir}" --target install
 # 5. websocketpp (header-only, cmake install registers package config)
 # ---------------------------------------------------------------------------
 dir="websocketpp-${DEPS_WEBSOCKETPP_V}"
-curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz" \
-    | tar xzf - -C "$WORK_DIR"
+archive="$WORK_DIR/${dir}.tar.gz"
+download_archive "https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz" "$archive"
+tar xzf "$archive" -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_SHARED_LIBS=ON \

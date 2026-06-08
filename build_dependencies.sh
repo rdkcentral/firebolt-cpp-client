@@ -99,7 +99,7 @@ cmake --build "$WORK_DIR/build/${dir}" --target install
 # 5. websocketpp (header-only, cmake install registers package config)
 # ---------------------------------------------------------------------------
 dir="websocketpp-${DEPS_WEBSOCKETPP_V}"
-curl -sL "https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz" \
+curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/zaphoyd/websocketpp/archive/refs/tags/${DEPS_WEBSOCKETPP_V}.tar.gz" \
     | tar xzf - -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \

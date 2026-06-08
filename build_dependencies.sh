@@ -85,7 +85,7 @@ cmake --build "$WORK_DIR/build/${dir}" --target install
 # 4. json-schema-validator
 # ---------------------------------------------------------------------------
 dir="json-schema-validator-${DEPS_JSON_SCHEMA_VALIDATOR_V}"
-curl -sL "https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz" \
+curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused "https://github.com/pboettch/json-schema-validator/archive/refs/tags/${DEPS_JSON_SCHEMA_VALIDATOR_V}.tar.gz" \
     | tar xzf - -C "$WORK_DIR"
 cmake -B "$WORK_DIR/build/${dir}" \
       -DCMAKE_BUILD_TYPE=Release \

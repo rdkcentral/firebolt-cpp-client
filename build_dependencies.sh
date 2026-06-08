@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# build_dependencies.sh — install all build dependencies for firebolt-cpp-transport
+# build_dependencies.sh — install all build dependencies for firebolt-cpp-client
 #
 # Installs to the system prefix (/usr/local) and is intentionally idempotent:
 # running it multiple times is safe.  Mirrors the dep set and versions pinned in
 # .github/Dockerfile so that both the native CI image and the Coverity container
 # end up with an identical build environment.
 #
-# Usage: sh build_dependencies.sh
+# Usage: sudo ./build_dependencies.sh
 #        (run as root, or with sudo, from any directory)
 set -x
 set -e

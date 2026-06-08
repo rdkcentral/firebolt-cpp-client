@@ -8,8 +8,8 @@
 #
 # Usage: sudo ./build_dependencies.sh
 #        (run as root, or with sudo, from any directory)
+set -euo pipefail
 set -x
-set -e
 
 DEPS_GOOGLETEST_V="1.15.2"
 DEPS_NLOHMANN_JSON_V="3.11.3"

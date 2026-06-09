@@ -59,4 +59,4 @@ jobs:
           COV_FORCE_BOOTSTRAP_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
           COV_SKIP_SYSTEM_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
           COV_FORCE_RELEASE_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_release_transport && '1' || '0' }}
-          GITHUB_TOKEN: ${{ secrets.RDKCM_RDKE }}
+          GITHUB_TOKEN: ${{ secrets.RDKCM_RDKE || github.token }}

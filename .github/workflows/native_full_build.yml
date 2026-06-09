@@ -1,0 +1,62 @@
+name: Build Component in Native Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      container_image:
+        description: Container image used for native build
+        required: false
+        default: ghcr.io/rdkcentral/docker-rdk-ci:latest
+        type: string
+      skip_build_dependencies:
+        description: Skip build_dependencies.sh
+        required: false
+        default: false
+        type: boolean
+      strict_transport_bootstrap:
+        description: Force transport bootstrap and ignore host/system package paths
+        required: false
+        default: true
+        type: boolean
+      force_release_transport:
+        description: Force transport bootstrap from pinned release archive (.transport.version)
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches: [ main, '+([0-9])\.+([0-9])\.x-maintenance' ]
+    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
+  pull_request:
+    branches: [ main, '+([0-9])\.+([0-9])\.x-maintenance' ]
+    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  native-build:
+    name: Build firebolt-cpp-client in native environment
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ github.event_name == 'workflow_dispatch' && inputs.container_image || 'ghcr.io/rdkcentral/docker-rdk-ci:latest' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_build_dependencies }}
+        run: bash -x build_dependencies.sh
+
+      - name: Build
+        run: bash -x cov_build.sh
+        env:
+          COV_DEPS_PREFIX: ${{ github.workspace }}/.cov-deps
+          COV_FORCE_BOOTSTRAP_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
+          COV_SKIP_SYSTEM_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
+          COV_FORCE_RELEASE_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_release_transport && '1' || '0' }}
+          GITHUB_TOKEN: ${{ secrets.RDKCM_RDKE }}

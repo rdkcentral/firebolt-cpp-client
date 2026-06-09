@@ -21,6 +21,6 @@ act-native:
 		--input force_release_transport=$(ACT_FORCE_RELEASE_TRANSPORT) \
 		--input container_image=$(ACT_CONTAINER_IMAGE)
 
-# Faster local loop if your container image already has dependencies.
+# Faster local loop if your container image already has dependencies (including FireboltTransport).
 act-native-fast:
-	$(MAKE) act-native ACT_SKIP_BUILD_DEPS=true
+	$(MAKE) act-native ACT_SKIP_BUILD_DEPS=true ACT_STRICT_TRANSPORT_BOOTSTRAP=false ACT_FORCE_RELEASE_TRANSPORT=false

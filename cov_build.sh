@@ -69,7 +69,7 @@ find_transport_config_dir() {
 bootstrap_transport_if_missing() {
     local transport_repo="${GITHUB_WORKSPACE}/../firebolt-cpp-transport"
     local transport_build_dir="${transport_repo}/build-cov"
-    local transport_src_dir="${GITHUB_WORKSPACE}/.cov-deps/src"
+    local transport_src_dir=""
     local transport_version=""
     local release_dir=""
     local release_archive=""
@@ -82,6 +82,7 @@ bootstrap_transport_if_missing() {
     local force_release="${COV_FORCE_RELEASE_TRANSPORT:-0}"
 
     COV_DEPS_PREFIX="${COV_DEPS_PREFIX:-${GITHUB_WORKSPACE}/.cov-deps}"
+    transport_src_dir="${COV_DEPS_PREFIX}/src"
 
     if [[ -f "${GITHUB_WORKSPACE}/.transport.version" ]]; then
         transport_version="$(tr -d '[:space:]' < "${GITHUB_WORKSPACE}/.transport.version")"

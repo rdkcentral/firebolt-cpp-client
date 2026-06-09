@@ -24,10 +24,10 @@ on:
         default: false
         type: boolean
   push:
-    branches: [ main, '+([0-9])\.+([0-9])\.x-maintenance' ]
+    branches: [ main, '*.*.x-maintenance' ]
     paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
   pull_request:
-    branches: [ main, '+([0-9])\.+([0-9])\.x-maintenance' ]
+    branches: [ main, '*.*.x-maintenance' ]
     paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
 
 permissions:

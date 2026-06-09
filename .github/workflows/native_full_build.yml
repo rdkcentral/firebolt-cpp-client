@@ -25,10 +25,10 @@ on:
         type: boolean
   push:
     branches: [ main, '*.*.x-maintenance' ]
-    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
+    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh', '.github/workflows/native_full_build.yml']
   pull_request:
     branches: [ main, '*.*.x-maintenance' ]
-    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh']
+    paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh', '.github/workflows/native_full_build.yml']
 
 permissions:
   contents: read

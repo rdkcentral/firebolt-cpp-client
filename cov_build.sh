@@ -137,6 +137,12 @@ bootstrap_transport_if_missing() {
             echo "Downloaded FireboltTransport release from ${release_url}"
         fi
 
+        release_dir="$(tar -tzf "${release_archive}" | sed -e 's|^\./||' | awk -F/ 'NF{print $1; exit}')"
+        if [[ -z "${release_dir}" ]]; then
+            echo "Transport archive appears to be empty: ${release_archive}" >&2
+            return 1
+        fi
+
         rm -rf "${transport_src_dir:?}/${release_dir}"
         tar -xzf "${release_archive}" -C "${transport_src_dir}"
 

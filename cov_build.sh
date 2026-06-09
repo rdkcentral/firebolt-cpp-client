@@ -167,7 +167,13 @@ bootstrap_transport_if_missing() {
     cmake --build "${transport_build_dir}" --parallel
     cmake --install "${transport_build_dir}"
 
-    if transport_config_dir="$(find_transport_config_dir)"; then
+    if [[ "${force_bootstrap}" == "1" ]]; then
+        if transport_config_dir="$(FireboltTransport_DIR="" find_transport_config_dir)"; then
+            FireboltTransport_DIR="${transport_config_dir}"
+            echo "Bootstrapped FireboltTransport at ${FireboltTransport_DIR}"
+            return 0
+        fi
+    elif transport_config_dir="$(find_transport_config_dir)"; then
         FireboltTransport_DIR="${transport_config_dir}"
         echo "Bootstrapped FireboltTransport at ${FireboltTransport_DIR}"
         return 0

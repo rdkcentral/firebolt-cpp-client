@@ -119,16 +119,20 @@ bootstrap_transport_if_missing() {
         mkdir -p "${transport_src_dir}"
 
         if [[ ! -f "${release_archive}" ]]; then
-            if curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused -o "${release_archive}" "${release_url_nov}"; then
+            local tmp_archive="${release_archive}.tmp"
+            rm -f "${tmp_archive}"
+            if curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused -o "${tmp_archive}" "${release_url_nov}"; then
                 release_url="${release_url_nov}"
-            elif curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused -o "${release_archive}" "${release_url_v}"; then
+            elif curl -fsSL --retry 5 --retry-delay 1 --retry-connrefused -o "${tmp_archive}" "${release_url_v}"; then
                 release_url="${release_url_v}"
             else
+                rm -f "${tmp_archive}"
                 echo "Failed to download FireboltTransport release for version ${transport_version}" >&2
                 echo "Tried: ${release_url_nov}" >&2
                 echo "Tried: ${release_url_v}" >&2
                 return 1
             fi
+            mv -f "${tmp_archive}" "${release_archive}"
             echo "Downloaded FireboltTransport release from ${release_url}"
         fi
 

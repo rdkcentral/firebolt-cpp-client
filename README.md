@@ -30,3 +30,9 @@ Examples:
 - `./lint.sh --tidy-only`
 - `./lint.sh --tidy-only --fix`
 - `./lint.sh --cppcheck-only`
+
+## Coverity
+
+For Coverity build and fully unattended dependency bootstrap instructions, see:
+
+- [COVERITY.md](COVERITY.md)

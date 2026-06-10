@@ -45,6 +45,27 @@ list(APPEND CMAKE_MODULE_PATH
     "${SYSROOT_PATH}/usr/lib/cmake"
 )
 
+set(FIREBOLT_TRANSPORT_ROOT "" CACHE PATH
+    "Optional install prefix for FireboltTransport (contains lib/cmake/FireboltTransport)"
+)
+
+if(NOT FIREBOLT_TRANSPORT_ROOT AND DEFINED ENV{FIREBOLT_TRANSPORT_ROOT} AND NOT "$ENV{FIREBOLT_TRANSPORT_ROOT}" STREQUAL "")
+    set(FIREBOLT_TRANSPORT_ROOT "$ENV{FIREBOLT_TRANSPORT_ROOT}" CACHE PATH
+        "Optional install prefix for FireboltTransport (contains lib/cmake/FireboltTransport)" FORCE)
+endif()
+
+if(FIREBOLT_TRANSPORT_ROOT)
+    list(INSERT CMAKE_PREFIX_PATH 0 "${FIREBOLT_TRANSPORT_ROOT}")
+endif()
+
+if(NOT FireboltTransport_ROOT AND DEFINED ENV{FireboltTransport_ROOT})
+    set(FireboltTransport_ROOT "$ENV{FireboltTransport_ROOT}")
+endif()
+
+if(NOT FireboltTransport_ROOT AND FIREBOLT_TRANSPORT_ROOT)
+    set(FireboltTransport_ROOT "${FIREBOLT_TRANSPORT_ROOT}")
+endif()
+
 find_package(nlohmann_json CONFIG REQUIRED)
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION_RAW)

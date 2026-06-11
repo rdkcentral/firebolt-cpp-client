@@ -37,6 +37,10 @@ public:
                          std::optional<std::string> watchedOn,
                          std::optional<Firebolt::AgePolicy> agePolicy) const override;
 
+    Result<bool> watchedV2(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
+                           std::optional<std::string> watchedOn,
+                           std::optional<Firebolt::AgePolicy> agePolicy) const override;
+
 private:
     Firebolt::Helpers::IHelper& helper_;
 };

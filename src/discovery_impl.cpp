@@ -52,4 +52,30 @@ Result<void> DiscoveryImpl::watched(const std::string& entityId, std::optional<d
 
     return helper_.invoke("Discovery.watched", parameters);
 }
+
+Result<bool> DiscoveryImpl::watchedV2(const std::string& entityId, std::optional<double> progress,
+                                      std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                      std::optional<Firebolt::AgePolicy> agePolicy) const
+{
+    nlohmann::json parameters;
+    parameters["entityId"] = entityId;
+    if (progress)
+    {
+        parameters["progress"] = *progress;
+    }
+    if (completed)
+    {
+        parameters["completed"] = *completed;
+    }
+    if (watchedOn)
+    {
+        parameters["watchedOn"] = *watchedOn;
+    }
+    if (agePolicy)
+    {
+        parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
+    }
+
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Discovery.watchedV2", parameters);
+}
 } // namespace Firebolt::Discovery

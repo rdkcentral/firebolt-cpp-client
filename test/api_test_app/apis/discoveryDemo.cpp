@@ -33,6 +33,7 @@ DiscoveryDemo::DiscoveryDemo()
     : DemoBase("Discovery")
 {
     methods_.push_back("Discovery.watched");
+    methods_.push_back("Discovery.watchedV2");
 }
 
 void DiscoveryDemo::runOption(const std::string& method)
@@ -62,6 +63,31 @@ void DiscoveryDemo::runOption(const std::string& method)
         if (succeed(r))
         {
             std::cout << "Discovery.watched: Success" << std::endl;
+        }
+    }
+    else if (method == "Discovery.watchedV2")
+    {
+        std::string entityId = paramFromConsole("entityId", "exampleEntityId");
+        std::optional<double> progress = 0.5;
+        try
+        {
+            progress = std::stod(
+                paramFromConsole("progress (percentage as (0-0.999) for VOD, number of seconds for live)", "0.5"));
+        }
+        catch (const std::exception&)
+        {
+        }
+        std::optional<bool> completed = paramFromConsole("completed (true/false)", "false") == "true";
+        std::string watchedOn = paramFromConsole("watchedOn (ISO 8601 timestamp)", "2024-01-01T00:00:00Z");
+
+        std::optional<Firebolt::AgePolicy> agePolicyOpt =
+            chooseEnumFromList(Firebolt::JsonData::AgePolicyEnum, "Choose an age policy for the watch event:");
+
+        auto r = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watchedV2(entityId, progress, completed,
+                                                                                        watchedOn, agePolicyOpt);
+        if (succeed(r))
+        {
+            std::cout << "Discovery.watchedV2: " << (*r ? "true" : "false") << std::endl;
         }
     }
 }

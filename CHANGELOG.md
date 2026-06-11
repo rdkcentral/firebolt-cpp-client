@@ -1,3 +1,8 @@
+## [0.6.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.0...v0.6.1)
+
+### Added
+- `Discovery.watchedV2`: same as `Discovery.watched` but returns `Result<bool>` - compatibility shim for callers migrating away from the pre-v0.6.0 boolean return type
+
 ## [0.6.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.5...v0.6.0)
 
 ### Added

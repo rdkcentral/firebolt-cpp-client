@@ -44,5 +44,23 @@ public:
     virtual Result<void> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,
                                  std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
+
+    /**
+     * @brief Notify the platform that content was partially or completely watched, returns whether the notification
+     *        was accepted
+     *
+     * @param[in]  entityId    : The entity Id of the watched content
+     * @param[in]  progress    : How much of the content has been watched (percentage as (0-0.999) for VOD, number of
+     *                           seconds for live)
+     * @param[in]  completed   : Whether or not this viewing is considered "complete" per the app's definition thereof
+     * @param[in]  watchedOn   : The ISO 8601 timestamp of when the content was watched
+     * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
+     *                           to which content may be directed
+     *
+     * @retval Whether the platform accepted the watched notification, or an error
+     */
+    virtual Result<bool> watchedV2(const std::string& entityId, std::optional<double> progress,
+                                   std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                   std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 };
 } // namespace Firebolt::Discovery

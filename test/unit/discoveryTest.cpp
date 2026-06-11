@@ -70,3 +70,42 @@ TEST_F(DiscoveryUTest, watched_payload)
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
 }
+
+TEST_F(DiscoveryUTest, watchedV2)
+{
+    mock("Discovery.watchedV2");
+    std::string entityId = "content123";
+    std::optional<double> progress = 0.75f;
+    std::optional<bool> completed = true;
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
+    auto result = discoveryImpl_.watchedV2(entityId, progress, completed, watchedOn, agePolicy);
+    ASSERT_TRUE(result) << "Error on watchedV2";
+    EXPECT_TRUE(*result);
+}
+
+TEST_F(DiscoveryUTest, watchedV2_payload)
+{
+    nlohmann::json expected;
+    expected["entityId"] = "content123";
+    expected["progress"] = 0.75f;
+    expected["completed"] = true;
+    expected["watchedOn"] = "2024-06-01T12:00:00Z";
+    expected["agePolicy"] = "app:adult";
+    EXPECT_CALL(mockHelper, getJson("Discovery.watchedV2", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /* methodName */, const nlohmann::json& parameters)
+            {
+                EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
+                                                << " but got: " << parameters.dump();
+                return Firebolt::Result<nlohmann::json>{nlohmann::json(true)};
+            }));
+    std::string entityId = "content123";
+    std::optional<double> progress = 0.75f;
+    std::optional<bool> completed = true;
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
+    auto result = discoveryImpl_.watchedV2(entityId, progress, completed, watchedOn, agePolicy);
+    ASSERT_TRUE(result) << "Error on watchedV2";
+    EXPECT_TRUE(*result);
+}

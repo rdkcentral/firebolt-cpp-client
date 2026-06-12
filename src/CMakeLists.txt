@@ -34,6 +34,8 @@ add_library(${TARGET}
     ${SOURCES}
 )
 
+target_compile_options(${TARGET} PRIVATE -Wno-error=format)
+
 if(ENABLE_TESTS)
     target_compile_options(${TARGET} PRIVATE --coverage -g -O0 -fno-inline)
     target_link_options(${TARGET} PRIVATE --coverage)

@@ -20,6 +20,7 @@
 #include "json_types/common.h"
 #include "json_types/metrics.h"
 #include <firebolt/json_types.h>
+#include <stdio.h>
 
 namespace Firebolt::Metrics
 {
@@ -55,6 +56,7 @@ Result<void> MetricsImpl::startContent(const std::optional<std::string>& entityI
     {
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
+    printf("Test coverity workflow %s\n");
     return helper_.invoke("Metrics.startContent", parameters);
 }
 

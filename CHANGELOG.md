@@ -1,3 +1,8 @@
+## [0.6.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.1...v0.6.2)
+
+### Fixed
+- `Discovery.watched` now returns `Result<bool>` again (reverts the `Result<void>` change introduced in v0.6.0); 
+
 ## [0.6.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.0...v0.6.1)
 
 ### Added
@@ -10,7 +15,7 @@
   - `Actions.intent` (no parameters, returns string)
   - `Actions.onIntent` event
 
-### Changed
+### Changed``
 - **Breaking**: `Discovery.watched` and all `Metrics.*` methods now return `Result<void>` (previously `Result<bool>`)
 
 ## [0.5.5](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.5.4...v0.5.5)

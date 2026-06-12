@@ -62,7 +62,7 @@
       ],
       "result": {
         "name": "success",
-        "summary": "whether the call was successful or not",
+        "summary": "Whether the call was successful or not",
         "schema": {
           "type": "boolean"
         }

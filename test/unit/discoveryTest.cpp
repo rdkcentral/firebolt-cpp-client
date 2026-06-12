@@ -64,7 +64,7 @@ TEST_F(DiscoveryUTest, watched_payload)
                 bool res = parameters == expected;
                 EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
                                                 << " but got: " << parameters.dump();
-                return Firebolt::Result<nlohmann::json>{res};
+                return Firebolt::Result<nlohmann::json>{nlohmann::json(res)};
             }));
     std::string entityId = "content123";
     std::optional<double> progress = 0.75f;

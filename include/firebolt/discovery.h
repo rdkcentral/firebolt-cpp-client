@@ -39,7 +39,7 @@ public:
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
-     * @retval The status.
+     * @retval Whether the platform successfully recorded the watched notification, or an error
      */
     virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,

@@ -27,7 +27,7 @@ DiscoveryImpl::DiscoveryImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<void> DiscoveryImpl::watched(const std::string& entityId, std::optional<double> progress,
+Result<bool> DiscoveryImpl::watched(const std::string& entityId, std::optional<double> progress,
                                     std::optional<bool> completed, std::optional<std::string> watchedOn,
                                     std::optional<Firebolt::AgePolicy> agePolicy) const
 {
@@ -50,7 +50,12 @@ Result<void> DiscoveryImpl::watched(const std::string& entityId, std::optional<d
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
 
-    return helper_.invoke("Discovery.watched", parameters);
+    Result<bool> result = helper_.get<Firebolt::JSON::Boolean, bool>("Discovery.watched", parameters);
+    if (!result)
+    {
+        return Result<bool>{result.error()};
+    }
+    return Result<bool>{result.value()};
 }
 
 Result<bool> DiscoveryImpl::watchedV2(const std::string& entityId, std::optional<double> progress,

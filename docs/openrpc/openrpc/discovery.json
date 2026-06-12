@@ -61,9 +61,10 @@
         }
       ],
       "result": {
-        "name": "result",
+        "name": "success",
+        "summary": "whether the call was successful or not",
         "schema": {
-          "type": "null"
+          "type": "boolean"
         }
       },
       "examples": [
@@ -88,8 +89,8 @@
             }
           ],
           "result": {
-            "name": "result",
-            "value": null
+            "name": "success",
+            "value": true
           }
         },
         {
@@ -117,8 +118,8 @@
             }
           ],
           "result": {
-            "name": "result",
-            "value": null
+            "name": "success",
+            "value": true
           }
         }
       ]

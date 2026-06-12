@@ -39,9 +39,9 @@ public:
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
-     * @retval An ok Result on success, or an error; no value is returned
+     * @retval The status.
      */
-    virtual Result<void> watched(const std::string& entityId, std::optional<double> progress,
+    virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,
                                  std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 

@@ -62,7 +62,7 @@ void DiscoveryDemo::runOption(const std::string& method)
                                                                                       watchedOn, agePolicyOpt);
         if (succeed(r))
         {
-            std::cout << "Discovery.watched: Success" << std::endl;
+            std::cout << "Discovery.watched result: " << std::boolalpha << *r << std::endl;
         }
     }
     else if (method == "Discovery.watchedV2")

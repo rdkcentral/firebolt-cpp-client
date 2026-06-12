@@ -29,10 +29,13 @@ protected:
 
 TEST_F(DiscoveryCTest, Watched)
 {
+    auto expectedValue = jsonEngine.get_value("Discovery.watched");
     auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched("entity123", 0.75f, true,
                                                                                        "2024-10-01T12:00:00Z",
                                                                                        Firebolt::AgePolicy::ADULT);
     ASSERT_TRUE(result) << "Failed to call watched";
+
+    EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
 TEST_F(DiscoveryCTest, WatchedV2)

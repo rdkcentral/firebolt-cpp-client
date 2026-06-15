@@ -180,9 +180,8 @@
       ],
       "result": {
         "name": "result",
-        "summary": "Whether the platform accepted the watched notification",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -208,7 +207,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         },
         {
@@ -237,7 +236,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         }
       ]

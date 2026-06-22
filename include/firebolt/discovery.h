@@ -46,8 +46,7 @@ public:
                                  std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
-     * @brief Notify the platform that content was partially or completely watched, returns whether the notification
-     *        was accepted
+     * @brief Notify the platform that content was partially or completely watched
      *
      * @param[in]  entityId    : The entity Id of the watched content
      * @param[in]  progress    : How much of the content has been watched (percentage as (0-0.999) for VOD, number of

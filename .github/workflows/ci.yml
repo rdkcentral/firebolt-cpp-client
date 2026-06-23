@@ -366,6 +366,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Run coverage script tests
+        run: python3 .github/scripts/compare_coverage_test.py
+
       - name: Fetch baseline from build-metadata branch
         # Gracefully handle a missing build-metadata branch (first-time setup)
         continue-on-error: true
@@ -402,8 +405,8 @@ jobs:
         run: |
           python3 .github/scripts/compare_coverage.py \
             --baseline coverage-baseline.json \
-            --l0 ./unit-coverage/filtered_coverage.info \
-            --l1 ./component-coverage/filtered_coverage.info
+            --unit ./unit-coverage/filtered_coverage.info \
+            --component ./component-coverage/filtered_coverage.info
 
   update_baseline:
     name: Update Coverage Baseline
@@ -471,8 +474,8 @@ jobs:
 
           python3 .github/scripts/compare_coverage.py \
             --baseline "$BL_ARG" \
-            --l0 ./unit-coverage/filtered_coverage.info \
-            --l1 ./component-coverage/filtered_coverage.info \
+            --unit ./unit-coverage/filtered_coverage.info \
+            --component ./component-coverage/filtered_coverage.info \
             --output-json new-baseline.json \
             --commit "$GITHUB_SHA" \
             --timestamp "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"

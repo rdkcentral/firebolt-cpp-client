@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-# If not stated otherwise in this file or this component's LICENSE file the
-# following copyright and licenses apply:
-#
-# Copyright 2026 RDK Management
+# Copyright 2026 Comcast Cable Communications Management, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# SPDX-License-Identifier: Apache-2.0
 """
 Tests for compare_coverage.py
 
@@ -24,7 +22,7 @@ Covers:
   - Integration tests (subprocess) simulating all gate scenarios listed in the
     Coverage Gate implementation spec.
 
-Workflow-level scenarios (L0 job fails / L1 job fails / both fail) are handled
+Workflow-level scenarios (unit_tests fails / component_tests fails / both fail) are handled
 by GitHub Actions' implicit success() dependency check on the coverage-gate job
 and cannot be tested at the Python script level; they are documented inline.
 """
@@ -213,16 +211,16 @@ class TestLoadBaseline(unittest.TestCase):
 
     # --- Valid JSON -------------------------------------------------------------
 
-    def test_valid_baseline_with_l0_and_l1(self):
-        p = _write_baseline(self.tmp, {"L0": 80.0, "L1": 85.0})
-        self.assertEqual(compare_coverage.load_baseline(p), {"L0": 80.0, "L1": 85.0})
+    def test_valid_baseline_with_unit_and_component(self):
+        p = _write_baseline(self.tmp, {"Unit": 80.0, "Component": 85.0})
+        self.assertEqual(compare_coverage.load_baseline(p), {"Unit": 80.0, "Component": 85.0})
 
     def test_valid_empty_json_object(self):
         p = _write_baseline(self.tmp, {})
         self.assertEqual(compare_coverage.load_baseline(p), {})
 
     def test_valid_baseline_extra_keys_preserved(self):
-        data = {"L0": 80.0, "L1": 85.0, "commit": "abc123", "timestamp": "2026-01-01"}
+        data = {"Unit": 80.0, "Component": 85.0, "commit": "abc123", "timestamp": "2026-01-01"}
         p = _write_baseline(self.tmp, data)
         self.assertEqual(compare_coverage.load_baseline(p), data)
 
@@ -234,7 +232,7 @@ class TestLoadBaseline(unittest.TestCase):
         self.assertEqual(result, {})
 
     def test_truncated_json_returns_empty_dict(self):
-        p = self._write_json("truncated.json", '{"L0": 80')
+        p = self._write_json("truncated.json", '{"Unit": 80')
         self.assertEqual(compare_coverage.load_baseline(p), {})
 
     def test_empty_file_returns_empty_dict(self):
@@ -467,10 +465,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s1_exceeds_threshold_and_baseline(self):
-        bl = self._baseline({"L0": 77.0, "L1": 78.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 %
-        l1 = self._lcov("l1.info", 100, 82)  # 82 %
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 77.0, "Component": 78.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 %
+        component_cov = self._lcov("component.info", 100, 82)  # 82 %
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[PASS]", r.stdout)
 
@@ -480,10 +478,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s2_meets_threshold_exactly_meets_baseline(self):
-        bl = self._baseline({"L0": 70.0, "L1": 70.0})
-        l0 = self._lcov("l0.info", 100, 75)  # 75.0 %
-        l1 = self._lcov("l1.info", 100, 75)  # 75.0 %
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 70.0, "Component": 70.0})
+        unit_cov = self._lcov("unit.info", 100, 75)  # 75.0 %
+        component_cov = self._lcov("component.info", 100, 75)  # 75.0 %
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[PASS]", r.stdout)
 
@@ -493,10 +491,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s3_meets_baseline_exactly_exceeds_threshold(self):
-        bl = self._baseline({"L0": 80.0, "L1": 80.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 % == baseline
-        l1 = self._lcov("l1.info", 100, 80)  # 80 % == baseline
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 80.0, "Component": 80.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 % == baseline
+        component_cov = self._lcov("component.info", 100, 80)  # 80 % == baseline
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     # ===========================================================================
@@ -505,10 +503,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s4_meets_both_exactly(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 75)
-        l1 = self._lcov("l1.info", 100, 75)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 75)
+        component_cov = self._lcov("component.info", 100, 75)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     # ===========================================================================
@@ -517,10 +515,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s5_above_threshold_below_baseline(self):
-        bl = self._baseline({"L0": 85.0, "L1": 85.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 % < 85 % baseline
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 85.0, "Component": 85.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 % < 85 % baseline
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
         self.assertIn("dropped from baseline", r.stdout)
@@ -531,10 +529,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s6_below_threshold_meets_baseline(self):
-        bl = self._baseline({"L0": 70.0, "L1": 70.0})
-        l0 = self._lcov("l0.info", 100, 74)  # 74 % < 75 % threshold
-        l1 = self._lcov("l1.info", 100, 74)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 70.0, "Component": 70.0})
+        unit_cov = self._lcov("unit.info", 100, 74)  # 74 % < 75 % threshold
+        component_cov = self._lcov("component.info", 100, 74)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
         self.assertIn("below threshold", r.stdout)
@@ -545,10 +543,10 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s7_fails_both_threshold_and_baseline(self):
-        bl = self._baseline({"L0": 85.0, "L1": 85.0})
-        l0 = self._lcov("l0.info", 100, 70)  # 70 % < threshold AND < baseline
-        l1 = self._lcov("l1.info", 100, 70)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 85.0, "Component": 85.0})
+        unit_cov = self._lcov("unit.info", 100, 70)  # 70 % < threshold AND < baseline
+        component_cov = self._lcov("component.info", 100, 70)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("below threshold", r.stdout)
         self.assertIn("dropped from baseline", r.stdout)
@@ -559,21 +557,21 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_s8_baseline_missing_coverage_above_threshold(self):
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
         r = self._run(
             "--baseline", "/nonexistent/coverage-baseline.json",
-            "--l0", l0, "--l1", l1,
+            "--unit", unit_cov, "--component", component_cov,
         )
         # No baseline → regression skipped → threshold pass → exit 0
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     def test_s8_baseline_missing_coverage_below_threshold(self):
-        l0 = self._lcov("l0.info", 100, 70)  # 70 % < 75 %
-        l1 = self._lcov("l1.info", 100, 70)
+        unit_cov = self._lcov("unit.info", 100, 70)  # 70 % < 75 %
+        component_cov = self._lcov("component.info", 100, 70)
         r = self._run(
             "--baseline", "/nonexistent/coverage-baseline.json",
-            "--l0", l0, "--l1", l1,
+            "--unit", unit_cov, "--component", component_cov,
         )
         # Informational only — exit 0 even below threshold; [WARN] shown
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
@@ -588,9 +586,9 @@ class TestMainIntegration(unittest.TestCase):
         path = os.path.join(self.tmp, "malformed.json")
         with open(path, "w") as fh:
             fh.write("{this is not json}")
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", path, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", path, "--unit", unit_cov, "--component", component_cov)
         # Warning must appear in stderr
         self.assertIn("WARNING", r.stderr)
         # Fallback to empty baseline → threshold-only → pass
@@ -600,9 +598,9 @@ class TestMainIntegration(unittest.TestCase):
         path = os.path.join(self.tmp, "malformed2.json")
         with open(path, "w") as fh:
             fh.write("{bad json")
-        l0 = self._lcov("l0.info", 100, 70)
-        l1 = self._lcov("l1.info", 100, 70)
-        r = self._run("--baseline", path, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 70)
+        component_cov = self._lcov("component.info", 100, 70)
+        r = self._run("--baseline", path, "--unit", unit_cov, "--component", component_cov)
         self.assertIn("WARNING", r.stderr)
         # Informational only — exit 0 even below threshold; [WARN] shown
         self.assertEqual(r.returncode, 0)
@@ -612,9 +610,9 @@ class TestMainIntegration(unittest.TestCase):
         path = os.path.join(self.tmp, "empty.json")
         with open(path, "w") as fh:
             fh.write("")
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", path, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", path, "--unit", unit_cov, "--component", component_cov)
         # Empty file → empty dict baseline → threshold-only → pass
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
@@ -622,9 +620,9 @@ class TestMainIntegration(unittest.TestCase):
         path = os.path.join(self.tmp, "list_json.json")
         with open(path, "w") as fh:
             json.dump([1, 2, 3], fh)
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", path, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", path, "--unit", unit_cov, "--component", component_cov)
         # Non-dict JSON → WARNING emitted, empty dict → threshold-only → pass
         self.assertIn("WARNING", r.stderr)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
@@ -639,42 +637,42 @@ class TestMainIntegration(unittest.TestCase):
     # it is enforced by the workflow graph.
     # ===========================================================================
 
-    def test_s10_l0_artifacts_absent_l1_passes(self):
+    def test_s10_unit_artifacts_absent_component_passes(self):
         """
-        Simulates the artifact-level effect: L0 .info absent (download step
-        with continue-on-error:true produced no file), L1 coverage present
-        and passing.  Script-level: L0 is WARN (data missing), L1 is PASS.
+        Simulates the artifact-level effect: unit .info absent (download step
+        with continue-on-error:true produced no file), component coverage present
+        and passing.  Script-level: Unit is WARN (data missing), Component is PASS.
         """
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l1 = self._lcov("l1.info", 100, 80)  # L0 omitted intentionally
-        r = self._run("--baseline", bl, "--l1", l1)
-        # L0 WARN (missing) → overall WARN, but exit 0 (informational)
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        component_cov = self._lcov("component.info", 100, 80)  # Unit omitted intentionally
+        r = self._run("--baseline", bl, "--component", component_cov)
+        # Unit WARN (missing) → overall WARN, but exit 0 (informational)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("coverage data missing", r.stdout)
         self.assertIn("[WARN]", r.stdout)
 
     # ===========================================================================
-    # SCENARIO 11 — L1 job fails (symmetric to scenario 10)
+    # SCENARIO 11 — component_tests job fails (symmetric to scenario 10)
     # ===========================================================================
 
-    def test_s11_l1_artifacts_absent_l0_passes(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)  # L1 omitted intentionally
-        r = self._run("--baseline", bl, "--l0", l0)
+    def test_s11_component_artifacts_absent_unit_passes(self):
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # Component omitted intentionally
+        r = self._run("--baseline", bl, "--unit", unit_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("coverage data missing", r.stdout)
         self.assertIn("[WARN]", r.stdout)
 
     # ===========================================================================
-    # SCENARIO 12 — Both L0 AND L1 jobs fail
+    # SCENARIO 12 — Both unit_tests AND component_tests jobs fail
     # Coverage Gate does NOT trigger (workflow-level).  At script level, both
     # .info files are absent → both SKIP → exit 0 (harmless; gate is already
     # blocked at the workflow graph layer before the script is ever called).
     # ===========================================================================
 
     def test_s12_both_artifacts_absent(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        # Neither --l0 nor --l1 provided
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        # Neither --unit nor --component provided
         r = self._run("--baseline", bl)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         # Both rows + summary line show coverage data missing, OVERALL WARN
@@ -691,9 +689,9 @@ class TestMainIntegration(unittest.TestCase):
 
     def test_s13_missing_required_baseline_arg(self):
         """Invoking the script without --baseline must fail (argparse error)."""
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--unit", unit_cov, "--component", component_cov)
         # argparse exits with code 2 on missing required argument
         self.assertNotEqual(r.returncode, 0)
         self.assertTrue(len(r.stderr) > 0, "Error must appear on stderr")
@@ -702,32 +700,32 @@ class TestMainIntegration(unittest.TestCase):
     # Partial-failure cases: one suite fails, other passes
     # ===========================================================================
 
-    def test_only_l0_fails_gate_warns(self):
-        """L0 below threshold, L1 passes → overall [WARN] but exit 0."""
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 70)  # 70 % ✗
-        l1 = self._lcov("l1.info", 100, 80)  # 80 % ✓
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+    def test_only_unit_fails_gate_warns(self):
+        """Unit below threshold, Component passes → overall [WARN] but exit 0."""
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 70)  # 70 % ✗
+        component_cov = self._lcov("component.info", 100, 80)  # 80 % ✓
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
-        # L1 row still shows PASS
+        # Component row still shows PASS
         self.assertIn("[PASS]", r.stdout)
         self.assertIn("[WARN]", r.stdout)
 
-    def test_only_l1_fails_gate_warns(self):
-        """L1 below threshold, L0 passes → overall [WARN] but exit 0."""
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 % ✓
-        l1 = self._lcov("l1.info", 100, 70)  # 70 % ✗
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+    def test_only_component_fails_gate_warns(self):
+        """Component below threshold, Unit passes → overall [WARN] but exit 0."""
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 % ✓
+        component_cov = self._lcov("component.info", 100, 70)  # 70 % ✗
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
 
-    def test_only_l0_regresses_gate_warns(self):
-        """L0 regresses below baseline (still above threshold), L1 passes → [WARN] exit 0."""
-        bl = self._baseline({"L0": 85.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 % < 85 % baseline ✗
-        l1 = self._lcov("l1.info", 100, 80)  # 80 % >= 75 % baseline ✓
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+    def test_only_unit_regresses_gate_warns(self):
+        """Unit regresses below baseline (still above threshold), Component passes → [WARN] exit 0."""
+        bl = self._baseline({"Unit": 85.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 % < 85 % baseline ✗
+        component_cov = self._lcov("component.info", 100, 80)  # 80 % >= 75 % baseline ✓
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
 
@@ -737,16 +735,16 @@ class TestMainIntegration(unittest.TestCase):
 
     def test_first_time_setup_empty_baseline_passes(self):
         bl = self._baseline({})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     def test_first_time_setup_empty_baseline_below_threshold_warns(self):
         bl = self._baseline({})
-        l0 = self._lcov("l0.info", 100, 70)
-        l1 = self._lcov("l1.info", 100, 70)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        unit_cov = self._lcov("unit.info", 100, 70)
+        component_cov = self._lcov("component.info", 100, 70)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         # Informational only — exit 0 even below threshold; [WARN] shown
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
@@ -756,18 +754,18 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_overall_pass_token_in_output(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertIn("OVERALL:", r.stdout)
         self.assertIn("[PASS]", r.stdout)
 
     def test_overall_warn_token_in_output(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 70)
-        l1 = self._lcov("l1.info", 100, 70)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 70)
+        component_cov = self._lcov("component.info", 100, 70)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertIn("OVERALL:", r.stdout)
         self.assertIn("[WARN]", r.stdout)
         # Informational only — always exit 0
@@ -778,13 +776,13 @@ class TestMainIntegration(unittest.TestCase):
     # ===========================================================================
 
     def test_output_json_written_when_both_pass(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 82)
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 82)
         out = os.path.join(self.tmp, "new-baseline.json")
         self._run(
             "--baseline", bl,
-            "--l0", l0, "--l1", l1,
+            "--unit", unit_cov, "--component", component_cov,
             "--output-json", out,
             "--commit", "abc123",
             "--timestamp", "2026-01-01T00:00:00Z",
@@ -792,8 +790,8 @@ class TestMainIntegration(unittest.TestCase):
         self.assertTrue(os.path.isfile(out), "output-json must be written")
         with open(out) as fh:
             data = json.load(fh)
-        self.assertEqual(data["L0"], 80.0)
-        self.assertEqual(data["L1"], 82.0)
+        self.assertEqual(data["Unit"], 80.0)
+        self.assertEqual(data["Component"], 82.0)
         self.assertEqual(data["commit"], "abc123")
         self.assertEqual(data["timestamp"], "2026-01-01T00:00:00Z")
 
@@ -803,103 +801,103 @@ class TestMainIntegration(unittest.TestCase):
         regardless of gate outcome.  The update-baseline step checks
         `if [ ! -s new-baseline.json ]` separately.
         """
-        bl = self._baseline({"L0": 90.0, "L1": 90.0})
-        l0 = self._lcov("l0.info", 100, 80)  # 80 % < 90 % baseline → WARN
-        l1 = self._lcov("l1.info", 100, 80)
+        bl = self._baseline({"Unit": 90.0, "Component": 90.0})
+        unit_cov = self._lcov("unit.info", 100, 80)  # 80 % < 90 % baseline → WARN
+        component_cov = self._lcov("component.info", 100, 80)
         out = os.path.join(self.tmp, "new-baseline-fail.json")
         r = self._run(
             "--baseline", bl,
-            "--l0", l0, "--l1", l1,
+            "--unit", unit_cov, "--component", component_cov,
             "--output-json", out,
         )
         # Informational only — always exit 0 regardless of gate outcome
         self.assertEqual(r.returncode, 0)
         self.assertTrue(os.path.isfile(out), "output-json written even on gate warning")
 
-    def test_output_json_not_written_when_l0_missing(self):
-        """When L0 .info is absent, --output-json must NOT be written (data incomplete)."""
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l1 = self._lcov("l1.info", 100, 82)
-        out = os.path.join(self.tmp, "new-baseline-no-l0.json")
-        r = self._run("--baseline", bl, "--l1", l1, "--output-json", out)
-        self.assertFalse(os.path.isfile(out), "output-json must NOT be written when L0 absent")
+    def test_output_json_not_written_when_unit_missing(self):
+        """When unit .info is absent, --output-json must NOT be written (data incomplete)."""
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        component_cov = self._lcov("component.info", 100, 82)
+        out = os.path.join(self.tmp, "new-baseline-no-unit.json")
+        r = self._run("--baseline", bl, "--component", component_cov, "--output-json", out)
+        self.assertFalse(os.path.isfile(out), "output-json must NOT be written when unit absent")
         self.assertIn("WARNING", r.stderr)
 
-    def test_output_json_not_written_when_l1_missing(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)
-        out = os.path.join(self.tmp, "new-baseline-no-l1.json")
-        r = self._run("--baseline", bl, "--l0", l0, "--output-json", out)
-        self.assertFalse(os.path.isfile(out), "output-json must NOT be written when L1 absent")
+    def test_output_json_not_written_when_component_missing(self):
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        out = os.path.join(self.tmp, "new-baseline-no-component.json")
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--output-json", out)
+        self.assertFalse(os.path.isfile(out), "output-json must NOT be written when component absent")
         self.assertIn("WARNING", r.stderr)
 
     def test_output_json_not_written_when_both_missing(self):
-        bl = self._baseline({"L0": 75.0, "L1": 75.0})
+        bl = self._baseline({"Unit": 75.0, "Component": 75.0})
         out = os.path.join(self.tmp, "new-baseline-neither.json")
         r = self._run("--baseline", bl, "--output-json", out)
         self.assertFalse(os.path.isfile(out))
         self.assertIn("WARNING", r.stderr)
 
     # ===========================================================================
-    # Baseline coercion: non-float L0/L1 values must not crash the script
-    # (Fixes comment 2/7 — baseline.get("L0") not validated as float)
+    # Baseline coercion: non-float Unit/Component values must not crash the script
     # ===========================================================================
 
-    def test_baseline_string_l0_treated_as_missing(self):
-        """String value for L0 in baseline JSON → coerced to None → threshold-only."""
-        bl = self._baseline({"L0": "not-a-number", "L1": 75.0})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
-        # Must not crash; L0 baseline treated as absent → threshold-only → pass
+
+    def test_baseline_string_unit_treated_as_missing(self):
+        """String value for Unit in baseline JSON → coerced to None → threshold-only."""
+        bl = self._baseline({"Unit": "not-a-number", "Component": 75.0})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
+        # Must not crash; Unit baseline treated as absent → threshold-only → pass
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
-    def test_baseline_null_l1_treated_as_missing(self):
-        """null value for L1 in baseline JSON → coerced to None → threshold-only."""
-        bl = self._baseline({"L0": 80.0, "L1": None})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+    def test_baseline_null_component_treated_as_missing(self):
+        """null value for Component in baseline JSON → coerced to None → threshold-only."""
+        bl = self._baseline({"Unit": 80.0, "Component": None})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     def test_baseline_both_non_float_threshold_only(self):
-        """Both L0/L1 baseline values invalid → both threshold-only → pass if above 75%."""
-        bl = self._baseline({"L0": "bad", "L1": "bad"})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        """Both Unit/Component baseline values invalid → both threshold-only → pass if above 75%."""
+        bl = self._baseline({"Unit": "bad", "Component": "bad"})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     def test_baseline_both_non_float_below_threshold_warns(self):
-        """Both L0/L1 baseline values invalid → threshold-only → [WARN] exit 0 if below 75%."""
-        bl = self._baseline({"L0": "bad", "L1": "bad"})
-        l0 = self._lcov("l0.info", 100, 70)
-        l1 = self._lcov("l1.info", 100, 70)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        """Both Unit/Component baseline values invalid → threshold-only → [WARN] exit 0 if below 75%."""
+        bl = self._baseline({"Unit": "bad", "Component": "bad"})
+        unit_cov = self._lcov("unit.info", 100, 70)
+        component_cov = self._lcov("component.info", 100, 70)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("[WARN]", r.stdout)
 
     # ===========================================================================
     # _fmt_timestamp: null/non-string timestamp must not crash the report
-    # (Fixes comment 8 — only ValueError was caught, not TypeError)
     # ===========================================================================
+
 
     def test_null_timestamp_in_baseline_does_not_crash(self):
         """null timestamp value in baseline JSON → TypeError handled → report still runs."""
-        bl = self._baseline({"L0": 80.0, "L1": 80.0, "commit": "abc", "timestamp": None})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 80.0, "Component": 80.0, "commit": "abc", "timestamp": None})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         # Must not crash; timestamp renders as fallback; gate passes
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
         self.assertIn("OVERALL:", r.stdout)
 
     def test_integer_timestamp_in_baseline_does_not_crash(self):
         """Integer timestamp → TypeError in strptime → handled gracefully."""
-        bl = self._baseline({"L0": 80.0, "L1": 80.0, "commit": "abc", "timestamp": 12345})
-        l0 = self._lcov("l0.info", 100, 80)
-        l1 = self._lcov("l1.info", 100, 80)
-        r = self._run("--baseline", bl, "--l0", l0, "--l1", l1)
+        bl = self._baseline({"Unit": 80.0, "Component": 80.0, "commit": "abc", "timestamp": 12345})
+        unit_cov = self._lcov("unit.info", 100, 80)
+        component_cov = self._lcov("component.info", 100, 80)
+        r = self._run("--baseline", bl, "--unit", unit_cov, "--component", component_cov)
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
 

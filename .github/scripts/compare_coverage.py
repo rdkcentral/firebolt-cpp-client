@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-# If not stated otherwise in this file or this component's LICENSE file the
-# following copyright and licenses apply:
-#
-# Copyright 2026 RDK Management
+# Copyright 2026 Comcast Cable Communications Management, LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# SPDX-License-Identifier: Apache-2.0
 """
 Coverage comparison script for firebolt-cpp-client.
 
-Reads unit test (L0) and component test (L1) coverage results, compares overall
-line coverage against the stored baseline from the build-metadata branch, and
-prints a summary.
+Reads unit test and component test coverage results, compares overall line
+coverage against the stored baseline from the build-metadata branch, and prints
+a summary.
 """
 
 import argparse
@@ -190,18 +188,19 @@ def load_baseline(path: str) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Compare L0/L1 coverage against the develop baseline.\n"
-            "Exits 1 when coverage fails threshold or regresses from baseline."
+            "Compare unit test and component test coverage against "
+            "the develop baseline. Informational only — always exits 0 and does "
+            "not block PRs."
         )
     )
     parser.add_argument("--baseline", required=True, metavar="PATH",
                         help="Path to coverage-baseline.json.")
-    parser.add_argument("--l0", required=False, metavar="PATH",
-                        help="Path to the L0 lcov filtered_coverage.info file.")
-    parser.add_argument("--l1", required=False, metavar="PATH",
-                        help="Path to the L1 lcov filtered_coverage.info file.")
+    parser.add_argument("--unit", required=False, metavar="PATH",
+                        help="Path to the unit test lcov filtered_coverage.info file.")
+    parser.add_argument("--component", required=False, metavar="PATH",
+                        help="Path to the component test lcov filtered_coverage.info file.")
     parser.add_argument("--output-json", required=False, metavar="PATH",
-                        help="Write {L0, L1, commit, timestamp} JSON here for baseline update.")
+                        help="Write {Unit, Component, commit, timestamp} JSON here for baseline update.")
     parser.add_argument("--commit", required=False, default="",
                         help="Commit SHA to embed in --output-json.")
     parser.add_argument("--timestamp", required=False, default="",
@@ -219,22 +218,22 @@ def main() -> None:
         except (TypeError, ValueError):
             return None
 
-    baseline_l0: Optional[float] = _coerce_pct(baseline.get("L0"))
-    baseline_l1: Optional[float] = _coerce_pct(baseline.get("L1"))
+    baseline_unit:      Optional[float] = _coerce_pct(baseline.get("Unit"))
+    baseline_component: Optional[float] = _coerce_pct(baseline.get("Component"))
 
-    l0_coverage = parse_lcov_coverage(args.l0) if args.l0 else None
-    l1_coverage = parse_lcov_coverage(args.l1) if args.l1 else None
+    unit_coverage      = parse_lcov_coverage(args.unit)      if args.unit      else None
+    component_coverage = parse_lcov_coverage(args.component) if args.component else None
 
     # ------------------------------------------------------------------
     # Optional: write extracted numbers for baseline update.
     # Skipped (with a warning) when either suite lacks valid coverage data.
     # ------------------------------------------------------------------
     if args.output_json:
-        if l0_coverage is not None and l1_coverage is not None:
+        if unit_coverage is not None and component_coverage is not None:
             payload = {
-                "L0": l0_coverage,
-                "L1": l1_coverage,
-                "commit": args.commit or "",
+                "Unit":      unit_coverage,
+                "Component": component_coverage,
+                "commit":    args.commit or "",
                 "timestamp": args.timestamp or "",
             }
             try:
@@ -246,17 +245,16 @@ def main() -> None:
         else:
             print(
                 f"  WARNING: --output-json skipped: coverage data incomplete "
-                f"(L0={l0_coverage}, L1={l1_coverage})",
+                f"(Unit={unit_coverage}, Component={component_coverage})",
                 file=sys.stderr,
             )
 
-    l0_ok, l0_result, l0_delta, l0_reason = _suite_analysis(l0_coverage, baseline_l0)
-    l1_ok, l1_result, l1_delta, l1_reason = _suite_analysis(l1_coverage, baseline_l1)
+    unit_ok,      unit_result,      unit_delta,      unit_reason      = _suite_analysis(unit_coverage,      baseline_unit)
+    component_ok, component_result, component_delta, component_reason = _suite_analysis(component_coverage, baseline_component)
 
-    all_ok       = l0_ok and l1_ok
+    all_ok = unit_ok and component_ok
     status_token = _colored("[PASS]", True) if all_ok else _colored("[WARN]", False)
 
-    
     # Output report
     print()
     print(_HEADER)
@@ -270,26 +268,26 @@ def main() -> None:
     print(_SEP)
 
     # Coverage table
-    print(f"  {'Suite':<7}{'Current':<9}{'Baseline':<10}{'Delta':<10}Result")
+    print(f"  {'Suite':<12}{'Current':<9}{'Baseline':<10}{'Delta':<10}Result")
     for name, current, base, result, delta_disp in [
-        ("L0", l0_coverage, baseline_l0, l0_result, l0_delta),
-        ("L1", l1_coverage, baseline_l1, l1_result, l1_delta),
+        ("Unit",      unit_coverage,      baseline_unit,      unit_result,      unit_delta),
+        ("Component", component_coverage, baseline_component, component_result, component_delta),
     ]:
         cur_str  = f"{current:.2f}%" if current is not None else "N/A"
         base_str = f"{base:.2f}%"    if base    is not None else "N/A"
-        print(f"  {name:<7}{cur_str:<9}{base_str:<10}{delta_disp:<10}{result}")
+        print(f"  {name:<12}{cur_str:<9}{base_str:<10}{delta_disp:<10}{result}")
 
     print(_SEP)
 
     # Summary + overall bar
-    warn_suites = [(n, r) for n, r in [("L0", l0_reason), ("L1", l1_reason)] if r]
+    warn_suites = [(n, r) for n, r in [("Unit", unit_reason), ("Component", component_reason)] if r]
     summary = _build_summary(warn_suites)
     if summary:
         print(f"  {summary}")
 
     # Notify when one or both suites had no coverage data (artifact absent).
-    # Gate logic is unchanged — SKIP is treated as passing by design.
-    skipped = [n for n, cov in [("L0", l0_coverage), ("L1", l1_coverage)] if cov is None]
+    # Missing data is reported as [WARN]; the gate remains informational.
+    skipped = [n for n, cov in [("Unit", unit_coverage), ("Component", component_coverage)] if cov is None]
     if skipped:
         print(f"  NOTE: {_join_names(skipped)} coverage data absent \u2014 artifact missing or unreadable.")
 

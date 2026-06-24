@@ -38,8 +38,10 @@ void StatsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().StatsInterface().memoryUsage();
         if (succeed(r))
         {
-            std::cout << "User Memory Used: " << r->userMemoryUsed << " / " << r->userMemoryLimit << std::endl;
-            std::cout << "GPU Memory Used: " << r->gpuMemoryUsed << " / " << r->gpuMemoryLimit << std::endl;
+            std::cout << "User Memory Used (bytes): " << r->userMemoryUsed << " / " << r->userMemoryLimit
+                      << std::endl;
+            std::cout << "GPU Memory Used (bytes): " << r->gpuMemoryUsed << " / " << r->gpuMemoryLimit
+                      << std::endl;
         }
     }
 }

@@ -30,14 +30,14 @@ public:
     void fromJson(const nlohmann::json& json) override
     {
         if (!checkRequiredFields(json,
-                                 {"userMemoryUsedKiB", "userMemoryLimitKiB", "gpuMemoryUsedKiB", "gpuMemoryLimitKiB"}))
+                                 {"userMemoryUsed", "userMemoryLimit", "gpuMemoryUsed", "gpuMemoryLimit"}))
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        userMemoryUsed = json["userMemoryUsedKiB"].get<uint32_t>();
-        userMemoryLimit = json["userMemoryLimitKiB"].get<uint32_t>();
-        gpuMemoryUsed = json["gpuMemoryUsedKiB"].get<uint32_t>();
-        gpuMemoryLimit = json["gpuMemoryLimitKiB"].get<uint32_t>();
+        userMemoryUsed = json["userMemoryUsed"].get<uint64_t>();
+        userMemoryLimit = json["userMemoryLimit"].get<uint64_t>();
+        gpuMemoryUsed = json["gpuMemoryUsed"].get<uint64_t>();
+        gpuMemoryLimit = json["gpuMemoryLimit"].get<uint64_t>();
     }
     ::Firebolt::Stats::MemoryInfo value() const override
     {
@@ -45,9 +45,9 @@ public:
     }
 
 private:
-    uint32_t userMemoryUsed;
-    uint32_t userMemoryLimit;
-    uint32_t gpuMemoryUsed;
-    uint32_t gpuMemoryLimit;
+    uint64_t userMemoryUsed;
+    uint64_t userMemoryLimit;
+    uint64_t gpuMemoryUsed;
+    uint64_t gpuMemoryLimit;
 };
 } // namespace Firebolt::Stats::JsonData

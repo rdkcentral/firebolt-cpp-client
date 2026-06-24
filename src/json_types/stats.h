@@ -29,8 +29,7 @@ class MemoryInfo : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Stats::Memor
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        if (!checkRequiredFields(json,
-                                 {"userMemoryUsed", "userMemoryLimit", "gpuMemoryUsed", "gpuMemoryLimit"}))
+        if (!checkRequiredFields(json, {"userMemoryUsed", "userMemoryLimit", "gpuMemoryUsed", "gpuMemoryLimit"}))
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }

@@ -1088,6 +1088,39 @@
 			]
 		},
 		{
+			"name": "Localization.timeZone",
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:localization:time-zone"
+					]
+				}
+			],
+			"summary": "Get the IANA timezone of the device.",
+			"params": [],
+			"result": {
+				"name": "timeZone",
+				"summary": "The device timezone.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Default example",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "America/New_York"
+					}
+				}
+			]
+		},
+		{
 			"name": "Metrics.ready",
 			"tags": [
 				{
@@ -3366,6 +3399,52 @@
 				}
 			],
 			"summary": "Get the *full* BCP 47 code, including script, region, variant, etc., for the preferred locale",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "Localization.onTimeZoneChanged",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Localization.onTimeZoneChanged",
+					"x-subscriber-for": "Localization.timeZone"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:localization:time-zone"
+					]
+				}
+			],
+			"summary": "Get the IANA timezone of the device.",
 			"params": [
 				{
 					"name": "listen",

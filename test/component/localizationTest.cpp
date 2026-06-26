@@ -145,3 +145,40 @@ TEST_F(LocalizationCTest, subscribeOnPreferredPresentationLanguageChanged)
     auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().unsubscribe(id.value_or(0));
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
+
+TEST_F(LocalizationCTest, TimeZone)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().timeZone();
+    ASSERT_TRUE(result) << "error on get";
+
+    auto expectedValue = jsonEngine.get_value("Localization.timeZone").get<std::string>();
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(LocalizationCTest, subscribeOnTimeZoneChanged)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().subscribeOnTimeZoneChanged(
+        [&](const std::string& timeZone)
+        {
+            EXPECT_EQ(timeZone, "America/New_York");
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    ASSERT_TRUE(id) << "error on subscribe ";
+    EXPECT_TRUE(id.has_value()) << "error on id";
+
+    // Trigger the event from the mock server
+    triggerEvent("Localization.onTimeZoneChanged", R"({"value":"America/New_York"})");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    SetUp();
+    triggerEvent("Localization.onTimeZoneChanged", R"({"value":12345})");
+    verifyEventNotReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().unsubscribe(id.value_or(0));
+    ASSERT_TRUE(result) << "error on unsubscribe ";
+}

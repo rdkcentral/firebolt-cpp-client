@@ -53,6 +53,13 @@ public:
     virtual Result<std::string> presentationLanguage() const = 0;
 
     /**
+     * @brief Get the IANA timezone of the device.
+     *
+     * @retval The device timezone or error
+     */
+    virtual Result<std::string> timeZone() const = 0;
+
+    /**
      * @brief Subscribe on the change of CountryChanged property
      *
      * @param[in]  notification : The callback function
@@ -82,14 +89,7 @@ public:
     subscribeOnPresentationLanguageChanged(std::function<void(const std::string&)>&& notification) = 0;
 
     /**
-     * @brief Get the IANA timezone of the device.
-     *
-     * @retval The device timezone or error
-     */
-    virtual Result<std::string> timeZone() const = 0;
-
-    /**
-     * @brief Subscribe on the change of TimeZoneChanged property
+     * @brief Subscribe on the change of timeZone property
      *
      * @param[in]  notification : The callback function
      *

@@ -775,6 +775,43 @@
 			]
 		},
 		{
+			"name": "Localization.onTimeZoneChanged",
+			"tags": [
+				{
+					"name": "notifier",
+					"x-notifier-for": "Localization.timeZone",
+					"x-event": "Localization.onTimeZoneChanged"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:localization:time-zone"
+					]
+				}
+			],
+			"summary": "Get the IANA timezone of the device.",
+			"params": [
+				{
+					"name": "timeZone",
+					"summary": "The device timezone.",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default example",
+					"params": [
+						{
+							"name": "Default Result",
+							"value": "America/New_York"
+						}
+					]
+				}
+			]
+		},
+		{
 			"name": "Network.onConnectedChanged",
 			"summary": "Returns whether the device currently has a usable network connection.",
 			"tags": [

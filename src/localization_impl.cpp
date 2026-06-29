@@ -48,10 +48,11 @@ Result<std::string> LocalizationImpl::timeZone() const
     return helper_.get<Firebolt::JSON::String, std::string>("Localization.timeZone");
 }
 
-Result<SubscriptionId> LocalizationImpl::subscribeOnTimeZoneChanged(std::function<void(const std::string&)>&& notification)
+Result<SubscriptionId>
+LocalizationImpl::subscribeOnTimeZoneChanged(std::function<void(const std::string&)>&& notification)
 {
     return subscriptionManager_.subscribe<Firebolt::JSON::String>("Localization.onTimeZoneChanged",
-                                                                   std::move(notification));
+                                                                  std::move(notification));
 }
 
 Result<SubscriptionId> LocalizationImpl::subscribeOnCountryChanged(std::function<void(const std::string&)>&& notification)

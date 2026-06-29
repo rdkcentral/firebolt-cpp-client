@@ -193,6 +193,7 @@ int main(int argc, char** argv)
     }
     else if (!isatty(fileno(stdin)))
     {
+        appConfig.autoRun = true;
         std::string line;
         while (std::getline(std::cin, line))
         {

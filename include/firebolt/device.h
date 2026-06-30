@@ -96,6 +96,20 @@ public:
     virtual Result<uint32_t> uptime() const = 0;
 
     /**
+     * @brief Returns whether Dolby Atmos experience is available on the device
+     *
+     * @retval True if Dolby Atmos experience is available, or error
+     */
+    virtual Result<bool> dolbyAtmosExperienceAvailable() const = 0;
+
+    /**
+     * @brief Subscribe to Dolby Atmos experience availability changes
+     *
+     * @retval SubscriptionId or error
+     */
+    virtual Result<SubscriptionId> subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) = 0;
+
+    /**
      * @brief Subscribe to HDR format changes
      *
      * @retval SubscriptionId or error

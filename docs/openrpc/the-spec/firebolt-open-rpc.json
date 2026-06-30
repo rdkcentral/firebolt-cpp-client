@@ -528,6 +528,39 @@
 			]
 		},
 		{
+			"name": "Device.dolbyAtmosExperienceAvailable",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [],
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "dolbyAtmosExperienceAvailable",
+				"summary": "Whether Dolby Atmos experience is available on the device",
+				"schema": {
+					"type": "boolean"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": true
+					}
+				}
+			]
+		},
+		{
 			"name": "Discovery.watched",
 			"summary": "Notify the platform that content was partially or completely watched",
 			"tags": [
@@ -3259,6 +3292,52 @@
 			"examples": [
 				{
 					"name": "Getting the negotiated HDR formats",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "Device.onDolbyAtmosExperienceAvailableChanged",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Device.onDolbyAtmosExperienceAvailableChanged",
+					"x-subscriber-for": "Device.dolbyAtmosExperienceAvailable"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
 					"params": [
 						{
 							"name": "listen",

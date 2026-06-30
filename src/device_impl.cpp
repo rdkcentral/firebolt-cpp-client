@@ -57,6 +57,16 @@ Result<uint32_t> DeviceImpl::uptime() const
     return helper_.get<Firebolt::JSON::Unsigned, uint32_t>("Device.uptime");
 }
 
+Result<bool> DeviceImpl::dolbyAtmosExperienceAvailable() const
+{
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Device.dolbyAtmosExperienceAvailable");
+}
+
+Result<SubscriptionId> DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged", std::move(notification));
+}
+
 Result<SubscriptionId> DeviceImpl::subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification)
 {
     return subscriptionManager_.subscribe<JsonData::HDRFormat>("Device.onHdrChanged", std::move(notification));

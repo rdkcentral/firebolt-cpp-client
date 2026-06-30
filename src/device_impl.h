@@ -40,7 +40,8 @@ public:
     Result<uint32_t> uptime() const override;
 
     Result<bool> dolbyAtmosExperienceAvailable() const override;
-    Result<SubscriptionId> subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
+    Result<SubscriptionId>
+    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
 
     Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) override;
 

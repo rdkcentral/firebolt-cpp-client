@@ -107,7 +107,8 @@ public:
      *
      * @retval SubscriptionId or error
      */
-    virtual Result<SubscriptionId> subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) = 0;
+    virtual Result<SubscriptionId>
+    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) = 0;
 
     /**
      * @brief Subscribe to HDR format changes

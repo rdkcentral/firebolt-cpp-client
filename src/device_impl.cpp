@@ -64,7 +64,8 @@ Result<bool> DeviceImpl::dolbyAtmosExperienceAvailable() const
 
 Result<SubscriptionId> DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification)
 {
-    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged", std::move(notification));
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged",
+                                                                   std::move(notification));
 }
 
 Result<SubscriptionId> DeviceImpl::subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification)

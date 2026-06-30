@@ -154,7 +154,8 @@ TEST_F(DeviceUTest, DolbyAtmosExperienceAvailable)
 TEST_F(DeviceUTest, DolbyAtmosExperienceAvailableBadResponse)
 {
     mock_with_response("Device.dolbyAtmosExperienceAvailable", "invalid_response");
-    ASSERT_FALSE(deviceImpl_.dolbyAtmosExperienceAvailable()) << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
+    ASSERT_FALSE(deviceImpl_.dolbyAtmosExperienceAvailable())
+        << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
 }
 
 TEST_F(DeviceUTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)

@@ -24,4 +24,8 @@ namespace Firebolt::Version {
     constexpr uint32_t Minor = @PROJECT_VERSION_MINOR@;
     constexpr uint32_t Patch = @PROJECT_VERSION_PATCH@;
     constexpr const char* String = "@PROJECT_VERSION@";
+    constexpr const char* GitRef = "@GIT_DESCRIBE@";
+    constexpr const char* BuildTime = "@BUILD_TIMESTAMP@";
+    constexpr const char* Component = "FireboltClient";
+    constexpr const char* Banner = "FireboltClient version=@PROJECT_VERSION@ git=@GIT_DESCRIBE@ built=@BUILD_TIMESTAMP@";
 }

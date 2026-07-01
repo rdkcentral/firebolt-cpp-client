@@ -31,7 +31,9 @@
 #include "presentation_impl.h"
 #include "stats_impl.h"
 #include "texttospeech_impl.h"
+#include <mutex>
 #include <firebolt/gateway.h>
+#include <firebolt/logger.h>
 
 namespace Firebolt
 {
@@ -62,8 +64,17 @@ public:
 
     Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
     {
-        auto result = Firebolt::Transport::GetGatewayInstance().connect(config, listener);
-        FIREBOLT_LOG_NOTICE("Client", "Version: %s", Version::String);
+        Firebolt::Config effectiveConfig = config;
+        {
+            std::lock_guard<std::mutex> lock(logSettingsMutex_);
+            if (logSettingsOverride_.has_value())
+            {
+                effectiveConfig.log = logSettingsOverride_.value();
+            }
+        }
+
+        auto result = Firebolt::Transport::GetGatewayInstance().connect(effectiveConfig, listener);
+        FIREBOLT_LOG_NOTICE("Client", "%s", Version::Banner);
         return result;
     }
 
@@ -71,6 +82,25 @@ public:
     {
         unsubscribeAll();
         return Firebolt::Transport::GetGatewayInstance().disconnect();
+    }
+
+    void SetLogSettings(const Firebolt::Config::LogSettings& settings) override
+    {
+        {
+            std::lock_guard<std::mutex> lock(logSettingsMutex_);
+            logSettingsOverride_ = settings;
+        }
+
+        // Apply logger level/format immediately for client-side logs before connect/reconnect.
+        Firebolt::Logger::setLogLevel(settings.level);
+        Firebolt::Logger::setFormat(settings.format.ts, settings.format.location, settings.format.function,
+                                    settings.format.thread);
+    }
+
+    void ClearLogSettings() override
+    {
+        std::lock_guard<std::mutex> lock(logSettingsMutex_);
+        logSettingsOverride_.reset();
     }
 
     Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
@@ -113,6 +143,8 @@ private:
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;
     TextToSpeech::TextToSpeechImpl textToSpeech_;
+    std::mutex logSettingsMutex_;
+    std::optional<Firebolt::Config::LogSettings> logSettingsOverride_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

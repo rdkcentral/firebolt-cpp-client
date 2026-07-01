@@ -32,6 +32,7 @@
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
 #include "firebolt/texttospeech.h"
+#include <optional>
 #include <firebolt/config.h>
 #include <firebolt/types.h>
 #include <functional>
@@ -78,6 +79,21 @@ public:
      * @return Firebolt::Error
      */
     virtual Firebolt::Error Disconnect() = 0;
+
+    /**
+     * @brief Set client-wide logging settings to be consumed by subsequent Connect calls.
+     *
+     * This updates logger level/format immediately and stores transport logging masks
+     * that will be applied the next time Connect is called.
+     *
+     * @param settings : Logging settings to apply.
+     */
+    virtual void SetLogSettings(const Firebolt::Config::LogSettings& settings) = 0;
+
+    /**
+     * @brief Clear any previously configured client-wide logging override.
+     */
+    virtual void ClearLogSettings() = 0;
 
     /**
      * @brief Returns instance of Accessibility interface

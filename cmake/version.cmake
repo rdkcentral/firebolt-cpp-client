@@ -27,6 +27,20 @@ if (NOT PROJECT_VERSION)
             OUTPUT_STRIP_TRAILING_WHITESPACE
             ERROR_QUIET
         )
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_SHA
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE GIT_DESCRIBE
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
     endif ()
 
     if (GIT_VERSION)
@@ -41,6 +55,28 @@ if (NOT PROJECT_VERSION)
     set(PROJECT_VERSION "${VERSION_STRING}" CACHE STRING "Project version string")
     set(PROJECT_VERSION "${VERSION_STRING}")
 endif ()
+
+if (NOT GIT_SHA)
+    set(GIT_SHA "unknown")
+endif ()
+if (NOT GIT_DESCRIBE)
+    set(GIT_DESCRIBE "${GIT_SHA}")
+endif ()
+
+# Allow build system (e.g. Yocto dev bbappend) to pass SRCREV as the ref:
+#   EXTRA_OECMAKE:append = " -DFIREBOLT_GIT_REF=${SRCREV}"
+# Truncated to 8 chars to match short-SHA convention.
+# When no git and no override (prod tarball), fall back to the version tag —
+# it IS the authoritative ref for a release build.
+if (FIREBOLT_GIT_REF)
+    string(SUBSTRING "${FIREBOLT_GIT_REF}" 0 8 GIT_SHA)
+    set(GIT_DESCRIBE "${GIT_SHA}")
+elseif (GIT_DESCRIBE STREQUAL "unknown")
+    set(GIT_DESCRIBE "v${PROJECT_VERSION}")
+    set(GIT_SHA "v${PROJECT_VERSION}")
+endif ()
+
+string(TIMESTAMP BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)
 
 set(VERSION ${PROJECT_VERSION})
 string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1" PROJECT_VERSION_MAJOR "${VERSION}")

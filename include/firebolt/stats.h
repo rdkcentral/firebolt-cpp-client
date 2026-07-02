@@ -36,10 +36,10 @@ public:
     virtual ~IStats() = default;
 
     /**
-    * @brief Returns information about container memory usage in bytes.
-    *
-    * @retval MemoryInfo struct or error
-    */
+     * @brief Returns information about container memory usage in bytes.
+     *
+     * @retval MemoryInfo struct or error
+     */
     virtual Result<MemoryInfo> memoryUsage() const = 0;
 };
 

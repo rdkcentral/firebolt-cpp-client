@@ -34,6 +34,20 @@ namespace Firebolt::Actions
 namespace JsonData
 {
 
+// Serialises any JSON value (object, string, …) to its compact JSON text
+// representation. Used for Actions.intent / Actions.onIntent whose wire format
+// is the object {"intent":"...","intentId":N} but whose public C++ API surface
+// exposes the whole document as a std::string, per the Firebolt 9 spec.
+class JsonString : public Firebolt::JSON::NL_Json_Basic<std::string>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { value_ = json.dump(); }
+    std::string value() const override { return value_; }
+
+private:
+    std::string value_;
+};
+
 } // namespace JsonData
 
 } // namespace Firebolt::Actions

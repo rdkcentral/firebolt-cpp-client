@@ -66,9 +66,14 @@
 			"params": [],
 			"result": {
 				"name": "intent",
-				"summary": "The current intent.",
+				"summary": "The current intent as a JSON document.",
 				"schema": {
-					"type": "string"
+					"type": "object",
+					"required": ["intent", "intentId"],
+					"properties": {
+						"intent": { "type": "string" },
+						"intentId": { "type": "integer" }
+					}
 				}
 			},
 			"examples": [
@@ -76,7 +81,7 @@
 					"name": "Get the current intent",
 					"result": {
 						"name": "Default Result",
-						"value": "launch"
+						"value": { "intent": "launch", "intentId": 1 }
 					}
 				}
 			]
@@ -109,7 +114,12 @@
 				"name": "intent",
 				"summary": "The current intent.",
 				"schema": {
-					"type": "string"
+					"type": "object",
+					"required": ["intent", "intentId"],
+					"properties": {
+						"intent": { "type": "string" },
+						"intentId": { "type": "integer" }
+					}
 				}
 			},
 			"examples": [
@@ -123,7 +133,7 @@
 					],
 					"result": {
 						"name": "Default Result",
-						"value": "launch"
+						"value": { "intent": "launch", "intentId": 1 }
 					}
 				}
 			]

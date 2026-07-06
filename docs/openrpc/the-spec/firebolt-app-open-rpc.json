@@ -1046,28 +1046,32 @@
 				"type": "object",
 				"description": "Describes current and maximum memory usage of the container.",
 				"properties": {
-					"userMemoryUsedKiB": {
+					"userMemoryUsed": {
 						"type": "integer",
-						"description": "User memory currently used in 1024 bytes."
+						"description": "User memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"userMemoryLimitKiB": {
+					"userMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum user memory available in 1024 bytes."
+						"description": "Maximum user memory available, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryUsedKiB": {
+					"gpuMemoryUsed": {
 						"type": "integer",
-						"description": "GPU memory currently used in 1024 bytes."
+						"description": "GPU memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryLimitKiB": {
+					"gpuMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum GPU memory available in 1024 bytes."
+						"description": "Maximum GPU memory available, in bytes.",
+						"minimum": 0
 					}
 				},
 				"required": [
-					"userMemoryUsedKiB",
-					"userMemoryLimitKiB",
-					"gpuMemoryUsedKiB",
-					"gpuMemoryLimitKiB"
+					"userMemoryUsed",
+					"userMemoryLimit",
+					"gpuMemoryUsed",
+					"gpuMemoryLimit"
 				]
 			},
 			"TTSEnabled": {

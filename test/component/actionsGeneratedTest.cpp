@@ -36,7 +36,7 @@ TEST_F(ActionsGeneratedCTest, Intent)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(*result, "launch");
+    EXPECT_EQ(*result, "{\"intent\":\"launch\",\"intentId\":1}");
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
@@ -44,7 +44,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
         [&](const std::string& intent)
         {
-            EXPECT_EQ(intent, "launch");
+            EXPECT_EQ(intent, "{\"intent\":\"launch\",\"intentId\":1}");
             {
                 std::lock_guard<std::mutex> lock(mtx);
                 eventReceived = true;
@@ -55,7 +55,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
-    triggerEvent("Actions.onIntent", R"("launch")");
+    triggerEvent("Actions.onIntent", R"({"intent":"launch","intentId":1})");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());

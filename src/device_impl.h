@@ -39,14 +39,14 @@ public:
     Result<std::string> uid() const override;
     Result<uint32_t> uptime() const override;
 
-    Result<bool> dolbyAtmosExperienceAvailable() const override;
-    Result<SubscriptionId>
-    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
-
     Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
+
+    Result<bool> dolbyAtmosExperienceAvailable() const override;
+    Result<SubscriptionId>
+    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

@@ -47,20 +47,23 @@ public:
     std::string name() const { return name_; }
     virtual void runOption(const std::string& method) = 0;
     const std::vector<std::string>& methods() const { return methods_; }
+    int failureCount() const { return failureCount_; }
 
 protected:
-    template <typename T> bool succeed(const Firebolt::Result<T>& result) const
+    template <typename T> bool succeed(const Firebolt::Result<T>& result)
     {
         if (result)
         {
             return true;
         }
+        ++failureCount_;
         std::cout << "Error: " << static_cast<int>(result.error()) << std::endl;
         return false;
     }
 
     std::string name_;
     std::vector<std::string> methods_;
+    int failureCount_ = 0;
 };
 
 template <typename T> T chooseEnumFromList(const Firebolt::JSON::EnumType<T>& enumType, const std::string& prompt)

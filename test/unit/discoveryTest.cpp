@@ -78,7 +78,7 @@ TEST_F(DiscoveryUTest, watched_payload)
 
 TEST_F(DiscoveryUTest, watchedV2)
 {
-    mockInvoke("Discovery.watchedV2");
+    mockInvoke("Discovery.watched");
     std::string entityId = "content123";
     std::optional<double> progress = 0.75f;
     std::optional<bool> completed = true;
@@ -96,7 +96,7 @@ TEST_F(DiscoveryUTest, watchedV2_payload)
     expected["completed"] = true;
     expected["watchedOn"] = "2024-06-01T12:00:00Z";
     expected["agePolicy"] = "app:adult";
-    EXPECT_CALL(mockHelper, invoke("Discovery.watchedV2", _))
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _))
         .WillOnce(Invoke(
             [&](const std::string& /* methodName */, const nlohmann::json& parameters)
             {

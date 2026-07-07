@@ -76,6 +76,6 @@ Result<void> DiscoveryImpl::watchedV2(const std::string& entityId, std::optional
         parameters["agePolicy"] = Firebolt::JSON::toString(Firebolt::JsonData::AgePolicyEnum, *agePolicy);
     }
 
-    return helper_.invoke("Discovery.watchedV2", parameters);
+    return helper_.invoke("Discovery.watched", parameters);
 }
 } // namespace Firebolt::Discovery

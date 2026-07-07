@@ -139,3 +139,34 @@ TEST_F(DeviceUTest, SubscribeOnHdrChanged)
 
     deviceImpl_.unsubscribe(*result);
 }
+
+TEST_F(DeviceUTest, DolbyAtmosExperienceAvailable)
+{
+    mock("Device.dolbyAtmosExperienceAvailable");
+    auto expectedValue = jsonEngine.get_value("Device.dolbyAtmosExperienceAvailable");
+
+    auto result = deviceImpl_.dolbyAtmosExperienceAvailable();
+    ASSERT_TRUE(result) << "DeviceImpl::dolbyAtmosExperienceAvailable() returned an error";
+
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DeviceUTest, DolbyAtmosExperienceAvailableBadResponse)
+{
+    mock_with_response("Device.dolbyAtmosExperienceAvailable", "invalid_response");
+    ASSERT_FALSE(deviceImpl_.dolbyAtmosExperienceAvailable())
+        << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
+}
+
+TEST_F(DeviceUTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
+{
+    nlohmann::json expectedValue = 1;
+    mockSubscribe("Device.onDolbyAtmosExperienceAvailableChanged");
+
+    auto result = deviceImpl_.subscribeOnDolbyAtmosExperienceAvailableChanged([&](const bool& /*value*/) {});
+
+    ASSERT_TRUE(result) << "DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+
+    deviceImpl_.unsubscribe(*result);
+}

@@ -121,3 +121,34 @@ TEST_F(DeviceCTest, SubscribeOnHdrChanged)
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
+
+TEST_F(DeviceCTest, DolbyAtmosExperienceAvailable)
+{
+    auto expectedValue = jsonEngine.get_value("Device.dolbyAtmosExperienceAvailable");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().dolbyAtmosExperienceAvailable();
+    ASSERT_TRUE(result) << "DeviceImpl::dolbyAtmosExperienceAvailable() returned an error";
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnDolbyAtmosExperienceAvailableChanged(
+        [&](const bool& value)
+        {
+            std::cout << "[Subscription] Device Dolby Atmos experience availability changed" << std::endl;
+            EXPECT_EQ(value, true);
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("Device.onDolbyAtmosExperienceAvailableChanged", R"({ "value": true })");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}

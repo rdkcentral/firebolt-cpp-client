@@ -44,6 +44,10 @@ public:
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 
+    Result<bool> dolbyAtmosExperienceAvailable() const override;
+    Result<SubscriptionId>
+    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
+
 private:
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;

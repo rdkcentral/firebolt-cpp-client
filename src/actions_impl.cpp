@@ -34,12 +34,12 @@ ActionsImpl::ActionsImpl(Firebolt::Helpers::IHelper& helper)
 
 Result<std::string> ActionsImpl::intent() const
 {
-    return helper_.get<Firebolt::JSON::String, std::string>("Actions.intent");
+    return helper_.get<JsonData::JsonString, std::string>("Actions.intent");
 }
 
 Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification)
 {
-    return subscriptionManager_.subscribe<Firebolt::JSON::String>("Actions.onIntent", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::JsonString>("Actions.onIntent", std::move(notification));
 }
 
 Result<void> ActionsImpl::unsubscribe(SubscriptionId id)

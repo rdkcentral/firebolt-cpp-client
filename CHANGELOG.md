@@ -1,3 +1,8 @@
+## [0.6.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/0.6.2...v0.6.3)
+
+### Fixed
+- `Actions.intent` and `Actions.onIntent` now correctly handle a JSON object payload (`{"intent":"...","intentId":N}`) sent by the Firebolt backend. Previously the client failed to parse the response because it expected a plain string.
+
 ## [0.6.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.1...v0.6.2)
 
 ### Fixed

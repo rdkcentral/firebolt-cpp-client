@@ -36,7 +36,9 @@ TEST_F(ActionsGeneratedCTest, Intent)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(*result, "launch");
+    auto parsed = nlohmann::json::parse(*result);
+    EXPECT_EQ(parsed.at("intent").get<std::string>(), "launch");
+    EXPECT_EQ(parsed.at("intentId").get<int>(), 1);
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
@@ -44,7 +46,9 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
         [&](const std::string& intent)
         {
-            EXPECT_EQ(intent, "launch");
+            auto parsed = nlohmann::json::parse(intent);
+            EXPECT_EQ(parsed.at("intent").get<std::string>(), "launch");
+            EXPECT_EQ(parsed.at("intentId").get<int>(), 1);
             {
                 std::lock_guard<std::mutex> lock(mtx);
                 eventReceived = true;
@@ -55,7 +59,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
-    triggerEvent("Actions.onIntent", R"("launch")");
+    triggerEvent("Actions.onIntent", R"({"intent":"launch","intentId":1})");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());

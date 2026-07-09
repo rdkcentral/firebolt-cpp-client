@@ -40,6 +40,10 @@ public:
      *                           to which content may be directed
      *
      * @retval Whether the platform successfully recorded the watched notification, or an error
+     *
+     * @note   This method is retained for backward compatibility with the original Discovery spec.
+     *         Prefer watchedV2() for new integrations, which returns Result<void> and omits the
+     *         redundant boolean payload.
      */
     virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,

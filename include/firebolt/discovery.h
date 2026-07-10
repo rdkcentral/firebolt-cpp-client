@@ -40,14 +40,17 @@ public:
      *                           to which content may be directed
      *
      * @retval Whether the platform successfully recorded the watched notification, or an error
+     *
+     * @note   This method is retained for backward compatibility with the original Discovery spec.
+     *         Prefer watchedV2() for new integrations, which returns Result<void> and omits the
+     *         redundant boolean payload.
      */
     virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                  std::optional<bool> completed, std::optional<std::string> watchedOn,
                                  std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
-     * @brief Notify the platform that content was partially or completely watched, returns whether the notification
-     *        was accepted
+     * @brief Notify the platform that content was partially or completely watched
      *
      * @param[in]  entityId    : The entity Id of the watched content
      * @param[in]  progress    : How much of the content has been watched (percentage as (0-0.999) for VOD, number of
@@ -57,9 +60,9 @@ public:
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
-     * @retval Whether the platform accepted the watched notification, or an error
+     * @retval An ok Result on success, or an error; no value is returned
      */
-    virtual Result<bool> watchedV2(const std::string& entityId, std::optional<double> progress,
+    virtual Result<void> watchedV2(const std::string& entityId, std::optional<double> progress,
                                    std::optional<bool> completed, std::optional<std::string> watchedOn,
                                    std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 };

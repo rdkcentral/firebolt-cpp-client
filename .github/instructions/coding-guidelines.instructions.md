@@ -29,7 +29,7 @@ The codebase has exactly three conceptual layers. Do not collapse or skip layers
 | Implementation | `src/<module>_impl.h` + `src/<module>_impl.cpp` | Concrete logic; hidden from consumers |
 | JSON deserialization | `src/json_types/<module>.h` | Wire format ↔ native type adapters; never exposed publicly |
 
-**Current practice (confirmed across all 13 modules):**
+**Current practice (confirmed across all existing modules):**
 - Every module has exactly one interface (`I<Module>`), one impl (`<Module>Impl`), and zero or more JSON type adapters. Four modules (discovery, localization, network, presentation) have no `json_types/` file; they use primitive-type helpers (`Firebolt::JSON::String`, `Boolean`, `Unsigned`) directly.
 - The singleton entry point is `Firebolt::IFireboltAccessor::Instance()`, implemented in `src/firebolt.cpp` as a Meyers singleton over `FireboltAccessorImpl`.
 
@@ -146,7 +146,7 @@ After the change, run `./run-component-tests-local.sh` to validate all layers to
 
 ### 3.2 Include Style
 
-**Current practice (confirmed across all 13 modules):**
+**Current practice (confirmed across all existing modules):**
 - Includes of public firebolt headers: angle brackets with full path (`#include <firebolt/types.h>`, `#include <firebolt/helpers.h>`).
 - Includes of implementation-local headers: double quotes without path prefix (`#include "device_impl.h"`, `#include "json_types/device.h"`).
 - Includes of the module's own public header from within `_impl.h`: double quotes with full path (`#include "firebolt/device.h"`).
@@ -188,9 +188,9 @@ private:
 ```
 
 - All `*Impl` constructors take `Firebolt::Helpers::IHelper&` as their only parameter and must be marked `explicit`. Three impl classes currently lack `explicit` — flagged for cleanup:
-  - `src/stats_impl.h` — `StatsImpl(Firebolt::Helpers::IHelper&)` at line 30
-  - `src/lifecycle_impl.h` — `LifecycleImpl(Firebolt::Helpers::IHelper&)` at line 37
-  - `src/localization_impl.h` — `LocalizationImpl(Firebolt::Helpers::IHelper&)` at line 29
+  - `src/stats_impl.h` — `StatsImpl(Firebolt::Helpers::IHelper&)`
+  - `src/lifecycle_impl.h` — `LifecycleImpl(Firebolt::Helpers::IHelper&)`
+  - `src/localization_impl.h` — `LocalizationImpl(Firebolt::Helpers::IHelper&)`
 - Method return types and parameter types in `*_impl.h` must exactly match those declared in the corresponding public interface header. Always use `uint32_t` (from `<cstdint>`), never the non-standard POSIX type `u_int32_t`. A type mismatch between interface and override produces an invalid override and fails to compile on non-POSIX targets.
 
   **Cleanup to fix:** `src/device_impl.h` — `timeInActiveState()` is declared as `u_int32_t`; must be changed to `uint32_t` to match `include/firebolt/device.h`.
@@ -246,7 +246,7 @@ Do not use `friend` declarations to grant test classes access to implementation 
 
 ### 5.1 `Result<T>` at the API Boundary
 
-**Current practice (without exception in 13 modules):**
+**Current practice (without exception across all existing modules):**
 - Every method in `I<Module>` returns `Result<T>` or `Result<void>`.
 - `Result<void>` is used for methods that send a command and carry no return value (e.g., `Metrics.ready()`, `Lifecycle.close()`).
 - Callers check the result with boolean conversion (`if (result)`) or dereference after assertion (`*result`).
@@ -453,7 +453,7 @@ Negative tests must verify runtime behaviour — specifically that callbacks are
 
 ### 10.3 Pairing Rule
 
-**Current practice (confirmed across all 13 modules):** Every module has both a unit test file and a component test file. When adding a new module or method:
+**Current practice (confirmed across all existing modules):** Every module has both a unit test file and a component test file. When adding a new module or method:
 - Add unit tests in `test/unit/<module>Test.cpp`
 - Add component tests in `test/component/<module>Test.cpp`
 - Both test files must cover all public API methods
@@ -567,7 +567,7 @@ The following patterns are explicitly wrong for this codebase. Each entry notes 
 
 | # | Anti-Pattern | Why It Is Wrong Here |
 |---|---|---|
-| AP-1 | Returning `std::optional<T>` instead of `Result<T>` from interface methods | Cannot carry an error code; breaks the uniform error contract used across all 13 modules |
+| AP-1 | Returning `std::optional<T>` instead of `Result<T>` from interface methods | Cannot carry an error code; breaks the uniform error contract used across all modules |
 | AP-2 | Throwing exceptions from `*_impl.cpp` method bodies | Consumers expect `Result<T>`; exceptions escape the module boundary unexpectedly |
 | AP-3 | Adding `unique_ptr` or `shared_ptr` for module ownership in `FireboltAccessorImpl` | All modules are owned by value in `FireboltAccessorImpl`; smart pointers add indirection with no benefit here |
 | AP-4 | Storing `IHelper` by pointer | Consistent reference storage; pointer would allow null and is not the established contract |

@@ -44,11 +44,11 @@ Every new module must be wired into `src/firebolt.cpp`:
 1. Member variable of type `Module::ModuleImpl` in `FireboltAccessorImpl`.
 2. Initialised via `Firebolt::Helpers::GetHelperInstance()` in the constructor initialiser list.
 3. Accessor method returning `Module::IModule&` override.
-4. `unsubscribeAll()` call in the private `unsubscribeAll()` helper — **only if the module supports subscriptions**.
+4. `unsubscribeAll()` call in the private `unsubscribeAll()` helper — **only if the module supports subscriptions** (i.e., the interface exposes any `subscribeOn*` methods). Note: `Device` currently exposes `subscribeOnHdrChanged(...)` but is absent from `FireboltAccessorImpl::unsubscribeAll()` — see Known Issue below.
 
-Reference: `src/firebolt.cpp` lines 44–110.
+Reference: `src/firebolt.cpp` (`FireboltAccessorImpl` ctor initializer list and `unsubscribeAll()`).
 
-**Cleanup to fix:** `src/firebolt.cpp` — `device_.unsubscribeAll()` is absent from `unsubscribeAll()` (lines 91–99) despite `DeviceImpl` holding a `SubscriptionManager` and `IDevice` exposing `subscribeOnHdrChanged` and `subscribeOnDolbyAtmosExperienceAvailableChanged`. Device subscriptions are never cleaned up on Disconnect. Add `device_.unsubscribeAll();` alongside the other module calls in that method.
+**Known issue:** `FireboltAccessorImpl::unsubscribeAll()` in `src/firebolt.cpp` does not call `device_.unsubscribeAll()` even though `DeviceImpl` supports subscriptions (`subscribeOnHdrChanged`, `subscribeOnDolbyAtmosExperienceAvailableChanged`). Device subscriptions are never cleaned up on Disconnect. Track this as a separate defect.
 
 ### 1.3 API-Facing Change Discipline
 
@@ -138,7 +138,7 @@ After the change, run `./run-component-tests-local.sh` to validate all layers to
 
 **Current practice:**
 - Bespoke headers (`include/firebolt/` and most `src/`): use `#pragma once`.
-- Auto-generated **interface and impl** headers (e.g., `include/firebolt/actions.h`, `src/actions_impl.h`): use `#ifndef FIREBOLT_<MODULE>_H` / `#define FIREBOLT_<MODULE>_H` / `#endif` guards — confirmed at `include/firebolt/actions.h:22` and `src/actions_impl.h:22`.
+- Auto-generated **interface and impl** headers (e.g., `include/firebolt/actions.h`, `src/actions_impl.h`): use `#ifndef FIREBOLT_<MODULE>_H` / `#define FIREBOLT_<MODULE>_H` / `#endif` guards — confirmed in `include/firebolt/actions.h` and `src/actions_impl.h`.
 - Auto-generated **json_types** headers (e.g., `src/json_types/actions.h`): use `#pragma once` — consistent with all bespoke json_types headers.
 - Do not mix both guards in the same file.
 
@@ -167,7 +167,7 @@ Confirmed observation: `include/firebolt/actions.h` (auto-generated) includes `<
 
 ### 4.1 `*Impl` Class Declaration Order
 
-**Current practice (confirmed in all 13 impl headers):**
+**Recommended going forward:**
 ```
 class <Module>Impl : public I<Module>
 {

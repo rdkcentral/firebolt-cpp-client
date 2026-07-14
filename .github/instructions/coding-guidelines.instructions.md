@@ -76,7 +76,7 @@ After the change, run `./run-component-tests-local.sh` to validate all layers to
 - Every `.h` and `.cpp` file closes with a namespace-end comment: `} // namespace Firebolt::<ModuleName>`.
 
 **Anti-patterns:**
-- Do not use `using namespace Firebolt::<Module>;` in .cpp files either. Use fully-qualified names or targeted `using Firebolt::Helpers::ClassName;` declarations instead. (Applies retroactively to `stats_impl.cpp` and `lifecycle_impl.cpp` — flagged for cleanup.)
+- Do not use `using namespace Firebolt::Helpers;` (or `using namespace Firebolt::<Module>;`) in `.cpp` files. Prefer fully-qualified names or targeted `using Firebolt::Helpers::ClassName;` declarations instead. (Applies retroactively to `stats_impl.cpp` and `lifecycle_impl.cpp` — both currently have `using namespace Firebolt::Helpers;` at file scope — flagged for cleanup.)
 
 ### 2.2 Interfaces and Implementations
 

@@ -71,8 +71,8 @@
 					"type": "object",
 					"required": ["intent", "intentId"],
 					"properties": {
-						"intent": { "type": "string" },
-						"intentId": { "type": "integer" }
+						"intent": { "type": "object" },
+						"intentId": { "type": "integer", "minimum": 0 }
 					}
 				}
 			},
@@ -81,7 +81,7 @@
 					"name": "Get the current intent",
 					"result": {
 						"name": "Default Result",
-						"value": { "intent": "launch", "intentId": 1 }
+						"value": { "intent": {"action": "pre-load", "context": {"source": "system"}}, "intentId": 0 }
 					}
 				}
 			]
@@ -117,8 +117,8 @@
 					"type": "object",
 					"required": ["intent", "intentId"],
 					"properties": {
-						"intent": { "type": "string" },
-						"intentId": { "type": "integer" }
+						"intent": { "type": "object" },
+						"intentId": { "type": "integer", "minimum": 0 }
 					}
 				}
 			},
@@ -133,7 +133,7 @@
 					],
 					"result": {
 						"name": "Default Result",
-						"value": { "intent": "launch", "intentId": 1 }
+						"value": { "intent": {"action": "pre-load", "context": {"source": "system"}}, "intentId": 0 }
 					}
 				}
 			]

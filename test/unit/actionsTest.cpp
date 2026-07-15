@@ -28,13 +28,15 @@ protected:
 
 TEST_F(ActionsUTest, Start)
 {
-    mock_with_response("Actions.intent", nlohmann::json({{"intent", "launch"}, {"intentId", 1}}));
+    mock_with_response("Actions.intent", nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}}, {"intentId", 0u}}));
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
     auto parsed = nlohmann::json::parse(*result);
-    EXPECT_EQ(parsed.at("intent").get<std::string>(), "launch");
-    EXPECT_EQ(parsed.at("intentId").get<int>(), 1);
+    EXPECT_TRUE(parsed.at("intent").is_object());
+    EXPECT_EQ(parsed.at("intent").at("action").get<std::string>(), "pre-load");
+    EXPECT_EQ(parsed.at("intent").at("context").at("source").get<std::string>(), "system");
+    EXPECT_EQ(parsed.at("intentId").get<unsigned>(), 0u);
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)

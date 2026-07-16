@@ -45,7 +45,14 @@ Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const I
 Result<void> ActionsImpl::start(const std::string& intent, std::optional<std::string> handlerAppId) const
 {
     nlohmann::json params;
-    params["intent"] = nlohmann::json::parse(intent);
+    try
+    {
+        params["intent"] = nlohmann::json::parse(intent);
+    }
+    catch (const nlohmann::json::parse_error&)
+    {
+        return Firebolt::Result<void>{Firebolt::Error::InvalidParams};
+    }
     if (handlerAppId)
     {
         params["handlerAppId"] = *handlerAppId;

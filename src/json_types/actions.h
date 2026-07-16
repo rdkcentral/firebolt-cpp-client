@@ -26,7 +26,7 @@
 #include "firebolt/actions.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
-#include <type_traits>
+#include <stdexcept>
 
 namespace Firebolt::Actions
 {
@@ -41,9 +41,17 @@ class JsonValue : public Firebolt::JSON::NL_Json_Basic<Intent>
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        value_.intent.action         = json.at("intent").at("action").get<std::string>();
-        value_.intent.context.source = json.at("intent").at("context").at("source").get<std::string>();
-        value_.intentId              = json.at("intentId").get<unsigned>();
+        if (!checkRequiredFields(json, {"intent", "intentId"}) ||
+            !json["intent"].is_object() ||
+            !checkRequiredFields(json["intent"], {"action", "context"}) ||
+            !json["intent"]["context"].is_object() ||
+            !checkRequiredFields(json["intent"]["context"], {"source"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
+        value_.intent.action         = json["intent"]["action"].get<std::string>();
+        value_.intent.context.source = json["intent"]["context"]["source"].get<std::string>();
+        value_.intentId              = json["intentId"].get<uint32_t>();
     }
     Intent value() const override { return value_; }
 

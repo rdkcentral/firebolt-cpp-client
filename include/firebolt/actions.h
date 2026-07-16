@@ -45,7 +45,7 @@ struct IntentData
 struct Intent
 {
     IntentData intent;
-    unsigned   intentId{0};
+    uint32_t   intentId{0};
 };
 
 class IActions

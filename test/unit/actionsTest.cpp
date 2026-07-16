@@ -65,3 +65,10 @@ TEST_F(ActionsUTest, Start)
     auto result = actionsImpl_.start(R"({"action":"pre-load","context":{"source":"system"}})");
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }
+
+TEST_F(ActionsUTest, StartInvalidJson)
+{
+    auto result = actionsImpl_.start("not-valid-json");
+    ASSERT_FALSE(result) << "ActionsImpl::start() should fail for invalid JSON";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}

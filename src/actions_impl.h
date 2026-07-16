@@ -41,7 +41,7 @@ public:
     Result<SubscriptionId> subscribeOnIntent(std::function<void(const Intent&)>&& notification) override;
 
     Result<void> start(const std::string& intent,
-                       std::optional<std::string> handlerAppId) const override;
+                       std::optional<std::string> handlerAppId = std::nullopt) const override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;

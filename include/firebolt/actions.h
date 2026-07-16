@@ -26,28 +26,46 @@
 #include <functional>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <utility>
-#include <vector>
 
 namespace Firebolt::Actions
 {
+
+struct IntentContext
+{
+    std::string source;
+};
+
+struct IntentData
+{
+    std::string   action;
+    IntentContext context;
+};
+
+struct Intent
+{
+    IntentData intent;
+    unsigned   intentId{0};
+};
 
 class IActions
 {
 public:
     virtual ~IActions() = default;
 
-    virtual Result<std::string> intent() const = 0;
+    virtual Result<Intent> intent() const = 0;
 
-    virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) = 0;
-    virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const std::string&)>&& notification)
+    virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const Intent&)>&& notification) = 0;
+    virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const Intent&)>&& notification)
     {
         return subscribeOnIntent(std::move(notification));
     }
 
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
+
+    virtual Result<void> start(const std::string& intent,
+                               std::optional<std::string> handlerAppId = std::nullopt) const = 0;
 
 }; // class IActions
 

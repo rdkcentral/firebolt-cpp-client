@@ -31,7 +31,9 @@ protected:
 
 TEST_F(ActionsUTest, Intent)
 {
-    mock_with_response("Actions.intent", nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}}, {"intentId", 0u}}));
+    mock_with_response("Actions.intent",
+                       nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}},
+                                       {"intentId", 0u}}));
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
@@ -70,5 +72,12 @@ TEST_F(ActionsUTest, StartInvalidJson)
 {
     auto result = actionsImpl_.start("not-valid-json");
     ASSERT_FALSE(result) << "ActionsImpl::start() should fail for invalid JSON";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(ActionsUTest, StartNonObjectJson)
+{
+    auto result = actionsImpl_.start(R"([1,2,3])");
+    ASSERT_FALSE(result) << "ActionsImpl::start() should fail for non-object JSON";
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

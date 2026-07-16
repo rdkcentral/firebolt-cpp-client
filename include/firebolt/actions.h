@@ -38,14 +38,14 @@ struct IntentContext
 
 struct IntentData
 {
-    std::string   action;
+    std::string action;
     IntentContext context;
 };
 
 struct Intent
 {
     IntentData intent;
-    uint32_t   intentId{0};
+    uint32_t intentId{0};
 };
 
 class IActions

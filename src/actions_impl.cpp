@@ -47,7 +47,12 @@ Result<void> ActionsImpl::start(const std::string& intent, std::optional<std::st
     nlohmann::json params;
     try
     {
-        params["intent"] = nlohmann::json::parse(intent);
+        auto parsedIntent = nlohmann::json::parse(intent);
+        if (!parsedIntent.is_object())
+        {
+            return Firebolt::Result<void>{Firebolt::Error::InvalidParams};
+        }
+        params["intent"] = std::move(parsedIntent);
     }
     catch (const nlohmann::json::parse_error&)
     {

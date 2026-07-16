@@ -20,6 +20,7 @@
 #include <firebolt/firebolt.h>
 #include <iostream>
 #include <string>
+#include <utility>
 
 using namespace Firebolt;
 using namespace Firebolt::Actions;
@@ -43,15 +44,13 @@ void ActionsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
         if (succeed(r))
         {
-            std::cout << "Current Intent - action: " << r->intent.action
-                      << ", source: " << r->intent.context.source
+            std::cout << "Current Intent - action: " << r->intent.action << ", source: " << r->intent.context.source
                       << ", intentId: " << r->intentId << std::endl;
         }
     }
     else if (method == "Actions.start")
     {
-        std::string intent = paramFromConsole("intent (JSON)",
-            R"({"action":"pre-load","context":{"source":"system"}})");
+        std::string intent = paramFromConsole("intent (JSON)", R"({"action":"pre-load","context":{"source":"system"}})");
         std::string handlerAppIdStr = paramFromConsole("handlerAppId (leave empty to skip)", "");
         std::optional<std::string> handlerAppId;
         if (!handlerAppIdStr.empty())
@@ -69,8 +68,8 @@ void ActionsDemo::runOption(const std::string& method)
         auto callback = [&](const Intent& payload)
         {
             std::cout << "Intent received - action: " << payload.intent.action
-                      << ", source: " << payload.intent.context.source
-                      << ", intentId: " << payload.intentId << std::endl;
+                      << ", source: " << payload.intent.context.source << ", intentId: " << payload.intentId
+                      << std::endl;
         };
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(std::move(callback));
         if (succeed(r))
@@ -81,7 +80,14 @@ void ActionsDemo::runOption(const std::string& method)
     else if (method == "Actions.unsubscribe")
     {
         std::string idStr = paramFromConsole("subscription ID", "0");
-        SubscriptionId id = static_cast<SubscriptionId>(std::stoul(idStr));
+        SubscriptionId id = 0;
+        try
+        {
+            id = static_cast<SubscriptionId>(std::stoul(idStr));
+        }
+        catch (const std::exception&)
+        {
+        }
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id);
         if (succeed(r))
         {

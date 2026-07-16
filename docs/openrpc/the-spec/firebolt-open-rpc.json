@@ -69,10 +69,18 @@
 				"summary": "The current intent as a JSON document.",
 				"schema": {
 					"type": "object",
-					"required": ["intent", "intentId"],
+					"required": [
+						"intent",
+						"intentId"
+					],
 					"properties": {
-						"intent": { "type": "object" },
-						"intentId": { "type": "integer", "minimum": 0 }
+						"intent": {
+							"type": "object"
+						},
+						"intentId": {
+							"type": "integer",
+							"minimum": 0
+						}
 					}
 				}
 			},
@@ -81,7 +89,15 @@
 					"name": "Get the current intent",
 					"result": {
 						"name": "Default Result",
-						"value": { "intent": {"action": "pre-load", "context": {"source": "system"}}, "intentId": 0 }
+						"value": {
+							"intent": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							},
+							"intentId": 0
+						}
 					}
 				}
 			]
@@ -115,10 +131,18 @@
 				"summary": "The current intent as a JSON document.",
 				"schema": {
 					"type": "object",
-					"required": ["intent", "intentId"],
+					"required": [
+						"intent",
+						"intentId"
+					],
 					"properties": {
-						"intent": { "type": "object" },
-						"intentId": { "type": "integer", "minimum": 0 }
+						"intent": {
+							"type": "object"
+						},
+						"intentId": {
+							"type": "integer",
+							"minimum": 0
+						}
 					}
 				}
 			},
@@ -133,7 +157,71 @@
 					],
 					"result": {
 						"name": "Default Result",
-						"value": { "intent": {"action": "pre-load", "context": {"source": "system"}}, "intentId": 0 }
+						"value": {
+							"intent": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							},
+							"intentId": 0
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.start",
+			"summary": "Sends an intent to the platform.",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "intent",
+					"summary": "The intent to send, as a JSON document.",
+					"required": true,
+					"schema": {
+						"type": "object"
+					}
+				},
+				{
+					"name": "handlerAppId",
+					"summary": "Optional ID of the application that should handle the intent.",
+					"required": false,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Start an intent",
+					"params": [
+						{
+							"name": "intent",
+							"value": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							}
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
 					}
 				}
 			]

@@ -36,23 +36,19 @@ TEST_F(ActionsGeneratedCTest, Intent)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    auto parsed = nlohmann::json::parse(*result);
-    EXPECT_TRUE(parsed.at("intent").is_object());
-    EXPECT_EQ(parsed.at("intent").at("action").get<std::string>(), "pre-load");
-    EXPECT_EQ(parsed.at("intent").at("context").at("source").get<std::string>(), "system");
-    EXPECT_EQ(parsed.at("intentId").get<unsigned>(), 0u);
+    EXPECT_EQ(result->intent.action, "pre-load");
+    EXPECT_EQ(result->intent.context.source, "system");
+    EXPECT_EQ(result->intentId, 0u);
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
-        [&](const std::string& intent)
+        [&](const Firebolt::Actions::Intent& payload)
         {
-            auto parsed = nlohmann::json::parse(intent);
-            EXPECT_TRUE(parsed.at("intent").is_object());
-            EXPECT_EQ(parsed.at("intent").at("action").get<std::string>(), "pre-load");
-            EXPECT_EQ(parsed.at("intent").at("context").at("source").get<std::string>(), "system");
-            EXPECT_EQ(parsed.at("intentId").get<unsigned>(), 0u);
+            EXPECT_EQ(payload.intent.action, "pre-load");
+            EXPECT_EQ(payload.intent.context.source, "system");
+            EXPECT_EQ(payload.intentId, 0u);
             {
                 std::lock_guard<std::mutex> lock(mtx);
                 eventReceived = true;
@@ -68,4 +64,11 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
+}
+
+TEST_F(ActionsGeneratedCTest, Start)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(
+        R"({"action":"pre-load","context":{"source":"system"}})");
+    ASSERT_TRUE(result) << toError(result);
 }

@@ -75,7 +75,18 @@
 					],
 					"properties": {
 						"intent": {
-							"type": "object"
+							"type": "object",
+							"required": ["action", "context"],
+							"properties": {
+								"action": { "type": "string" },
+								"context": {
+									"type": "object",
+									"required": ["source"],
+									"properties": {
+										"source": { "type": "string" }
+									}
+								}
+							}
 						},
 						"intentId": {
 							"type": "integer",
@@ -137,7 +148,18 @@
 					],
 					"properties": {
 						"intent": {
-							"type": "object"
+							"type": "object",
+							"required": ["action", "context"],
+							"properties": {
+								"action": { "type": "string" },
+								"context": {
+									"type": "object",
+									"required": ["source"],
+									"properties": {
+										"source": { "type": "string" }
+									}
+								}
+							}
 						},
 						"intentId": {
 							"type": "integer",

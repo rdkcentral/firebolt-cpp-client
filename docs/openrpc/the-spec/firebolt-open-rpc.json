@@ -76,12 +76,11 @@
 					"properties": {
 						"intent": {
 							"type": "object",
-							"required": ["action", "context"],
+							"required": ["action"],
 							"properties": {
 								"action": { "type": "string" },
 								"context": {
 									"type": "object",
-									"required": ["source"],
 									"properties": {
 										"source": { "type": "string" }
 									}
@@ -149,12 +148,11 @@
 					"properties": {
 						"intent": {
 							"type": "object",
-							"required": ["action", "context"],
+							"required": ["action"],
 							"properties": {
 								"action": { "type": "string" },
 								"context": {
 									"type": "object",
-									"required": ["source"],
 									"properties": {
 										"source": { "type": "string" }
 									}

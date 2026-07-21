@@ -20,7 +20,6 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
-using ::testing::_;
 using ::testing::Invoke;
 
 class ActionsUTest : public ::testing::Test, protected MockBase

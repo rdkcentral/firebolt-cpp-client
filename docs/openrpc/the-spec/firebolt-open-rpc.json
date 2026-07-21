@@ -207,7 +207,17 @@
 					"summary": "The intent to send, as a JSON document.",
 					"required": true,
 					"schema": {
-						"type": "object"
+						"type": "object",
+						"required": ["action"],
+						"properties": {
+							"action": { "type": "string" },
+							"context": {
+								"type": "object",
+								"properties": {
+									"source": { "type": "string" }
+								}
+							}
+						}
 					}
 				},
 				{

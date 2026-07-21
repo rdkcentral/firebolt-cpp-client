@@ -41,6 +41,7 @@ class JsonValue : public Firebolt::JSON::NL_Json_Basic<Intent>
 public:
     void fromJson(const nlohmann::json& json) override
     {
+        value_ = {};
         if (!checkRequiredFields(json, {"intent", "intentId"}) || !json["intent"].is_object() ||
             !checkRequiredFields(json["intent"], {"action"}))
         {

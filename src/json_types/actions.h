@@ -42,13 +42,18 @@ public:
     void fromJson(const nlohmann::json& json) override
     {
         if (!checkRequiredFields(json, {"intent", "intentId"}) || !json["intent"].is_object() ||
-            !checkRequiredFields(json["intent"], {"action", "context"}) || !json["intent"]["context"].is_object() ||
-            !checkRequiredFields(json["intent"]["context"], {"source"}))
+            !checkRequiredFields(json["intent"], {"action"}))
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
         value_.intent.action = json["intent"]["action"].get<std::string>();
-        value_.intent.context.source = json["intent"]["context"]["source"].get<std::string>();
+        if (json["intent"].contains("context") && json["intent"]["context"].is_object())
+        {
+            IntentContext ctx;
+            if (json["intent"]["context"].contains("source"))
+                ctx.source = json["intent"]["context"]["source"].get<std::string>();
+            value_.intent.context = ctx;
+        }
         value_.intentId = json["intentId"].get<uint32_t>();
     }
     Intent value() const override { return value_; }

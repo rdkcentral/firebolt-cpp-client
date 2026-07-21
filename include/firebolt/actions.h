@@ -33,13 +33,13 @@ namespace Firebolt::Actions
 
 struct IntentContext
 {
-    std::string source;
+    std::optional<std::string> source;
 };
 
 struct IntentData
 {
     std::string action;
-    IntentContext context;
+    std::optional<IntentContext> context;
 };
 
 struct Intent
@@ -64,7 +64,7 @@ public:
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-    virtual Result<void> start(const std::string& intent,
+    virtual Result<void> start(const IntentData& intent,
                                std::optional<std::string> handlerAppId = std::nullopt) const = 0;
 
 }; // class IActions

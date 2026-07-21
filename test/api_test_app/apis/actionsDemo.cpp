@@ -50,14 +50,16 @@ void ActionsDemo::runOption(const std::string& method)
     }
     else if (method == "Actions.start")
     {
-        std::string intent = paramFromConsole("intent (JSON)", R"({"action":"pre-load","context":{"source":"system"}})");
+        std::string actionStr = paramFromConsole("action", "pre-load");
+        std::string sourceStr = paramFromConsole("context.source (leave empty to skip)", "system");
         std::string handlerAppIdStr = paramFromConsole("handlerAppId (leave empty to skip)", "");
         std::optional<std::string> handlerAppId;
         if (!handlerAppIdStr.empty())
-        {
             handlerAppId = handlerAppIdStr;
-        }
-        auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intent, handlerAppId);
+        Firebolt::Actions::IntentData intentData{actionStr};
+        if (!sourceStr.empty())
+            intentData.context = Firebolt::Actions::IntentContext{sourceStr};
+        auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intentData, handlerAppId);
         if (succeed(r))
         {
             std::cout << "Actions.start: Success" << std::endl;
@@ -68,8 +70,11 @@ void ActionsDemo::runOption(const std::string& method)
         auto callback = [&](const Intent& payload)
         {
             std::cout << "Intent received - action: " << payload.intent.action
-                      << ", source: " << payload.intent.context.source << ", intentId: " << payload.intentId
-                      << std::endl;
+                      << ", source: "
+                      << (payload.intent.context && payload.intent.context->source
+                              ? *payload.intent.context->source
+                              : "(none)")
+                      << ", intentId: " << payload.intentId << std::endl;
         };
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(std::move(callback));
         if (succeed(r))

@@ -37,7 +37,9 @@ TEST_F(ActionsGeneratedCTest, Intent)
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
     EXPECT_EQ(result->intent.action, "pre-load");
-    EXPECT_EQ(result->intent.context.source, "system");
+    ASSERT_TRUE(result->intent.context);
+    ASSERT_TRUE(result->intent.context->source);
+    EXPECT_EQ(*result->intent.context->source, "system");
     EXPECT_EQ(result->intentId, 0u);
 }
 
@@ -47,7 +49,9 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
         [&](const Firebolt::Actions::Intent& payload)
         {
             EXPECT_EQ(payload.intent.action, "pre-load");
-            EXPECT_EQ(payload.intent.context.source, "system");
+            ASSERT_TRUE(payload.intent.context);
+            ASSERT_TRUE(payload.intent.context->source);
+            EXPECT_EQ(*payload.intent.context->source, "system");
             EXPECT_EQ(payload.intentId, 0u);
             {
                 std::lock_guard<std::mutex> lock(mtx);
@@ -69,6 +73,6 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 TEST_F(ActionsGeneratedCTest, Start)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(
-        R"({"action":"pre-load","context":{"source":"system"}})");
+        Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
     ASSERT_TRUE(result) << toError(result);
 }

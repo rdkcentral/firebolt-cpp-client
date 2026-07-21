@@ -38,7 +38,9 @@ TEST_F(ActionsUTest, Intent)
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
     EXPECT_EQ(result->intent.action, "pre-load");
-    EXPECT_EQ(result->intent.context.source, "system");
+    ASSERT_TRUE(result->intent.context);
+    ASSERT_TRUE(result->intent.context->source);
+    EXPECT_EQ(*result->intent.context->source, "system");
     EXPECT_EQ(result->intentId, 0u);
 }
 
@@ -64,20 +66,7 @@ TEST_F(ActionsUTest, Start)
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.start(R"({"action":"pre-load","context":{"source":"system"}})");
+    auto result = actionsImpl_.start(
+        Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
-}
-
-TEST_F(ActionsUTest, StartInvalidJson)
-{
-    auto result = actionsImpl_.start("not-valid-json");
-    ASSERT_FALSE(result) << "ActionsImpl::start() should fail for invalid JSON";
-    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
-}
-
-TEST_F(ActionsUTest, StartNonObjectJson)
-{
-    auto result = actionsImpl_.start(R"([1,2,3])");
-    ASSERT_FALSE(result) << "ActionsImpl::start() should fail for non-object JSON";
-    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

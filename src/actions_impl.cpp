@@ -42,21 +42,13 @@ Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const I
     return subscriptionManager_.subscribe<JsonData::JsonValue>("Actions.onIntent", std::move(notification));
 }
 
-Result<void> ActionsImpl::start(const std::string& intent, std::optional<std::string> handlerAppId) const
+Result<void> ActionsImpl::start(const IntentData& intent, std::optional<std::string> handlerAppId) const
 {
     nlohmann::json params;
-    try
+    params["intent"]["action"] = intent.action;
+    if (intent.context && intent.context->source)
     {
-        auto parsedIntent = nlohmann::json::parse(intent);
-        if (!parsedIntent.is_object())
-        {
-            return Firebolt::Result<void>{Firebolt::Error::InvalidParams};
-        }
-        params["intent"] = std::move(parsedIntent);
-    }
-    catch (const nlohmann::json::parse_error&)
-    {
-        return Firebolt::Result<void>{Firebolt::Error::InvalidParams};
+        params["intent"]["context"]["source"] = *intent.context->source;
     }
     if (handlerAppId)
     {

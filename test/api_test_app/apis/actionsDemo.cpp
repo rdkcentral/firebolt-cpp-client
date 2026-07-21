@@ -44,7 +44,8 @@ void ActionsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
         if (succeed(r))
         {
-            std::cout << "Current Intent - action: " << r->intent.action << ", source: " << r->intent.context.source
+            std::cout << "Current Intent - action: " << r->intent.action
+                      << ", source: " << (r->intent.context && r->intent.context->source ? *r->intent.context->source : "(none)")
                       << ", intentId: " << r->intentId << std::endl;
         }
     }

@@ -17,6 +17,7 @@
  */
 
 #include "accessibilityDemo.h"
+#include "actionsDemo.h"
 #include "advertisingDemo.h"
 #include "deviceDemo.h"
 #include "discoveryDemo.h"
@@ -157,6 +158,7 @@ int main(int argc, char** argv)
     std::vector<std::unique_ptr<DemoBase>> interfaces;
 
     interfaces.emplace_back(std::make_unique<AccessibilityDemo>());
+    interfaces.emplace_back(std::make_unique<ActionsDemo>());
     interfaces.emplace_back(std::make_unique<AdvertisingDemo>());
     interfaces.emplace_back(std::make_unique<DeviceDemo>());
     interfaces.emplace_back(std::make_unique<DiscoveryDemo>());

@@ -32,14 +32,29 @@ ActionsImpl::ActionsImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<std::string> ActionsImpl::intent() const
+Result<Intent> ActionsImpl::intent() const
 {
-    return helper_.get<JsonData::JsonString, std::string>("Actions.intent");
+    return helper_.get<JsonData::JsonValue, Intent>("Actions.intent");
 }
 
-Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const std::string&)>&& notification)
+Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const Intent&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::JsonString>("Actions.onIntent", std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::JsonValue>("Actions.onIntent", std::move(notification));
+}
+
+Result<void> ActionsImpl::start(const IntentData& intent, std::optional<std::string> handlerAppId) const
+{
+    nlohmann::json params;
+    params["intent"]["action"] = intent.action;
+    if (intent.context && intent.context->source)
+    {
+        params["intent"]["context"]["source"] = *intent.context->source;
+    }
+    if (handlerAppId)
+    {
+        params["handlerAppId"] = *handlerAppId;
+    }
+    return helper_.invoke("Actions.start", params);
 }
 
 Result<void> ActionsImpl::unsubscribe(SubscriptionId id)

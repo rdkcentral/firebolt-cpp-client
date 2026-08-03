@@ -19,17 +19,12 @@
 #pragma once
 
 #include "utils.h"
-#include <firebolt/lifecycle.h>
 #include <string>
 
-class LifecycleDemo : public DemoBase
+class ActionsDemo : public DemoBase
 {
 public:
-    LifecycleDemo();
-    ~LifecycleDemo() = default;
+    ActionsDemo();
+    ~ActionsDemo() = default;
     void runOption(const std::string& method) override;
-
-private:
-    Firebolt::Lifecycle::LifecycleState currentState_;
-    Firebolt::SubscriptionId lastSubscriptionId_{0};
 };

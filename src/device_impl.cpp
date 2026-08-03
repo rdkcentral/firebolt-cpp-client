@@ -71,4 +71,15 @@ void DeviceImpl::unsubscribeAll()
 {
     subscriptionManager_.unsubscribeAll();
 }
+
+Result<bool> DeviceImpl::dolbyAtmosExperienceAvailable() const
+{
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Device.dolbyAtmosExperienceAvailable");
+}
+
+Result<SubscriptionId> DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged",
+                                                                   std::move(notification));
+}
 } // namespace Firebolt::Device

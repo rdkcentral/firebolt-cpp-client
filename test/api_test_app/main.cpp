@@ -171,7 +171,29 @@ int main(int argc, char** argv)
     interfaces.emplace_back(std::make_unique<StatsDemo>());
     interfaces.emplace_back(std::make_unique<TextToSpeechDemo>());
 
-    if (!isatty(fileno(stdin)))
+    if (appConfig.autoRun)
+    {
+        int failures = 0;
+        for (auto& interface : interfaces)
+        {
+            std::cout << "Auto-running interface: " << interface->name() << std::endl;
+
+            for (auto& method : interface->methods())
+            {
+                std::cout << "Auto-running method: " << method << std::endl;
+                interface->runOption(method);
+            }
+            failures += interface->failureCount();
+        }
+        if (failures > 0)
+        {
+            std::cout << "FAILED: " << failures << " method(s) returned errors" << std::endl;
+            Firebolt::IFireboltAccessor::Instance().Disconnect();
+            return 1;
+        }
+        std::cout << "All methods succeeded" << std::endl;
+    }
+    else if (!isatty(fileno(stdin)))
     {
         appConfig.autoRun = true;
         std::string line;
@@ -197,19 +219,6 @@ int main(int argc, char** argv)
             if (!found)
             {
                 std::cout << "Method not found: " << line << std::endl;
-            }
-        }
-    }
-    else if (appConfig.autoRun)
-    {
-        for (auto& interface : interfaces)
-        {
-            std::cout << "Auto-running interface: " << interface->name() << std::endl;
-
-            for (auto& method : interface->methods())
-            {
-                std::cout << "Auto-running method: " << method << std::endl;
-                interface->runOption(method);
             }
         }
     }

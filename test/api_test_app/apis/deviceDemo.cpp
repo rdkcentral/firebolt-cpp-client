@@ -33,6 +33,7 @@ DeviceDemo::DeviceDemo()
 {
     methods_.push_back("Device.chipsetId");
     methods_.push_back("Device.deviceClass");
+    methods_.push_back("Device.dolbyAtmosExperienceAvailable");
     methods_.push_back("Device.hdr");
     methods_.push_back("Device.timeInActiveState");
     methods_.push_back("Device.uid");
@@ -91,6 +92,14 @@ void DeviceDemo::runOption(const std::string& method)
         if (succeed(r))
         {
             std::cout << "Device Uptime (seconds): " << *r << std::endl;
+        }
+    }
+    else if (method == "Device.dolbyAtmosExperienceAvailable")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().dolbyAtmosExperienceAvailable();
+        if (succeed(r))
+        {
+            std::cout << std::boolalpha << "Dolby Atmos Experience Available: " << *r << std::endl;
         }
     }
 }

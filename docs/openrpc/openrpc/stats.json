@@ -8,7 +8,7 @@
   "methods": [
     {
       "name": "memoryUsage",
-      "summary": "Returns information about container memory usage, in units of 1024 bytes.",
+      "summary": "Returns information about container memory usage in bytes.",
       "tags": [
         {
           "name": "capabilities",
@@ -32,10 +32,10 @@
             "name": "value",
             "description": "The memory usage information",
             "value": {
-              "userMemoryUsedKiB": 123456,
-              "userMemoryLimitKiB": 789012,
-              "gpuMemoryUsedKiB": 345678,
-              "gpuMemoryLimitKiB": 901234
+              "userMemoryUsed": 126418944,
+              "userMemoryLimit": 807948288,
+              "gpuMemoryUsed": 353974272,
+              "gpuMemoryLimit": 922863616
             }
           }
         }
@@ -49,28 +49,32 @@
         "type": "object",
         "description": "Describes current and maximum memory usage of the container.",
         "properties": {
-          "userMemoryUsedKiB": {
+          "userMemoryUsed": {
             "type": "integer",
-            "description": "User memory currently used in 1024 bytes."
+            "description": "User memory currently used, in bytes.",
+            "minimum": 0
           },
-          "userMemoryLimitKiB": {
+          "userMemoryLimit": {
             "type": "integer",
-            "description": "Maximum user memory available in 1024 bytes."
+            "description": "Maximum user memory available, in bytes.",
+            "minimum": 0
           },
-          "gpuMemoryUsedKiB": {
+          "gpuMemoryUsed": {
             "type": "integer",
-            "description": "GPU memory currently used in 1024 bytes."
+            "description": "GPU memory currently used, in bytes.",
+            "minimum": 0
           },
-          "gpuMemoryLimitKiB": {
+          "gpuMemoryLimit": {
             "type": "integer",
-            "description": "Maximum GPU memory available in 1024 bytes."
+            "description": "Maximum GPU memory available, in bytes.",
+            "minimum": 0
           }
         },
         "required": [
-          "userMemoryUsedKiB",
-          "userMemoryLimitKiB",
-          "gpuMemoryUsedKiB",
-          "gpuMemoryLimitKiB"
+          "userMemoryUsed",
+          "userMemoryLimit",
+          "gpuMemoryUsed",
+          "gpuMemoryLimit"
         ]
       }
     }

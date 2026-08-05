@@ -64,8 +64,7 @@ public:
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-    virtual Result<void> start(const IntentData& intent,
-                               std::optional<std::string> handlerAppId = std::nullopt) const = 0;
+    virtual Result<void> start(const IntentData& intent, std::optional<std::string> handlerAppId = std::nullopt) const = 0;
 
 }; // class IActions
 

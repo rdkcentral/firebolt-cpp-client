@@ -65,7 +65,7 @@ TEST_F(ActionsUTest, Start)
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.start(
-        Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
+    auto result =
+        actionsImpl_.start(Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }

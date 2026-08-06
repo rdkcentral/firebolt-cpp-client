@@ -44,8 +44,8 @@ void ActionsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
         if (succeed(r))
         {
-            std::cout << "Current Intent - action: " << r->intent.action
-                      << ", source: " << (r->intent.context && r->intent.context->source ? *r->intent.context->source : "(none)")
+            std::cout << "Current Intent - action: " << r->intent.action << ", source: "
+                      << (r->intent.context && r->intent.context->source ? *r->intent.context->source : "(none)")
                       << ", intentId: " << r->intentId << std::endl;
         }
     }
@@ -70,11 +70,9 @@ void ActionsDemo::runOption(const std::string& method)
     {
         auto callback = [&](const Intent& payload)
         {
-            std::cout << "Intent received - action: " << payload.intent.action
-                      << ", source: "
-                      << (payload.intent.context && payload.intent.context->source
-                              ? *payload.intent.context->source
-                              : "(none)")
+            std::cout << "Intent received - action: " << payload.intent.action << ", source: "
+                      << (payload.intent.context && payload.intent.context->source ? *payload.intent.context->source
+                                                                                   : "(none)")
                       << ", intentId: " << payload.intentId << std::endl;
         };
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(std::move(callback));

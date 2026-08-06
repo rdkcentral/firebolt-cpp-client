@@ -267,19 +267,28 @@ if [[ "$RUN_CLANG_TIDY" == true ]]; then
 
   clang_tidy_failed=0
   total_files=${#source_files[@]}
-  index=0
-  for f in "${source_files[@]}"; do
-    index=$((index + 1))
-    echo "[lint][clang-tidy] ${index}/${total_files}: $f"
-    clang_tidy_cmd=(clang-tidy -p "$BUILD_DIR")
-    if [[ "$APPLY_FIXES" == true ]]; then
-      clang_tidy_cmd+=("-fix")
-    fi
-    clang_tidy_cmd+=("$f")
-    if ! "${clang_tidy_cmd[@]}"; then
+  NPROC=$(nproc 2>/dev/null || echo 4)
+
+  if [[ "$APPLY_FIXES" == false ]] && command -v run-clang-tidy >/dev/null 2>&1; then
+    echo "[lint][clang-tidy] Running ${total_files} files in parallel (${NPROC} jobs)"
+    if ! run-clang-tidy -p "$BUILD_DIR" -j "$NPROC" "${source_files[@]}"; then
       clang_tidy_failed=1
     fi
-  done
+  else
+    index=0
+    for f in "${source_files[@]}"; do
+      index=$((index + 1))
+      echo "[lint][clang-tidy] ${index}/${total_files}: $f"
+      clang_tidy_cmd=(clang-tidy -p "$BUILD_DIR")
+      if [[ "$APPLY_FIXES" == true ]]; then
+        clang_tidy_cmd+=("-fix")
+      fi
+      clang_tidy_cmd+=("$f")
+      if ! "${clang_tidy_cmd[@]}"; then
+        clang_tidy_failed=1
+      fi
+    done
+  fi
 
   if [[ $clang_tidy_failed -ne 0 ]]; then
     echo "clang-tidy reported issues." >&2

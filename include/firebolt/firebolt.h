@@ -32,6 +32,7 @@
 #include "firebolt/presentation.h"
 #include "firebolt/stats.h"
 #include "firebolt/texttospeech.h"
+#include "firebolt/videooutput.h"
 #include <firebolt/config.h>
 #include <firebolt/types.h>
 #include <functional>
@@ -169,5 +170,7 @@ public:
      * @return Reference to Actions interface
      */
     virtual Actions::IActions& ActionsInterface() = 0;
+
+    virtual Videooutput::IVideooutput& VideooutputInterface() = 0;
 };
 } // namespace Firebolt

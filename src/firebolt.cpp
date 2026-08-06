@@ -31,6 +31,7 @@
 #include "presentation_impl.h"
 #include "stats_impl.h"
 #include "texttospeech_impl.h"
+#include "videooutput_impl.h"
 #include <firebolt/gateway.h>
 
 namespace Firebolt
@@ -51,7 +52,8 @@ public:
           network_(Firebolt::Helpers::GetHelperInstance()),
           presentation_(Firebolt::Helpers::GetHelperInstance()),
           stats_(Firebolt::Helpers::GetHelperInstance()),
-          textToSpeech_(Firebolt::Helpers::GetHelperInstance())
+          textToSpeech_(Firebolt::Helpers::GetHelperInstance()),
+          videooutput_(Firebolt::Helpers::GetHelperInstance())
     {
     }
 
@@ -86,6 +88,7 @@ public:
     Stats::IStats& StatsInterface() override { return stats_; }
     TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
     Actions::IActions& ActionsInterface() override { return actions_; }
+    Videooutput::IVideooutput& VideooutputInterface() override { return videooutput_; }
 
 private:
     void unsubscribeAll()
@@ -97,6 +100,7 @@ private:
         network_.unsubscribeAll();
         presentation_.unsubscribeAll();
         textToSpeech_.unsubscribeAll();
+        videooutput_.unsubscribeAll();
     }
 
 private:
@@ -113,6 +117,7 @@ private:
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;
     TextToSpeech::TextToSpeechImpl textToSpeech_;
+    Videooutput::VideooutputImpl videooutput_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

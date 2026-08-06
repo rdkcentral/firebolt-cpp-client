@@ -31,132 +31,132 @@ namespace Firebolt::VideoOutput
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(CecStateValue, {
-                                                {CecStateValue::Active, "ACTIVE"},
-                                                {CecStateValue::Inactive, "INACTIVE"},
-                                                {CecStateValue::Unsupported, "UNSUPPORTED"},
+                                                {CecStateValue::Active, "active"},
+                                                {CecStateValue::Inactive, "inactive"},
+                                                {CecStateValue::Unsupported, "unsupported"},
                                             })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(ColorDepthValue, {
-                                                  {ColorDepthValue::D0, "D0"},
-                                                  {ColorDepthValue::D10, "D10"},
-                                                  {ColorDepthValue::D12, "D12"},
-                                                  {ColorDepthValue::D8, "D8"},
+                                                  {ColorDepthValue::D0, "0"},
+                                                  {ColorDepthValue::D10, "10"},
+                                                  {ColorDepthValue::D12, "12"},
+                                                  {ColorDepthValue::D8, "8"},
                                               })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(ColorFormatValue, {
-                                                   {ColorFormatValue::None, "NONE"},
-                                                   {ColorFormatValue::Rgb444, "RGB444"},
-                                                   {ColorFormatValue::Ycbcr420, "YCBCR420"},
-                                                   {ColorFormatValue::Ycbcr422, "YCBCR422"},
-                                                   {ColorFormatValue::Ycbcr444, "YCBCR444"},
+                                                   {ColorFormatValue::None, "none"},
+                                                   {ColorFormatValue::Rgb444, "rgb444"},
+                                                   {ColorFormatValue::Ycbcr420, "ycbcr420"},
+                                                   {ColorFormatValue::Ycbcr422, "ycbcr422"},
+                                                   {ColorFormatValue::Ycbcr444, "ycbcr444"},
                                                })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(DynamicRangeValue, {
-                                                    {DynamicRangeValue::DolbyVision, "DOLBY_VISION"},
-                                                    {DynamicRangeValue::Hdr10, "HDR10"},
-                                                    {DynamicRangeValue::Hdr10plus, "HDR10PLUS"},
-                                                    {DynamicRangeValue::Hlg, "HLG"},
-                                                    {DynamicRangeValue::None, "NONE"},
-                                                    {DynamicRangeValue::Sdr, "SDR"},
+                                                    {DynamicRangeValue::DolbyVision, "dolby_vision"},
+                                                    {DynamicRangeValue::Hdr10, "hdr10"},
+                                                    {DynamicRangeValue::Hdr10plus, "hdr10plus"},
+                                                    {DynamicRangeValue::Hlg, "hlg"},
+                                                    {DynamicRangeValue::None, "none"},
+                                                    {DynamicRangeValue::Sdr, "sdr"},
                                                 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(HdcpState, {
-                                            {HdcpState::Direct, "DIRECT"},
-                                            {HdcpState::Hdcp14, "HDCP14"},
-                                            {HdcpState::Hdcp22, "HDCP22"},
-                                            {HdcpState::None, "NONE"},
+                                            {HdcpState::Direct, "direct"},
+                                            {HdcpState::Hdcp14, "hdcp14"},
+                                            {HdcpState::Hdcp22, "hdcp22"},
+                                            {HdcpState::None, "none"},
                                         })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OutputColorimetry, {
-                                                    {OutputColorimetry::Bt2020rgb, "BT2020RGB"},
-                                                    {OutputColorimetry::Bt2020ycc, "BT2020YCC"},
-                                                    {OutputColorimetry::Bt709, "BT709"},
-                                                    {OutputColorimetry::None, "NONE"},
-                                                    {OutputColorimetry::Oprgb, "OPRGB"},
+                                                    {OutputColorimetry::Bt2020rgb, "bt2020rgb"},
+                                                    {OutputColorimetry::Bt2020ycc, "bt2020ycc"},
+                                                    {OutputColorimetry::Bt709, "bt709"},
+                                                    {OutputColorimetry::None, "none"},
+                                                    {OutputColorimetry::Oprgb, "oprgb"},
                                                 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(QuantizationRangeValue, {
-                                                         {QuantizationRangeValue::Full, "FULL"},
-                                                         {QuantizationRangeValue::Limited, "LIMITED"},
-                                                         {QuantizationRangeValue::None, "NONE"},
+                                                         {QuantizationRangeValue::Full, "full"},
+                                                         {QuantizationRangeValue::Limited, "limited"},
+                                                         {QuantizationRangeValue::None, "none"},
                                                      })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(RefreshRateValue, {
-                                                   {RefreshRateValue::R0, "R0"},
-                                                   {RefreshRateValue::R23976, "R23_976"},
-                                                   {RefreshRateValue::R24, "R24"},
-                                                   {RefreshRateValue::R25, "R25"},
-                                                   {RefreshRateValue::R2997, "R29_97"},
-                                                   {RefreshRateValue::R30, "R30"},
-                                                   {RefreshRateValue::R50, "R50"},
-                                                   {RefreshRateValue::R5994, "R59_94"},
-                                                   {RefreshRateValue::R60, "R60"},
+                                                   {RefreshRateValue::R0, "0"},
+                                                   {RefreshRateValue::R23976, "23.976"},
+                                                   {RefreshRateValue::R24, "24"},
+                                                   {RefreshRateValue::R25, "25"},
+                                                   {RefreshRateValue::R2997, "29.97"},
+                                                   {RefreshRateValue::R30, "30"},
+                                                   {RefreshRateValue::R50, "50"},
+                                                   {RefreshRateValue::R5994, "59.94"},
+                                                   {RefreshRateValue::R60, "60"},
                                                })
 
 namespace JsonData
 {
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::CecStateValue> CecStateValueEnum({
-    {"ACTIVE", ::Firebolt::VideoOutput::CecStateValue::Active},
-    {"INACTIVE", ::Firebolt::VideoOutput::CecStateValue::Inactive},
-    {"UNSUPPORTED", ::Firebolt::VideoOutput::CecStateValue::Unsupported},
+    {"active", ::Firebolt::VideoOutput::CecStateValue::Active},
+    {"inactive", ::Firebolt::VideoOutput::CecStateValue::Inactive},
+    {"unsupported", ::Firebolt::VideoOutput::CecStateValue::Unsupported},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorDepthValue> ColorDepthValueEnum({
-    {"D0", ::Firebolt::VideoOutput::ColorDepthValue::D0},
-    {"D10", ::Firebolt::VideoOutput::ColorDepthValue::D10},
-    {"D12", ::Firebolt::VideoOutput::ColorDepthValue::D12},
-    {"D8", ::Firebolt::VideoOutput::ColorDepthValue::D8},
+    {"0", ::Firebolt::VideoOutput::ColorDepthValue::D0},
+    {"10", ::Firebolt::VideoOutput::ColorDepthValue::D10},
+    {"12", ::Firebolt::VideoOutput::ColorDepthValue::D12},
+    {"8", ::Firebolt::VideoOutput::ColorDepthValue::D8},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorFormatValue> ColorFormatValueEnum({
-    {"NONE", ::Firebolt::VideoOutput::ColorFormatValue::None},
-    {"RGB444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
-    {"YCBCR420", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr420},
-    {"YCBCR422", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr422},
-    {"YCBCR444", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr444},
+    {"none", ::Firebolt::VideoOutput::ColorFormatValue::None},
+    {"rgbb444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
+    {"ycbcr420", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr420},
+    {"ycbcr422", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr422},
+    {"ycbcr444", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr444},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::DynamicRangeValue> DynamicRangeValueEnum({
-    {"DOLBY_VISION", ::Firebolt::VideoOutput::DynamicRangeValue::DolbyVision},
-    {"HDR10", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10},
-    {"HDR10PLUS", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10plus},
-    {"HLG", ::Firebolt::VideoOutput::DynamicRangeValue::Hlg},
-    {"NONE", ::Firebolt::VideoOutput::DynamicRangeValue::None},
-    {"SDR", ::Firebolt::VideoOutput::DynamicRangeValue::Sdr},
+    {"dolbyVision", ::Firebolt::VideoOutput::DynamicRangeValue::DolbyVision},
+    {"hdr10", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10},
+    {"hdr10plus", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10plus},
+    {"hlg", ::Firebolt::VideoOutput::DynamicRangeValue::Hlg},
+    {"none", ::Firebolt::VideoOutput::DynamicRangeValue::None},
+    {"sdr", ::Firebolt::VideoOutput::DynamicRangeValue::Sdr},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::HdcpState> HdcpStateEnum({
-    {"DIRECT", ::Firebolt::VideoOutput::HdcpState::Direct},
-    {"HDCP14", ::Firebolt::VideoOutput::HdcpState::Hdcp14},
-    {"HDCP22", ::Firebolt::VideoOutput::HdcpState::Hdcp22},
-    {"NONE", ::Firebolt::VideoOutput::HdcpState::None},
+    {"direct", ::Firebolt::VideoOutput::HdcpState::Direct},
+    {"hdcp1.4", ::Firebolt::VideoOutput::HdcpState::Hdcp14},
+    {"hdcp2.2", ::Firebolt::VideoOutput::HdcpState::Hdcp22},
+    {"none", ::Firebolt::VideoOutput::HdcpState::None},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::OutputColorimetry> OutputColorimetryEnum({
-    {"BT2020RGB", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020rgb},
-    {"BT2020YCC", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020ycc},
-    {"BT709", ::Firebolt::VideoOutput::OutputColorimetry::Bt709},
-    {"NONE", ::Firebolt::VideoOutput::OutputColorimetry::None},
-    {"OPRGB", ::Firebolt::VideoOutput::OutputColorimetry::Oprgb},
+    {"bt2020rgb", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020rgb},
+    {"bt2020ycc", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020ycc},
+    {"bt709", ::Firebolt::VideoOutput::OutputColorimetry::Bt709},
+    {"none", ::Firebolt::VideoOutput::OutputColorimetry::None},
+    {"oprgb", ::Firebolt::VideoOutput::OutputColorimetry::Oprgb},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::QuantizationRangeValue> QuantizationRangeValueEnum({
-    {"FULL", ::Firebolt::VideoOutput::QuantizationRangeValue::Full},
-    {"LIMITED", ::Firebolt::VideoOutput::QuantizationRangeValue::Limited},
-    {"NONE", ::Firebolt::VideoOutput::QuantizationRangeValue::None},
+    {"full", ::Firebolt::VideoOutput::QuantizationRangeValue::Full},
+    {"limited", ::Firebolt::VideoOutput::QuantizationRangeValue::Limited},
+    {"none", ::Firebolt::VideoOutput::QuantizationRangeValue::None},
 });
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::RefreshRateValue> RefreshRateValueEnum({
-    {"R0", ::Firebolt::VideoOutput::RefreshRateValue::R0},
-    {"R23_976", ::Firebolt::VideoOutput::RefreshRateValue::R23976},
-    {"R24", ::Firebolt::VideoOutput::RefreshRateValue::R24},
-    {"R25", ::Firebolt::VideoOutput::RefreshRateValue::R25},
-    {"R29_97", ::Firebolt::VideoOutput::RefreshRateValue::R2997},
-    {"R30", ::Firebolt::VideoOutput::RefreshRateValue::R30},
-    {"R50", ::Firebolt::VideoOutput::RefreshRateValue::R50},
-    {"R59_94", ::Firebolt::VideoOutput::RefreshRateValue::R5994},
-    {"R60", ::Firebolt::VideoOutput::RefreshRateValue::R60},
+    {"0", ::Firebolt::VideoOutput::RefreshRateValue::R0},
+    {"23.976", ::Firebolt::VideoOutput::RefreshRateValue::R23976},
+    {"24", ::Firebolt::VideoOutput::RefreshRateValue::R24},
+    {"25", ::Firebolt::VideoOutput::RefreshRateValue::R25},
+    {"29.97", ::Firebolt::VideoOutput::RefreshRateValue::R2997},
+    {"30", ::Firebolt::VideoOutput::RefreshRateValue::R30},
+    {"50", ::Firebolt::VideoOutput::RefreshRateValue::R50},
+    {"59.94", ::Firebolt::VideoOutput::RefreshRateValue::R5994},
+    {"60", ::Firebolt::VideoOutput::RefreshRateValue::R60},
 });
 
 class VideoOutputResolution : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::VideoOutputResolution>

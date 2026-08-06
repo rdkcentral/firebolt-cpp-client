@@ -36,7 +36,7 @@ class DeviceClassJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Device:
 {
 public:
     void fromJson(const nlohmann::json& json) override { deviceClass_ = DeviceClassEnum.at(json); }
-    ::Firebolt::Device::DeviceClass value() const override { return deviceClass_; }
+    [[nodiscard]] ::Firebolt::Device::DeviceClass value() const override { return deviceClass_; }
 
 private:
     ::Firebolt::Device::DeviceClass deviceClass_;
@@ -56,7 +56,7 @@ public:
         hdrFormat_.dolbyVision = json["dolbyVision"].get<bool>();
         hdrFormat_.hlg = json["hlg"].get<bool>();
     }
-    ::Firebolt::Device::HDRFormat value() const override { return hdrFormat_; }
+    [[nodiscard]] ::Firebolt::Device::HDRFormat value() const override { return hdrFormat_; }
 
 private:
     ::Firebolt::Device::HDRFormat hdrFormat_;

@@ -21,7 +21,7 @@
 
 TEST(VideooutputGeneratedCTest, InterfaceSurfaceHasresolution)
 {
-    using Interface = Firebolt::Videooutput::IVideooutput;
+    using Interface = Firebolt::VideoOutput::IVideoOutput;
     auto ptr = &Interface::resolution;
     (void)ptr;
     SUCCEED();
@@ -29,7 +29,7 @@ TEST(VideooutputGeneratedCTest, InterfaceSurfaceHasresolution)
 
 TEST(VideooutputGeneratedCTest, InterfaceSurfaceHascolorDepth)
 {
-    using Interface = Firebolt::Videooutput::IVideooutput;
+    using Interface = Firebolt::VideoOutput::IVideoOutput;
     auto ptr = &Interface::colorDepth;
     (void)ptr;
     SUCCEED();

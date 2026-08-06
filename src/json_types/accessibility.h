@@ -36,7 +36,7 @@ public:
         enabled_ = json["enabled"].get<bool>();
         preferredLanguages_ = json["preferredLanguages"].get<std::vector<std::string>>();
     }
-    ::Firebolt::Accessibility::ClosedCaptionsSettings value() const override
+    [[nodiscard]] ::Firebolt::Accessibility::ClosedCaptionsSettings value() const override
     {
         return ::Firebolt::Accessibility::ClosedCaptionsSettings{enabled_, preferredLanguages_};
     }
@@ -59,7 +59,7 @@ public:
         rate_ = json["rate"].get<double>();
         navigationHints_ = json["navigationHints"].get<bool>();
     }
-    ::Firebolt::Accessibility::VoiceGuidanceSettings value() const override
+    [[nodiscard]] ::Firebolt::Accessibility::VoiceGuidanceSettings value() const override
     {
         return ::Firebolt::Accessibility::VoiceGuidanceSettings{enabled_, rate_, navigationHints_};
     }

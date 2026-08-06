@@ -69,7 +69,7 @@ TEST_F(DeviceCTest, TimeInActiveState)
     ASSERT_TRUE(result) << "DeviceImpl::timeInActiveState() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << '\n';
         return;
     }
     EXPECT_EQ(*result, expectedValue);
@@ -90,7 +90,7 @@ TEST_F(DeviceCTest, Uptime)
     ASSERT_TRUE(result) << "DeviceImpl::uptime() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << '\n';
         return;
     }
     EXPECT_EQ(*result, expectedValue);
@@ -101,7 +101,7 @@ TEST_F(DeviceCTest, SubscribeOnHdrChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnHdrChanged(
         [&](const Firebolt::Device::HDRFormat& value)
         {
-            std::cout << "[Subscription] Device HDR changed" << std::endl;
+            std::cout << "[Subscription] Device HDR changed" << '\n';
             EXPECT_EQ(value.hdr10, true);
             EXPECT_EQ(value.hdr10Plus, true);
             EXPECT_EQ(value.dolbyVision, true);
@@ -135,7 +135,7 @@ TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnDolbyAtmosExperienceAvailableChanged(
         [&](const bool& value)
         {
-            std::cout << "[Subscription] Device Dolby Atmos experience availability changed" << std::endl;
+            std::cout << "[Subscription] Device Dolby Atmos experience availability changed" << '\n';
             EXPECT_EQ(value, true);
             {
                 std::lock_guard<std::mutex> lock(mtx);

@@ -171,6 +171,6 @@ public:
      */
     virtual Actions::IActions& ActionsInterface() = 0;
 
-    virtual Videooutput::IVideooutput& VideooutputInterface() = 0;
+    virtual VideoOutput::IVideoOutput& VideoOutputInterface() = 0;
 };
 } // namespace Firebolt

@@ -32,19 +32,19 @@ public:
 
     ~DeviceImpl() override = default;
 
-    Result<std::string> chipsetId() const override;
-    Result<DeviceClass> deviceClass() const override;
-    Result<HDRFormat> hdr() const override;
-    Result<u_int32_t> timeInActiveState() const override;
-    Result<std::string> uid() const override;
-    Result<uint32_t> uptime() const override;
+    [[nodiscard]] Result<std::string> chipsetId() const override;
+    [[nodiscard]] Result<DeviceClass> deviceClass() const override;
+    [[nodiscard]] Result<HDRFormat> hdr() const override;
+    [[nodiscard]] Result<u_int32_t> timeInActiveState() const override;
+    [[nodiscard]] Result<std::string> uid() const override;
+    [[nodiscard]] Result<uint32_t> uptime() const override;
 
     Result<SubscriptionId> subscribeOnHdrChanged(std::function<void(const HDRFormat&)>&& notification) override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 
-    Result<bool> dolbyAtmosExperienceAvailable() const override;
+    [[nodiscard]] Result<bool> dolbyAtmosExperienceAvailable() const override;
     Result<SubscriptionId>
     subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
 

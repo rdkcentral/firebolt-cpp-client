@@ -24,7 +24,7 @@ class VideooutputGeneratedUTest : public ::testing::Test
 {
 protected:
     ::testing::NiceMock<MockHelper> mockHelper;
-    Firebolt::Videooutput::VideooutputImpl impl{mockHelper};
+    Firebolt::VideoOutput::VideoOutputImpl impl{mockHelper};
 };
 
 TEST_F(VideooutputGeneratedUTest, Constructs)
@@ -42,7 +42,7 @@ TEST_F(VideooutputGeneratedUTest, UnsubscribeForwardsToHelper)
 
 TEST_F(VideooutputGeneratedUTest, ForwardsresolutionTransportErrors)
 {
-    EXPECT_CALL(mockHelper, getJson("Videooutput.resolution", ::testing::_))
+    EXPECT_CALL(mockHelper, getJson("VideoOutput.resolution", ::testing::_))
         .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& /*params*/)
                                     { return Firebolt::Result<nlohmann::json>{Firebolt::Error::General}; }));
 
@@ -52,7 +52,7 @@ TEST_F(VideooutputGeneratedUTest, ForwardsresolutionTransportErrors)
 
 TEST_F(VideooutputGeneratedUTest, ForwardscolorDepthTransportErrors)
 {
-    EXPECT_CALL(mockHelper, getJson("Videooutput.colorDepth", ::testing::_))
+    EXPECT_CALL(mockHelper, getJson("VideoOutput.colorDepth", ::testing::_))
         .WillOnce(::testing::Invoke([](const std::string& /*method*/, const nlohmann::json& /*params*/)
                                     { return Firebolt::Result<nlohmann::json>{Firebolt::Error::General}; }));
 

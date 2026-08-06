@@ -28,10 +28,9 @@
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 
-namespace Firebolt::Actions
-{
 
-namespace JsonData
+
+namespace Firebolt::Actions::JsonData
 {
 
 // Deserialises the wire object {"intent":{"action":"...","context":{"source":"..."}},"intentId":N}
@@ -51,20 +50,21 @@ public:
         if (json["intent"].contains("context") && json["intent"]["context"].is_object())
         {
             IntentContext ctx;
-            if (json["intent"]["context"].contains("source"))
+            if (json["intent"]["context"].contains("source")) {
                 ctx.source = json["intent"]["context"]["source"].get<std::string>();
+}
             value_.intent.context = ctx;
         }
         value_.intentId = json["intentId"].get<uint32_t>();
     }
-    Intent value() const override { return value_; }
+    [[nodiscard]] Intent value() const override { return value_; }
 
 private:
     Intent value_;
 };
 
-} // namespace JsonData
+} // namespace Firebolt::Actions::JsonData
 
-} // namespace Firebolt::Actions
+
 
 #endif // FIREBOLT_ACTIONS_JSON_H

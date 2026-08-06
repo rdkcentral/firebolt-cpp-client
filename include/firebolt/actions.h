@@ -53,7 +53,7 @@ class IActions
 public:
     virtual ~IActions() = default;
 
-    virtual Result<Intent> intent() const = 0;
+    [[nodiscard]] virtual Result<Intent> intent() const = 0;
 
     virtual Result<SubscriptionId> subscribeOnIntent(std::function<void(const Intent&)>&& notification) = 0;
     virtual Result<SubscriptionId> subscribeOnIntentChanged(std::function<void(const Intent&)>&& notification)
@@ -64,7 +64,7 @@ public:
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-    virtual Result<void> start(const IntentData& intent, std::optional<std::string> handlerAppId = std::nullopt) const = 0;
+    [[nodiscard]] virtual Result<void> start(const IntentData& intent, std::optional<std::string> handlerAppId = std::nullopt) const = 0;
 
 }; // class IActions
 

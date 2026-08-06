@@ -27,7 +27,7 @@
 #include <nlohmann/json.hpp>
 #include <type_traits>
 
-namespace Firebolt::Videooutput
+namespace Firebolt::VideoOutput
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(CecStateValue, {
@@ -96,70 +96,70 @@ NLOHMANN_JSON_SERIALIZE_ENUM(RefreshRateValue, {
 namespace JsonData
 {
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::CecStateValue> CecStateValueEnum({
-    {"ACTIVE", ::Firebolt::Videooutput::CecStateValue::Active},
-    {"INACTIVE", ::Firebolt::Videooutput::CecStateValue::Inactive},
-    {"UNSUPPORTED", ::Firebolt::Videooutput::CecStateValue::Unsupported},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::CecStateValue> CecStateValueEnum({
+    {"ACTIVE", ::Firebolt::VideoOutput::CecStateValue::Active},
+    {"INACTIVE", ::Firebolt::VideoOutput::CecStateValue::Inactive},
+    {"UNSUPPORTED", ::Firebolt::VideoOutput::CecStateValue::Unsupported},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::ColorDepthValue> ColorDepthValueEnum({
-    {"D0", ::Firebolt::Videooutput::ColorDepthValue::D0},
-    {"D10", ::Firebolt::Videooutput::ColorDepthValue::D10},
-    {"D12", ::Firebolt::Videooutput::ColorDepthValue::D12},
-    {"D8", ::Firebolt::Videooutput::ColorDepthValue::D8},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorDepthValue> ColorDepthValueEnum({
+    {"D0", ::Firebolt::VideoOutput::ColorDepthValue::D0},
+    {"D10", ::Firebolt::VideoOutput::ColorDepthValue::D10},
+    {"D12", ::Firebolt::VideoOutput::ColorDepthValue::D12},
+    {"D8", ::Firebolt::VideoOutput::ColorDepthValue::D8},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::ColorFormatValue> ColorFormatValueEnum({
-    {"NONE", ::Firebolt::Videooutput::ColorFormatValue::None},
-    {"RGB444", ::Firebolt::Videooutput::ColorFormatValue::Rgb444},
-    {"YCBCR420", ::Firebolt::Videooutput::ColorFormatValue::Ycbcr420},
-    {"YCBCR422", ::Firebolt::Videooutput::ColorFormatValue::Ycbcr422},
-    {"YCBCR444", ::Firebolt::Videooutput::ColorFormatValue::Ycbcr444},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorFormatValue> ColorFormatValueEnum({
+    {"NONE", ::Firebolt::VideoOutput::ColorFormatValue::None},
+    {"RGB444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
+    {"YCBCR420", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr420},
+    {"YCBCR422", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr422},
+    {"YCBCR444", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr444},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::DynamicRangeValue> DynamicRangeValueEnum({
-    {"DOLBY_VISION", ::Firebolt::Videooutput::DynamicRangeValue::DolbyVision},
-    {"HDR10", ::Firebolt::Videooutput::DynamicRangeValue::Hdr10},
-    {"HDR10PLUS", ::Firebolt::Videooutput::DynamicRangeValue::Hdr10plus},
-    {"HLG", ::Firebolt::Videooutput::DynamicRangeValue::Hlg},
-    {"NONE", ::Firebolt::Videooutput::DynamicRangeValue::None},
-    {"SDR", ::Firebolt::Videooutput::DynamicRangeValue::Sdr},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::DynamicRangeValue> DynamicRangeValueEnum({
+    {"DOLBY_VISION", ::Firebolt::VideoOutput::DynamicRangeValue::DolbyVision},
+    {"HDR10", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10},
+    {"HDR10PLUS", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10plus},
+    {"HLG", ::Firebolt::VideoOutput::DynamicRangeValue::Hlg},
+    {"NONE", ::Firebolt::VideoOutput::DynamicRangeValue::None},
+    {"SDR", ::Firebolt::VideoOutput::DynamicRangeValue::Sdr},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::HdcpState> HdcpStateEnum({
-    {"DIRECT", ::Firebolt::Videooutput::HdcpState::Direct},
-    {"HDCP14", ::Firebolt::Videooutput::HdcpState::Hdcp14},
-    {"HDCP22", ::Firebolt::Videooutput::HdcpState::Hdcp22},
-    {"NONE", ::Firebolt::Videooutput::HdcpState::None},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::HdcpState> HdcpStateEnum({
+    {"DIRECT", ::Firebolt::VideoOutput::HdcpState::Direct},
+    {"HDCP14", ::Firebolt::VideoOutput::HdcpState::Hdcp14},
+    {"HDCP22", ::Firebolt::VideoOutput::HdcpState::Hdcp22},
+    {"NONE", ::Firebolt::VideoOutput::HdcpState::None},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::OutputColorimetry> OutputColorimetryEnum({
-    {"BT2020RGB", ::Firebolt::Videooutput::OutputColorimetry::Bt2020rgb},
-    {"BT2020YCC", ::Firebolt::Videooutput::OutputColorimetry::Bt2020ycc},
-    {"BT709", ::Firebolt::Videooutput::OutputColorimetry::Bt709},
-    {"NONE", ::Firebolt::Videooutput::OutputColorimetry::None},
-    {"OPRGB", ::Firebolt::Videooutput::OutputColorimetry::Oprgb},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::OutputColorimetry> OutputColorimetryEnum({
+    {"BT2020RGB", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020rgb},
+    {"BT2020YCC", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020ycc},
+    {"BT709", ::Firebolt::VideoOutput::OutputColorimetry::Bt709},
+    {"NONE", ::Firebolt::VideoOutput::OutputColorimetry::None},
+    {"OPRGB", ::Firebolt::VideoOutput::OutputColorimetry::Oprgb},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::QuantizationRangeValue> QuantizationRangeValueEnum({
-    {"FULL", ::Firebolt::Videooutput::QuantizationRangeValue::Full},
-    {"LIMITED", ::Firebolt::Videooutput::QuantizationRangeValue::Limited},
-    {"NONE", ::Firebolt::Videooutput::QuantizationRangeValue::None},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::QuantizationRangeValue> QuantizationRangeValueEnum({
+    {"FULL", ::Firebolt::VideoOutput::QuantizationRangeValue::Full},
+    {"LIMITED", ::Firebolt::VideoOutput::QuantizationRangeValue::Limited},
+    {"NONE", ::Firebolt::VideoOutput::QuantizationRangeValue::None},
 });
 
-inline const Firebolt::JSON::EnumType<::Firebolt::Videooutput::RefreshRateValue> RefreshRateValueEnum({
-    {"R0", ::Firebolt::Videooutput::RefreshRateValue::R0},
-    {"R23_976", ::Firebolt::Videooutput::RefreshRateValue::R23976},
-    {"R24", ::Firebolt::Videooutput::RefreshRateValue::R24},
-    {"R25", ::Firebolt::Videooutput::RefreshRateValue::R25},
-    {"R29_97", ::Firebolt::Videooutput::RefreshRateValue::R2997},
-    {"R30", ::Firebolt::Videooutput::RefreshRateValue::R30},
-    {"R50", ::Firebolt::Videooutput::RefreshRateValue::R50},
-    {"R59_94", ::Firebolt::Videooutput::RefreshRateValue::R5994},
-    {"R60", ::Firebolt::Videooutput::RefreshRateValue::R60},
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::RefreshRateValue> RefreshRateValueEnum({
+    {"R0", ::Firebolt::VideoOutput::RefreshRateValue::R0},
+    {"R23_976", ::Firebolt::VideoOutput::RefreshRateValue::R23976},
+    {"R24", ::Firebolt::VideoOutput::RefreshRateValue::R24},
+    {"R25", ::Firebolt::VideoOutput::RefreshRateValue::R25},
+    {"R29_97", ::Firebolt::VideoOutput::RefreshRateValue::R2997},
+    {"R30", ::Firebolt::VideoOutput::RefreshRateValue::R30},
+    {"R50", ::Firebolt::VideoOutput::RefreshRateValue::R50},
+    {"R59_94", ::Firebolt::VideoOutput::RefreshRateValue::R5994},
+    {"R60", ::Firebolt::VideoOutput::RefreshRateValue::R60},
 });
 
-class VideoOutputResolution : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Videooutput::VideoOutputResolution>
+class VideoOutputResolution : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::VideoOutputResolution>
 {
 public:
     void fromJson(const nlohmann::json& json) override
@@ -171,9 +171,9 @@ public:
         height_ = json["height"].get<uint32_t>();
         width_ = json["width"].get<uint32_t>();
     }
-    ::Firebolt::Videooutput::VideoOutputResolution value() const override
+    [[nodiscard]] ::Firebolt::VideoOutput::VideoOutputResolution value() const override
     {
-        return ::Firebolt::Videooutput::VideoOutputResolution{height_, width_};
+        return ::Firebolt::VideoOutput::VideoOutputResolution{height_, width_};
     }
 
 private:
@@ -190,6 +190,6 @@ inline void to_json(nlohmann::json& j, const VideoOutputResolution& v)
     j["width"] = v.width;
 }
 
-} // namespace Firebolt::Videooutput
+} // namespace Firebolt::VideoOutput
 
 #endif // FIREBOLT_VIDEOOUTPUT_JSON_H

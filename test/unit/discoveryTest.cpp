@@ -38,7 +38,7 @@ TEST_F(DiscoveryUTest, watched)
 {
     mock("Discovery.watched");
     std::string entityId = "content123";
-    std::optional<double> progress = 0.75f;
+    std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
@@ -53,7 +53,7 @@ TEST_F(DiscoveryUTest, watched_payload)
 {
     nlohmann::json expected;
     expected["entityId"] = "content123";
-    expected["progress"] = 0.75f;
+    expected["progress"] = 0.75F;
     expected["completed"] = true;
     expected["watchedOn"] = "2024-06-01T12:00:00Z";
     expected["agePolicy"] = "app:adult";
@@ -67,7 +67,7 @@ TEST_F(DiscoveryUTest, watched_payload)
                 return Firebolt::Result<nlohmann::json>{nlohmann::json(res)};
             }));
     std::string entityId = "content123";
-    std::optional<double> progress = 0.75f;
+    std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
@@ -80,7 +80,7 @@ TEST_F(DiscoveryUTest, watchedV2)
 {
     mockInvoke("Discovery.watched");
     std::string entityId = "content123";
-    std::optional<double> progress = 0.75f;
+    std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
@@ -92,7 +92,7 @@ TEST_F(DiscoveryUTest, watchedV2_payload)
 {
     nlohmann::json expected;
     expected["entityId"] = "content123";
-    expected["progress"] = 0.75f;
+    expected["progress"] = 0.75F;
     expected["completed"] = true;
     expected["watchedOn"] = "2024-06-01T12:00:00Z";
     expected["agePolicy"] = "app:adult";
@@ -105,7 +105,7 @@ TEST_F(DiscoveryUTest, watchedV2_payload)
                 return Firebolt::Result<void>{Firebolt::Error::None};
             }));
     std::string entityId = "content123";
-    std::optional<double> progress = 0.75f;
+    std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
     std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;

@@ -32,41 +32,41 @@ public:
 
     ~MetricsImpl() override = default;
 
-    Result<void> ready() const override;
-    Result<void> signIn() const override;
-    Result<void> signOut() const override;
-    Result<void> startContent(const std::optional<std::string>& entityId,
-                              const std::optional<Firebolt::AgePolicy> agePolicy) const override;
-    Result<void> stopContent(const std::optional<std::string>& entityId,
-                             const std::optional<Firebolt::AgePolicy> agePolicy) const override;
-    Result<void> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> error(const ErrorType type, const std::string& code, const std::string& description,
-                       const bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
+    [[nodiscard]] Result<void> ready() const override;
+    [[nodiscard]] Result<void> signIn() const override;
+    [[nodiscard]] Result<void> signOut() const override;
+    [[nodiscard]] Result<void> startContent(const std::optional<std::string>& entityId,
+                              std::optional<Firebolt::AgePolicy> agePolicy) const override;
+    [[nodiscard]] Result<void> stopContent(const std::optional<std::string>& entityId,
+                             std::optional<Firebolt::AgePolicy> agePolicy) const override;
+    [[nodiscard]] Result<void> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
+    [[nodiscard]] Result<void> error(ErrorType type, const std::string& code, const std::string& description,
+                       bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
                        const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaLoadStart(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaLoadStart(const std::string& entityId,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaPlay(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaPlay(const std::string& entityId,
                            const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaPlaying(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaPlaying(const std::string& entityId,
                               const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaPause(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaPause(const std::string& entityId,
                             const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaWaiting(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaWaiting(const std::string& entityId,
                               const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaSeeking(const std::string& entityId, const double target,
+    [[nodiscard]] Result<void> mediaSeeking(const std::string& entityId, double target,
                               const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaSeeked(const std::string& entityId, const double position,
+    [[nodiscard]] Result<void> mediaSeeked(const std::string& entityId, double position,
                              const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaRateChanged(const std::string& entityId, const double rate,
+    [[nodiscard]] Result<void> mediaRateChanged(const std::string& entityId, double rate,
                                   const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaRenditionChanged(const std::string& entityId, const unsigned bitrate, const unsigned width,
-                                       const unsigned height, const std::optional<std::string>& profile,
+    [[nodiscard]] Result<void> mediaRenditionChanged(const std::string& entityId, unsigned bitrate, unsigned width,
+                                       unsigned height, const std::optional<std::string>& profile,
                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> mediaEnded(const std::string& entityId,
+    [[nodiscard]] Result<void> mediaEnded(const std::string& entityId,
                             const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> event(const std::string& schema, const std::string& data,
+    [[nodiscard]] Result<void> event(const std::string& schema, const std::string& data,
                        const std::optional<Firebolt::AgePolicy>& agePolicy) const override;
-    Result<void> appInfo(const std::string& build) const override;
+    [[nodiscard]] Result<void> appInfo(const std::string& build) const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

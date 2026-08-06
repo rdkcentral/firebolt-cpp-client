@@ -25,40 +25,41 @@
 #include "firebolt/videooutput.h"
 #include <firebolt/helpers.h>
 
-namespace Firebolt::Videooutput
+namespace Firebolt::VideoOutput
 {
 
-class VideooutputImpl : public IVideooutput
+class VideoOutputImpl : public IVideoOutput
 {
 public:
-    explicit VideooutputImpl(Firebolt::Helpers::IHelper& helper);
-    VideooutputImpl(const VideooutputImpl&) = delete;
-    VideooutputImpl& operator=(const VideooutputImpl&) = delete;
-    ~VideooutputImpl() override = default;
-
-    Result<VideoOutputResolution> resolution() const override;
+    explicit VideoOutputImpl(Firebolt::Helpers::IHelper& helper);
+    VideoOutputImpl(const VideoOutputImpl&) = delete;
+    VideoOutputImpl& operator=(const VideoOutputImpl&) = delete;
+    ~VideoOutputImpl() override = default;
+    VideoOutputImpl(VideoOutputImpl&&) = delete;
+    VideoOutputImpl& operator=(VideoOutputImpl&&) = delete;
+    [[nodiscard]] Result<VideoOutputResolution> resolution() const override;
     Result<SubscriptionId>
     subscribeOnResolutionChanged(std::function<void(const VideoOutputResolution&)>&& notification) override;
 
-    Result<HdcpState> hdcp() const override;
+    [[nodiscard]] Result<HdcpState> hdcp() const override;
     Result<SubscriptionId> subscribeOnHdcpChanged(std::function<void(const HdcpState&)>&& notification) override;
 
-    Result<CecStateValue> cecState() const override;
+    [[nodiscard]] Result<CecStateValue> cecState() const override;
     Result<SubscriptionId> subscribeOnCecStateChanged(std::function<void(const CecStateValue&)>&& notification) override;
 
-    Result<RefreshRateValue> refreshRate() const override;
+    [[nodiscard]] Result<RefreshRateValue> refreshRate() const override;
     Result<SubscriptionId>
     subscribeOnRefreshRateChanged(std::function<void(const RefreshRateValue&)>&& notification) override;
 
-    Result<ColorDepthValue> colorDepth() const override;
+    [[nodiscard]] Result<ColorDepthValue> colorDepth() const override;
 
-    Result<ColorFormatValue> colorFormat() const override;
+    [[nodiscard]] Result<ColorFormatValue> colorFormat() const override;
 
-    Result<OutputColorimetry> colorimetry() const override;
+    [[nodiscard]] Result<OutputColorimetry> colorimetry() const override;
 
-    Result<DynamicRangeValue> dynamicRange() const override;
+    [[nodiscard]] Result<DynamicRangeValue> dynamicRange() const override;
 
-    Result<QuantizationRangeValue> quantizationRange() const override;
+    [[nodiscard]] Result<QuantizationRangeValue> quantizationRange() const override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
@@ -68,6 +69,6 @@ private:
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
 };
 
-} // namespace Firebolt::Videooutput
+} // namespace Firebolt::VideoOutput
 
 #endif // FIREBOLT_VIDEOOUTPUT_IMPL_H

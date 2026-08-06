@@ -58,42 +58,42 @@ public:
      *
      * @retval The chipset id string or error
      */
-    virtual Result<std::string> chipsetId() const = 0;
+    [[nodiscard]] virtual Result<std::string> chipsetId() const = 0;
 
     /**
      * @brief Get the class of the device
      *
      * @retval The class property or error
      */
-    virtual Result<DeviceClass> deviceClass() const = 0;
+    [[nodiscard]] virtual Result<DeviceClass> deviceClass() const = 0;
 
     /**
      * @brief Returns the HDR standards that are supported by the attached TV or the integral display
      *
      * @retval The HDR format capabilities or error
      */
-    virtual Result<HDRFormat> hdr() const = 0;
+    [[nodiscard]] virtual Result<HDRFormat> hdr() const = 0;
 
     /**
      * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
      *
      * @retval The uptime in seconds or error
      */
-    virtual Result<uint32_t> timeInActiveState() const = 0;
+    [[nodiscard]] virtual Result<uint32_t> timeInActiveState() const = 0;
 
     /**
      * @brief Returns a persistent unique UUID for the current app and device.  The UUID is reset when the app or device is reset
      *
      * @retval The uid string or error
      */
-    virtual Result<std::string> uid() const = 0;
+    [[nodiscard]] virtual Result<std::string> uid() const = 0;
 
     /**
      * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
      *
      * @retval The uptime in seconds or error
      */
-    virtual Result<uint32_t> uptime() const = 0;
+    [[nodiscard]] virtual Result<uint32_t> uptime() const = 0;
 
     /**
      * @brief Subscribe to HDR format changes
@@ -122,7 +122,7 @@ public:
      *
      * @retval True if Dolby Atmos experience is available, or error
      */
-    virtual Result<bool> dolbyAtmosExperienceAvailable() const = 0;
+    [[nodiscard]] virtual Result<bool> dolbyAtmosExperienceAvailable() const = 0;
 
     /**
      * @brief Subscribe to Dolby Atmos experience availability changes

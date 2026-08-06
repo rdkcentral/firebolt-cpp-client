@@ -34,11 +34,11 @@ public:
 
     ~PresentationImpl() override = default;
 
-    Result<bool> focused() const override;
+    [[nodiscard]] Result<bool> focused() const override;
     Result<SubscriptionId> subscribeOnFocusedChanged(std::function<void(bool)>&& notification) override;
 
-    virtual Result<void> unsubscribe(SubscriptionId id) override;
-    virtual void unsubscribeAll() override;
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

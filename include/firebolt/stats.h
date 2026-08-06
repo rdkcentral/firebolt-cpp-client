@@ -40,7 +40,7 @@ public:
      *
      * @retval MemoryInfo struct or error
      */
-    virtual Result<MemoryInfo> memoryUsage() const = 0;
+    [[nodiscard]] virtual Result<MemoryInfo> memoryUsage() const = 0;
 };
 
 } // namespace Firebolt::Stats

@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-namespace Firebolt::Videooutput
+namespace Firebolt::VideoOutput
 {
 enum class CecStateValue
 {
@@ -107,39 +107,39 @@ struct VideoOutputResolution
     uint32_t width;
 };
 
-class IVideooutput
+class IVideoOutput
 {
 public:
-    virtual ~IVideooutput() = default;
+    virtual ~IVideoOutput() = default;
 
-    virtual Result<CecStateValue> cecState() const = 0;
+    [[nodiscard]] virtual Result<CecStateValue> cecState() const = 0;
     virtual Result<SubscriptionId> subscribeOnCecStateChanged(std::function<void(const CecStateValue&)>&& notification) = 0;
 
-    virtual Result<ColorDepthValue> colorDepth() const = 0;
+    [[nodiscard]] virtual Result<ColorDepthValue> colorDepth() const = 0;
 
-    virtual Result<ColorFormatValue> colorFormat() const = 0;
+    [[nodiscard]] virtual Result<ColorFormatValue> colorFormat() const = 0;
 
-    virtual Result<OutputColorimetry> colorimetry() const = 0;
+    [[nodiscard]] virtual Result<OutputColorimetry> colorimetry() const = 0;
 
-    virtual Result<DynamicRangeValue> dynamicRange() const = 0;
+    [[nodiscard]] virtual Result<DynamicRangeValue> dynamicRange() const = 0;
 
-    virtual Result<HdcpState> hdcp() const = 0;
+    [[nodiscard]] virtual Result<HdcpState> hdcp() const = 0;
     virtual Result<SubscriptionId> subscribeOnHdcpChanged(std::function<void(const HdcpState&)>&& notification) = 0;
 
-    virtual Result<QuantizationRangeValue> quantizationRange() const = 0;
+    [[nodiscard]] virtual Result<QuantizationRangeValue> quantizationRange() const = 0;
 
-    virtual Result<RefreshRateValue> refreshRate() const = 0;
+    [[nodiscard]] virtual Result<RefreshRateValue> refreshRate() const = 0;
     virtual Result<SubscriptionId>
     subscribeOnRefreshRateChanged(std::function<void(const RefreshRateValue&)>&& notification) = 0;
 
-    virtual Result<VideoOutputResolution> resolution() const = 0;
+    [[nodiscard]] virtual Result<VideoOutputResolution> resolution() const = 0;
     virtual Result<SubscriptionId>
     subscribeOnResolutionChanged(std::function<void(const VideoOutputResolution&)>&& notification) = 0;
 
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-}; // class IVideooutput
+}; // class IVideoOutput
 
 #ifndef FIREBOLT_NO_METHOD_AVAILABILITY
 
@@ -183,6 +183,6 @@ static constexpr std::array<MethodId, 9> allMethods = {
 
 #endif // FIREBOLT_NO_METHOD_AVAILABILITY
 
-} // namespace Firebolt::Videooutput
+} // namespace Firebolt::VideoOutput
 
 #endif // FIREBOLT_VIDEOOUTPUT_H

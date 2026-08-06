@@ -91,7 +91,7 @@ public:
      *
      * @retval The list of voices supported for the language
      */
-    virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
+    [[nodiscard]] virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
 
     /**
      * @brief Speak the uttered text using the TTS engine
@@ -100,7 +100,7 @@ public:
      *
      * @retval Result for Speak
      */
-    virtual Result<SpeechResponse> speak(const std::string& text) const = 0;
+    [[nodiscard]] virtual Result<SpeechResponse> speak(const std::string& text) const = 0;
 
     /**
      * @brief Pauses the speech for given speech id
@@ -109,7 +109,7 @@ public:
      *
      * @retval Result for Pause
      */
-    virtual Result<TTSStatusResponse> pause(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> pause(SpeechId speechId) const = 0;
 
     /**
      * @brief Resumes the speech for given speech id
@@ -118,7 +118,7 @@ public:
      *
      * @retval Result for Resume
      */
-    virtual Result<TTSStatusResponse> resume(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> resume(SpeechId speechId) const = 0;
 
     /**
      * @brief Cancels the speech for given speech id
@@ -127,7 +127,7 @@ public:
      *
      * @retval Result for cancel
      */
-    virtual Result<TTSStatusResponse> cancel(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> cancel(SpeechId speechId) const = 0;
 
     /**
      * @brief Returns the current state of the speech request.
@@ -136,7 +136,7 @@ public:
      *
      * @retval Result for speech state
      */
-    virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const = 0;
 
     /**
      * @brief Triggered when the text to speech conversion is about to start. It

@@ -60,7 +60,7 @@ public:
     FireboltAccessorImpl(const FireboltAccessorImpl&) = delete;
     FireboltAccessorImpl& operator=(const FireboltAccessorImpl&) = delete;
 
-    ~FireboltAccessorImpl() { unsubscribeAll(); }
+    ~FireboltAccessorImpl() override { unsubscribeAll(); }
 
     Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
     {
@@ -88,7 +88,7 @@ public:
     Stats::IStats& StatsInterface() override { return stats_; }
     TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
     Actions::IActions& ActionsInterface() override { return actions_; }
-    Videooutput::IVideooutput& VideooutputInterface() override { return videooutput_; }
+    VideoOutput::IVideoOutput& VideoOutputInterface() override { return videooutput_; }
 
 private:
     void unsubscribeAll()
@@ -103,7 +103,7 @@ private:
         videooutput_.unsubscribeAll();
     }
 
-private:
+
     Accessibility::AccessibilityImpl accessibility_;
     Advertising::AdvertisingImpl advertising_;
     Actions::ActionsImpl actions_;
@@ -117,7 +117,7 @@ private:
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;
     TextToSpeech::TextToSpeechImpl textToSpeech_;
-    Videooutput::VideooutputImpl videooutput_;
+    VideoOutput::VideoOutputImpl videooutput_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

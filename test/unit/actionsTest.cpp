@@ -32,7 +32,7 @@ TEST_F(ActionsUTest, Intent)
 {
     mock_with_response("Actions.intent",
                        nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}},
-                                       {"intentId", 0u}}));
+                                       {"intentId", 0U}}));
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
@@ -40,7 +40,7 @@ TEST_F(ActionsUTest, Intent)
     ASSERT_TRUE(result->intent.context);
     ASSERT_TRUE(result->intent.context->source);
     EXPECT_EQ(*result->intent.context->source, "system");
-    EXPECT_EQ(result->intentId, 0u);
+    EXPECT_EQ(result->intentId, 0U);
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)

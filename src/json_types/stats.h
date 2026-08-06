@@ -38,7 +38,7 @@ public:
         gpuMemoryUsed = json["gpuMemoryUsed"].get<uint64_t>();
         gpuMemoryLimit = json["gpuMemoryLimit"].get<uint64_t>();
     }
-    ::Firebolt::Stats::MemoryInfo value() const override
+    [[nodiscard]] ::Firebolt::Stats::MemoryInfo value() const override
     {
         return ::Firebolt::Stats::MemoryInfo{userMemoryUsed, userMemoryLimit, gpuMemoryUsed, gpuMemoryLimit};
     }

@@ -22,7 +22,7 @@
 #include "videooutput_impl.h"
 #include "json_types/videooutput.h"
 #include <nlohmann/json.hpp>
-#include <regex>
+
 
 namespace Firebolt::VideoOutput
 {

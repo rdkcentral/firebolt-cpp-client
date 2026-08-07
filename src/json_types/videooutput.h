@@ -25,7 +25,6 @@
 #include "firebolt/videooutput.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
-#include <type_traits>
 
 namespace Firebolt::VideoOutput
 {
@@ -52,7 +51,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ColorFormatValue, {
                                                })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(DynamicRangeValue, {
-                                                    {DynamicRangeValue::DolbyVision, "dolby_vision"},
+                                                    {DynamicRangeValue::DolbyVision, "dolbyVision"},
                                                     {DynamicRangeValue::Hdr10, "hdr10"},
                                                     {DynamicRangeValue::Hdr10plus, "hdr10plus"},
                                                     {DynamicRangeValue::Hlg, "hlg"},
@@ -62,8 +61,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DynamicRangeValue, {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(HdcpState, {
                                             {HdcpState::Direct, "direct"},
-                                            {HdcpState::Hdcp14, "hdcp14"},
-                                            {HdcpState::Hdcp22, "hdcp22"},
+                                            {HdcpState::Hdcp14, "hdcp1.4"},
+                                            {HdcpState::Hdcp22, "hdcp2.2"},
                                             {HdcpState::None, "none"},
                                         })
 
@@ -111,7 +110,7 @@ inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorDepthValue> 
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorFormatValue> ColorFormatValueEnum({
     {"none", ::Firebolt::VideoOutput::ColorFormatValue::None},
-    {"rgbb444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
+    {"rgb444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
     {"ycbcr420", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr420},
     {"ycbcr422", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr422},
     {"ycbcr444", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr444},

@@ -23,7 +23,6 @@
 #include "json_types/videooutput.h"
 #include <nlohmann/json.hpp>
 
-
 namespace Firebolt::VideoOutput
 {
 VideoOutputImpl::VideoOutputImpl(Firebolt::Helpers::IHelper& helper)

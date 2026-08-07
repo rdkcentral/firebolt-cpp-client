@@ -38,7 +38,10 @@ public:
         width_ = json["width"].get<uint32_t>();
         height_ = json["height"].get<uint32_t>();
     }
-    [[nodiscard]] ::Firebolt::Display::DisplaySize value() const override { return Firebolt::Display::DisplaySize{width_, height_}; }
+    [[nodiscard]] ::Firebolt::Display::DisplaySize value() const override
+    {
+        return Firebolt::Display::DisplaySize{width_, height_};
+    }
 
 private:
     uint32_t width_;

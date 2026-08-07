@@ -103,7 +103,6 @@ private:
         videooutput_.unsubscribeAll();
     }
 
-
     Accessibility::AccessibilityImpl accessibility_;
     Advertising::AdvertisingImpl advertising_;
     Actions::ActionsImpl actions_;

@@ -71,7 +71,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> startContent(const std::optional<std::string>& entityId,
-                                      std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
+                                                    std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
      * @brief Informs the platform that your user has stopped content
@@ -83,7 +83,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> stopContent(const std::optional<std::string>& entityId,
-                                     std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
+                                                   std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
      * @brief Informs the platform that your user has navigated to a page or view
@@ -94,7 +94,8 @@ public:
      *
      * @retval An ok Result on success, or an error; no value is returned
      */
-    [[nodiscard]] virtual Result<void> page(const std::string& pageId, const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+    [[nodiscard]] virtual Result<void> page(const std::string& pageId,
+                                            const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Informs the platform of an error that has occurred in your app
@@ -110,8 +111,9 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> error(ErrorType type, const std::string& code, const std::string& description,
-                               bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
-                               const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                             bool visible,
+                                             const std::optional<std::map<std::string, std::string>>& parameters,
+                                             const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when setting the URL of a media asset to play, in order to infer load time
@@ -123,7 +125,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaLoadStart(const std::string& entityId,
-                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when media playback actually starts due to autoplay, user-initiated play, unpausing, or recovering
@@ -136,7 +138,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaPlaying(const std::string& entityId,
-                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when media playback should start due to autoplay, user-initiated play, or unpausing
@@ -148,7 +150,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaPlay(const std::string& entityId,
-                                   const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when media playback will pause due to an intentional pause operation
@@ -160,7 +162,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaPause(const std::string& entityId,
-                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                  const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when media playback will halt due to a network, buffer, or other unintentional constraint
@@ -172,7 +174,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaWaiting(const std::string& entityId,
-                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when a seek is initiated during media playback
@@ -186,7 +188,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaSeeking(const std::string& entityId, double target,
-                                      const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when a seek is completed during media playback
@@ -201,7 +203,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaSeeked(const std::string& entityId, double position,
-                                     const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                   const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when the playback rate of media is changed
@@ -214,7 +216,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaRateChanged(const std::string& entityId, double rate,
-                                          const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when the rendition of media is changed, such as bitrate, dimensions, or profile
@@ -229,9 +231,10 @@ public:
      *
      * @retval An ok Result on success, or an error; no value is returned
      */
-    [[nodiscard]] virtual Result<void> mediaRenditionChanged(const std::string& entityId, unsigned bitrate, unsigned width,
-                                               unsigned height, const std::optional<std::string>& profile,
-                                               const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+    [[nodiscard]] virtual Result<void>
+    mediaRenditionChanged(const std::string& entityId, unsigned bitrate, unsigned width, unsigned height,
+                          const std::optional<std::string>& profile,
+                          const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called when playback has stopped because the end of the media was reached
@@ -243,7 +246,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> mediaEnded(const std::string& entityId,
-                                    const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                                  const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Called to inform the platform of 1st party distributor metrics
@@ -256,7 +259,7 @@ public:
      * @retval An ok Result on success, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> event(const std::string& schema, const std::string& data,
-                               const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
+                                             const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;
 
     /**
      * @brief Inform the platform about an app's build info

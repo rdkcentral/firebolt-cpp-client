@@ -49,7 +49,6 @@ public:
     void unsubscribeAll() override;
 
 private:
-
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
 

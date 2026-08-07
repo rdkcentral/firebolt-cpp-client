@@ -38,7 +38,10 @@ public:
         ifa_type = json["ifa_type"].get<std::string>();
         lmt = json["lmt"].get<std::string>();
     }
-    [[nodiscard]] ::Firebolt::Advertising::Ifa value() const override { return ::Firebolt::Advertising::Ifa{ifa, ifa_type, lmt}; }
+    [[nodiscard]] ::Firebolt::Advertising::Ifa value() const override
+    {
+        return ::Firebolt::Advertising::Ifa{ifa, ifa_type, lmt};
+    }
 
 private:
     std::string ifa;

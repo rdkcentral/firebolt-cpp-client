@@ -28,8 +28,6 @@
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 
-
-
 namespace Firebolt::Actions::JsonData
 {
 
@@ -50,9 +48,10 @@ public:
         if (json["intent"].contains("context") && json["intent"]["context"].is_object())
         {
             IntentContext ctx;
-            if (json["intent"]["context"].contains("source")) {
+            if (json["intent"]["context"].contains("source"))
+            {
                 ctx.source = json["intent"]["context"]["source"].get<std::string>();
-}
+            }
             value_.intent.context = ctx;
         }
         value_.intentId = json["intentId"].get<uint32_t>();
@@ -64,7 +63,5 @@ private:
 };
 
 } // namespace Firebolt::Actions::JsonData
-
-
 
 #endif // FIREBOLT_ACTIONS_JSON_H

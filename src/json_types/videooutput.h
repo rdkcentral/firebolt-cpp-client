@@ -26,7 +26,7 @@
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
 
-namespace Firebolt::VideoOutput
+namespace Firebolt::VideoOutput::JsonData
 {
 
 NLOHMANN_JSON_SERIALIZE_ENUM(CecStateValue, {
@@ -92,8 +92,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(RefreshRateValue, {
                                                    {RefreshRateValue::R60, "60"},
                                                })
 
-namespace JsonData
-{
 
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::CecStateValue> CecStateValueEnum({
     {"active", ::Firebolt::VideoOutput::CecStateValue::Active},
@@ -182,13 +180,13 @@ private:
 
 } // namespace JsonData
 
-inline void to_json(nlohmann::json& j, const VideoOutputResolution& v)
+inline void to_json(nlohmann::json& j, const Firebolt::VideoOutput::VideoOutputResolution& v)
 {
     j = nlohmann::json::object();
     j["height"] = v.height;
     j["width"] = v.width;
 }
 
-} // namespace Firebolt::VideoOutput
+ // namespace Firebolt::VideoOutput
 
 #endif // FIREBOLT_VIDEOOUTPUT_JSON_H

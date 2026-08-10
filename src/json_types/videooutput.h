@@ -92,7 +92,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(RefreshRateValue, {
                                                    {RefreshRateValue::R60, "60"},
                                                })
 
-
 inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::CecStateValue> CecStateValueEnum({
     {"active", ::Firebolt::VideoOutput::CecStateValue::Active},
     {"inactive", ::Firebolt::VideoOutput::CecStateValue::Inactive},
@@ -177,7 +176,6 @@ private:
     uint32_t height_{};
     uint32_t width_{};
 };
-
 } // namespace JsonData
 
 inline void to_json(nlohmann::json& j, const Firebolt::VideoOutput::VideoOutputResolution& v)
@@ -185,8 +183,6 @@ inline void to_json(nlohmann::json& j, const Firebolt::VideoOutput::VideoOutputR
     j = nlohmann::json::object();
     j["height"] = v.height;
     j["width"] = v.width;
-}
-
- // namespace Firebolt::VideoOutput
+} // namespace Firebolt::VideoOutput
 
 #endif // FIREBOLT_VIDEOOUTPUT_JSON_H

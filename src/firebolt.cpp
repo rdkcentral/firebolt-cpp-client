@@ -31,6 +31,7 @@
 #include "presentation_impl.h"
 #include "stats_impl.h"
 #include "texttospeech_impl.h"
+#include "videooutput_impl.h"
 #include <firebolt/gateway.h>
 
 namespace Firebolt
@@ -51,14 +52,15 @@ public:
           network_(Firebolt::Helpers::GetHelperInstance()),
           presentation_(Firebolt::Helpers::GetHelperInstance()),
           stats_(Firebolt::Helpers::GetHelperInstance()),
-          textToSpeech_(Firebolt::Helpers::GetHelperInstance())
+          textToSpeech_(Firebolt::Helpers::GetHelperInstance()),
+          videooutput_(Firebolt::Helpers::GetHelperInstance())
     {
     }
 
     FireboltAccessorImpl(const FireboltAccessorImpl&) = delete;
     FireboltAccessorImpl& operator=(const FireboltAccessorImpl&) = delete;
 
-    ~FireboltAccessorImpl() { unsubscribeAll(); }
+    ~FireboltAccessorImpl() override { unsubscribeAll(); }
 
     Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
     {
@@ -86,6 +88,7 @@ public:
     Stats::IStats& StatsInterface() override { return stats_; }
     TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
     Actions::IActions& ActionsInterface() override { return actions_; }
+    VideoOutput::IVideoOutput& VideoOutputInterface() override { return videooutput_; }
 
 private:
     void unsubscribeAll()
@@ -97,9 +100,9 @@ private:
         network_.unsubscribeAll();
         presentation_.unsubscribeAll();
         textToSpeech_.unsubscribeAll();
+        videooutput_.unsubscribeAll();
     }
 
-private:
     Accessibility::AccessibilityImpl accessibility_;
     Advertising::AdvertisingImpl advertising_;
     Actions::ActionsImpl actions_;
@@ -113,6 +116,7 @@ private:
     Presentation::PresentationImpl presentation_;
     Stats::StatsImpl stats_;
     TextToSpeech::TextToSpeechImpl textToSpeech_;
+    VideoOutput::VideoOutputImpl videooutput_;
 };
 
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()

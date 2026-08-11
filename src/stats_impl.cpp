@@ -31,7 +31,7 @@ StatsImpl::StatsImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-StatsImpl::~StatsImpl() {}
+StatsImpl::~StatsImpl() = default;
 
 Result<MemoryInfo> StatsImpl::memoryUsage() const
 {

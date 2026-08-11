@@ -45,9 +45,9 @@ public:
      *         Prefer watchedV2() for new integrations, which returns Result<void> and omits the
      *         redundant boolean payload.
      */
-    virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
-                                 std::optional<bool> completed, std::optional<std::string> watchedOn,
-                                 std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
+    [[nodiscard]] virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
+                                               std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                               std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 
     /**
      * @brief Notify the platform that content was partially or completely watched
@@ -62,8 +62,8 @@ public:
      *
      * @retval An ok Result on success, or an error; no value is returned
      */
-    virtual Result<void> watchedV2(const std::string& entityId, std::optional<double> progress,
-                                   std::optional<bool> completed, std::optional<std::string> watchedOn,
-                                   std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
+    [[nodiscard]] virtual Result<void> watchedV2(const std::string& entityId, std::optional<double> progress,
+                                                 std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                                 std::optional<Firebolt::AgePolicy> agePolicy) const = 0;
 };
 } // namespace Firebolt::Discovery

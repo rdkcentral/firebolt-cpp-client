@@ -22,14 +22,17 @@ Before running it, export `DEVICE_SSH_USER`, `DEVICE_SSH_HOST`, and `DEVICE_SSH_
 
 ## Lint
 
-Use `lint.sh` to run local static analysis for C/C++ sources.
+Use `lint.sh` to run the same clang-format lint that CI enforces.
+It checks tracked `*.cpp` and `*.h` files using:
+
+- `git ls-files -- '*.cpp' '*.h' | xargs clang-format --dry-run --Werror`
 
 Examples:
 
 - `./lint.sh`
-- `./lint.sh --tidy-only`
-- `./lint.sh --tidy-only --fix`
-- `./lint.sh --cppcheck-only`
+- `./lint.sh --fix`
+- `./lint.sh --local`
+- `SKIP_DOCKER=1 ./lint.sh`
 
 ## Coverity
 

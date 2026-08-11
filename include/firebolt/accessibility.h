@@ -49,7 +49,7 @@ public:
      *
      * @retval The audio description setting state or error
      */
-    virtual Result<bool> audioDescription() const = 0;
+    [[nodiscard]] virtual Result<bool> audioDescription() const = 0;
 
     /**
      * @brief Subscribe to audio description setting changes
@@ -63,7 +63,7 @@ public:
      *
      * @retval ClosedCaptionsSettings or error
      */
-    virtual Result<ClosedCaptionsSettings> closedCaptionsSettings() const = 0;
+    [[nodiscard]] virtual Result<ClosedCaptionsSettings> closedCaptionsSettings() const = 0;
 
     virtual Result<SubscriptionId>
     subscribeOnClosedCaptionsSettingsChanged(std::function<void(const ClosedCaptionsSettings&)>&& notification) = 0;
@@ -73,7 +73,7 @@ public:
      *
      * @retval The high contrast UI setting or error
      */
-    virtual Result<bool> highContrastUI() const = 0;
+    [[nodiscard]] virtual Result<bool> highContrastUI() const = 0;
 
     virtual Result<SubscriptionId> subscribeOnHighContrastUIChanged(std::function<void(bool)>&& notification) = 0;
 
@@ -81,7 +81,7 @@ public:
      * @brief Returns voice guidance settings: enabled, rate, and verbosity
      * @retval VoiceGuidanceSettings or error
      */
-    virtual Result<VoiceGuidanceSettings> voiceGuidanceSettings() const = 0;
+    [[nodiscard]] virtual Result<VoiceGuidanceSettings> voiceGuidanceSettings() const = 0;
 
     virtual Result<SubscriptionId>
     subscribeOnVoiceGuidanceSettingsChanged(std::function<void(const VoiceGuidanceSettings&)>&& notification) = 0;

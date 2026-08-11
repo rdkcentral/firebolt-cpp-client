@@ -33,10 +33,10 @@ public:
     ~LocalizationImpl() override = default;
 
     // Methods
-    Result<std::string> country() const override;
-    Result<std::vector<std::string>> preferredAudioLanguages() const override;
-    Result<std::string> presentationLanguage() const override;
-    Result<std::string> timeZone() const override;
+    [[nodiscard]] Result<std::string> country() const override;
+    [[nodiscard]] Result<std::vector<std::string>> preferredAudioLanguages() const override;
+    [[nodiscard]] Result<std::string> presentationLanguage() const override;
+    [[nodiscard]] Result<std::string> timeZone() const override;
 
     // Events
     Result<SubscriptionId> subscribeOnCountryChanged(std::function<void(const std::string&)>&& notification) override;

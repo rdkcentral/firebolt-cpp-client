@@ -1,5 +1,5 @@
 /**
- * Copyright 2025 Comcast Cable Communications Management, LLC
+ * Copyright 2026 Comcast Cable Communications Management, LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#pragma once
+#include "firebolt/videooutput.h"
+#include <gtest/gtest.h>
 
-#include <firebolt/types.h>
-
-namespace Firebolt::Stats
+TEST(VideooutputGeneratedCTest, InterfaceSurfaceHasresolution)
 {
-struct MemoryInfo
+    using Interface = Firebolt::VideoOutput::IVideoOutput;
+    auto ptr = &Interface::resolution;
+    (void)ptr;
+    SUCCEED();
+}
+
+TEST(VideooutputGeneratedCTest, InterfaceSurfaceHascolorDepth)
 {
-    uint64_t userMemoryUsed;
-    uint64_t userMemoryLimit;
-    uint64_t gpuMemoryUsed;
-    uint64_t gpuMemoryLimit;
-};
-
-class IStats
-{
-public:
-    virtual ~IStats() = default;
-
-    /**
-     * @brief Returns information about container memory usage in bytes.
-     *
-     * @retval MemoryInfo struct or error
-     */
-    [[nodiscard]] virtual Result<MemoryInfo> memoryUsage() const = 0;
-};
-
-} // namespace Firebolt::Stats
+    using Interface = Firebolt::VideoOutput::IVideoOutput;
+    auto ptr = &Interface::colorDepth;
+    (void)ptr;
+    SUCCEED();
+}

@@ -33,13 +33,13 @@ public:
 
     ~DiscoveryImpl() override = default;
 
-    Result<bool> watched(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
-                         std::optional<std::string> watchedOn,
-                         std::optional<Firebolt::AgePolicy> agePolicy) const override;
+    [[nodiscard]] Result<bool> watched(const std::string& entityId, std::optional<double> progress,
+                                       std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                       std::optional<Firebolt::AgePolicy> agePolicy) const override;
 
-    Result<void> watchedV2(const std::string& entityId, std::optional<double> progress, std::optional<bool> completed,
-                           std::optional<std::string> watchedOn,
-                           std::optional<Firebolt::AgePolicy> agePolicy) const override;
+    [[nodiscard]] Result<void> watchedV2(const std::string& entityId, std::optional<double> progress,
+                                         std::optional<bool> completed, std::optional<std::string> watchedOn,
+                                         std::optional<Firebolt::AgePolicy> agePolicy) const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

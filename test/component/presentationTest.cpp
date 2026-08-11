@@ -73,7 +73,7 @@ TEST_F(PresentationCTest, unsubscribeInCallback)
         Firebolt::IFireboltAccessor::Instance().PresentationInterface().subscribeOnFocusedChanged(
             [&](const bool& /* focus */)
             {
-                std::cout << "In the callback, unsubscribing from the event" << subscriptionId << std::endl;
+                std::cout << "In the callback, unsubscribing from the event" << subscriptionId << '\n';
                 auto result = Firebolt::IFireboltAccessor::Instance().PresentationInterface().unsubscribe(subscriptionId);
                 verifyUnsubscribeResult(result);
                 {

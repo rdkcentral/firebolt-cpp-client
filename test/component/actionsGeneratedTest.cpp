@@ -40,7 +40,7 @@ TEST_F(ActionsGeneratedCTest, Intent)
     ASSERT_TRUE(result->intent.context);
     ASSERT_TRUE(result->intent.context->source);
     EXPECT_EQ(*result->intent.context->source, "system");
-    EXPECT_EQ(result->intentId, 0u);
+    EXPECT_EQ(result->intentId, 0U);
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
@@ -52,7 +52,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
             ASSERT_TRUE(payload.intent.context);
             ASSERT_TRUE(payload.intent.context->source);
             EXPECT_EQ(*payload.intent.context->source, "system");
-            EXPECT_EQ(payload.intentId, 0u);
+            EXPECT_EQ(payload.intentId, 0U);
             {
                 std::lock_guard<std::mutex> lock(mtx);
                 eventReceived = true;

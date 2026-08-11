@@ -41,7 +41,7 @@ public:
      *
      * @retval The class property or error
      */
-    virtual Result<std::string> edid() const = 0;
+    [[nodiscard]] virtual Result<std::string> edid() const = 0;
 
     /**
      * @brief Returns the physical/native resolution of the connected or integral display, in pixels
@@ -56,7 +56,7 @@ public:
      *
      * @retval The display resolution (width and height in pixels) or error
      */
-    virtual Result<DisplaySize> maxResolution() const = 0;
+    [[nodiscard]] virtual Result<DisplaySize> maxResolution() const = 0;
 
     /**
      * @brief Returns the physical dimensions of the connected or integral display, in centimeters
@@ -71,7 +71,7 @@ public:
      *
      * @retval The class property or error
      */
-    virtual Result<DisplaySize> size() const = 0;
+    [[nodiscard]] virtual Result<DisplaySize> size() const = 0;
 };
 
 } // namespace Firebolt::Display

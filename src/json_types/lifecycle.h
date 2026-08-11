@@ -44,7 +44,7 @@ class LifecycleState : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Lifecycl
 {
 public:
     void fromJson(const nlohmann::json& json) override { state_ = LifecycleStateEnum.at(json.get<std::string>()); }
-    ::Firebolt::Lifecycle::LifecycleState value() const override { return state_; }
+    [[nodiscard]] ::Firebolt::Lifecycle::LifecycleState value() const override { return state_; }
 
 private:
     ::Firebolt::Lifecycle::LifecycleState state_;
@@ -62,7 +62,7 @@ public:
         oldState_ = LifecycleStateEnum.at(json["oldState"]);
         newState_ = LifecycleStateEnum.at(json["newState"]);
     }
-    ::Firebolt::Lifecycle::StateChange value() const override
+    [[nodiscard]] ::Firebolt::Lifecycle::StateChange value() const override
     {
         return ::Firebolt::Lifecycle::StateChange{oldState_, newState_};
     }

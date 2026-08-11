@@ -35,7 +35,7 @@ public:
      *
      * @retval The device country code or error
      */
-    virtual Result<std::string> country() const = 0;
+    [[nodiscard]] virtual Result<std::string> country() const = 0;
 
     /**
      * @brief A list of zero or more languages in order of decreasing preference.  Typically two languages are present.
@@ -43,21 +43,21 @@ public:
      *
      * @retval The preferred audio languages or error
      */
-    virtual Result<std::vector<std::string>> preferredAudioLanguages() const = 0;
+    [[nodiscard]] virtual Result<std::vector<std::string>> preferredAudioLanguages() const = 0;
 
     /**
      * @brief The presentation language of the device, in BCP 47, e.g. en-US
      *
      * @retval The preferred audio languages or error
      */
-    virtual Result<std::string> presentationLanguage() const = 0;
+    [[nodiscard]] virtual Result<std::string> presentationLanguage() const = 0;
 
     /**
      * @brief Get the IANA timezone of the device.
      *
      * @retval The device timezone or error
      */
-    virtual Result<std::string> timeZone() const = 0;
+    [[nodiscard]] virtual Result<std::string> timeZone() const = 0;
 
     /**
      * @brief Subscribe on the change of CountryChanged property

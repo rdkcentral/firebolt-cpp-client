@@ -19,77 +19,60 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_DIR="build-dev"
-NO_BUILD=false
-CLEAN=false
-RUN_CLANG_TIDY=true
-RUN_CPPCHECK=true
-APPLY_FIXES=false
-CLANG_TIDY_PATHS=(src include test/unit test/component)
+MODE="check"
+USE_DOCKER="auto"
+IMAGE="${LINT_DOCKER_IMAGE:-firebolt-cpp-client-fmt:local}"
 
 usage() {
   cat <<EOF
 Usage: ./lint.sh [options]
 
-Runs C/C++ static analysis for firebolt-cpp-client.
-Default behavior: build compile_commands.json via ./build.sh +tests, then run
-clang-tidy and cppcheck. Use ./fmt.sh for clang-format check/fix.
+Run the same formatting lint as CI for firebolt-cpp-client.
+
+CI check command mirrored by this script:
+  git ls-files -- '*.cpp' '*.h' | xargs clang-format --dry-run --Werror
 
 Options:
-  --clean           Remove build directory before building
-  --no-build        Skip build step and use existing compile database
-  --build-dir <dir> Build directory containing compile_commands.json (default: build-dev)
-  --tidy-path <p>   Add path for clang-tidy scan (repeatable)
-  --fix             Apply clang-tidy fix-its (clang-tidy only)
-  --tidy-only       Run clang-tidy only
-  --cppcheck-only   Run cppcheck only
-  --help            Show this help
+  --fix            Reformat files in place (same file set as CI)
+  --check          Explicitly run check mode (default)
+  --docker         Force Docker execution
+  --local          Force local clang-format execution
+  --image <name>   Docker image name (default: firebolt-cpp-client-fmt:local)
+  --help           Show this help
+
+Environment:
+  SKIP_DOCKER=1    Same as --local
 
 Examples:
   ./lint.sh
-  ./lint.sh --tidy-only
-  ./lint.sh --tidy-only --fix
-  ./lint.sh --tidy-path test/api_test_app
-  ./lint.sh --no-build --build-dir build-dev
+  ./lint.sh --fix
+  ./lint.sh --docker
+  SKIP_DOCKER=1 ./lint.sh
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --clean)
-      CLEAN=true
-      ;;
-    --no-build)
-      NO_BUILD=true
-      ;;
-    --build-dir)
-      if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
-        echo "Missing value for --build-dir" >&2
-        usage
-        exit 1
-      fi
-      BUILD_DIR="${2:-}"
-      shift
-      ;;
-    --tidy-path)
-      if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
-        echo "Missing value for --tidy-path" >&2
-        usage
-        exit 1
-      fi
-      CLANG_TIDY_PATHS+=("${2:-}")
-      shift
-      ;;
     --fix)
-      APPLY_FIXES=true
+      MODE="fix"
       ;;
-    --tidy-only)
-      RUN_CLANG_TIDY=true
-      RUN_CPPCHECK=false
+    --check)
+      MODE="check"
       ;;
-    --cppcheck-only)
-      RUN_CLANG_TIDY=false
-      RUN_CPPCHECK=true
+    --docker)
+      USE_DOCKER="true"
+      ;;
+    --local)
+      USE_DOCKER="false"
+      ;;
+    --image)
+      if [[ $# -lt 2 || -z "${2:-}" || "$2" == --* ]]; then
+        echo "Missing value for --image" >&2
+        usage
+        exit 1
+      fi
+      IMAGE="$2"
+      shift
       ;;
     --help|-h)
       usage
@@ -104,116 +87,55 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+if [[ "${SKIP_DOCKER:-0}" == "1" ]]; then
+  USE_DOCKER="false"
+elif [[ "$USE_DOCKER" == "auto" ]]; then
+  if command -v docker >/dev/null 2>&1; then
+    USE_DOCKER="true"
+  else
+    USE_DOCKER="false"
+  fi
+fi
+
 cd "$ROOT_DIR"
 
-if [[ "$RUN_CLANG_TIDY" == true && "$NO_BUILD" == false && "$BUILD_DIR" != "build-dev" ]]; then
-  echo "--build-dir is only supported with --no-build (build step always uses build-dev)." >&2
-  exit 1
-fi
+if [[ "$USE_DOCKER" == "true" ]]; then
+  if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+    echo "[lint] Building Docker image '$IMAGE' with clang-format (one-time)"
+    docker build -t "$IMAGE" - <<'DOCKERFILE'
+FROM ubuntu:24.04
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends clang-format git \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+DOCKERFILE
+  fi
 
-if [[ "$RUN_CLANG_TIDY" == false && "$RUN_CPPCHECK" == false ]]; then
-  echo "Nothing to run: clang-tidy and cppcheck are both disabled." >&2
-  exit 1
-fi
-
-if [[ "$APPLY_FIXES" == true && "$RUN_CLANG_TIDY" == false ]]; then
-  echo "--fix requires clang-tidy to be enabled (remove --cppcheck-only)." >&2
-  exit 1
-fi
-
-if [[ "$RUN_CLANG_TIDY" == true ]] && ! command -v clang-tidy >/dev/null 2>&1; then
-  echo "clang-tidy not found. Install it (e.g. apt install clang-tidy)." >&2
-  exit 1
-fi
-
-if [[ "$RUN_CPPCHECK" == true ]] && ! command -v cppcheck >/dev/null 2>&1; then
-  echo "cppcheck not found. Install it (e.g. apt install cppcheck)." >&2
-  exit 1
-fi
-
-if [[ "$CLEAN" == true ]]; then
-  rm -rf "$BUILD_DIR"
-fi
-
-if [[ "$NO_BUILD" == false && "$RUN_CLANG_TIDY" == true ]]; then
-  ./build.sh +tests
-fi
-
-if [[ "$RUN_CLANG_TIDY" == true && ! -f "$BUILD_DIR/compile_commands.json" ]]; then
-  echo "Missing $BUILD_DIR/compile_commands.json. Run ./build.sh +tests first." >&2
-  exit 1
-fi
-
-if [[ "$RUN_CLANG_TIDY" == true ]]; then
-  if [[ "$APPLY_FIXES" == true ]]; then
-    echo "[lint] Running clang-tidy with fixes enabled"
+  if [[ "$MODE" == "fix" ]]; then
+    echo "[lint] Running CI-equivalent clang-format file set in FIX mode via Docker"
+    docker run --rm --user "$(id -u):$(id -g)" -v "$ROOT_DIR:/workspace" "$IMAGE" \
+      bash -lc "set -e && git ls-files -- '*.cpp' '*.h' | xargs clang-format -i"
+    echo "[lint] Formatting fixes applied"
   else
-    echo "[lint] Running clang-tidy"
+    echo "[lint] Running CI-equivalent clang-format check via Docker"
+    docker run --rm --user "$(id -u):$(id -g)" -v "$ROOT_DIR:/workspace" "$IMAGE" \
+      bash -lc "set -e && git ls-files -- '*.cpp' '*.h' | xargs clang-format --dry-run --Werror"
+    echo "[lint] Formatting OK"
   fi
-
-  existing_paths=()
-  for p in "${CLANG_TIDY_PATHS[@]}"; do
-    if [[ -e "$p" ]]; then
-      existing_paths+=("$p")
-    fi
-  done
-
-  if [[ ${#existing_paths[@]} -eq 0 ]]; then
-    echo "No valid clang-tidy paths found." >&2
+else
+  if ! command -v clang-format >/dev/null 2>&1; then
+    echo "clang-format not found. Install it or run without SKIP_DOCKER=1." >&2
     exit 1
   fi
 
-  mapfile -t source_files < <(
-    find "${existing_paths[@]}" -type f \( -name "*.c" -o -name "*.cc" -o -name "*.cpp" -o -name "*.cxx" \) | sort
-  )
-
-  if [[ ${#source_files[@]} -eq 0 ]]; then
-    echo "No C/C++ source files found for clang-tidy." >&2
-    exit 1
-  fi
-
-  clang_tidy_failed=0
-  total_files=${#source_files[@]}
-  NPROC=$(nproc 2>/dev/null || echo 4)
-
-  if [[ "$APPLY_FIXES" == false ]] && command -v run-clang-tidy >/dev/null 2>&1; then
-    echo "[lint][clang-tidy] Running ${total_files} files in parallel (${NPROC} jobs)"
-    if ! run-clang-tidy -p "$BUILD_DIR" -j "$NPROC" "${source_files[@]}"; then
-      clang_tidy_failed=1
-    fi
+  echo "[lint] Using local clang-format: $(clang-format --version)"
+  if [[ "$MODE" == "fix" ]]; then
+    echo "[lint] Running CI-equivalent clang-format file set in FIX mode"
+    git ls-files -- '*.cpp' '*.h' | xargs clang-format -i
+    echo "[lint] Formatting fixes applied"
   else
-    index=0
-    for f in "${source_files[@]}"; do
-      index=$((index + 1))
-      echo "[lint][clang-tidy] ${index}/${total_files}: $f"
-      clang_tidy_cmd=(clang-tidy -p "$BUILD_DIR")
-      if [[ "$APPLY_FIXES" == true ]]; then
-        clang_tidy_cmd+=("-fix")
-      fi
-      clang_tidy_cmd+=("$f")
-      if ! "${clang_tidy_cmd[@]}"; then
-        clang_tidy_failed=1
-      fi
-    done
-  fi
-
-  if [[ $clang_tidy_failed -ne 0 ]]; then
-    echo "clang-tidy reported issues." >&2
-    exit 1
+    echo "[lint] Running CI-equivalent clang-format check"
+    git ls-files -- '*.cpp' '*.h' | xargs clang-format --dry-run --Werror
+    echo "[lint] Formatting OK"
   fi
 fi
-
-if [[ "$RUN_CPPCHECK" == true ]]; then
-  echo "[lint] Running cppcheck"
-  cppcheck \
-    --enable=warning,style,performance,portability \
-    --std=c++17 \
-    --language=c++ \
-    --inline-suppr \
-    --error-exitcode=1 \
-    -I include \
-    -I src \
-    src include test
-fi
-
-echo "[lint] Completed successfully"

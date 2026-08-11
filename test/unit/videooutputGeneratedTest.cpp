@@ -32,23 +32,23 @@ protected:
     void expectGetterResponse(const std::string& methodName, const nlohmann::json& response)
     {
         EXPECT_CALL(mockHelper, getJson(methodName, ::testing::_))
-            .WillOnce(::testing::Invoke([methodName, response](const std::string& /*method*/, const nlohmann::json& params)
-                                        {
-                                            EXPECT_TRUE(areGetterParamsEmpty(params))
-                                                << methodName << " getter should not send request params";
-                                            return Firebolt::Result<nlohmann::json>{response};
-                                        }));
+            .WillOnce(::testing::Invoke(
+                [methodName, response](const std::string& /*method*/, const nlohmann::json& params)
+                {
+                    EXPECT_TRUE(areGetterParamsEmpty(params)) << methodName << " getter should not send request params";
+                    return Firebolt::Result<nlohmann::json>{response};
+                }));
     }
 
     void expectGetterTransportError(const std::string& methodName, Firebolt::Error error = Firebolt::Error::General)
     {
         EXPECT_CALL(mockHelper, getJson(methodName, ::testing::_))
-            .WillOnce(::testing::Invoke([methodName, error](const std::string& /*method*/, const nlohmann::json& params)
-                                        {
-                                            EXPECT_TRUE(areGetterParamsEmpty(params))
-                                                << methodName << " getter should not send request params";
-                                            return Firebolt::Result<nlohmann::json>{error};
-                                        }));
+            .WillOnce(::testing::Invoke(
+                [methodName, error](const std::string& /*method*/, const nlohmann::json& params)
+                {
+                    EXPECT_TRUE(areGetterParamsEmpty(params)) << methodName << " getter should not send request params";
+                    return Firebolt::Result<nlohmann::json>{error};
+                }));
     }
 
     ::testing::NiceMock<MockHelper> mockHelper;
@@ -70,8 +70,7 @@ TEST_F(VideooutputGeneratedUTest, UnsubscribeForwardsToHelper)
 
 TEST_F(VideooutputGeneratedUTest, UnsubscribeForwardsHelperErrors)
 {
-    EXPECT_CALL(mockHelper, unsubscribe(42))
-        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
+    EXPECT_CALL(mockHelper, unsubscribe(42)).WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
 
     auto result = impl.unsubscribe(42);
     ASSERT_FALSE(result);
@@ -270,14 +269,14 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnResolutionChangedForwardsAndDispatc
     Firebolt::VideoOutput::VideoOutputResolution received{};
 
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke([&](void* owner, const std::string& eventName, std::any&& notification,
-                                        void (*callback)(void*, const nlohmann::json&))
-                                    {
-                                        Firebolt::Helpers::SubscriptionData data{owner, eventName,
-                                                                                 std::move(notification)};
-                                        callback(&data, nlohmann::json{{"height", 2160}, {"width", 3840}});
-                                        return Firebolt::Result<Firebolt::SubscriptionId>{99};
-                                    }));
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json{{"height", 2160}, {"width", 3840}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{99};
+            }));
 
     auto result = impl.subscribeOnResolutionChanged(
         [&](const Firebolt::VideoOutput::VideoOutputResolution& value)
@@ -298,17 +297,17 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnResolutionChangedSwallowsMalformedE
     bool notified = false;
 
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke([&](void* owner, const std::string& eventName, std::any&& notification,
-                                        void (*callback)(void*, const nlohmann::json&))
-                                    {
-                                        Firebolt::Helpers::SubscriptionData data{owner, eventName,
-                                                                                 std::move(notification)};
-                                        callback(&data, nlohmann::json{{"width", 3840}});
-                                        return Firebolt::Result<Firebolt::SubscriptionId>{5};
-                                    }));
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json{{"width", 3840}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{5};
+            }));
 
-    auto result = impl.subscribeOnResolutionChanged(
-        [&](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/) { notified = true; });
+    auto result = impl.subscribeOnResolutionChanged([&](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/)
+                                                    { notified = true; });
 
     ASSERT_TRUE(result);
     EXPECT_EQ(*result, 5U);
@@ -320,8 +319,7 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnResolutionChangedForwardsSubscribeE
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
         .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
 
-    auto result = impl.subscribeOnResolutionChanged(
-        [](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/) {});
+    auto result = impl.subscribeOnResolutionChanged([](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/) {});
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
@@ -333,15 +331,14 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnHdcpChangedForwardsAndDispatchesPar
     Firebolt::VideoOutput::HdcpState received = Firebolt::VideoOutput::HdcpState::None;
 
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onHdcpChanged", ::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke([&](void* owner, const std::string& eventName, std::any&& notification,
-                                        void (*callback)(void*, const nlohmann::json&))
-                                    {
-                                        Firebolt::Helpers::SubscriptionData data{owner, eventName,
-                                                                                 std::move(notification)};
-                                        callback(&data,
-                                                 nlohmann::json(static_cast<int>(Firebolt::VideoOutput::HdcpState::Direct)));
-                                        return Firebolt::Result<Firebolt::SubscriptionId>{11};
-                                    }));
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json(static_cast<int>(Firebolt::VideoOutput::HdcpState::Direct)));
+                return Firebolt::Result<Firebolt::SubscriptionId>{11};
+            }));
 
     auto result = impl.subscribeOnHdcpChanged(
         [&](const Firebolt::VideoOutput::HdcpState& value)
@@ -373,15 +370,14 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnCecStateChangedForwardsAndDispatche
     Firebolt::VideoOutput::CecStateValue received = Firebolt::VideoOutput::CecStateValue::Unsupported;
 
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onCecStateChanged", ::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke([&](void* owner, const std::string& eventName, std::any&& notification,
-                                        void (*callback)(void*, const nlohmann::json&))
-                                    {
-                                        Firebolt::Helpers::SubscriptionData data{owner, eventName,
-                                                                                 std::move(notification)};
-                                        callback(&data,
-                                                 nlohmann::json(static_cast<int>(Firebolt::VideoOutput::CecStateValue::Active)));
-                                        return Firebolt::Result<Firebolt::SubscriptionId>{12};
-                                    }));
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json(static_cast<int>(Firebolt::VideoOutput::CecStateValue::Active)));
+                return Firebolt::Result<Firebolt::SubscriptionId>{12};
+            }));
 
     auto result = impl.subscribeOnCecStateChanged(
         [&](const Firebolt::VideoOutput::CecStateValue& value)
@@ -413,15 +409,14 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedForwardsAndDispat
     Firebolt::VideoOutput::RefreshRateValue received = Firebolt::VideoOutput::RefreshRateValue::R0;
 
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
-        .WillOnce(::testing::Invoke([&](void* owner, const std::string& eventName, std::any&& notification,
-                                        void (*callback)(void*, const nlohmann::json&))
-                                    {
-                                        Firebolt::Helpers::SubscriptionData data{owner, eventName,
-                                                                                 std::move(notification)};
-                                        callback(&data,
-                                                 nlohmann::json(static_cast<int>(Firebolt::VideoOutput::RefreshRateValue::R24)));
-                                        return Firebolt::Result<Firebolt::SubscriptionId>{13};
-                                    }));
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json(static_cast<int>(Firebolt::VideoOutput::RefreshRateValue::R24)));
+                return Firebolt::Result<Firebolt::SubscriptionId>{13};
+            }));
 
     auto result = impl.subscribeOnRefreshRateChanged(
         [&](const Firebolt::VideoOutput::RefreshRateValue& value)
@@ -441,8 +436,7 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedForwardsSubscribe
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
         .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
 
-    auto result = impl.subscribeOnRefreshRateChanged(
-        [](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
+    auto result = impl.subscribeOnRefreshRateChanged([](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);

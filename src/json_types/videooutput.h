@@ -176,13 +176,13 @@ private:
     uint32_t height_{};
     uint32_t width_{};
 };
-} // namespace Firebolt::VideoOutput::JsonData
 
 inline void to_json(nlohmann::json& j, const Firebolt::VideoOutput::VideoOutputResolution& v)
 {
     j = nlohmann::json::object();
     j["height"] = v.height;
     j["width"] = v.width;
-} // namespace Firebolt::VideoOutput
+}
+} // namespace Firebolt::VideoOutput::JsonData
 
 #endif // FIREBOLT_VIDEOOUTPUT_JSON_H

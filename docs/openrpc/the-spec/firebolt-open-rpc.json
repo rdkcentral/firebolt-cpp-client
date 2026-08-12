@@ -2484,6 +2484,48 @@
 						"type": "string"
 					},
 					"required": true
+				},
+				{
+					"name": "callSign",
+					"summary": "Optional call sign for the app making the request",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "language",
+					"summary": "Optional language override as a BCP 47 locale tag",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "voice",
+					"summary": "Optional voice identifier",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "volume",
+					"summary": "Optional volume override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "rate",
+					"summary": "Optional speech rate override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "pitch",
+					"summary": "Optional pitch override",
+					"schema": {
+						"type": "string"
+					}
 				}
 			],
 			"tags": [
@@ -2511,6 +2553,30 @@
 						{
 							"name": "text",
 							"value": "I am a text waiting for speech."
+						},
+						{
+							"name": "callSign",
+							"value": "AppA"
+						},
+						{
+							"name": "language",
+							"value": "en-US"
+						},
+						{
+							"name": "voice",
+							"value": "female-1"
+						},
+						{
+							"name": "volume",
+							"value": "80"
+						},
+						{
+							"name": "rate",
+							"value": "normal"
+						},
+						{
+							"name": "pitch",
+							"value": "medium"
 						}
 					],
 					"result": {

@@ -44,7 +44,7 @@ Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, std::opt
     if (callSign)
     {
         params["callSign"] = *callSign;
-    } // or "callsign" if API expects lower-case
+    }
     if (language)
     {
         params["language"] = *language;

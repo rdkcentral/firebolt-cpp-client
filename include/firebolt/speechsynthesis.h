@@ -46,5 +46,7 @@ public:
     subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) = 0;
 
     [[nodiscard]] virtual Result<void> cancel(UtteranceId id) const = 0;
+    [[nodiscard]] virtual Result<void> pause(UtteranceId id) const = 0;
+    [[nodiscard]] virtual Result<void> resume(UtteranceId id) const = 0;
 };
 } // namespace Firebolt::SpeechSynthesis

@@ -81,4 +81,16 @@ Result<void> SpeechSynthesisImpl::cancel(UtteranceId id) const
     params["id"] = id;
     return helper_.invoke("SpeechSynthesis.cancel", params);
 }
+Result<void> SpeechSynthesisImpl::pause(UtteranceId id) const
+{
+    nlohmann::json params;
+    params["id"] = id;
+    return helper_.invoke("SpeechSynthesis.pause", params);
+}
+Result<void> SpeechSynthesisImpl::resume(UtteranceId id) const
+{
+    nlohmann::json params;
+    params["id"] = id;
+    return helper_.invoke("SpeechSynthesis.resume", params);
+}
 } // namespace Firebolt::SpeechSynthesis

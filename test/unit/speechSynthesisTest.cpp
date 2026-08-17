@@ -163,3 +163,48 @@ TEST_F(SpeechSynthesisUTest, cancel_invokeError)
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
 }
+
+TEST_F(SpeechSynthesisUTest, pause)
+{
+    nlohmann::json expectedParams;
+    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.pause", expectedParams))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    auto result = speechSynthesisImpl_.pause(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_TRUE(result);
+}
+
+TEST_F(SpeechSynthesisUTest, pause_invokeError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.pause", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
+
+    auto result = speechSynthesisImpl_.pause(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(SpeechSynthesisUTest, resume)
+{
+    nlohmann::json expectedParams;
+    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.resume", expectedParams))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    auto result = speechSynthesisImpl_.resume(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_TRUE(result);
+}
+// Removed duplicate pause test
+
+TEST_F(SpeechSynthesisUTest, resume_invokeError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.resume", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
+
+    auto result = speechSynthesisImpl_.resume(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}

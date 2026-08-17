@@ -44,6 +44,8 @@ public:
     subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) override;
 
     [[nodiscard]] Result<void> cancel(UtteranceId id) const override;
+    [[nodiscard]] Result<void> pause(UtteranceId id) const override;
+    [[nodiscard]] Result<void> resume(UtteranceId id) const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

@@ -29,3 +29,45 @@ TEST_F(SpeechSynthesisUTest, Constructs)
 {
     SUCCEED();
 }
+
+TEST_F(SpeechSynthesisUTest, speak)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<nlohmann::json>{42}; }));
+
+    auto result = speechSynthesisImpl_.speak("Hello from speech synthesis");
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 42U);
+}
+
+TEST_F(SpeechSynthesisUTest, speak_payloadIncludesOnlyProvidedOptionalFields)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                nlohmann::json expected;
+                expected["text"] = "payload";
+                expected["language"] = "en-US";
+                expected["pitch"] = "medium";
+                EXPECT_EQ(parameters, expected);
+                return Firebolt::Result<nlohmann::json>{7};
+            }));
+
+    auto result = speechSynthesisImpl_.speak("payload", std::nullopt, std::string("en-US"), std::nullopt, std::nullopt,
+                                             std::nullopt, std::string("medium"));
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 7U);
+}
+
+TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
+{
+    mock_with_response("SpeechSynthesis.speak", "not-a-number");
+
+    auto result = speechSynthesisImpl_.speak("Hello from speech synthesis");
+
+    ASSERT_FALSE(result);
+}

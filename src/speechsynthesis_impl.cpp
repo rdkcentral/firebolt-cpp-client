@@ -17,8 +17,8 @@
  */
 
 #include "speechsynthesis_impl.h"
-#include <firebolt/types.h>
 #include <firebolt/json_types.h>
+#include <firebolt/types.h>
 
 namespace Firebolt::SpeechSynthesis
 {
@@ -28,9 +28,9 @@ SpeechSynthesisImpl::SpeechSynthesisImpl(Firebolt::Helpers::IHelper& helper)
 }
 
 Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::optional<std::string> callSign,
-          std::optional<std::string> language, std::optional<std::string> voice,
-          std::optional<std::string> volume, std::optional<std::string> rate,
-          std::optional<std::string> pitch) const
+                                            std::optional<std::string> language, std::optional<std::string> voice,
+                                            std::optional<std::string> volume, std::optional<std::string> rate,
+                                            std::optional<std::string> pitch) const
 {
     nlohmann::json params;
     params["text"] = text;

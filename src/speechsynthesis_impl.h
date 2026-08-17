@@ -18,8 +18,8 @@
 
 #pragma once
 
-#include <firebolt/speechsynthesis.h>
 #include <firebolt/helpers.h>
+#include <firebolt/speechsynthesis.h>
 
 namespace Firebolt::SpeechSynthesis
 {
@@ -32,11 +32,12 @@ public:
 
     ~SpeechSynthesisImpl() override = default;
 
-
     [[nodiscard]] Result<unsigned> speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
-          std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
-          std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
-          std::optional<std::string> pitch = std::nullopt) const  override;
+                                         std::optional<std::string> language = std::nullopt,
+                                         std::optional<std::string> voice = std::nullopt,
+                                         std::optional<std::string> volume = std::nullopt,
+                                         std::optional<std::string> rate = std::nullopt,
+                                         std::optional<std::string> pitch = std::nullopt) const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

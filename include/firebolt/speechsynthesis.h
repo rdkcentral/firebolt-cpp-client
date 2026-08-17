@@ -30,6 +30,7 @@ struct Voice
     std::string lang;
     bool _default;
 };
+using UtteranceId = std::uint64_t;
 class ISpeechSynthesis
 {
 public:
@@ -43,5 +44,7 @@ public:
     [[nodiscard]] virtual Result<std::pmr::vector<Voice>> voices() const = 0;
     [[nodiscard]] virtual Result<SubscriptionId>
     subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) = 0;
+
+    [[nodiscard]] virtual Result<void> cancel(UtteranceId id) const = 0;
 };
 } // namespace Firebolt::SpeechSynthesis

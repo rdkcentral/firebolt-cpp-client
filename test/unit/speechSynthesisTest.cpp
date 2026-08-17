@@ -141,3 +141,25 @@ TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged_subscribeError)
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
 }
+
+TEST_F(SpeechSynthesisUTest, cancel)
+{
+    nlohmann::json expectedParams;
+    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.cancel", expectedParams))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    auto result = speechSynthesisImpl_.cancel(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_TRUE(result);
+}
+
+TEST_F(SpeechSynthesisUTest, cancel_invokeError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.cancel", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
+
+    auto result = speechSynthesisImpl_.cancel(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}

@@ -75,5 +75,10 @@ SpeechSynthesisImpl::subscribeOnVoicesChanged(std::function<void(const std::pmr:
     return subscriptionManager_.subscribe<JsonData::VoicesResponse>("SpeechSynthesis.onVoicesChanged",
                                                                     std::move(notification));
 }
-
+Result<void> SpeechSynthesisImpl::cancel(UtteranceId id) const
+{
+    nlohmann::json params;
+    params["id"] = id;
+    return helper_.invoke("SpeechSynthesis.cancel", params);
+}
 } // namespace Firebolt::SpeechSynthesis

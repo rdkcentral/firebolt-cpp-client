@@ -43,6 +43,8 @@ public:
     [[nodiscard]] Result<SubscriptionId>
     subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) override;
 
+    [[nodiscard]] Result<void> cancel(UtteranceId id) const override;
+
 private:
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;

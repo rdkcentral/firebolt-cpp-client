@@ -17,6 +17,7 @@
  */
 
 #include "speechsynthesis_impl.h"
+#include "json_types/speechsynthesis.h"
 #include <firebolt/json_types.h>
 #include <firebolt/types.h>
 
@@ -61,5 +62,9 @@ Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::option
     }
 
     return helper_.get<Firebolt::JSON::Unsigned, unsigned>("SpeechSynthesis.speak", params);
+}
+Result<std::pmr::vector<Voice>> SpeechSynthesisImpl::voices() const
+{
+    return helper_.get<JsonData::VoicesResponse, std::pmr::vector<Voice>>("SpeechSynthesis.voices");
 }
 } // namespace Firebolt::SpeechSynthesis

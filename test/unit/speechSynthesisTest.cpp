@@ -71,3 +71,51 @@ TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
 
     ASSERT_FALSE(result);
 }
+
+TEST_F(SpeechSynthesisUTest, voices)
+{
+    nlohmann::json response = nlohmann::json::array();
+    response.push_back({{"name", "Salli"}, {"lang", "en-US"}, {"default", true}});
+    response.push_back({{"name", "Arthur"}, {"lang", "en-GB"}, {"default", false}});
+    mock_with_response("SpeechSynthesis.voices", response);
+
+    auto result = speechSynthesisImpl_.voices();
+
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->size(), 2U);
+    EXPECT_EQ((*result)[0].name, "Salli");
+    EXPECT_EQ((*result)[0].lang, "en-US");
+    EXPECT_TRUE((*result)[0]._default);
+    EXPECT_EQ((*result)[1].name, "Arthur");
+    EXPECT_EQ((*result)[1].lang, "en-GB");
+    EXPECT_FALSE((*result)[1]._default);
+}
+
+TEST_F(SpeechSynthesisUTest, voices_payloadHasNoParameters)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.voices", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                EXPECT_TRUE(parameters.is_object());
+                EXPECT_TRUE(parameters.empty());
+                nlohmann::json response = nlohmann::json::array();
+                response.push_back({{"name", "Salli"}, {"lang", "en-US"}, {"default", true}});
+                return Firebolt::Result<nlohmann::json>{response};
+            }));
+
+    auto result = speechSynthesisImpl_.voices();
+
+    ASSERT_TRUE(result);
+    ASSERT_EQ(result->size(), 1U);
+}
+
+TEST_F(SpeechSynthesisUTest, voices_invalidResponse)
+{
+    nlohmann::json badResponse = {{"name", "not-an-array"}};
+    mock_with_response("SpeechSynthesis.voices", badResponse);
+
+    auto result = speechSynthesisImpl_.voices();
+
+    ASSERT_FALSE(result);
+}

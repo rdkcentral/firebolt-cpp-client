@@ -24,6 +24,12 @@
 #include <vector>
 namespace Firebolt::SpeechSynthesis
 {
+struct Voice
+{
+    std::string name;
+    std::string lang;
+    bool _default;
+};
 class ISpeechSynthesis
 {
 public:
@@ -34,5 +40,8 @@ public:
           std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
           std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
           std::optional<std::string> pitch = std::nullopt) const = 0;
+    [[nodiscard]] virtual Result<std::pmr::vector<Voice>> voices() const = 0;
+
+    //[[nodiscard]] virtual Result<SubscriptionId> subscribeOnVoicesChanged(std::function<void(bool)>&& notification) = 0;
 };
 } // namespace Firebolt::SpeechSynthesis

@@ -38,6 +38,7 @@ public:
                                          std::optional<std::string> volume = std::nullopt,
                                          std::optional<std::string> rate = std::nullopt,
                                          std::optional<std::string> pitch = std::nullopt) const override;
+    [[nodiscard]] Result<std::pmr::vector<Voice>> voices() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

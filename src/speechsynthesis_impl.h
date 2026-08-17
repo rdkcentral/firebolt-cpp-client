@@ -40,7 +40,11 @@ public:
                                          std::optional<std::string> pitch = std::nullopt) const override;
     [[nodiscard]] Result<std::pmr::vector<Voice>> voices() const override;
 
+    [[nodiscard]] Result<SubscriptionId>
+    subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) override;
+
 private:
     Firebolt::Helpers::IHelper& helper_;
+    Firebolt::Helpers::SubscriptionManager subscriptionManager_;
 };
 } // namespace Firebolt::SpeechSynthesis

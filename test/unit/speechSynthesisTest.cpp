@@ -119,3 +119,25 @@ TEST_F(SpeechSynthesisUTest, voices_invalidResponse)
 
     ASSERT_FALSE(result);
 }
+
+TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged)
+{
+    EXPECT_CALL(mockHelper, subscribe(_, "SpeechSynthesis.onVoicesChanged", _, _))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{1}));
+
+    auto result = speechSynthesisImpl_.subscribeOnVoicesChanged(
+        [](const std::pmr::vector<Firebolt::SpeechSynthesis::Voice>& /*voices*/) {});
+    ASSERT_TRUE(result) << "error on subscribe ";
+    EXPECT_TRUE(result.has_value()) << "error on id";
+}
+
+TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged_subscribeError)
+{
+    EXPECT_CALL(mockHelper, subscribe(_, "SpeechSynthesis.onVoicesChanged", _, _))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = speechSynthesisImpl_.subscribeOnVoicesChanged(
+        [](const std::pmr::vector<Firebolt::SpeechSynthesis::Voice>& /*voices*/) {});
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}

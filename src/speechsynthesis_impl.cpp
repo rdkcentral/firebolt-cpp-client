@@ -24,7 +24,8 @@
 namespace Firebolt::SpeechSynthesis
 {
 SpeechSynthesisImpl::SpeechSynthesisImpl(Firebolt::Helpers::IHelper& helper)
-    : helper_(helper)
+    : helper_(helper),
+      subscriptionManager_(helper, this)
 {
 }
 
@@ -67,4 +68,12 @@ Result<std::pmr::vector<Voice>> SpeechSynthesisImpl::voices() const
 {
     return helper_.get<JsonData::VoicesResponse, std::pmr::vector<Voice>>("SpeechSynthesis.voices");
 }
+
+Result<SubscriptionId>
+SpeechSynthesisImpl::subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::VoicesResponse>("SpeechSynthesis.onVoicesChanged",
+                                                                    std::move(notification));
+}
+
 } // namespace Firebolt::SpeechSynthesis

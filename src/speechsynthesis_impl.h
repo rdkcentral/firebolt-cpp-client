@@ -46,6 +46,8 @@ public:
     [[nodiscard]] Result<void> cancel(UtteranceId id) const override;
     [[nodiscard]] Result<void> pause(UtteranceId id) const override;
     [[nodiscard]] Result<void> resume(UtteranceId id) const override;
+    [[nodiscard]] Result<SubscriptionId>
+    subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification) override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

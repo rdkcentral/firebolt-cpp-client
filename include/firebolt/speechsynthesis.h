@@ -30,7 +30,28 @@ struct Voice
     std::string lang;
     bool _default;
 };
+
+enum class UtteranceEventEnum
+{
+    synthesisStarting,
+    playbackStarting,
+    paused,
+    resumed,
+    completed,
+    interrupted,
+    networkFailed,
+    synthesisFailed,
+    playbackFailed
+};
+
 using UtteranceId = std::uint64_t;
+
+struct UtteranceEvent
+{
+    UtteranceId id;
+    UtteranceEventEnum event;
+};
+
 class ISpeechSynthesis
 {
 public:
@@ -48,5 +69,7 @@ public:
     [[nodiscard]] virtual Result<void> cancel(UtteranceId id) const = 0;
     [[nodiscard]] virtual Result<void> pause(UtteranceId id) const = 0;
     [[nodiscard]] virtual Result<void> resume(UtteranceId id) const = 0;
+    [[nodiscard]] virtual Result<SubscriptionId>
+    subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification) = 0;
 };
 } // namespace Firebolt::SpeechSynthesis

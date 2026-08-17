@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/speechsynthesis.h"
 #include "mock_helper.h"
 #include "speechsynthesis_impl.h"
 
@@ -207,4 +208,46 @@ TEST_F(SpeechSynthesisUTest, resume_invokeError)
     auto result = speechSynthesisImpl_.resume(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(SpeechSynthesisUTest, subscribeOnUtteranceEvent)
+{
+    EXPECT_CALL(mockHelper, subscribe(_, "SpeechSynthesis.onUtteranceEvent", _, _))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{1}));
+
+    auto result = speechSynthesisImpl_.subscribeOnUtteranceEvent(
+        [](const Firebolt::SpeechSynthesis::UtteranceEvent& /*event*/) {});
+    ASSERT_TRUE(result) << "error on subscribe ";
+    EXPECT_TRUE(result.has_value()) << "error on id";
+}
+
+TEST_F(SpeechSynthesisUTest, subscribeOnUtteranceEvent_subscribeError)
+{
+    EXPECT_CALL(mockHelper, subscribe(_, "SpeechSynthesis.onUtteranceEvent", _, _))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = speechSynthesisImpl_.subscribeOnUtteranceEvent(
+        [](const Firebolt::SpeechSynthesis::UtteranceEvent& /*event*/) {});
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(SpeechSynthesisUTest, utteranceEventResponse_parsesValidPayload)
+{
+    Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse response;
+    nlohmann::json payload = {{"id", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)}, {"event", "resumed"}};
+
+    response.fromJson(payload);
+    auto value = response.value();
+
+    EXPECT_EQ(value.id, static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77));
+    EXPECT_EQ(value.event, Firebolt::SpeechSynthesis::UtteranceEventEnum::resumed);
+}
+
+TEST_F(SpeechSynthesisUTest, utteranceEventResponse_rejectsUnknownEvent)
+{
+    Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse response;
+    nlohmann::json payload = {{"id", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)}, {"event", "not-valid"}};
+
+    EXPECT_THROW(response.fromJson(payload), std::invalid_argument);
 }

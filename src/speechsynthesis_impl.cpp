@@ -93,4 +93,10 @@ Result<void> SpeechSynthesisImpl::resume(UtteranceId id) const
     params["id"] = id;
     return helper_.invoke("SpeechSynthesis.resume", params);
 }
+Result<SubscriptionId>
+SpeechSynthesisImpl::subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::UtteranceEventResponse>("SpeechSynthesis.onUtteranceEvent",
+                                                                            std::move(notification));
+}
 } // namespace Firebolt::SpeechSynthesis

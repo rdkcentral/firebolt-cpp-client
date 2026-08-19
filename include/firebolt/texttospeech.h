@@ -97,11 +97,20 @@ public:
      * @brief Speak the uttered text using the TTS engine
      *
      * @param[in] text : String to be converted to Audio for speech
+     * @param[in] callSign : Optional call sign for the app making the request
+     * @param[in] language : Optional language for the speech request
+     * @param[in] voice : Optional voice for the speech request
+     * @param[in] volume : Optional volume for the speech request
+     * @param[in] rate : Optional rate for the speech request
+     * @param[in] pitch : Optional pitch for the speech request
      *
      * @retval Result for Speak
      */
-    [[nodiscard]] virtual Result<SpeechResponse> speak(const std::string& text) const = 0;
-
+    [[nodiscard]] virtual Result<SpeechResponse>
+    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
+          std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
+          std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
+          std::optional<std::string> pitch = std::nullopt) const = 0;
     /**
      * @brief Pauses the speech for given speech id
      *

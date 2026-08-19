@@ -1,0 +1,9 @@
+{
+  "openrpc": "1.2.4",
+  "info": {
+    "title": "SpeechSynthesis",
+    "description": "Scaffold for the SpeechSynthesis Firebolt module.",
+    "version": "0.0.0"
+  },
+  "methods": []
+}

@@ -30,6 +30,7 @@
 #include "firebolt/metrics.h"
 #include "firebolt/network.h"
 #include "firebolt/presentation.h"
+#include "firebolt/speechsynthesis.h"
 #include "firebolt/stats.h"
 #include "firebolt/texttospeech.h"
 #include "firebolt/videooutput.h"
@@ -163,6 +164,13 @@ public:
      * @return Reference to TextToSpeech interface
      */
     virtual TextToSpeech::ITextToSpeech& TextToSpeechInterface() = 0;
+
+    /**
+     * @brief Returns instance of SpeechSynthesis interface
+     *
+     * @return Reference to SpeechSynthesis interface
+     */
+    virtual SpeechSynthesis::ISpeechSynthesis& SpeechSynthesisInterface() = 0;
 
     /**
      * @brief Returns instance of Actions interface

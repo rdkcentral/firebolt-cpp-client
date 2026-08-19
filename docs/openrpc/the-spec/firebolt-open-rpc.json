@@ -15,6 +15,7 @@
 			"Metrics": "Methods for sending metrics",
 			"Network": "Methods for accessing network information.",
 			"Presentation": "Methods for accessing Presentation preferences.",
+			"SpeechSynthesis": "A module for controlling speech synthesis over Firebolt.",
 			"Stats": "Provides methods to retrieve application-level system information.",
 			"TextToSpeech": "A module for controlling and accessing Text To Speech over Firebolt."
 		}
@@ -2846,6 +2847,373 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "SpeechSynthesis.speak",
+			"summary": "Speak an utterance.",
+			"params": [
+				{
+					"name": "text",
+					"schema": {
+						"type": "string"
+					},
+					"required": true
+				},
+				{
+					"name": "callSign",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "language",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "voice",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "volume",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "rate",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "pitch",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "utteranceId",
+				"schema": {
+					"type": "integer",
+					"minimum": 0
+				}
+			},
+			"examples": [
+				{
+					"name": "Speak text",
+					"params": [
+						{
+							"name": "text",
+							"value": "I am a text waiting for speech."
+						},
+						{
+							"name": "callSign",
+							"value": "AppA"
+						},
+						{
+							"name": "language",
+							"value": "en-US"
+						},
+						{
+							"name": "voice",
+							"value": "female-1"
+						},
+						{
+							"name": "volume",
+							"value": "80"
+						},
+						{
+							"name": "rate",
+							"value": "normal"
+						},
+						{
+							"name": "pitch",
+							"value": "medium"
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": 1
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.voices",
+			"summary": "Get available synthesis voices.",
+			"params": [],
+			"result": {
+				"name": "voices",
+				"schema": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"name",
+							"lang",
+							"default"
+						],
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"lang": {
+								"type": "string"
+							},
+							"default": {
+								"type": "boolean"
+							}
+						}
+					}
+				}
+			},
+			"examples": [
+				{
+					"name": "Get voices",
+					"params": [],
+					"result": {
+						"name": "result",
+						"value": [
+							{
+								"name": "Salli",
+								"lang": "en-US",
+								"default": true
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.cancel",
+			"summary": "Cancel an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Cancel utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.pause",
+			"summary": "Pause an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Pause utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.resume",
+			"summary": "Resume an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Resume utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.onVoicesChanged",
+			"summary": "Notification when available voices change.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "SpeechSynthesis.onVoicesChanged"
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default Example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"name",
+							"lang",
+							"default"
+						],
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"lang": {
+								"type": "string"
+							},
+							"default": {
+								"type": "boolean"
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "SpeechSynthesis.onUtteranceEvent",
+			"summary": "Notification for utterance lifecycle events.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "SpeechSynthesis.onUtteranceEvent"
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default Example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "object",
+					"required": [
+						"id",
+						"event"
+					],
+					"properties": {
+						"id": {
+							"type": "integer",
+							"minimum": 0
+						},
+						"event": {
+							"type": "string",
+							"enum": [
+								"synthesisStarting",
+								"playbackStarting",
+								"paused",
+								"resumed",
+								"completed",
+								"interrupted",
+								"networkFailed",
+								"synthesisFailed",
+								"playbackFailed"
+							]
+						}
+					}
+				}
+			}
 		},
 		{
 			"name": "Lifecycle2.onStateChanged",

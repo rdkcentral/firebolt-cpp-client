@@ -20,6 +20,7 @@
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
 #include "utils.h"
+#include <gtest/gtest.h>
 
 class TextToSpeechCTest : public ::testing::Test
 {
@@ -42,6 +43,37 @@ TEST_F(TextToSpeechCTest, speak)
     auto speakResult =
         Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.");
     ASSERT_TRUE(speakResult) << "Error on speak";
+
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
+    EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());
+    EXPECT_EQ(speakResult->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speakResult->success, expectedValue["success"].get<bool>());
+}
+
+TEST_F(TextToSpeechCTest, speak_withAllOptionalArguments)
+{
+    auto speakResult =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
+                                                                              std::string("AppA"), std::string("en-US"),
+                                                                              std::string("female-1"),
+                                                                              std::string("80"), std::string("normal"),
+                                                                              std::string("medium"));
+    ASSERT_TRUE(speakResult) << "Error on speak with all optional arguments";
+
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
+    EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());
+    EXPECT_EQ(speakResult->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speakResult->success, expectedValue["success"].get<bool>());
+}
+
+TEST_F(TextToSpeechCTest, speak_withSelectedOptionalArguments)
+{
+    auto speakResult =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
+                                                                              std::nullopt, std::string("en-US"),
+                                                                              std::nullopt, std::nullopt,
+                                                                              std::string("normal"), std::nullopt);
+    ASSERT_TRUE(speakResult) << "Error on speak with selected optional arguments";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
     EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());

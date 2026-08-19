@@ -20,6 +20,7 @@
 #include <firebolt/types.h>
 
 #include <functional>
+#include <memory_resource>
 #include <string>
 #include <vector>
 namespace Firebolt::SpeechSynthesis

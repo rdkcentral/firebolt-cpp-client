@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <memory_resource>
+
 #include "firebolt/speechsynthesis.h"
 #include <firebolt/json_types.h>
 

@@ -50,6 +50,41 @@ TEST_F(DeviceCTest, DeviceClass)
     ASSERT_TRUE(result) << "DeviceImpl::deviceClass() returned an error";
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
+TEST_F(DeviceCTest, OsName)
+{
+    auto expectedValue = jsonEngine.get_value("Device.osName");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osName();
+    ASSERT_TRUE(result) << "DeviceImpl::osName() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceCTest, SetOsName)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsName("Linux");
+    ASSERT_TRUE(result) << "DeviceImpl::setOsName() returned an error";
+}
+
+TEST_F(DeviceCTest, OsVersion)
+{
+    auto expectedValue = jsonEngine.get_value("Device.osVersion");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osVersion();
+    ASSERT_TRUE(result) << "DeviceImpl::osVersion() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceCTest, SetOsVersion)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsVersion("5.15.0");
+    ASSERT_TRUE(result) << "DeviceImpl::setOsVersion() returned an error";
+}
+
+TEST_F(DeviceCTest, Firmware)
+{
+    auto expectedValue = jsonEngine.get_value("Device.firmware");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().firmware();
+    ASSERT_TRUE(result) << "DeviceImpl::firmware() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
 
 TEST_F(DeviceCTest, Hdr)
 {
@@ -69,7 +104,7 @@ TEST_F(DeviceCTest, TimeInActiveState)
     ASSERT_TRUE(result) << "DeviceImpl::timeInActiveState() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << '\n';
         return;
     }
     EXPECT_EQ(*result, expectedValue);
@@ -90,7 +125,7 @@ TEST_F(DeviceCTest, Uptime)
     ASSERT_TRUE(result) << "DeviceImpl::uptime() returned an error";
     if (expectedValue.empty())
     {
-        std::cout << "[ !!!      ] Expected is empty, received: " << *result << std::endl;
+        std::cout << "[ !!!      ] Expected is empty, received: " << *result << '\n';
         return;
     }
     EXPECT_EQ(*result, expectedValue);
@@ -101,7 +136,7 @@ TEST_F(DeviceCTest, SubscribeOnHdrChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnHdrChanged(
         [&](const Firebolt::Device::HDRFormat& value)
         {
-            std::cout << "[Subscription] Device HDR changed" << std::endl;
+            std::cout << "[Subscription] Device HDR changed" << '\n';
             EXPECT_EQ(value.hdr10, true);
             EXPECT_EQ(value.hdr10Plus, true);
             EXPECT_EQ(value.dolbyVision, true);
@@ -116,6 +151,37 @@ TEST_F(DeviceCTest, SubscribeOnHdrChanged)
     verifyEventSubscription(id);
 
     triggerEvent("Device.onHdrChanged", R"({"hdr10": true, "hdr10Plus": true, "dolbyVision": true, "hlg": true})");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(DeviceCTest, DolbyAtmosExperienceAvailable)
+{
+    auto expectedValue = jsonEngine.get_value("Device.dolbyAtmosExperienceAvailable");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().dolbyAtmosExperienceAvailable();
+    ASSERT_TRUE(result) << "DeviceImpl::dolbyAtmosExperienceAvailable() returned an error";
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnDolbyAtmosExperienceAvailableChanged(
+        [&](const bool& value)
+        {
+            std::cout << "[Subscription] Device Dolby Atmos experience availability changed" << '\n';
+            EXPECT_EQ(value, true);
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("Device.onDolbyAtmosExperienceAvailableChanged", R"({ "value": true })");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());

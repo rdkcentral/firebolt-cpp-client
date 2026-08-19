@@ -173,7 +173,7 @@ TEST_F(MetricsUTest, MediaEnded)
 TEST_F(MetricsUTest, Event)
 {
     mockInvoke("Metrics.event");
-    auto result = metricsImpl_.event("https://com.example.schema", "{\"key\":\"value\"}", Firebolt::AgePolicy::ADULT);
+    auto result = metricsImpl_.event("https://com.example.schema", R"({"key":"value"})", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
 }
 

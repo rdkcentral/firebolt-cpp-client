@@ -56,6 +56,56 @@ TEST_F(DeviceUTest, DeviceClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
+TEST_F(DeviceUTest, OsName)
+{
+    mock_with_response("Device.osName", "Linux");
+
+    auto result = deviceImpl_.osName();
+    ASSERT_TRUE(result) << "DeviceImpl::osName() returned an error";
+    EXPECT_EQ(*result, "Linux");
+}
+
+TEST_F(DeviceUTest, SetOsName)
+{
+    EXPECT_CALL(mockHelper, invoke("Device.setOsName", nlohmann::json("Linux")))
+        .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+
+    auto result = deviceImpl_.setOsName("Linux");
+
+    ASSERT_TRUE(result);
+}
+
+TEST_F(DeviceUTest, OsVersion)
+{
+
+    mock_with_response("Device.osVersion", "5.15.0");
+
+    auto result = deviceImpl_.osVersion();
+    ASSERT_TRUE(result) << "DeviceImpl::osVersion() returned an error";
+    EXPECT_EQ(*result, "5.15.0");
+}
+
+TEST_F(DeviceUTest, SetOsVersion)
+{
+    EXPECT_CALL(mockHelper, invoke("Device.setOsVersion", nlohmann::json("5.15.0")))
+        .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+
+    auto result = deviceImpl_.setOsVersion("5.15.0");
+
+    ASSERT_TRUE(result);
+}
+
+TEST_F(DeviceUTest, Firmware)
+{
+    mock_with_response("Device.firmware", "1.0.0-20240101");
+
+    auto result = deviceImpl_.firmware();
+    ASSERT_TRUE(result) << "DeviceImpl::firmware() returned an error";
+    EXPECT_EQ(*result, "1.0.0-20240101");
+}
+
 TEST_F(DeviceUTest, DeviceClassBadResponse)
 {
     mock_with_response("Device.deviceClass", "abc");
@@ -135,6 +185,37 @@ TEST_F(DeviceUTest, SubscribeOnHdrChanged)
     auto result = deviceImpl_.subscribeOnHdrChanged([&](const Firebolt::Device::HDRFormat& /*value*/) {});
 
     ASSERT_TRUE(result) << "DeviceImpl::subscribeOnHdrChanged() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+
+    deviceImpl_.unsubscribe(*result);
+}
+
+TEST_F(DeviceUTest, DolbyAtmosExperienceAvailable)
+{
+    mock("Device.dolbyAtmosExperienceAvailable");
+    auto expectedValue = jsonEngine.get_value("Device.dolbyAtmosExperienceAvailable");
+
+    auto result = deviceImpl_.dolbyAtmosExperienceAvailable();
+    ASSERT_TRUE(result) << "DeviceImpl::dolbyAtmosExperienceAvailable() returned an error";
+
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DeviceUTest, DolbyAtmosExperienceAvailableBadResponse)
+{
+    mock_with_response("Device.dolbyAtmosExperienceAvailable", "invalid_response");
+    ASSERT_FALSE(deviceImpl_.dolbyAtmosExperienceAvailable())
+        << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
+}
+
+TEST_F(DeviceUTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
+{
+    nlohmann::json expectedValue = 1;
+    mockSubscribe("Device.onDolbyAtmosExperienceAvailableChanged");
+
+    auto result = deviceImpl_.subscribeOnDolbyAtmosExperienceAvailableChanged([&](const bool& /*value*/) {});
+
+    ASSERT_TRUE(result) << "DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged() returned an error";
     EXPECT_EQ(*result, expectedValue);
 
     deviceImpl_.unsubscribe(*result);

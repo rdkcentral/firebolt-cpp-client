@@ -20,19 +20,27 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 
+using ::testing::Invoke;
+
 class ActionsUTest : public ::testing::Test, protected MockBase
 {
 protected:
     Firebolt::Actions::ActionsImpl actionsImpl_{mockHelper};
 };
 
-TEST_F(ActionsUTest, Start)
+TEST_F(ActionsUTest, Intent)
 {
-    mock_with_response("Actions.intent", "launch");
+    mock_with_response("Actions.intent",
+                       nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}},
+                                       {"intentId", 0U}}));
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
-    EXPECT_EQ(*result, "launch");
+    EXPECT_EQ(result->intent.action, "pre-load");
+    ASSERT_TRUE(result->intent.context);
+    ASSERT_TRUE(result->intent.context->source);
+    EXPECT_EQ(*result->intent.context->source, "system");
+    EXPECT_EQ(result->intentId, 0U);
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)
@@ -40,11 +48,24 @@ TEST_F(ActionsUTest, SubscribeOnIntent)
     nlohmann::json expectedValue = 1;
     mockSubscribe("Actions.onIntent");
 
-    auto result = actionsImpl_.subscribeOnIntent([&](const std::string& /*value*/) {});
+    auto result = actionsImpl_.subscribeOnIntent([&](const Firebolt::Actions::Intent& /*value*/) {});
 
     ASSERT_TRUE(result) << "ActionsImpl::subscribeOnIntent() returned an error";
     EXPECT_EQ(*result, expectedValue);
 
     auto unsubResult = actionsImpl_.unsubscribe(*result);
     ASSERT_TRUE(unsubResult) << "ActionsImpl::unsubscribe() returned an error";
+}
+
+TEST_F(ActionsUTest, Start)
+{
+    nlohmann::json expectedParams;
+    expectedParams["intent"] = {{"action", "pre-load"}, {"context", {{"source", "system"}}}};
+    EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+
+    auto result =
+        actionsImpl_.start(Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
+    ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }

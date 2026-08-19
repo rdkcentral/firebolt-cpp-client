@@ -33,7 +33,7 @@ public:
      *
      * @retval The focus state or error
      */
-    virtual Result<bool> focused() const = 0;
+    [[nodiscard]] virtual Result<bool> focused() const = 0;
 
     /**
      * @brief Subscribe to focus change notifications

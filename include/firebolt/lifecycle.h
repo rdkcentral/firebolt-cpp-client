@@ -68,14 +68,14 @@ public:
      *
      * @param[in] type The type of the close app is requesting
      */
-    virtual Result<void> close(const CloseType& type) const = 0;
+    [[nodiscard]] virtual Result<void> close(const CloseType& type) const = 0;
 
     /**
      * @brief Get the current lifecycle state of the app
      *
      * @retval The current lifecycle state or error
      */
-    virtual Result<LifecycleState> state() const = 0;
+    [[nodiscard]] virtual Result<LifecycleState> state() const = 0;
 
     /**
      * @brief Subscribe to lifecycle state changes

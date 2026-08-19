@@ -32,12 +32,16 @@ public:
 
     ~TextToSpeechImpl() override = default;
 
-    Result<ListVoicesResponse> listVoices(const std::string& language) const override;
-    Result<SpeechResponse> speak(const std::string& text) const override;
-    Result<TTSStatusResponse> pause(SpeechId speechId) const override;
-    Result<TTSStatusResponse> resume(SpeechId speechId) const override;
-    Result<TTSStatusResponse> cancel(SpeechId speechId) const override;
-    Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const override;
+    [[nodiscard]] Result<ListVoicesResponse> listVoices(const std::string& language) const override;
+    [[nodiscard]] Result<SpeechResponse>
+    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
+          std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
+          std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
+          std::optional<std::string> pitch = std::nullopt) const override;
+    [[nodiscard]] Result<TTSStatusResponse> pause(SpeechId speechId) const override;
+    [[nodiscard]] Result<TTSStatusResponse> resume(SpeechId speechId) const override;
+    [[nodiscard]] Result<TTSStatusResponse> cancel(SpeechId speechId) const override;
+    [[nodiscard]] Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const override;
 
     Result<SubscriptionId> subscribeOnWillSpeak(std::function<void(const SpeechIdEvent&)>&& notification) override;
     Result<SubscriptionId> subscribeOnSpeechStart(std::function<void(const SpeechIdEvent&)>&& notification) override;

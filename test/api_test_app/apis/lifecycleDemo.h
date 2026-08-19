@@ -31,4 +31,5 @@ public:
 
 private:
     Firebolt::Lifecycle::LifecycleState currentState_;
+    Firebolt::SubscriptionId lastSubscriptionId_{0};
 };

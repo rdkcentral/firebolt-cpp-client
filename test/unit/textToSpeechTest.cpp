@@ -62,6 +62,137 @@ TEST_F(TextToSpeechUTest, speak)
     EXPECT_EQ(speak->success, expectedValue["success"].get<bool>());
 }
 
+TEST_F(TextToSpeechUTest, speak_payloadDefaultsToTextOnly)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                nlohmann::json expected = {{"text", "I am a text waiting for speech."}};
+                EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
+                                                << " but got: " << parameters.dump();
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.");
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_payloadIncludesAllOptionalFieldsWhenProvided)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                nlohmann::json expected;
+                expected["text"] = "I am a text waiting for speech.";
+                expected["callSign"] = "AppA";
+                expected["language"] = "en-US";
+                expected["voice"] = "female-1";
+                expected["volume"] = "80";
+                expected["rate"] = "normal";
+                expected["pitch"] = "medium";
+                EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
+                                                << " but got: " << parameters.dump();
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.", std::string("AppA"), std::string("en-US"),
+                                std::string("female-1"), std::string("80"), std::string("normal"), std::string("medium"));
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_payloadIncludesOnlyProvidedOptionalFields)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                nlohmann::json expected;
+                expected["text"] = "I am a text waiting for speech.";
+                expected["language"] = "en-US";
+                expected["rate"] = "normal";
+                EXPECT_EQ(parameters, expected) << "Parameters do not match expected payload: " << expected.dump()
+                                                << " but got: " << parameters.dump();
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.", std::nullopt, std::string("en-US"), std::nullopt,
+                                std::nullopt, std::string("normal"), std::nullopt);
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_payloadOmitsUnsetOptionalKeys)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                EXPECT_EQ(parameters.size(), 1U);
+                EXPECT_TRUE(parameters.contains("text"));
+                EXPECT_FALSE(parameters.contains("callSign"));
+                EXPECT_FALSE(parameters.contains("language"));
+                EXPECT_FALSE(parameters.contains("voice"));
+                EXPECT_FALSE(parameters.contains("volume"));
+                EXPECT_FALSE(parameters.contains("rate"));
+                EXPECT_FALSE(parameters.contains("pitch"));
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.");
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_payloadPreservesEmptyStringOptionalValues)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                EXPECT_TRUE(parameters.contains("text"));
+                EXPECT_TRUE(parameters.contains("callSign"));
+                EXPECT_TRUE(parameters.contains("rate"));
+                EXPECT_EQ(parameters["callSign"], "");
+                EXPECT_EQ(parameters["rate"], "");
+                EXPECT_FALSE(parameters.contains("language"));
+                EXPECT_FALSE(parameters.contains("voice"));
+                EXPECT_FALSE(parameters.contains("volume"));
+                EXPECT_FALSE(parameters.contains("pitch"));
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.", std::string(""), std::nullopt, std::nullopt,
+                                std::nullopt, std::string(""), std::nullopt);
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_payloadUsesCallSignKeyNotLegacyCallsign)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                EXPECT_TRUE(parameters.contains("callSign"));
+                EXPECT_FALSE(parameters.contains("callsign"));
+                EXPECT_EQ(parameters["callSign"], "AppA");
+                return Firebolt::Result<nlohmann::json>{jsonEngine.get_value("TextToSpeech.speak")};
+            }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.", std::string("AppA"));
+    ASSERT_TRUE(result);
+}
+
+TEST_F(TextToSpeechUTest, speak_propagatesHelperError)
+{
+    EXPECT_CALL(mockHelper, getJson("TextToSpeech.speak", _))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<nlohmann::json>{Firebolt::Error::General}; }));
+
+    auto result = ttsImpl.speak("I am a text waiting for speech.", std::string("AppA"));
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
 TEST_F(TextToSpeechUTest, pause)
 {
     mock("TextToSpeech.pause");

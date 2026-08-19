@@ -56,6 +56,60 @@ TEST_F(DeviceUTest, DeviceClass)
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
 
+TEST_F(DeviceUTest, OsName)
+{
+    mock_with_response("Device.osName", "Linux");
+
+    auto result = deviceImpl_.osName();
+    ASSERT_TRUE(result) << "DeviceImpl::osName() returned an error";
+    EXPECT_EQ(*result, "Linux");
+}
+
+TEST_F(DeviceUTest, SetOsName)
+{
+    EXPECT_CALL(mockHelper, invoke("Device.setOsName", "Linux"))
+        .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
+        {
+            return Firebolt::Result<void>{Firebolt::Error::None};
+        }));
+
+    auto result = deviceImpl_.setOsName("Linux");
+
+    ASSERT_TRUE(result);
+}
+
+TEST_F(DeviceUTest, OsVersion)
+{
+
+    mock_with_response("Device.osVersion", "5.15.0");
+
+    auto result = deviceImpl_.osVersion();
+    ASSERT_TRUE(result) << "DeviceImpl::osVersion() returned an error";
+    EXPECT_EQ(*result, "5.15.0");
+}
+
+TEST_F(DeviceUTest, SetOsVersion)
+{
+    EXPECT_CALL(mockHelper, invoke("Device.setOsVersion", "5.15.0"))
+        .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
+        {
+            return Firebolt::Result<void>{Firebolt::Error::None};
+        }));
+
+    auto result = deviceImpl_.setOsVersion("5.15.0");
+
+    ASSERT_TRUE(result);
+}
+
+TEST_F(DeviceUTest, Firmware)
+{
+    mock_with_response("Device.firmware", "1.0.0-20240101");
+
+    auto result = deviceImpl_.firmware();
+    ASSERT_TRUE(result) << "DeviceImpl::firmware() returned an error";
+    EXPECT_EQ(*result, "1.0.0-20240101");
+}
+
 TEST_F(DeviceUTest, DeviceClassBadResponse)
 {
     mock_with_response("Device.deviceClass", "abc");

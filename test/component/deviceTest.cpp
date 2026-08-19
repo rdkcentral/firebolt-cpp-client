@@ -50,6 +50,41 @@ TEST_F(DeviceCTest, DeviceClass)
     ASSERT_TRUE(result) << "DeviceImpl::deviceClass() returned an error";
     EXPECT_EQ(static_cast<int>(*result), static_cast<int>(Firebolt::Device::JsonData::DeviceClassEnum.at(expectedValue)));
 }
+TEST_F(DeviceCTest, OsName)
+{
+    auto expectedValue = jsonEngine.get_value("Device.osName");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osName();
+    ASSERT_TRUE(result) << "DeviceImpl::osName() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceCTest, SetOsName)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsName("Linux");
+    ASSERT_TRUE(result) << "DeviceImpl::setOsName() returned an error";
+}
+
+TEST_F(DeviceCTest, OsVersion)
+{
+    auto expectedValue = jsonEngine.get_value("Device.osVersion");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osVersion();
+    ASSERT_TRUE(result) << "DeviceImpl::osVersion() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceCTest, SetOsVersion)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsVersion("5.15.0");
+    ASSERT_TRUE(result) << "DeviceImpl::setOsVersion() returned an error";
+}
+
+TEST_F(DeviceCTest, Firmware)
+{
+    auto expectedValue = jsonEngine.get_value("Device.firmware");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().firmware();
+    ASSERT_TRUE(result) << "DeviceImpl::firmware() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
 
 TEST_F(DeviceCTest, Hdr)
 {
@@ -152,3 +187,4 @@ TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
+

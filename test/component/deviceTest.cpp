@@ -187,4 +187,3 @@ TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
-

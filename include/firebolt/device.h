@@ -94,14 +94,14 @@ public:
      * @retval The status
      */
     [[nodiscard]] virtual Result<void> setOsVersion(const std::string& osVersion) = 0;
-    
+
     /**
      * @brief Get a string that identifies the firmware image of the device
      *
      * @retval The firmware image string or error
      */
     [[nodiscard]] virtual Result<std::string> firmware() const = 0;
-    
+
     /**
      * @brief Returns the HDR standards that are supported by the attached TV or the integral display
      *

@@ -69,9 +69,7 @@ TEST_F(DeviceUTest, SetOsName)
 {
     EXPECT_CALL(mockHelper, invoke("Device.setOsName", "Linux"))
         .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
-        {
-            return Firebolt::Result<void>{Firebolt::Error::None};
-        }));
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
     auto result = deviceImpl_.setOsName("Linux");
 
@@ -92,9 +90,7 @@ TEST_F(DeviceUTest, SetOsVersion)
 {
     EXPECT_CALL(mockHelper, invoke("Device.setOsVersion", "5.15.0"))
         .WillOnce(Invoke([](const std::string&, const nlohmann::json&)
-        {
-            return Firebolt::Result<void>{Firebolt::Error::None};
-        }));
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
     auto result = deviceImpl_.setOsVersion("5.15.0");
 

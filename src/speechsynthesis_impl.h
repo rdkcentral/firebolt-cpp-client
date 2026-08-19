@@ -48,7 +48,7 @@ public:
     [[nodiscard]] Result<void> resume(UtteranceId id) const override;
     [[nodiscard]] Result<SubscriptionId>
     subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification) override;
-     Result<void> unsubscribe(SubscriptionId id) override;
+    Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 
 private:

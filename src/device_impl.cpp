@@ -37,6 +37,31 @@ Result<DeviceClass> DeviceImpl::deviceClass() const
     return Result(helper_.get<JsonData::DeviceClassJson, DeviceClass>("Device.deviceClass"));
 }
 
+Result<std::string> DeviceImpl::osName() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.osName");
+}
+
+Result<void> DeviceImpl::setOsName(const std::string& osName)
+{
+    return helper_.invoke("Device.setOsName", nlohmann::json(osName));
+}
+
+Result<std::string> DeviceImpl::osVersion() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.osVersion");
+}
+
+Result<void> DeviceImpl::setOsVersion(const std::string& osVersion)
+{
+    return helper_.invoke("Device.setOsVersion", nlohmann::json(osVersion));
+}
+
+Result<std::string> DeviceImpl::firmware() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.firmware");
+}
+
 Result<HDRFormat> DeviceImpl::hdr() const
 {
     return Result(helper_.get<JsonData::HDRFormat, HDRFormat>("Device.hdr"));

@@ -538,6 +538,182 @@
 			]
 		},
 		{
+			"name": "Device.osName",
+			"summary": "Returns the operating system name as defined by the operator",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "osName",
+				"summary": "The operating system name",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the operating system name",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "Linux"
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.setOsName",
+			"summary": "Sets the operating system name as defined by the operator",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "osName",
+					"summary": "The operating system name",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Setting the operating system name",
+					"params": [
+						{
+							"name": "osName",
+							"value": "Linux"
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.osVersion",
+			"summary": "Returns the operating system version as defined by the operator",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "osVersion",
+				"summary": "The operating system version",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the operating system version",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "5.15.0"
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.setOsVersion",
+			"summary": "Sets the operating system version as defined by the operator",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "osVersion",
+					"summary": "The operating system version",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Setting the operating system version",
+					"params": [
+						{
+							"name": "osVersion",
+							"value": "5.15.0"
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.firmware",
+			"summary": "Returns a string that identifies the firmware image of the device",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "firmware",
+				"summary": "The firmware image string",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the firmware image",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "1.0.0-20240101"
+					}
+				}
+			]
+		},
+		{
 			"name": "Device.uptime",
 			"summary": "Returns the number of seconds since most recent device boot, including any time spent during deep sleep",
 			"params": [],

@@ -68,6 +68,41 @@ public:
     [[nodiscard]] virtual Result<DeviceClass> deviceClass() const = 0;
 
     /**
+     * @brief Get the operating system name
+     *
+     * @retval The OS name string or error
+     */
+    [[nodiscard]] virtual Result<std::string> osName() const = 0;
+
+    /**
+     * @brief Set the operating system name
+     *
+     * @retval The status
+     */
+    [[nodiscard]] virtual Result<void> setOsName(const std::string& osName) = 0;
+
+    /**
+     * @brief Get the operating system version
+     *
+     * @retval The OS version string or error
+     */
+    [[nodiscard]] virtual Result<std::string> osVersion() const = 0;
+
+    /**
+     * @brief Set the operating system version
+     *
+     * @retval The status
+     */
+    [[nodiscard]] virtual Result<void> setOsVersion(const std::string& osVersion) = 0;
+
+    /**
+     * @brief Get a string that identifies the firmware image of the device
+     *
+     * @retval The firmware image string or error
+     */
+    [[nodiscard]] virtual Result<std::string> firmware() const = 0;
+
+    /**
      * @brief Returns the HDR standards that are supported by the attached TV or the integral display
      *
      * @retval The HDR format capabilities or error

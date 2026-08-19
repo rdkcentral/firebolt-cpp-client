@@ -34,6 +34,11 @@ public:
 
     [[nodiscard]] Result<std::string> chipsetId() const override;
     [[nodiscard]] Result<DeviceClass> deviceClass() const override;
+    [[nodiscard]] Result<std::string> osName() const override;
+    [[nodiscard]] Result<void> setOsName(const std::string& osName) override;
+    [[nodiscard]] Result<std::string> osVersion() const override;
+    [[nodiscard]] Result<void> setOsVersion(const std::string& osVersion) override;
+    [[nodiscard]] Result<std::string> firmware() const override;
     [[nodiscard]] Result<HDRFormat> hdr() const override;
     [[nodiscard]] Result<u_int32_t> timeInActiveState() const override;
     [[nodiscard]] Result<std::string> uid() const override;

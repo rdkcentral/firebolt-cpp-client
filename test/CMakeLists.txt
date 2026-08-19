@@ -72,11 +72,11 @@ if(FIREBOLT_GTEST_HEADER_ROOT
         set(FIREBOLT_GTEST_OVERRIDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/gtest_header_override")
         file(REMOVE_RECURSE "${FIREBOLT_GTEST_OVERRIDE_DIR}")
         file(MAKE_DIRECTORY "${FIREBOLT_GTEST_OVERRIDE_DIR}")
-        execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
             "${FIREBOLT_GTEST_HEADER_ROOT}/gtest"
             "${FIREBOLT_GTEST_OVERRIDE_DIR}/gtest")
         if(EXISTS "${FIREBOLT_GTEST_HEADER_ROOT}/gmock")
-            execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+            execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
                 "${FIREBOLT_GTEST_HEADER_ROOT}/gmock"
                 "${FIREBOLT_GTEST_OVERRIDE_DIR}/gmock")
         endif()

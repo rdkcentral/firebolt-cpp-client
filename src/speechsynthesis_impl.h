@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <memory_resource>
+
 #include <firebolt/helpers.h>
 #include <firebolt/speechsynthesis.h>
 

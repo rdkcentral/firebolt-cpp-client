@@ -48,6 +48,42 @@ else()
     find_package(GTest CONFIG REQUIRED)
 endif()
 
+set(FIREBOLT_GTEST_HEADER_ROOT "")
+if(TARGET GTest::gtest)
+    get_target_property(FIREBOLT_GTEST_INTERFACE_INCLUDE_DIRS GTest::gtest INTERFACE_INCLUDE_DIRECTORIES)
+    foreach(dir IN LISTS FIREBOLT_GTEST_INTERFACE_INCLUDE_DIRS)
+        if(EXISTS "${dir}/gtest/gtest.h")
+            set(FIREBOLT_GTEST_HEADER_ROOT "${dir}")
+            break()
+        endif()
+    endforeach()
+endif()
+
+set(FIREBOLT_GTEST_OVERRIDE_DIR "")
+if(FIREBOLT_GTEST_HEADER_ROOT
+    AND EXISTS "/usr/local/include/gtest/internal/gtest-internal.h"
+    AND EXISTS "${FIREBOLT_GTEST_HEADER_ROOT}/gtest/internal/gtest-internal.h")
+    file(STRINGS "/usr/local/include/gtest/internal/gtest-internal.h" FIREBOLT_GTEST_LOCAL_SIGNATURE
+        REGEX "std::string test_suite_name" LIMIT_COUNT 1)
+    file(STRINGS "${FIREBOLT_GTEST_HEADER_ROOT}/gtest/internal/gtest-internal.h" FIREBOLT_GTEST_SELECTED_SIGNATURE
+        REGEX "const char\\* test_suite_name" LIMIT_COUNT 1)
+
+    if(FIREBOLT_GTEST_LOCAL_SIGNATURE AND FIREBOLT_GTEST_SELECTED_SIGNATURE)
+        set(FIREBOLT_GTEST_OVERRIDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/gtest_header_override")
+        file(REMOVE_RECURSE "${FIREBOLT_GTEST_OVERRIDE_DIR}")
+        file(MAKE_DIRECTORY "${FIREBOLT_GTEST_OVERRIDE_DIR}")
+        execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${FIREBOLT_GTEST_HEADER_ROOT}/gtest"
+            "${FIREBOLT_GTEST_OVERRIDE_DIR}/gtest")
+        if(EXISTS "${FIREBOLT_GTEST_HEADER_ROOT}/gmock")
+            execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "${FIREBOLT_GTEST_HEADER_ROOT}/gmock"
+                "${FIREBOLT_GTEST_OVERRIDE_DIR}/gmock")
+        endif()
+        message(STATUS "Using GTest header override: ${FIREBOLT_GTEST_OVERRIDE_DIR}")
+    endif()
+endif()
+
 find_package(nlohmann_json_schema_validator CONFIG REQUIRED)
 
 include(GoogleTest)
@@ -66,6 +102,12 @@ add_executable(${UNIT_TESTS_APP}
     UnitTestsMain.cpp
     ${UNIT_TESTS}
 )
+
+if(FIREBOLT_GTEST_OVERRIDE_DIR)
+    target_include_directories(${UNIT_TESTS_APP} BEFORE PRIVATE
+        "${FIREBOLT_GTEST_OVERRIDE_DIR}"
+    )
+endif()
 
 target_compile_options(${UNIT_TESTS_APP} PRIVATE --coverage -g -O0 -fno-inline)
 target_link_options(${UNIT_TESTS_APP} PRIVATE --coverage)
@@ -114,6 +156,12 @@ add_executable(${COMPONENT_TESTS_APP}
     "utils.cpp"
     ${COMPONENT_TESTS}
 )
+
+if(FIREBOLT_GTEST_OVERRIDE_DIR)
+    target_include_directories(${COMPONENT_TESTS_APP} BEFORE PRIVATE
+        "${FIREBOLT_GTEST_OVERRIDE_DIR}"
+    )
+endif()
 
 target_link_libraries(${COMPONENT_TESTS_APP}
     PRIVATE

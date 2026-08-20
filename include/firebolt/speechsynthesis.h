@@ -20,6 +20,7 @@
 #include <firebolt/types.h>
 
 #include <functional>
+#include <memory_resource>
 #include <string>
 #include <vector>
 namespace Firebolt::SpeechSynthesis
@@ -71,5 +72,7 @@ public:
     [[nodiscard]] virtual Result<void> resume(UtteranceId id) const = 0;
     [[nodiscard]] virtual Result<SubscriptionId>
     subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification) = 0;
+    virtual Result<void> unsubscribe(SubscriptionId id) = 0;
+    virtual void unsubscribeAll() = 0;
 };
 } // namespace Firebolt::SpeechSynthesis

@@ -104,6 +104,7 @@ private:
         presentation_.unsubscribeAll();
         textToSpeech_.unsubscribeAll();
         videooutput_.unsubscribeAll();
+        speechSynthesis_.unsubscribeAll();
     }
 
     Accessibility::AccessibilityImpl accessibility_;

@@ -34,7 +34,7 @@ public:
      *
      * @retval The connection state or error
      */
-    virtual Result<bool> connected() const = 0;
+    [[nodiscard]] virtual Result<bool> connected() const = 0;
 
     /**
      * @brief Subscribe to connection changes

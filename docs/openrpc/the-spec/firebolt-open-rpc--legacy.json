@@ -753,6 +753,97 @@
 			]
 		},
 		{
+			"name": "Device.dolbyAtmosExperienceAvailable",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [],
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "dolbyAtmosExperienceAvailable",
+				"summary": "Whether Dolby Atmos experience is available on the device",
+				"schema": {
+					"type": "boolean"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": true
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.onDolbyAtmosExperienceAvailableChanged",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [
+				{
+					"name": "listen",
+					"required": true,
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "subscriber",
+					"x-subscriber-for": "Device.dolbyAtmosExperienceAvailable"
+				},
+				{
+					"name": "event",
+					"x-alternative": "dolbyAtmosExperienceAvailable"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "dolbyAtmosExperienceAvailable",
+				"summary": "Whether Dolby Atmos experience is available on the device",
+				"schema": {
+					"anyOf": [
+						{
+							"$ref": "#/x-schemas/Types/ListenResponse"
+						},
+						{
+							"type": "boolean"
+						}
+					]
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": true
+					}
+				}
+			]
+		},
+		{
 			"name": "Discovery.watched",
 			"summary": "Notify the platform that content was partially or completely watched",
 			"tags": [
@@ -2707,7 +2798,7 @@
 		},
 		{
 			"name": "Stats.memoryUsage",
-			"summary": "Returns information about container memory usage, in units of 1024 bytes.",
+			"summary": "Returns information about container memory usage in bytes.",
 			"tags": [
 				{
 					"name": "capabilities",
@@ -2731,10 +2822,10 @@
 						"name": "value",
 						"description": "The memory usage information",
 						"value": {
-							"userMemoryUsedKiB": 123456,
-							"userMemoryLimitKiB": 789012,
-							"gpuMemoryUsedKiB": 345678,
-							"gpuMemoryLimitKiB": 901234
+							"userMemoryUsed": 126418944,
+							"userMemoryLimit": 807948288,
+							"gpuMemoryUsed": 353974272,
+							"gpuMemoryLimit": 922863616
 						}
 					}
 				}
@@ -2752,6 +2843,48 @@
 						"type": "string"
 					},
 					"required": true
+				},
+				{
+					"name": "callSign",
+					"summary": "Optional call sign for the app making the request",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "language",
+					"summary": "Optional language override as a BCP 47 locale tag",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "voice",
+					"summary": "Optional voice identifier",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "volume",
+					"summary": "Optional volume override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "rate",
+					"summary": "Optional speech rate override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "pitch",
+					"summary": "Optional pitch override",
+					"schema": {
+						"type": "string"
+					}
 				}
 			],
 			"tags": [
@@ -2779,6 +2912,30 @@
 						{
 							"name": "text",
 							"value": "I am a text waiting for speech."
+						},
+						{
+							"name": "callSign",
+							"value": "AppA"
+						},
+						{
+							"name": "language",
+							"value": "en-US"
+						},
+						{
+							"name": "voice",
+							"value": "female-1"
+						},
+						{
+							"name": "volume",
+							"value": "80"
+						},
+						{
+							"name": "rate",
+							"value": "normal"
+						},
+						{
+							"name": "pitch",
+							"value": "medium"
 						}
 					],
 					"result": {
@@ -3530,28 +3687,32 @@
 				"type": "object",
 				"description": "Describes current and maximum memory usage of the container.",
 				"properties": {
-					"userMemoryUsedKiB": {
+					"userMemoryUsed": {
 						"type": "integer",
-						"description": "User memory currently used in 1024 bytes."
+						"description": "User memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"userMemoryLimitKiB": {
+					"userMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum user memory available in 1024 bytes."
+						"description": "Maximum user memory available, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryUsedKiB": {
+					"gpuMemoryUsed": {
 						"type": "integer",
-						"description": "GPU memory currently used in 1024 bytes."
+						"description": "GPU memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryLimitKiB": {
+					"gpuMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum GPU memory available in 1024 bytes."
+						"description": "Maximum GPU memory available, in bytes.",
+						"minimum": 0
 					}
 				},
 				"required": [
-					"userMemoryUsedKiB",
-					"userMemoryLimitKiB",
-					"gpuMemoryUsedKiB",
-					"gpuMemoryLimitKiB"
+					"userMemoryUsed",
+					"userMemoryLimit",
+					"gpuMemoryUsed",
+					"gpuMemoryLimit"
 				]
 			},
 			"TTSEnabled": {

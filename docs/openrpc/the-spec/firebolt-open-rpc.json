@@ -15,6 +15,7 @@
 			"Metrics": "Methods for sending metrics",
 			"Network": "Methods for accessing network information.",
 			"Presentation": "Methods for accessing Presentation preferences.",
+			"SpeechSynthesis": "A module for controlling speech synthesis over Firebolt.",
 			"Stats": "Provides methods to retrieve application-level system information.",
 			"TextToSpeech": "A module for controlling and accessing Text To Speech over Firebolt."
 		}
@@ -66,9 +67,38 @@
 			"params": [],
 			"result": {
 				"name": "intent",
-				"summary": "The current intent.",
+				"summary": "The current intent as a JSON document.",
 				"schema": {
-					"type": "string"
+					"type": "object",
+					"required": [
+						"intent",
+						"intentId"
+					],
+					"properties": {
+						"intent": {
+							"type": "object",
+							"required": [
+								"action"
+							],
+							"properties": {
+								"action": {
+									"type": "string"
+								},
+								"context": {
+									"type": "object",
+									"properties": {
+										"source": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						},
+						"intentId": {
+							"type": "integer",
+							"minimum": 0
+						}
+					}
 				}
 			},
 			"examples": [
@@ -76,7 +106,15 @@
 					"name": "Get the current intent",
 					"result": {
 						"name": "Default Result",
-						"value": "launch"
+						"value": {
+							"intent": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							},
+							"intentId": 0
+						}
 					}
 				}
 			]
@@ -107,9 +145,38 @@
 			],
 			"result": {
 				"name": "intent",
-				"summary": "The current intent.",
+				"summary": "The current intent as a JSON document.",
 				"schema": {
-					"type": "string"
+					"type": "object",
+					"required": [
+						"intent",
+						"intentId"
+					],
+					"properties": {
+						"intent": {
+							"type": "object",
+							"required": [
+								"action"
+							],
+							"properties": {
+								"action": {
+									"type": "string"
+								},
+								"context": {
+									"type": "object",
+									"properties": {
+										"source": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						},
+						"intentId": {
+							"type": "integer",
+							"minimum": 0
+						}
+					}
 				}
 			},
 			"examples": [
@@ -123,7 +190,87 @@
 					],
 					"result": {
 						"name": "Default Result",
-						"value": "launch"
+						"value": {
+							"intent": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							},
+							"intentId": 0
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Actions.start",
+			"summary": "Sends an intent to the platform.",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:actions:intent"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "intent",
+					"summary": "The intent to send, as a JSON document.",
+					"required": true,
+					"schema": {
+						"type": "object",
+						"required": [
+							"action"
+						],
+						"properties": {
+							"action": {
+								"type": "string"
+							},
+							"context": {
+								"type": "object",
+								"properties": {
+									"source": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					}
+				},
+				{
+					"name": "handlerAppId",
+					"summary": "Optional ID of the application that should handle the intent.",
+					"required": false,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Start an intent",
+					"params": [
+						{
+							"name": "intent",
+							"value": {
+								"action": "pre-load",
+								"context": {
+									"source": "system"
+								}
+							}
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
 					}
 				}
 			]
@@ -391,6 +538,182 @@
 			]
 		},
 		{
+			"name": "Device.osName",
+			"summary": "Returns the operating system name as defined by the operator",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "osName",
+				"summary": "The operating system name",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the operating system name",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "Linux"
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.setOsName",
+			"summary": "Sets the operating system name as defined by the operator",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "osName",
+					"summary": "The operating system name",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Setting the operating system name",
+					"params": [
+						{
+							"name": "osName",
+							"value": "Linux"
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.osVersion",
+			"summary": "Returns the operating system version as defined by the operator",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "osVersion",
+				"summary": "The operating system version",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the operating system version",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "5.15.0"
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.setOsVersion",
+			"summary": "Sets the operating system version as defined by the operator",
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "osVersion",
+					"summary": "The operating system version",
+					"required": true,
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Setting the operating system version",
+					"params": [
+						{
+							"name": "osVersion",
+							"value": "5.15.0"
+						}
+					],
+					"result": {
+						"name": "Default Result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.firmware",
+			"summary": "Returns a string that identifies the firmware image of the device",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "firmware",
+				"summary": "The firmware image string",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the firmware image",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "1.0.0-20240101"
+					}
+				}
+			]
+		},
+		{
 			"name": "Device.uptime",
 			"summary": "Returns the number of seconds since most recent device boot, including any time spent during deep sleep",
 			"params": [],
@@ -528,6 +851,39 @@
 			]
 		},
 		{
+			"name": "Device.dolbyAtmosExperienceAvailable",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [],
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "dolbyAtmosExperienceAvailable",
+				"summary": "Whether Dolby Atmos experience is available on the device",
+				"schema": {
+					"type": "boolean"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": true
+					}
+				}
+			]
+		},
+		{
 			"name": "Discovery.watched",
 			"summary": "Notify the platform that content was partially or completely watched",
 			"tags": [
@@ -647,7 +1003,7 @@
 		},
 		{
 			"name": "Discovery.watchedV2",
-			"summary": "Notify the platform that content was partially or completely watched, returns whether the notification was accepted",
+			"summary": "Notify the platform that content was partially or completely watched",
 			"tags": [
 				{
 					"name": "polymorphic-reducer"
@@ -701,9 +1057,8 @@
 			],
 			"result": {
 				"name": "result",
-				"summary": "Whether the platform accepted the watched notification",
 				"schema": {
-					"type": "boolean"
+					"type": "null"
 				}
 			},
 			"examples": [
@@ -729,7 +1084,7 @@
 					],
 					"result": {
 						"name": "result",
-						"value": true
+						"value": null
 					}
 				},
 				{
@@ -758,7 +1113,7 @@
 					],
 					"result": {
 						"name": "result",
-						"value": true
+						"value": null
 					}
 				}
 			]
@@ -1083,6 +1438,39 @@
 					"result": {
 						"name": "Default Result",
 						"value": "en-US"
+					}
+				}
+			]
+		},
+		{
+			"name": "Localization.timeZone",
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:localization:time-zone"
+					]
+				}
+			],
+			"summary": "Get the IANA timezone of the device.",
+			"params": [],
+			"result": {
+				"name": "timeZone",
+				"summary": "The device timezone.",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Default example",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "America/New_York"
 					}
 				}
 			]
@@ -2228,7 +2616,7 @@
 		},
 		{
 			"name": "Stats.memoryUsage",
-			"summary": "Returns information about container memory usage, in units of 1024 bytes.",
+			"summary": "Returns information about container memory usage in bytes.",
 			"tags": [
 				{
 					"name": "capabilities",
@@ -2252,10 +2640,10 @@
 						"name": "value",
 						"description": "The memory usage information",
 						"value": {
-							"userMemoryUsedKiB": 123456,
-							"userMemoryLimitKiB": 789012,
-							"gpuMemoryUsedKiB": 345678,
-							"gpuMemoryLimitKiB": 901234
+							"userMemoryUsed": 126418944,
+							"userMemoryLimit": 807948288,
+							"gpuMemoryUsed": 353974272,
+							"gpuMemoryLimit": 922863616
 						}
 					}
 				}
@@ -2273,6 +2661,48 @@
 						"type": "string"
 					},
 					"required": true
+				},
+				{
+					"name": "callSign",
+					"summary": "Optional call sign for the app making the request",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "language",
+					"summary": "Optional language override as a BCP 47 locale tag",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "voice",
+					"summary": "Optional voice identifier",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "volume",
+					"summary": "Optional volume override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "rate",
+					"summary": "Optional speech rate override",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "pitch",
+					"summary": "Optional pitch override",
+					"schema": {
+						"type": "string"
+					}
 				}
 			],
 			"tags": [
@@ -2300,6 +2730,30 @@
 						{
 							"name": "text",
 							"value": "I am a text waiting for speech."
+						},
+						{
+							"name": "callSign",
+							"value": "AppA"
+						},
+						{
+							"name": "language",
+							"value": "en-US"
+						},
+						{
+							"name": "voice",
+							"value": "female-1"
+						},
+						{
+							"name": "volume",
+							"value": "80"
+						},
+						{
+							"name": "rate",
+							"value": "normal"
+						},
+						{
+							"name": "pitch",
+							"value": "medium"
 						}
 					],
 					"result": {
@@ -2569,6 +3023,373 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "SpeechSynthesis.speak",
+			"summary": "Speak an utterance.",
+			"params": [
+				{
+					"name": "text",
+					"schema": {
+						"type": "string"
+					},
+					"required": true
+				},
+				{
+					"name": "callSign",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "language",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "voice",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "volume",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "rate",
+					"schema": {
+						"type": "string"
+					}
+				},
+				{
+					"name": "pitch",
+					"schema": {
+						"type": "string"
+					}
+				}
+			],
+			"result": {
+				"name": "utteranceId",
+				"schema": {
+					"type": "integer",
+					"minimum": 0
+				}
+			},
+			"examples": [
+				{
+					"name": "Speak text",
+					"params": [
+						{
+							"name": "text",
+							"value": "I am a text waiting for speech."
+						},
+						{
+							"name": "callSign",
+							"value": "AppA"
+						},
+						{
+							"name": "language",
+							"value": "en-US"
+						},
+						{
+							"name": "voice",
+							"value": "female-1"
+						},
+						{
+							"name": "volume",
+							"value": "80"
+						},
+						{
+							"name": "rate",
+							"value": "normal"
+						},
+						{
+							"name": "pitch",
+							"value": "medium"
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": 1
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.voices",
+			"summary": "Get available synthesis voices.",
+			"params": [],
+			"result": {
+				"name": "voices",
+				"schema": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"name",
+							"lang",
+							"default"
+						],
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"lang": {
+								"type": "string"
+							},
+							"default": {
+								"type": "boolean"
+							}
+						}
+					}
+				}
+			},
+			"examples": [
+				{
+					"name": "Get voices",
+					"params": [],
+					"result": {
+						"name": "result",
+						"value": [
+							{
+								"name": "Salli",
+								"lang": "en-US",
+								"default": true
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.cancel",
+			"summary": "Cancel an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Cancel utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.pause",
+			"summary": "Pause an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Pause utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.resume",
+			"summary": "Resume an utterance.",
+			"params": [
+				{
+					"name": "id",
+					"schema": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"required": true
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			},
+			"examples": [
+				{
+					"name": "Resume utterance",
+					"params": [
+						{
+							"name": "id",
+							"value": 1
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			]
+		},
+		{
+			"name": "SpeechSynthesis.onVoicesChanged",
+			"summary": "Notification when available voices change.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "SpeechSynthesis.onVoicesChanged"
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default Example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"required": [
+							"name",
+							"lang",
+							"default"
+						],
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"lang": {
+								"type": "string"
+							},
+							"default": {
+								"type": "boolean"
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "SpeechSynthesis.onUtteranceEvent",
+			"summary": "Notification for utterance lifecycle events.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "SpeechSynthesis.onUtteranceEvent"
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default Example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "object",
+					"required": [
+						"id",
+						"event"
+					],
+					"properties": {
+						"id": {
+							"type": "integer",
+							"minimum": 0
+						},
+						"event": {
+							"type": "string",
+							"enum": [
+								"synthesisStarting",
+								"playbackStarting",
+								"paused",
+								"resumed",
+								"completed",
+								"interrupted",
+								"networkFailed",
+								"synthesisFailed",
+								"playbackFailed"
+							]
+						}
+					}
+				}
+			}
 		},
 		{
 			"name": "Lifecycle2.onStateChanged",
@@ -3246,6 +4067,52 @@
 			}
 		},
 		{
+			"name": "Device.onDolbyAtmosExperienceAvailableChanged",
+			"summary": "Returns whether Dolby Atmos experience is available on the device",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Device.onDolbyAtmosExperienceAvailableChanged",
+					"x-subscriber-for": "Device.dolbyAtmosExperienceAvailable"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting Dolby Atmos experience availability",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
 			"name": "Localization.onCountryChanged",
 			"tags": [
 				{
@@ -3366,6 +4233,52 @@
 				}
 			],
 			"summary": "Get the *full* BCP 47 code, including script, region, variant, etc., for the preferred locale",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Default example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "Localization.onTimeZoneChanged",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Localization.onTimeZoneChanged",
+					"x-subscriber-for": "Localization.timeZone"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:localization:time-zone"
+					]
+				}
+			],
+			"summary": "Get the IANA timezone of the device.",
 			"params": [
 				{
 					"name": "listen",
@@ -3649,28 +4562,32 @@
 				"type": "object",
 				"description": "Describes current and maximum memory usage of the container.",
 				"properties": {
-					"userMemoryUsedKiB": {
+					"userMemoryUsed": {
 						"type": "integer",
-						"description": "User memory currently used in 1024 bytes."
+						"description": "User memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"userMemoryLimitKiB": {
+					"userMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum user memory available in 1024 bytes."
+						"description": "Maximum user memory available, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryUsedKiB": {
+					"gpuMemoryUsed": {
 						"type": "integer",
-						"description": "GPU memory currently used in 1024 bytes."
+						"description": "GPU memory currently used, in bytes.",
+						"minimum": 0
 					},
-					"gpuMemoryLimitKiB": {
+					"gpuMemoryLimit": {
 						"type": "integer",
-						"description": "Maximum GPU memory available in 1024 bytes."
+						"description": "Maximum GPU memory available, in bytes.",
+						"minimum": 0
 					}
 				},
 				"required": [
-					"userMemoryUsedKiB",
-					"userMemoryLimitKiB",
-					"gpuMemoryUsedKiB",
-					"gpuMemoryLimitKiB"
+					"userMemoryUsed",
+					"userMemoryLimit",
+					"gpuMemoryUsed",
+					"gpuMemoryLimit"
 				]
 			},
 			"TTSEnabled": {

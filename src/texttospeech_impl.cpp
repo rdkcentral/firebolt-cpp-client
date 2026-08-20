@@ -34,10 +34,38 @@ Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& langu
     return helper_.get<JsonData::ListVoicesResponse, ListVoicesResponse>("TextToSpeech.listvoices", params);
 }
 
-Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text) const
+Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, std::optional<std::string> callSign,
+                                               std::optional<std::string> language, std::optional<std::string> voice,
+                                               std::optional<std::string> volume, std::optional<std::string> rate,
+                                               std::optional<std::string> pitch) const
 {
     nlohmann::json params;
     params["text"] = text;
+    if (callSign)
+    {
+        params["callSign"] = *callSign;
+    }
+    if (language)
+    {
+        params["language"] = *language;
+    }
+    if (voice)
+    {
+        params["voice"] = *voice;
+    }
+    if (volume)
+    {
+        params["volume"] = *volume;
+    }
+    if (rate)
+    {
+        params["rate"] = *rate;
+    }
+    if (pitch)
+    {
+        params["pitch"] = *pitch;
+    }
+
     return helper_.get<JsonData::SpeechResponse, SpeechResponse>("TextToSpeech.speak", params);
 }
 

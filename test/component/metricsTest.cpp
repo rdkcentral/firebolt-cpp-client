@@ -200,7 +200,7 @@ TEST_F(MetricsCTest, MediaEnded)
 TEST_F(MetricsCTest, Event)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().MetricsInterface().event("https://com.example.event",
-                                                                                   "{\"key\":\"value\"}",
+                                                                                   R"({"key":"value"})",
                                                                                    Firebolt::AgePolicy::ADULT);
     ASSERT_TRUE(result) << "MetricsImpl::event() returned an error";
 }

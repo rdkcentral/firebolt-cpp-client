@@ -58,42 +58,77 @@ public:
      *
      * @retval The chipset id string or error
      */
-    virtual Result<std::string> chipsetId() const = 0;
+    [[nodiscard]] virtual Result<std::string> chipsetId() const = 0;
 
     /**
      * @brief Get the class of the device
      *
      * @retval The class property or error
      */
-    virtual Result<DeviceClass> deviceClass() const = 0;
+    [[nodiscard]] virtual Result<DeviceClass> deviceClass() const = 0;
+
+    /**
+     * @brief Get the operating system name
+     *
+     * @retval The OS name string or error
+     */
+    [[nodiscard]] virtual Result<std::string> osName() const = 0;
+
+    /**
+     * @brief Set the operating system name
+     *
+     * @retval The status
+     */
+    [[nodiscard]] virtual Result<void> setOsName(const std::string& osName) = 0;
+
+    /**
+     * @brief Get the operating system version
+     *
+     * @retval The OS version string or error
+     */
+    [[nodiscard]] virtual Result<std::string> osVersion() const = 0;
+
+    /**
+     * @brief Set the operating system version
+     *
+     * @retval The status
+     */
+    [[nodiscard]] virtual Result<void> setOsVersion(const std::string& osVersion) = 0;
+
+    /**
+     * @brief Get a string that identifies the firmware image of the device
+     *
+     * @retval The firmware image string or error
+     */
+    [[nodiscard]] virtual Result<std::string> firmware() const = 0;
 
     /**
      * @brief Returns the HDR standards that are supported by the attached TV or the integral display
      *
      * @retval The HDR format capabilities or error
      */
-    virtual Result<HDRFormat> hdr() const = 0;
+    [[nodiscard]] virtual Result<HDRFormat> hdr() const = 0;
 
     /**
      * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
      *
      * @retval The uptime in seconds or error
      */
-    virtual Result<uint32_t> timeInActiveState() const = 0;
+    [[nodiscard]] virtual Result<uint32_t> timeInActiveState() const = 0;
 
     /**
      * @brief Returns a persistent unique UUID for the current app and device.  The UUID is reset when the app or device is reset
      *
      * @retval The uid string or error
      */
-    virtual Result<std::string> uid() const = 0;
+    [[nodiscard]] virtual Result<std::string> uid() const = 0;
 
     /**
      * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
      *
      * @retval The uptime in seconds or error
      */
-    virtual Result<uint32_t> uptime() const = 0;
+    [[nodiscard]] virtual Result<uint32_t> uptime() const = 0;
 
     /**
      * @brief Subscribe to HDR format changes
@@ -116,6 +151,21 @@ public:
      * @brief Remove all active subscriptions from subscribers list.
      */
     virtual void unsubscribeAll() = 0;
+
+    /**
+     * @brief Returns whether Dolby Atmos experience is available on the device
+     *
+     * @retval True if Dolby Atmos experience is available, or error
+     */
+    [[nodiscard]] virtual Result<bool> dolbyAtmosExperienceAvailable() const = 0;
+
+    /**
+     * @brief Subscribe to Dolby Atmos experience availability changes
+     *
+     * @retval SubscriptionId or error
+     */
+    virtual Result<SubscriptionId>
+    subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) = 0;
 };
 
 } // namespace Firebolt::Device

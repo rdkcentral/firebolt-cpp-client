@@ -33,6 +33,7 @@ DeviceDemo::DeviceDemo()
 {
     methods_.push_back("Device.chipsetId");
     methods_.push_back("Device.deviceClass");
+    methods_.push_back("Device.dolbyAtmosExperienceAvailable");
     methods_.push_back("Device.hdr");
     methods_.push_back("Device.timeInActiveState");
     methods_.push_back("Device.uid");
@@ -58,6 +59,46 @@ void DeviceDemo::runOption(const std::string& method)
         {
             std::cout << "Device Class: " << Firebolt::JSON::toString(Firebolt::Device::JsonData::DeviceClassEnum, *r)
                       << std::endl;
+        }
+    }
+    else if (method == "Device.osName")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osName();
+        if (succeed(r))
+        {
+            std::cout << "Device OS Name: " << *r << std::endl;
+        }
+    }
+    else if (method == "Device.setOsName")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsName("Linux");
+        if (succeed(r))
+        {
+            std::cout << "Device OS Name set successfully" << std::endl;
+        }
+    }
+    else if (method == "Device.osVersion")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().osVersion();
+        if (succeed(r))
+        {
+            std::cout << "Device OS Version: " << *r << std::endl;
+        }
+    }
+    else if (method == "Device.setOsVersion")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().setOsVersion("5.15.0");
+        if (succeed(r))
+        {
+            std::cout << "Device OS Version set successfully" << std::endl;
+        }
+    }
+    else if (method == "Device.firmware")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().firmware();
+        if (succeed(r))
+        {
+            std::cout << "Device Firmware: " << *r << std::endl;
         }
     }
     else if (method == "Device.hdr")
@@ -91,6 +132,14 @@ void DeviceDemo::runOption(const std::string& method)
         if (succeed(r))
         {
             std::cout << "Device Uptime (seconds): " << *r << std::endl;
+        }
+    }
+    else if (method == "Device.dolbyAtmosExperienceAvailable")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DeviceInterface().dolbyAtmosExperienceAvailable();
+        if (succeed(r))
+        {
+            std::cout << std::boolalpha << "Dolby Atmos Experience Available: " << *r << std::endl;
         }
     }
 }

@@ -99,4 +99,14 @@ SpeechSynthesisImpl::subscribeOnUtteranceEvent(std::function<void(const Utteranc
     return subscriptionManager_.subscribe<JsonData::UtteranceEventResponse>("SpeechSynthesis.onUtteranceEvent",
                                                                             std::move(notification));
 }
+Result<void> SpeechSynthesisImpl::unsubscribe(SubscriptionId id)
+{
+    return subscriptionManager_.unsubscribe(id);
+}
+
+void SpeechSynthesisImpl::unsubscribeAll()
+{
+    subscriptionManager_.unsubscribeAll();
+}
+
 } // namespace Firebolt::SpeechSynthesis

@@ -1,33 +1,148 @@
-name: Manual Release
+name: Create Release
 
 on:
   workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
 
 jobs:
   release:
-    if: github.ref_name == 'main' || endsWith(github.ref_name, '-rc') || endsWith(github.ref_name, '.x-maintenance')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
+      - name: Validate release branch
+        shell: bash
+        run: |
+          branch="${GITHUB_REF_NAME}"
 
-      - name: Install release deps
-        run: npm ci --prefix .github/release
+          case "$branch" in
+            main|*-rc|*.x-maintenance)
+              echo "Release allowed from branch: $branch"
+              ;;
+            *)
+              echo "Release blocked: branch '$branch' is not allowed. Use 'main', a '-rc' branch, or a '.x-maintenance' branch."
+              exit 1
+              ;;
+          esac
 
-      - name: Run semantic-release
-        run: npm --prefix .github/release exec -- semantic-release --extends ./.github/release/releaserc.json
+      - name: Compute next version
+        id: version
         env:
-          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+          BUMP: ${{ inputs.bump }}
+        shell: bash
+        run: |
+          git fetch --tags --force origin || true
+
+          latest="$(git tag --list 'v*' --sort=-v:refname | head -n1)"
+
+          if [ -z "$latest" ]; then
+            latest="v0.0.0"
+          fi
+
+          ver="${latest#v}"
+          IFS='.' read -r major minor patch <<< "$ver"
+
+          case "$BUMP" in
+            major)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch)
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          next="v${major}.${minor}.${patch}"
+
+          echo "latest=$latest"
+          echo "next=$next"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Validate release has changes
+        env:
+          LATEST: ${{ steps.version.outputs.latest }}
+        shell: bash
+        run: |
+          if [ "$LATEST" = "v0.0.0" ]; then
+            echo "No previous tag found; proceeding with initial release."
+            exit 0
+          fi
+
+          if git rev-list --count "${LATEST}..HEAD" | grep -q '^0$'; then
+            echo "No new commits since ${LATEST}; refusing to create a duplicate release."
+            exit 1
+          fi
+
+      - name: Create tag
+        env:
+          TAG: ${{ steps.version.outputs.next }}
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists on origin; continuing."
+            exit 0
+          fi
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git tag -a "${TAG}" -m "Release ${TAG}"
+          git push origin "${TAG}"
+
+      - name: Build release archive
+        id: asset
+        env:
+          VERSION: ${{ steps.version.outputs.next }}
+        shell: bash
+        run: |
+          # Reuse the existing script: strips .github/, writes .version, produces build/firebolt-cpp-client-<ver>.tar.gz
+          ./.github/scripts/mk-release-package.sh \
+            --version "${VERSION}" \
+            --package firebolt-cpp-client
+
+          bare="${VERSION#v}"
+          archive_name="firebolt-cpp-client-${bare}.tar.gz"
+          checksum_name="${archive_name}.sha256"
+
+          sha256sum "build/${archive_name}" > "build/${checksum_name}"
+
+          echo "archive=build/${archive_name}" >> "$GITHUB_OUTPUT"
+          echo "checksum=build/${checksum_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.next }}
+          ARCHIVE: ${{ steps.asset.outputs.archive }}
+          CHECKSUM: ${{ steps.asset.outputs.checksum }}
+        shell: bash
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$ARCHIVE" "$CHECKSUM" --clobber
+          else
+            gh release create "$TAG" \
+              --title "$TAG" \
+              --generate-notes \
+              "$ARCHIVE" "$CHECKSUM"
+          fi

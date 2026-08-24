@@ -48,6 +48,17 @@ jobs:
         run: |
           git fetch --tags --force origin
 
+          # Reuse an existing HEAD tag if this is a rerun after a partial failure.
+          existing="$(git tag --points-at HEAD --list 'v*' --sort=-v:refname | head -n1)"
+          if [ -n "$existing" ]; then
+            echo "HEAD already tagged as ${existing}; resuming partial release."
+            prev="$(git tag --list 'v*' --sort=-v:refname | grep -v "^${existing}$" | head -n1)"
+            [ -z "$prev" ] && prev="v0.0.0"
+            echo "latest=$prev" >> "$GITHUB_OUTPUT"
+            echo "next=$existing" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           latest="$(git tag --list 'v*' --sort=-v:refname | head -n1)"
 
           if [ -z "$latest" ]; then
@@ -94,6 +105,21 @@ jobs:
             exit 1
           fi
 
+      - name: Validate CHANGELOG
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        shell: bash
+        run: |
+          if grep -q '^## \[Unreleased\]' CHANGELOG.md; then
+            echo "ERROR: CHANGELOG.md still has an [Unreleased] section. Update it before releasing."
+            exit 1
+          fi
+          version="${NEXT#v}"
+          if ! grep -q "^## \[${version}\]" CHANGELOG.md; then
+            echo "ERROR: No entry for version ${version} found in CHANGELOG.md."
+            exit 1
+          fi
+
       - name: Create tag
         env:
           TAG: ${{ steps.version.outputs.next }}
@@ -127,6 +153,9 @@ jobs:
 
           sha256sum "build/${archive_name}" > "build/${checksum_name}"
 
+          # Extract the top CHANGELOG.md section as release notes (same as the old generateNotesCmd).
+          awk '/^## / { if (s) exit; s=1 } s{ print }' CHANGELOG.md > release_notes.md
+
           echo "archive=build/${archive_name}" >> "$GITHUB_OUTPUT"
           echo "checksum=build/${checksum_name}" >> "$GITHUB_OUTPUT"
 
@@ -143,6 +172,6 @@ jobs:
           else
             gh release create "$TAG" \
               --title "$TAG" \
-              --generate-notes \
+              --notes-file release_notes.md \
               "$ARCHIVE" "$CHECKSUM"
           fi

@@ -31,11 +31,11 @@ jobs:
           branch="${GITHUB_REF_NAME}"
 
           case "$branch" in
-            main|*-rc|*.x-maintenance)
+            main|*.rc|*.*.x-maintenance)
               echo "Release allowed from branch: $branch"
               ;;
             *)
-              echo "Release blocked: branch '$branch' is not allowed. Use 'main', a '-rc' branch, or a '.x-maintenance' branch."
+              echo "Release blocked: branch '$branch' is not allowed. Use 'main', a '*.rc' branch, or a '*.*.x-maintenance' branch."
               exit 1
               ;;
           esac
@@ -52,7 +52,7 @@ jobs:
           existing="$(git tag --points-at HEAD --list 'v*' --sort=-v:refname | head -n1)"
           if [ -n "$existing" ]; then
             echo "HEAD already tagged as ${existing}; resuming partial release."
-            prev="$(git tag --list 'v*' --sort=-v:refname | grep -v "^${existing}$" | head -n1)"
+            prev="$(git tag --list 'v*' --sort=-v:refname | awk -v ex="${existing}" '$0 != ex { print; exit }')"
             [ -z "$prev" ] && prev="v0.0.0"
             echo "latest=$prev" >> "$GITHUB_OUTPUT"
             echo "next=$existing" >> "$GITHUB_OUTPUT"
@@ -115,8 +115,9 @@ jobs:
             exit 1
           fi
           version="${NEXT#v}"
-          if ! grep -q "^## \[${version}\]" CHANGELOG.md; then
-            echo "ERROR: No entry for version ${version} found in CHANGELOG.md."
+          top="$(awk 'match($0, /^## \[([^]]+)\]/, m) { print m[1]; exit }' CHANGELOG.md)"
+          if [ -z "$top" ] || [ "$top" != "$version" ]; then
+            echo "ERROR: Top CHANGELOG.md entry (${top:-<none>}) does not match version ${version}. Move the ${version} entry to the top."
             exit 1
           fi
 

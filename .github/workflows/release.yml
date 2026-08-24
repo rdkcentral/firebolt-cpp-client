@@ -46,7 +46,7 @@ jobs:
           BUMP: ${{ inputs.bump }}
         shell: bash
         run: |
-          git fetch --tags --force origin || true
+          git fetch --tags --force origin
 
           latest="$(git tag --list 'v*' --sort=-v:refname | head -n1)"
 

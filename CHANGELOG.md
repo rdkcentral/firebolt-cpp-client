@@ -1,9 +1,19 @@
+## [0.6.4](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.3...v0.6.4)
+
+### Changed
+- **Breaking**: `Actions.intent()` return type changed from `Result<std::string>` to `Result<Intent>`
+- **Breaking**: `subscribeOnIntent` / `subscribeOnIntentChanged` callback parameter changed from `const std::string&` to `const Intent&`
+
+### Added
+- `Actions.start(const IntentData& intent, std::optional<std::string> handlerAppId)` — new API per Firebolt 9 spec
+- New public types: `Firebolt::Actions::Intent`, `IntentData`, `IntentContext`
+
 ## [0.6.3](https://github.com/rdkcentral/firebolt-cpp-client/compare/0.6.2...v0.6.3)
 
 ### Fixed
 - `Actions.intent` and `Actions.onIntent` now correctly handle a JSON object payload (`{"intent":"...","intentId":N}`) sent by the Firebolt backend. Previously the client failed to parse the response because it expected a plain string.
 
-## [0.6.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.1...v0.6.2)
+## [0.6.2](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.1...0.6.2)
 
 ### Fixed
 - `Discovery.watched` now returns `Result<bool>` again (reverts the `Result<void>` change introduced in v0.6.0).

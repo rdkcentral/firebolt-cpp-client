@@ -15,6 +15,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -48,18 +52,26 @@ jobs:
         run: |
           git fetch --tags --force origin
 
+          # Only consider strict vMAJOR.MINOR.PATCH tags reachable from HEAD;
+          # pre-release/other v-prefixed tags (e.g. v0.6.4.rc1) would break the
+          # numeric parsing below, and tags from unrelated history shouldn't
+          # count as "latest" for this release.
+          semver_tags() {
+            git tag --merged HEAD --list 'v*' --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$'
+          }
+
           # Reuse an existing HEAD tag if this is a rerun after a partial failure.
-          existing="$(git tag --points-at HEAD --list 'v*' --sort=-v:refname | head -n1)"
+          existing="$(git tag --points-at HEAD --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n1)"
           if [ -n "$existing" ]; then
             echo "HEAD already tagged as ${existing}; resuming partial release."
-            prev="$(git tag --list 'v*' --sort=-v:refname | awk -v ex="${existing}" '$0 != ex { print; exit }')"
+            prev="$(semver_tags | awk -v ex="${existing}" '$0 != ex { print; exit }')"
             [ -z "$prev" ] && prev="v0.0.0"
             echo "latest=$prev" >> "$GITHUB_OUTPUT"
             echo "next=$existing" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          latest="$(git tag --list 'v*' --sort=-v:refname | head -n1)"
+          latest="$(semver_tags | head -n1)"
 
           if [ -z "$latest" ]; then
             latest="v0.0.0"

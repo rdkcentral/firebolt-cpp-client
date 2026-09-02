@@ -5,7 +5,7 @@
   - `Localization.timeZone` getter and `onTimeZoneChanged` event
   - `Device.dolbyAtmosExperienceAvailable` getter and `onDolbyAtmosExperienceAvailableChanged` event
   - `Device.osName`, `Device.osVersion`, and `Device.firmware`
-  - `SpeechSynthesis` (`speak`, `cancel`, `pause`, `resume`, `voices`, `subscribeVoiceChanged`, `onUtteranceEvent`)
+  - `SpeechSynthesis` (`speak`, `cancel`, `pause`, `resume`, `voices`, `subscribeOnVoicesChanged`, `onUtteranceEvent`)
   - `VideoOutput` implementation
 
 ### Changed

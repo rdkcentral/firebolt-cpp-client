@@ -26,6 +26,9 @@ jobs:
   release:
     if: github.ref_name == 'main' || endsWith(github.ref_name, '.rc') || endsWith(github.ref_name, '.x-maintenance')
     runs-on: ubuntu-latest
+    concurrency:
+      group: release
+      cancel-in-progress: false
     permissions:
       contents: write
       issues: write
@@ -37,6 +40,20 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+
+      - name: Validate release branch
+        shell: bash
+        run: |
+          branch="${GITHUB_REF_NAME}"
+          case "$branch" in
+            main|*.rc|*.*.x-maintenance)
+              echo "Release allowed from branch: $branch"
+              ;;
+            *)
+              echo "Release blocked: branch '$branch' is not allowed. Use 'main', a '*.rc' branch, or a '*.*.x-maintenance' branch."
+              exit 1
+              ;;
+          esac
 
       - name: Compute next version
         id: version
@@ -117,11 +134,11 @@ jobs:
         shell: bash
         run: |
           if [ "$IS_PROMOTION" = "true" ]; then
-            if [ "$(git rev-parse HEAD)" != "$(git rev-parse "${BASELINE}^{commit}")" ]; then
-              echo "ERROR: HEAD has moved past ${BASELINE}. Cut a new RC from the current HEAD before promoting to stable."
+            if ! git merge-base --is-ancestor "${BASELINE}" HEAD; then
+              echo "ERROR: ${BASELINE} is not an ancestor of HEAD; select a descendant commit from this branch before promoting to stable."
               exit 1
             fi
-            echo "Promoting ${BASELINE} to stable; HEAD matches the RC commit."
+            echo "Promoting ${BASELINE} to stable release; current HEAD is a descendant."
             exit 0
           fi
           if ! git merge-base --is-ancestor "${BASELINE}" HEAD; then
@@ -135,10 +152,19 @@ jobs:
           fi
 
       - name: Validate CHANGELOG
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
         shell: bash
         run: |
           if grep -q '^## \[Unreleased\]' CHANGELOG.md; then
             echo "ERROR: CHANGELOG.md has an [Unreleased] section. Update it before releasing."
+            exit 1
+          fi
+          version="${NEXT#v}"
+          version="${version%%.rc*}"
+          top="$(awk '/^## \[[^]]+\]/ { sub(/^## \[/, ""); sub(/\].*$/, ""); print; exit }' CHANGELOG.md)"
+          if [ -z "$top" ] || [ "$top" != "$version" ]; then
+            echo "ERROR: Top CHANGELOG.md entry (${top:-<none>}) does not match version ${version}. Move the ${version} entry to the top."
             exit 1
           fi
 

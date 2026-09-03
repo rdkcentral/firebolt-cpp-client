@@ -24,7 +24,7 @@ on:
 
 jobs:
   release:
-    if: github.ref_name == 'main' || endsWith(github.ref_name, '.rc') || endsWith(github.ref_name, '.x-maintenance')
+    if: github.ref_type == 'branch' && (github.ref_name == 'main' || endsWith(github.ref_name, '.rc') || endsWith(github.ref_name, '.x-maintenance'))
     runs-on: ubuntu-latest
     concurrency:
       group: release
@@ -175,7 +175,12 @@ jobs:
         shell: bash
         run: |
           if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
-            echo "Tag ${TAG} already exists on origin; skipping tag creation."
+            git fetch --force origin "refs/tags/${TAG}:refs/tags/${TAG}"
+            if [ "$(git rev-parse "refs/tags/${TAG}^{commit}")" != "$(git rev-parse HEAD)" ]; then
+              echo "ERROR: Tag ${TAG} already exists on origin but does not point to the current HEAD; refusing to overwrite its release assets."
+              exit 1
+            fi
+            echo "Tag ${TAG} already exists at the current HEAD; resuming the release."
             exit 0
           fi
           # Identity is just for the annotated tag's metadata -- SEMANTIC_RELEASE_TOKEN is

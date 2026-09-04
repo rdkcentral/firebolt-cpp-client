@@ -3446,7 +3446,13 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "string",
+					"enum": [
+						"direct",
+						"hdcp1.4",
+						"hdcp2.2",
+						"none"
+					]
 				}
 			}
 		},
@@ -3494,7 +3500,12 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "string",
+					"enum": [
+						"active",
+						"inactive",
+						"unsupported"
+					]
 				}
 			}
 		},
@@ -3542,7 +3553,18 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "string",
+					"enum": [
+						"0",
+						"23.976",
+						"24",
+						"25",
+						"29.97",
+						"30",
+						"50",
+						"59.94",
+						"60"
+					]
 				}
 			}
 		},
@@ -4109,6 +4131,275 @@
 				"name": "result",
 				"schema": {
 					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "VideoOutput.hdcp",
+			"summary": "Returns HDCP state for the active video output",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"result": {
+				"name": "hdcp",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"direct",
+						"hdcp1.4",
+						"hdcp2.2",
+						"none"
+					]
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting HDCP state",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "hdcp1.4"
+					}
+				}
+			]
+		},
+		{
+			"name": "VideoOutput.cecState",
+			"summary": "Returns CEC state for the active video output",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"result": {
+				"name": "cecState",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"active",
+						"inactive",
+						"unsupported"
+					]
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting CEC state",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "inactive"
+					}
+				}
+			]
+		},
+		{
+			"name": "VideoOutput.refreshRate",
+			"summary": "Returns refresh rate for the active video output",
+			"params": [],
+			"tags": [
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"result": {
+				"name": "refreshRate",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"0",
+						"23.976",
+						"24",
+						"25",
+						"29.97",
+						"30",
+						"50",
+						"59.94",
+						"60"
+					]
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting refresh rate",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "59.94"
+					}
+				}
+			]
+		},
+		{
+			"name": "VideoOutput.onHdcpChanged",
+			"summary": "Returns HDCP state changes for the active video output",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "VideoOutput.onHdcpChanged",
+					"x-subscriber-for": "VideoOutput.hdcp"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting HDCP state change notifications",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"direct",
+						"hdcp1.4",
+						"hdcp2.2",
+						"none"
+					]
+				}
+			}
+		},
+		{
+			"name": "VideoOutput.onCecStateChanged",
+			"summary": "Returns CEC state changes for the active video output",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "VideoOutput.onCecStateChanged",
+					"x-subscriber-for": "VideoOutput.cecState"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting CEC state change notifications",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"active",
+						"inactive",
+						"unsupported"
+					]
+				}
+			}
+		},
+		{
+			"name": "VideoOutput.onRefreshRateChanged",
+			"summary": "Returns refresh rate changes for the active video output",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "VideoOutput.onRefreshRateChanged",
+					"x-subscriber-for": "VideoOutput.refreshRate"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:cpp-client-only"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting refresh rate change notifications",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "string",
+					"enum": [
+						"0",
+						"23.976",
+						"24",
+						"25",
+						"29.97",
+						"30",
+						"50",
+						"59.94",
+						"60"
+					]
 				}
 			}
 		},

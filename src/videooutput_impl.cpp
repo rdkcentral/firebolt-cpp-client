@@ -44,60 +44,57 @@ VideoOutputImpl::subscribeOnResolutionChanged(std::function<void(const VideoOutp
 
 Result<HdcpState> VideoOutputImpl::hdcp() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<HdcpState>, HdcpState>("VideoOutput.hdcp");
+    return helper_.get<JsonData::HdcpStateJson, HdcpState>("VideoOutput.hdcp");
 }
 Result<SubscriptionId> VideoOutputImpl::subscribeOnHdcpChanged(std::function<void(const HdcpState&)>&& notification)
 {
-    return subscriptionManager_.subscribe<Firebolt::JSON::BasicType<HdcpState>>("VideoOutput.onHdcpChanged",
-                                                                                std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::HdcpStateJson>("VideoOutput.onHdcpChanged", std::move(notification));
 }
 
 Result<CecStateValue> VideoOutputImpl::cecState() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<CecStateValue>, CecStateValue>("VideoOutput.cecState");
+    return helper_.get<JsonData::CecStateValueJson, CecStateValue>("VideoOutput.cecState");
 }
 Result<SubscriptionId> VideoOutputImpl::subscribeOnCecStateChanged(std::function<void(const CecStateValue&)>&& notification)
 {
-    return subscriptionManager_.subscribe<Firebolt::JSON::BasicType<CecStateValue>>("VideoOutput.onCecStateChanged",
-                                                                                    std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::CecStateValueJson>("VideoOutput.onCecStateChanged",
+                                                                       std::move(notification));
 }
 
 Result<RefreshRateValue> VideoOutputImpl::refreshRate() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<RefreshRateValue>, RefreshRateValue>("VideoOutput.refreshRate");
+    return helper_.get<JsonData::RefreshRateValueJson, RefreshRateValue>("VideoOutput.refreshRate");
 }
 Result<SubscriptionId>
 VideoOutputImpl::subscribeOnRefreshRateChanged(std::function<void(const RefreshRateValue&)>&& notification)
 {
-    return subscriptionManager_
-        .subscribe<Firebolt::JSON::BasicType<RefreshRateValue>>("VideoOutput.onRefreshRateChanged",
-                                                                std::move(notification));
+    return subscriptionManager_.subscribe<JsonData::RefreshRateValueJson>("VideoOutput.onRefreshRateChanged",
+                                                                          std::move(notification));
 }
 
 Result<ColorDepthValue> VideoOutputImpl::colorDepth() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<ColorDepthValue>, ColorDepthValue>("VideoOutput.colorDepth");
+    return helper_.get<JsonData::ColorDepthValueJson, ColorDepthValue>("VideoOutput.colorDepth");
 }
 
 Result<ColorFormatValue> VideoOutputImpl::colorFormat() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<ColorFormatValue>, ColorFormatValue>("VideoOutput.colorFormat");
+    return helper_.get<JsonData::ColorFormatValueJson, ColorFormatValue>("VideoOutput.colorFormat");
 }
 
 Result<OutputColorimetry> VideoOutputImpl::colorimetry() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<OutputColorimetry>, OutputColorimetry>("VideoOutput.colorimetry");
+    return helper_.get<JsonData::OutputColorimetryJson, OutputColorimetry>("VideoOutput.colorimetry");
 }
 
 Result<DynamicRangeValue> VideoOutputImpl::dynamicRange() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<DynamicRangeValue>, DynamicRangeValue>("VideoOutput.dynamicRange");
+    return helper_.get<JsonData::DynamicRangeValueJson, DynamicRangeValue>("VideoOutput.dynamicRange");
 }
 
 Result<QuantizationRangeValue> VideoOutputImpl::quantizationRange() const
 {
-    return helper_.get<Firebolt::JSON::BasicType<QuantizationRangeValue>, QuantizationRangeValue>(
-        "VideoOutput.quantizationRange");
+    return helper_.get<JsonData::QuantizationRangeValueJson, QuantizationRangeValue>("VideoOutput.quantizationRange");
 }
 
 Result<void> VideoOutputImpl::unsubscribe(SubscriptionId id)

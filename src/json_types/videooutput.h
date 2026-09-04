@@ -155,6 +155,110 @@ inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::RefreshRateValue>
     {"60", ::Firebolt::VideoOutput::RefreshRateValue::R60},
 });
 
+class CecStateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::CecStateValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        cecStateValue_ = CecStateValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::CecStateValue value() const override { return cecStateValue_; }
+
+private:
+    ::Firebolt::VideoOutput::CecStateValue cecStateValue_;
+};
+
+class ColorDepthValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::ColorDepthValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        colorDepthValue_ = ColorDepthValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::ColorDepthValue value() const override { return colorDepthValue_; }
+
+private:
+    ::Firebolt::VideoOutput::ColorDepthValue colorDepthValue_;
+};
+
+class ColorFormatValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::ColorFormatValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        colorFormatValue_ = ColorFormatValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::ColorFormatValue value() const override { return colorFormatValue_; }
+
+private:
+    ::Firebolt::VideoOutput::ColorFormatValue colorFormatValue_;
+};
+
+class DynamicRangeValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::DynamicRangeValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        dynamicRangeValue_ = DynamicRangeValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::DynamicRangeValue value() const override { return dynamicRangeValue_; }
+
+private:
+    ::Firebolt::VideoOutput::DynamicRangeValue dynamicRangeValue_;
+};
+
+class HdcpStateJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::HdcpState>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { hdcpState_ = HdcpStateEnum.at(json.get<std::string>()); }
+    [[nodiscard]] ::Firebolt::VideoOutput::HdcpState value() const override { return hdcpState_; }
+
+private:
+    ::Firebolt::VideoOutput::HdcpState hdcpState_;
+};
+
+class OutputColorimetryJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::OutputColorimetry>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        outputColorimetry_ = OutputColorimetryEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::OutputColorimetry value() const override { return outputColorimetry_; }
+
+private:
+    ::Firebolt::VideoOutput::OutputColorimetry outputColorimetry_;
+};
+
+class QuantizationRangeValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::QuantizationRangeValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        quantizationRangeValue_ = QuantizationRangeValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::QuantizationRangeValue value() const override
+    {
+        return quantizationRangeValue_;
+    }
+
+private:
+    ::Firebolt::VideoOutput::QuantizationRangeValue quantizationRangeValue_;
+};
+
+class RefreshRateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::RefreshRateValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        refreshRateValue_ = RefreshRateValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::RefreshRateValue value() const override { return refreshRateValue_; }
+
+private:
+    ::Firebolt::VideoOutput::RefreshRateValue refreshRateValue_;
+};
+
 class VideoOutputResolution : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::VideoOutputResolution>
 {
 public:

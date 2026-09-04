@@ -184,10 +184,6 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWire
             cv.notify_one();
         });
 
-    if (!id)
-    {
-        GTEST_SKIP() << "VideoOutput.onRefreshRateChanged is not available in the current mock OpenRPC fixture";
-    }
     verifyEventSubscription(id);
     triggerEvent("VideoOutput.onRefreshRateChanged", R"("59.94")");
     verifyEventReceived(mtx, cv, eventReceived);

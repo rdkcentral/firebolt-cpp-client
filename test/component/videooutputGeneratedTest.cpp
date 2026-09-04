@@ -134,10 +134,6 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringP
             cv.notify_one();
         });
 
-    if (!id)
-    {
-        GTEST_SKIP() << "VideoOutput.onHdcpChanged is not available in the current mock OpenRPC fixture";
-    }
     verifyEventSubscription(id);
     triggerEvent("VideoOutput.onHdcpChanged", R"("hdcp1.4")");
     verifyEventReceived(mtx, cv, eventReceived);

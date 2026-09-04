@@ -3446,13 +3446,7 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "string",
-					"enum": [
-						"direct",
-						"hdcp1.4",
-						"hdcp2.2",
-						"none"
-					]
+					"type": "null"
 				}
 			}
 		},
@@ -3500,12 +3494,7 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "string",
-					"enum": [
-						"active",
-						"inactive",
-						"unsupported"
-					]
+					"type": "null"
 				}
 			}
 		},
@@ -3553,18 +3542,7 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "string",
-					"enum": [
-						"0",
-						"23.976",
-						"24",
-						"25",
-						"29.97",
-						"30",
-						"50",
-						"59.94",
-						"60"
-					]
+					"type": "null"
 				}
 			}
 		},

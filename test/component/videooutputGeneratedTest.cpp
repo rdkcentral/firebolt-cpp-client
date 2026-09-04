@@ -159,10 +159,6 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnCecStateChangedParsesWireStr
             cv.notify_one();
         });
 
-    if (!id)
-    {
-        GTEST_SKIP() << "VideoOutput.onCecStateChanged is not available in the current mock OpenRPC fixture";
-    }
     verifyEventSubscription(id);
     triggerEvent("VideoOutput.onCecStateChanged", R"("inactive")");
     verifyEventReceived(mtx, cv, eventReceived);

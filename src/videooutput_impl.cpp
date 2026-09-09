@@ -68,8 +68,20 @@ Result<RefreshRateValue> VideoOutputImpl::refreshRate() const
 Result<SubscriptionId>
 VideoOutputImpl::subscribeOnRefreshRateChanged(std::function<void(const RefreshRateValue&)>&& notification)
 {
-    return subscriptionManager_.subscribe<JsonData::RefreshRateValueJson>("VideoOutput.onRefreshRateChanged",
-                                                                          std::move(notification));
+    std::function<void(const RefreshRateValue&)> callback = std::move(notification);
+
+    auto result =
+        subscriptionManager_.subscribe<JsonData::RefreshRateValueJson>("VideoOutput.onRefreshRateChanged",
+                                                                       std::function<void(const RefreshRateValue&)>(
+                                                                           callback));
+    if (!result && result.error() == Firebolt::Error::CapabilityNotSupported)
+    {
+        // Compatibility fallback for runtimes exposing a misspelled method alias.
+        return subscriptionManager_.subscribe<JsonData::RefreshRateValueJson>("VideoOutput.onRefereshRateChanged",
+                                                                              std::move(callback));
+    }
+
+    return result;
 }
 
 Result<ColorDepthValue> VideoOutputImpl::colorDepth() const

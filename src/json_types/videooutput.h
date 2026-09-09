@@ -23,6 +23,7 @@
 #define FIREBOLT_VIDEOOUTPUT_JSON_H
 
 #include "firebolt/videooutput.h"
+#include <cmath>
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
 
@@ -173,7 +174,35 @@ class ColorDepthValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Vid
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        colorDepthValue_ = ColorDepthValueEnum.at(json.get<std::string>());
+        if (json.is_string())
+        {
+            colorDepthValue_ = ColorDepthValueEnum.at(json.get<std::string>());
+            return;
+        }
+
+        if (json.is_number_integer() || json.is_number_unsigned())
+        {
+            const auto value = json.get<int>();
+            switch (value)
+            {
+            case 0:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D0;
+                return;
+            case 8:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D8;
+                return;
+            case 10:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D10;
+                return;
+            case 12:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D12;
+                return;
+            default:
+                throw std::out_of_range("Unsupported color depth value");
+            }
+        }
+
+        throw std::invalid_argument("ColorDepthValue must be a string or integer");
     }
     [[nodiscard]] ::Firebolt::VideoOutput::ColorDepthValue value() const override { return colorDepthValue_; }
 
@@ -251,7 +280,65 @@ class RefreshRateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Vi
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        refreshRateValue_ = RefreshRateValueEnum.at(json.get<std::string>());
+        if (json.is_string())
+        {
+            refreshRateValue_ = RefreshRateValueEnum.at(json.get<std::string>());
+            return;
+        }
+
+        if (json.is_number_integer() || json.is_number_unsigned())
+        {
+            const auto value = json.get<int>();
+            switch (value)
+            {
+            case 0:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R0;
+                return;
+            case 24:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R24;
+                return;
+            case 25:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R25;
+                return;
+            case 30:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R30;
+                return;
+            case 50:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R50;
+                return;
+            case 59:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R5994;
+                return;
+            case 60:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R60;
+                return;
+            default:
+                throw std::out_of_range("Unsupported refresh rate value");
+            }
+        }
+
+        if (json.is_number_float())
+        {
+            const auto value = json.get<double>();
+            if (std::fabs(value - 23.976) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R23976;
+                return;
+            }
+            if (std::fabs(value - 29.97) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R2997;
+                return;
+            }
+            if (std::fabs(value - 59.94) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R5994;
+                return;
+            }
+            throw std::out_of_range("Unsupported refresh rate value");
+        }
+
+        throw std::invalid_argument("RefreshRateValue must be a string or number");
     }
     [[nodiscard]] ::Firebolt::VideoOutput::RefreshRateValue value() const override { return refreshRateValue_; }
 

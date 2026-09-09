@@ -166,6 +166,24 @@ TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
 }
 
+TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsParsedValueWhenPayloadIsInteger)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(59));
+
+    auto result = impl.refreshRate();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsInvalidParamsWhenNumericValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(61));
+
+    auto result = impl.refreshRate();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(VideooutputGeneratedUTest, RefreshRateForwardsTransportErrors)
 {
     expectGetterTransportError("VideoOutput.refreshRate");
@@ -182,6 +200,24 @@ TEST_F(VideooutputGeneratedUTest, ColorDepthReturnsParsedValue)
     auto result = impl.colorDepth();
     ASSERT_TRUE(result);
     EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D12);
+}
+
+TEST_F(VideooutputGeneratedUTest, ColorDepthReturnsParsedValueWhenPayloadIsNumber)
+{
+    expectGetterResponse("VideoOutput.colorDepth", nlohmann::json(8));
+
+    auto result = impl.colorDepth();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D8);
+}
+
+TEST_F(VideooutputGeneratedUTest, ColorDepthReturnsInvalidParamsWhenNumericValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.colorDepth", nlohmann::json(11));
+
+    auto result = impl.colorDepth();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(VideooutputGeneratedUTest, ColorDepthForwardsTransportErrors)
@@ -437,6 +473,33 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedForwardsSubscribe
 {
     EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
         .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = impl.subscribeOnRefreshRateChanged([](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedFallsBackToMisspelledAliasWhenNotSupported)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::CapabilityNotSupported}));
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefereshRateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{31}));
+
+    auto result = impl.subscribeOnRefreshRateChanged([](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 31U);
+}
+
+TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedDoesNotFallbackOnGeneralError)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefereshRateChanged", ::testing::_, ::testing::_)).Times(0);
 
     auto result = impl.subscribeOnRefreshRateChanged([](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
 

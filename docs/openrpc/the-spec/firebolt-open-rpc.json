@@ -4272,13 +4272,7 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "string",
-					"enum": [
-						"direct",
-						"hdcp1.4",
-						"hdcp2.2",
-						"none"
-					]
+					"type": "null"
 				}
 			}
 		},

@@ -130,6 +130,15 @@ TEST_F(VideooutputGeneratedUTest, HdcpForwardsTransportErrors)
     EXPECT_EQ(result.error(), Firebolt::Error::General);
 }
 
+TEST_F(VideooutputGeneratedUTest, HdcpReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.hdcp", nlohmann::json("hdcp3.0"));
+
+    auto result = impl.hdcp();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(VideooutputGeneratedUTest, CecStateReturnsParsedValue)
 {
     expectGetterResponse("VideoOutput.cecState", nlohmann::json("inactive"));

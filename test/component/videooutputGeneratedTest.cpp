@@ -18,6 +18,7 @@
 
 #include "firebolt/firebolt.h"
 #include "firebolt/videooutput.h"
+#include "json_engine.h"
 #include "json_types/videooutput.h"
 #include "utils.h"
 #include <condition_variable>
@@ -38,6 +39,7 @@ protected:
     std::condition_variable cv;
     std::mutex mtx;
     bool eventReceived{false};
+    JsonEngine jsonEngine;
 };
 
 TEST(VideooutputGeneratedCTest, HdcpMarshallerParsesWireString)
@@ -108,20 +110,88 @@ TEST(VideooutputGeneratedCTest, MarshallersRejectUnknownWireValues)
     EXPECT_THROW(colorDepthJson.fromJson(nlohmann::json("11")), std::out_of_range);
 }
 
-TEST(VideooutputGeneratedCTest, InterfaceSurfaceHasresolution)
+TEST_F(VideooutputGeneratedRuntimeCTest, ResolutionReturnsParsedValue)
 {
-    using Interface = Firebolt::VideoOutput::IVideoOutput;
-    auto ptr = &Interface::resolution;
-    (void)ptr;
-    SUCCEED();
+    const auto expected = jsonEngine.get_value("VideoOutput.resolution");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().resolution();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::resolution() returned an error";
+    EXPECT_EQ(result->height, expected.at("height").get<uint32_t>());
+    EXPECT_EQ(result->width, expected.at("width").get<uint32_t>());
 }
 
-TEST(VideooutputGeneratedCTest, InterfaceSurfaceHascolorDepth)
+TEST_F(VideooutputGeneratedRuntimeCTest, HdcpReturnsParsedValue)
 {
-    using Interface = Firebolt::VideoOutput::IVideoOutput;
-    auto ptr = &Interface::colorDepth;
-    (void)ptr;
-    SUCCEED();
+    const auto expected = jsonEngine.get_value("VideoOutput.hdcp");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().hdcp();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::hdcp() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::HdcpStateEnum.at(expected.get<std::string>()));
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, CecStateReturnsParsedValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.cecState");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().cecState();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::cecState() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::CecStateValueEnum.at(expected.get<std::string>()));
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, RefreshRateReturnsParsedNumericValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.refreshRate");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().refreshRate();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::refreshRate() returned an error";
+    EXPECT_DOUBLE_EQ(expected.get<double>(), 59.94);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, ColorDepthReturnsParsedNumericValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.colorDepth");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorDepth();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::colorDepth() returned an error";
+    EXPECT_EQ(expected.get<int>(), 8);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D8);
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, ColorFormatReturnsParsedValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.colorFormat");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorFormat();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::colorFormat() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::ColorFormatValueEnum.at(expected.get<std::string>()));
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, ColorimetryReturnsParsedValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.colorimetry");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorimetry();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::colorimetry() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::OutputColorimetryEnum.at(expected.get<std::string>()));
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, DynamicRangeReturnsParsedValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.dynamicRange");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().dynamicRange();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::dynamicRange() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::DynamicRangeValueEnum.at(expected.get<std::string>()));
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, QuantizationRangeReturnsParsedValue)
+{
+    const auto expected = jsonEngine.get_value("VideoOutput.quantizationRange");
+    const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().quantizationRange();
+
+    ASSERT_TRUE(result) << "VideoOutputImpl::quantizationRange() returned an error";
+    EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::QuantizationRangeValueEnum.at(expected.get<std::string>()));
 }
 
 TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringPayload)

@@ -4113,6 +4113,27 @@
 			}
 		},
 		{
+			"name": "VideoOutput.resolution",
+			"summary": "Returns the resolution for the active video output",
+			"params": [],
+			"result": {
+				"name": "resolution",
+				"schema": {
+					"type": "object",
+					"required": ["height", "width"],
+					"properties": {
+						"height": {"type": "integer", "minimum": 0},
+						"width": {"type": "integer", "minimum": 0}
+					}
+				}
+			},
+			"examples": [{
+				"name": "Getting resolution",
+				"params": [],
+				"result": {"name": "Default Result", "value": {"height": 1080, "width": 1920}}
+			}]
+		},
+		{
 			"name": "VideoOutput.hdcp",
 			"summary": "Returns HDCP state for the active video output",
 			"params": [],
@@ -4205,17 +4226,17 @@
 			"result": {
 				"name": "refreshRate",
 				"schema": {
-					"type": "string",
+					"type": "number",
 					"enum": [
-						"0",
-						"23.976",
-						"24",
-						"25",
-						"29.97",
-						"30",
-						"50",
-						"59.94",
-						"60"
+						0,
+						23.976,
+						24,
+						25,
+						29.97,
+						30,
+						50,
+						59.94,
+						60
 					]
 				}
 			},
@@ -4225,10 +4246,45 @@
 					"params": [],
 					"result": {
 						"name": "Default Result",
-						"value": "59.94"
+						"value": 59.94
 					}
 				}
 			]
+		},
+		{
+			"name": "VideoOutput.colorDepth",
+			"summary": "Returns color depth for the active video output",
+			"params": [],
+			"result": {"name": "colorDepth", "schema": {"type": "integer", "enum": [0, 8, 10, 12]}},
+			"examples": [{"name": "Getting color depth", "params": [], "result": {"name": "Default Result", "value": 8}}]
+		},
+		{
+			"name": "VideoOutput.colorFormat",
+			"summary": "Returns color format for the active video output",
+			"params": [],
+			"result": {"name": "colorFormat", "schema": {"type": "string", "enum": ["ycbcr420", "ycbcr422", "ycbcr444", "rgb444", "none"]}},
+			"examples": [{"name": "Getting color format", "params": [], "result": {"name": "Default Result", "value": "ycbcr422"}}]
+		},
+		{
+			"name": "VideoOutput.colorimetry",
+			"summary": "Returns colorimetry for the active video output",
+			"params": [],
+			"result": {"name": "colorimetry", "schema": {"type": "string", "enum": ["bt2020rgb", "bt2020ycc", "bt709", "oprgb", "none"]}},
+			"examples": [{"name": "Getting colorimetry", "params": [], "result": {"name": "Default Result", "value": "bt709"}}]
+		},
+		{
+			"name": "VideoOutput.dynamicRange",
+			"summary": "Returns dynamic range for the active video output",
+			"params": [],
+			"result": {"name": "dynamicRange", "schema": {"type": "string", "enum": ["hdr10", "hdr10plus", "dolbyVision", "hlg", "sdr", "none"]}},
+			"examples": [{"name": "Getting dynamic range", "params": [], "result": {"name": "Default Result", "value": "sdr"}}]
+		},
+		{
+			"name": "VideoOutput.quantizationRange",
+			"summary": "Returns quantization range for the active video output",
+			"params": [],
+			"result": {"name": "quantizationRange", "schema": {"type": "string", "enum": ["limited", "full", "none"]}},
+			"examples": [{"name": "Getting quantization range", "params": [], "result": {"name": "Default Result", "value": "limited"}}]
 		},
 		{
 			"name": "VideoOutput.onHdcpChanged",
@@ -4272,7 +4328,13 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "string",
+					"enum": [
+						"hdcp1.4",
+						"hdcp2.2",
+						"none",
+						"direct"
+					]
 				}
 			}
 		},

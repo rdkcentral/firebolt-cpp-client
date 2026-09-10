@@ -174,6 +174,15 @@ TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
 }
 
+TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsParsedValueWhenPayloadIsNumber)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(59.94));
+
+    auto result = impl.refreshRate();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
 TEST_F(VideooutputGeneratedUTest, RefreshRateReturnsInvalidParamsWhenPayloadIsUnsupportedInteger)
 {
     expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(59));
@@ -523,4 +532,3 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedForwardsSubscribe
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
 }
-

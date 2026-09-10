@@ -580,7 +580,7 @@
 			],
 			"params": [
 				{
-					"name": "osName",
+												"name": "value",
 					"summary": "The operating system name",
 					"required": true,
 					"schema": {
@@ -599,7 +599,7 @@
 					"name": "Setting the operating system name",
 					"params": [
 						{
-							"name": "osName",
+									"name": "value",
 							"value": "Linux"
 						}
 					],
@@ -653,7 +653,7 @@
 			],
 			"params": [
 				{
-					"name": "osVersion",
+									"name": "value",
 					"summary": "The operating system version",
 					"required": true,
 					"schema": {
@@ -672,7 +672,7 @@
 					"name": "Setting the operating system version",
 					"params": [
 						{
-							"name": "osVersion",
+										"name": "value",
 							"value": "5.15.0"
 						}
 					],

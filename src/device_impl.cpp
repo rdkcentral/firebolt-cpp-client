@@ -44,7 +44,9 @@ Result<std::string> DeviceImpl::osName() const
 
 Result<void> DeviceImpl::setOsName(const std::string& osName)
 {
-    return helper_.invoke("Device.setOsName", nlohmann::json(osName));
+    nlohmann::json params;
+    params["value"] = osName;
+    return helper_.invoke("Device.setOsName", params);
 }
 
 Result<std::string> DeviceImpl::osVersion() const
@@ -54,7 +56,9 @@ Result<std::string> DeviceImpl::osVersion() const
 
 Result<void> DeviceImpl::setOsVersion(const std::string& osVersion)
 {
-    return helper_.invoke("Device.setOsVersion", nlohmann::json(osVersion));
+    nlohmann::json params;
+    params["value"] = osVersion;
+    return helper_.invoke("Device.setOsVersion", params);
 }
 
 Result<std::string> DeviceImpl::firmware() const

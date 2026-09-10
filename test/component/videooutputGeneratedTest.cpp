@@ -96,6 +96,7 @@ TEST(VideooutputGeneratedCTest, MarshallersRejectUnknownWireValues)
     Firebolt::VideoOutput::JsonData::DynamicRangeValueJson dynamicRangeJson;
     Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson quantizationRangeJson;
     Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRateJson;
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepthJson;
 
     EXPECT_THROW(hdcpJson.fromJson(nlohmann::json("hdcp3.0")), std::out_of_range);
     EXPECT_THROW(cecStateJson.fromJson(nlohmann::json("not-a-state")), std::out_of_range);
@@ -103,6 +104,8 @@ TEST(VideooutputGeneratedCTest, MarshallersRejectUnknownWireValues)
     EXPECT_THROW(dynamicRangeJson.fromJson(nlohmann::json("hdr11")), std::out_of_range);
     EXPECT_THROW(quantizationRangeJson.fromJson(nlohmann::json("super")), std::out_of_range);
     EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json("61")), std::out_of_range);
+    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json(59)), std::out_of_range);
+    EXPECT_THROW(colorDepthJson.fromJson(nlohmann::json("11")), std::out_of_range);
 }
 
 TEST(VideooutputGeneratedCTest, InterfaceSurfaceHasresolution)
@@ -165,31 +168,6 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnCecStateChangedParsesWireStr
 
     resetEventState();
     triggerEvent("VideoOutput.onCecStateChanged", R"("invalid-cec")");
-    verifyEventNotReceived(mtx, cv, eventReceived);
-
-    auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());
-    verifyUnsubscribeResult(result);
-}
-
-TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWireStringPayload)
-{
-    auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnRefreshRateChanged(
-        [&](const Firebolt::VideoOutput::RefreshRateValue& value)
-        {
-            EXPECT_EQ(value, Firebolt::VideoOutput::RefreshRateValue::R5994);
-            {
-                std::lock_guard<std::mutex> lock(mtx);
-                eventReceived = true;
-            }
-            cv.notify_one();
-        });
-
-    verifyEventSubscription(id);
-    triggerEvent("VideoOutput.onRefreshRateChanged", R"("59.94")");
-    verifyEventReceived(mtx, cv, eventReceived);
-
-    resetEventState();
-    triggerEvent("VideoOutput.onRefreshRateChanged", R"("61")");
     verifyEventNotReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());

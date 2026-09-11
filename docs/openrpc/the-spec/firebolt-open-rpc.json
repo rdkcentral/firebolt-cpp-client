@@ -3036,13 +3036,7 @@
 					"required": true
 				},
 				{
-					"name": "callSign",
-					"schema": {
-						"type": "string"
-					}
-				},
-				{
-					"name": "language",
+					"name": "lang",
 					"schema": {
 						"type": "string"
 					}
@@ -3056,19 +3050,31 @@
 				{
 					"name": "volume",
 					"schema": {
-						"type": "string"
+						"type": "number",
+						"minimum": 0,
+						"maximum": 1
 					}
 				},
 				{
 					"name": "rate",
 					"schema": {
-						"type": "string"
+						"type": "number",
+						"minimum": 0.1,
+						"maximum": 10
 					}
 				},
 				{
 					"name": "pitch",
 					"schema": {
-						"type": "string"
+						"type": "number",
+						"minimum": 0,
+						"maximum": 2
+					}
+				},
+				{
+					"name": "pii",
+					"schema": {
+						"type": "boolean"
 					}
 				}
 			],
@@ -3088,11 +3094,7 @@
 							"value": "I am a text waiting for speech."
 						},
 						{
-							"name": "callSign",
-							"value": "AppA"
-						},
-						{
-							"name": "language",
+							"name": "lang",
 							"value": "en-US"
 						},
 						{
@@ -3101,15 +3103,19 @@
 						},
 						{
 							"name": "volume",
-							"value": "80"
+							"value": 0.8
 						},
 						{
 							"name": "rate",
-							"value": "normal"
+							"value": 1
 						},
 						{
 							"name": "pitch",
-							"value": "medium"
+							"value": 1
+						},
+						{
+							"name": "pii",
+							"value": false
 						}
 					],
 					"result": {
@@ -3170,7 +3176,7 @@
 			"summary": "Cancel an utterance.",
 			"params": [
 				{
-					"name": "id",
+					"name": "utteranceId",
 					"schema": {
 						"type": "integer",
 						"minimum": 0
@@ -3189,7 +3195,7 @@
 					"name": "Cancel utterance",
 					"params": [
 						{
-							"name": "id",
+							"name": "utteranceId",
 							"value": 1
 						}
 					],
@@ -3205,7 +3211,7 @@
 			"summary": "Pause an utterance.",
 			"params": [
 				{
-					"name": "id",
+					"name": "utteranceId",
 					"schema": {
 						"type": "integer",
 						"minimum": 0
@@ -3224,7 +3230,7 @@
 					"name": "Pause utterance",
 					"params": [
 						{
-							"name": "id",
+							"name": "utteranceId",
 							"value": 1
 						}
 					],
@@ -3240,7 +3246,7 @@
 			"summary": "Resume an utterance.",
 			"params": [
 				{
-					"name": "id",
+					"name": "utteranceId",
 					"schema": {
 						"type": "integer",
 						"minimum": 0
@@ -3259,7 +3265,7 @@
 					"name": "Resume utterance",
 					"params": [
 						{
-							"name": "id",
+							"name": "utteranceId",
 							"value": 1
 						}
 					],
@@ -3365,11 +3371,11 @@
 				"schema": {
 					"type": "object",
 					"required": [
-						"id",
+						"utteranceId",
 						"event"
 					],
 					"properties": {
-						"id": {
+						"utteranceId": {
 							"type": "integer",
 							"minimum": 0
 						},

@@ -72,28 +72,32 @@ class UtteranceEventResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::
 public:
     void fromJson(const nlohmann::json& json) override
     {
-        if (!checkRequiredFields(json, {"id", "event"}))
+        if (!checkRequiredFields(json, {"utteranceId", "event"}))
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
 
         const auto eventName = json["event"].get<std::string>();
+
         const auto eventIt = UtteranceEventEnum.find(eventName);
         if (eventIt == UtteranceEventEnum.end())
         {
             throw std::invalid_argument("Unknown utterance event");
         }
+
+        utteranceId_ = json["utteranceId"].get<::Firebolt::SpeechSynthesis::UtteranceId>();
+
         event_ = eventIt->second;
-        id_ = json["id"].get<::Firebolt::SpeechSynthesis::UtteranceId>();
     }
 
-    [[nodiscard]] ::Firebolt::SpeechSynthesis::UtteranceEvent value() const override
+    [[nodiscard]]
+    ::Firebolt::SpeechSynthesis::UtteranceEvent value() const override
     {
-        return ::Firebolt::SpeechSynthesis::UtteranceEvent{id_, event_};
+        return {utteranceId_, event_};
     }
 
 private:
-    ::Firebolt::SpeechSynthesis::UtteranceId id_;
+    ::Firebolt::SpeechSynthesis::UtteranceId utteranceId_;
     ::Firebolt::SpeechSynthesis::UtteranceEventEnum event_;
 };
 } // namespace Firebolt::SpeechSynthesis::JsonData

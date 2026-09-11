@@ -30,7 +30,10 @@ protected:
 
 TEST_F(SpeechSynthesisCTest, speak)
 {
-    auto result = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().speak("component test");
+    auto result = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().speak("component test",
+                                                                                           std::string("en-US"),
+                                                                                           std::string("Salli"), 0.8,
+                                                                                           1.0, 1.0, false);
     ASSERT_TRUE(result) << "SpeechSynthesis.speak unavailable";
     EXPECT_GT(*result, 0U);
 }
@@ -46,15 +49,15 @@ TEST_F(SpeechSynthesisCTest, voices)
 
 TEST_F(SpeechSynthesisCTest, cancelPauseResume)
 {
-    constexpr Firebolt::SpeechSynthesis::UtteranceId id = 1;
+    constexpr Firebolt::SpeechSynthesis::UtteranceId utteranceId = 1;
 
-    auto cancelResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().cancel(id);
+    auto cancelResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().cancel(utteranceId);
     ASSERT_TRUE(cancelResult) << "SpeechSynthesis.cancel unavailable";
 
-    auto pauseResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().pause(id);
+    auto pauseResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().pause(utteranceId);
     ASSERT_TRUE(pauseResult) << "pause failed after successful cancel call";
 
-    auto resumeResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().resume(id);
+    auto resumeResult = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().resume(utteranceId);
     ASSERT_TRUE(resumeResult) << "resume failed after successful cancel call";
 }
 
@@ -85,7 +88,7 @@ TEST_F(SpeechSynthesisCTest, subscribeOnUtteranceEvent)
     auto id = Firebolt::IFireboltAccessor::Instance().SpeechSynthesisInterface().subscribeOnUtteranceEvent(
         [&](const Firebolt::SpeechSynthesis::UtteranceEvent& event)
         {
-            EXPECT_EQ(event.id, static_cast<Firebolt::SpeechSynthesis::UtteranceId>(7));
+            EXPECT_EQ(event.utteranceId, static_cast<Firebolt::SpeechSynthesis::UtteranceId>(7));
             EXPECT_EQ(event.event, Firebolt::SpeechSynthesis::UtteranceEventEnum::resumed);
             {
                 std::lock_guard<std::mutex> lock(mtx_);
@@ -96,6 +99,6 @@ TEST_F(SpeechSynthesisCTest, subscribeOnUtteranceEvent)
 
     verifyEventSubscription(id);
 
-    triggerEvent("SpeechSynthesis.onUtteranceEvent", R"({"id":7,"event":"resumed"})");
+    triggerEvent("SpeechSynthesis.onUtteranceEvent", R"({"utteranceId":7,"event":"resumed"})");
     verifyEventReceived(mtx_, cv_, eventReceived_);
 }

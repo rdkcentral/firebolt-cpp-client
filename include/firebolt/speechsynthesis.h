@@ -45,11 +45,11 @@ enum class UtteranceEventEnum
     playbackFailed
 };
 
-using UtteranceId = std::uint64_t;
+using UtteranceId = std::uint32_t;
 
 struct UtteranceEvent
 {
-    UtteranceId id;
+    UtteranceId utteranceId;
     UtteranceEventEnum event;
 };
 
@@ -58,18 +58,19 @@ class ISpeechSynthesis
 public:
     virtual ~ISpeechSynthesis() = default;
 
-    [[nodiscard]] virtual Result<unsigned>
-    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
-          std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
-          std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
-          std::optional<std::string> pitch = std::nullopt) const = 0;
+    [[nodiscard]] virtual Result<unsigned> speak(const std::string& text, std::optional<std::string> lang = std::nullopt,
+                                                 std::optional<std::string> voice = std::nullopt,
+                                                 std::optional<double> volume = std::nullopt,
+                                                 std::optional<double> rate = std::nullopt,
+                                                 std::optional<double> pitch = std::nullopt,
+                                                 std::optional<bool> pii = std::nullopt) const = 0;
     [[nodiscard]] virtual Result<std::pmr::vector<Voice>> voices() const = 0;
     [[nodiscard]] virtual Result<SubscriptionId>
     subscribeOnVoicesChanged(std::function<void(const std::pmr::vector<Voice>&)>&& notification) = 0;
 
-    [[nodiscard]] virtual Result<void> cancel(UtteranceId id) const = 0;
-    [[nodiscard]] virtual Result<void> pause(UtteranceId id) const = 0;
-    [[nodiscard]] virtual Result<void> resume(UtteranceId id) const = 0;
+    [[nodiscard]] virtual Result<void> cancel(UtteranceId utteranceId) const = 0;
+    [[nodiscard]] virtual Result<void> pause(UtteranceId utteranceId) const = 0;
+    [[nodiscard]] virtual Result<void> resume(UtteranceId utteranceId) const = 0;
     [[nodiscard]] virtual Result<SubscriptionId>
     subscribeOnUtteranceEvent(std::function<void(const UtteranceEvent&)>&& notification) = 0;
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;

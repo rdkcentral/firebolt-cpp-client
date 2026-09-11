@@ -42,83 +42,6 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST(VideooutputGeneratedCTest, HdcpMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::HdcpStateJson jsonType;
-    jsonType.fromJson(nlohmann::json("hdcp1.4"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::HdcpState::Hdcp14);
-}
-
-TEST(VideooutputGeneratedCTest, CecStateMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::CecStateValueJson jsonType;
-    jsonType.fromJson(nlohmann::json("inactive"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::CecStateValue::Inactive);
-}
-
-TEST(VideooutputGeneratedCTest, ColorFormatMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::ColorFormatValueJson jsonType;
-    jsonType.fromJson(nlohmann::json("ycbcr422"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::ColorFormatValue::Ycbcr422);
-}
-
-TEST(VideooutputGeneratedCTest, DynamicRangeMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson jsonType;
-    jsonType.fromJson(nlohmann::json("sdr"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::DynamicRangeValue::Sdr);
-}
-
-TEST(VideooutputGeneratedCTest, QuantizationRangeMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson jsonType;
-    jsonType.fromJson(nlohmann::json("limited"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::QuantizationRangeValue::Limited);
-}
-
-TEST(VideooutputGeneratedCTest, RefreshRateMarshallerParsesWireString)
-{
-    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
-    jsonType.fromJson(nlohmann::json("59.94"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R5994);
-}
-
-TEST(VideooutputGeneratedCTest, RefreshRateMarshallerParsesWholeNumberFloat)
-{
-    // Some servers encode a whole-number refresh rate (e.g. 24) as a JSON float literal (24.0).
-    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
-    jsonType.fromJson(nlohmann::json::parse("24.0"));
-
-    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R24);
-}
-
-TEST(VideooutputGeneratedCTest, MarshallersRejectUnknownWireValues)
-{
-    Firebolt::VideoOutput::JsonData::HdcpStateJson hdcpJson;
-    Firebolt::VideoOutput::JsonData::CecStateValueJson cecStateJson;
-    Firebolt::VideoOutput::JsonData::ColorFormatValueJson colorFormatJson;
-    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson dynamicRangeJson;
-    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson quantizationRangeJson;
-    Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRateJson;
-    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepthJson;
-
-    EXPECT_THROW(hdcpJson.fromJson(nlohmann::json("hdcp3.0")), std::out_of_range);
-    EXPECT_THROW(cecStateJson.fromJson(nlohmann::json("not-a-state")), std::out_of_range);
-    EXPECT_THROW(colorFormatJson.fromJson(nlohmann::json("xyz")), std::out_of_range);
-    EXPECT_THROW(dynamicRangeJson.fromJson(nlohmann::json("hdr11")), std::out_of_range);
-    EXPECT_THROW(quantizationRangeJson.fromJson(nlohmann::json("super")), std::out_of_range);
-    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json("61")), std::out_of_range);
-    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json(59)), std::out_of_range);
-    EXPECT_THROW(colorDepthJson.fromJson(nlohmann::json("11")), std::out_of_range);
-}
-
 TEST_F(VideooutputGeneratedRuntimeCTest, ResolutionReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.resolution");
@@ -203,6 +126,32 @@ TEST_F(VideooutputGeneratedRuntimeCTest, QuantizationRangeReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::QuantizationRangeValueEnum.at(expected.get<std::string>()));
 }
 
+TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnResolutionChangedParsesWireObjectPayload)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnResolutionChanged(
+        [&](const Firebolt::VideoOutput::VideoOutputResolution& value)
+        {
+            EXPECT_EQ(value.height, 2160U);
+            EXPECT_EQ(value.width, 3840U);
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+    triggerEvent("VideoOutput.onResolutionChanged", R"({"height":2160,"width":3840})");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    resetEventState();
+    triggerEvent("VideoOutput.onResolutionChanged", R"({"width":3840})");
+    verifyEventNotReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}
+
 TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringPayload)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnHdcpChanged(
@@ -242,13 +191,13 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWire
         });
 
     verifyEventSubscription(id);
-    // Whole-number rates can be encoded as a float on the wire (e.g. 24.0); the marshaller must still
+    // Whole-number rates can still arrive as a float on the wire (e.g. 24.0); the marshaller must
     // resolve it to R24 instead of rejecting it.
     triggerEvent("VideoOutput.onRefreshRateChanged", "24.0");
     verifyEventReceived(mtx, cv, eventReceived);
 
     resetEventState();
-    triggerEvent("VideoOutput.onRefreshRateChanged", "61.0");
+    triggerEvent("VideoOutput.onRefreshRateChanged", "61");
     verifyEventNotReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());

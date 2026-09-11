@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include "json_types/videooutput.h"
 #include "mock_helper.h"
 #include "videooutput_impl.h"
 #include <gmock/gmock.h>
@@ -531,4 +532,81 @@ TEST_F(VideooutputGeneratedUTest, SubscribeOnRefreshRateChangedForwardsSubscribe
 
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideooutputGeneratedUTest, HdcpMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::HdcpStateJson jsonType;
+    jsonType.fromJson(nlohmann::json("hdcp1.4"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::HdcpState::Hdcp14);
+}
+
+TEST_F(VideooutputGeneratedUTest, CecStateMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::CecStateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("inactive"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::CecStateValue::Inactive);
+}
+
+TEST_F(VideooutputGeneratedUTest, ColorFormatMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::ColorFormatValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("ycbcr422"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::ColorFormatValue::Ycbcr422);
+}
+
+TEST_F(VideooutputGeneratedUTest, DynamicRangeMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("sdr"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::DynamicRangeValue::Sdr);
+}
+
+TEST_F(VideooutputGeneratedUTest, QuantizationRangeMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("limited"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::QuantizationRangeValue::Limited);
+}
+
+TEST_F(VideooutputGeneratedUTest, RefreshRateMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("59.94"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideooutputGeneratedUTest, RefreshRateMarshallerParsesWholeNumberFloat)
+{
+    // Some servers encode a whole-number refresh rate (e.g. 24) as a JSON float literal (24.0).
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json::parse("24.0"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R24);
+}
+
+TEST_F(VideooutputGeneratedUTest, MarshallersRejectUnknownWireValues)
+{
+    Firebolt::VideoOutput::JsonData::HdcpStateJson hdcpJson;
+    Firebolt::VideoOutput::JsonData::CecStateValueJson cecStateJson;
+    Firebolt::VideoOutput::JsonData::ColorFormatValueJson colorFormatJson;
+    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson dynamicRangeJson;
+    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson quantizationRangeJson;
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRateJson;
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepthJson;
+
+    EXPECT_THROW(hdcpJson.fromJson(nlohmann::json("hdcp3.0")), std::out_of_range);
+    EXPECT_THROW(cecStateJson.fromJson(nlohmann::json("not-a-state")), std::out_of_range);
+    EXPECT_THROW(colorFormatJson.fromJson(nlohmann::json("xyz")), std::out_of_range);
+    EXPECT_THROW(dynamicRangeJson.fromJson(nlohmann::json("hdr11")), std::out_of_range);
+    EXPECT_THROW(quantizationRangeJson.fromJson(nlohmann::json("super")), std::out_of_range);
+    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json("61")), std::out_of_range);
+    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json(59)), std::out_of_range);
+    EXPECT_THROW(colorDepthJson.fromJson(nlohmann::json("11")), std::out_of_range);
 }

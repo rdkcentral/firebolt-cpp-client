@@ -29,21 +29,17 @@ SpeechSynthesisImpl::SpeechSynthesisImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::optional<std::string> callSign,
-                                            std::optional<std::string> language, std::optional<std::string> voice,
-                                            std::optional<std::string> volume, std::optional<std::string> rate,
-                                            std::optional<std::string> pitch) const
+Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::optional<std::string> lang,
+                                            std::optional<std::string> voice, std::optional<double> volume,
+                                            std::optional<double> rate, std::optional<double> pitch,
+                                            std::optional<bool> pii) const
 {
     nlohmann::json params;
     params["text"] = text;
 
-    if (callSign)
+    if (lang)
     {
-        params["callSign"] = *callSign;
-    }
-    if (language)
-    {
-        params["language"] = *language;
+        params["lang"] = *lang;
     }
     if (voice)
     {
@@ -61,6 +57,10 @@ Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::option
     {
         params["pitch"] = *pitch;
     }
+    if (pii)
+    {
+        params["pii"] = *pii;
+    }
 
     return helper_.get<Firebolt::JSON::Unsigned, unsigned>("SpeechSynthesis.speak", params);
 }
@@ -75,22 +75,22 @@ SpeechSynthesisImpl::subscribeOnVoicesChanged(std::function<void(const std::pmr:
     return subscriptionManager_.subscribe<JsonData::VoicesResponse>("SpeechSynthesis.onVoicesChanged",
                                                                     std::move(notification));
 }
-Result<void> SpeechSynthesisImpl::cancel(UtteranceId id) const
+Result<void> SpeechSynthesisImpl::cancel(UtteranceId utteranceId) const
 {
     nlohmann::json params;
-    params["id"] = id;
+    params["utteranceId"] = utteranceId;
     return helper_.invoke("SpeechSynthesis.cancel", params);
 }
-Result<void> SpeechSynthesisImpl::pause(UtteranceId id) const
+Result<void> SpeechSynthesisImpl::pause(UtteranceId utteranceId) const
 {
     nlohmann::json params;
-    params["id"] = id;
+    params["utteranceId"] = utteranceId;
     return helper_.invoke("SpeechSynthesis.pause", params);
 }
-Result<void> SpeechSynthesisImpl::resume(UtteranceId id) const
+Result<void> SpeechSynthesisImpl::resume(UtteranceId utteranceId) const
 {
     nlohmann::json params;
-    params["id"] = id;
+    params["utteranceId"] = utteranceId;
     return helper_.invoke("SpeechSynthesis.resume", params);
 }
 Result<SubscriptionId>

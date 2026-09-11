@@ -31,8 +31,6 @@ public:
     explicit VideoOutputImpl(Firebolt::Helpers::IHelper& helper);
     VideoOutputImpl(const VideoOutputImpl&) = delete;
     VideoOutputImpl& operator=(const VideoOutputImpl&) = delete;
-    VideoOutputImpl(VideoOutputImpl&&) = delete;
-    VideoOutputImpl& operator=(VideoOutputImpl&&) = delete;
     ~VideoOutputImpl() override = default;
     [[nodiscard]] Result<VideoOutputResolution> resolution() const override;
     Result<SubscriptionId>

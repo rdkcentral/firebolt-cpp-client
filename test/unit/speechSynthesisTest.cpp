@@ -34,8 +34,12 @@ TEST_F(SpeechSynthesisUTest, Constructs)
 TEST_F(SpeechSynthesisUTest, speak)
 {
     EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
-        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
-                         { return Firebolt::Result<nlohmann::json>{42}; }));
+        .WillOnce(Invoke(
+            [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
+            {
+                EXPECT_EQ(parameters, nlohmann::json({{"text", "Hello from speech synthesis"}}));
+                return Firebolt::Result<nlohmann::json>{42};
+            }));
 
     auto result = speechSynthesisImpl_.speak("Hello from speech synthesis");
 
@@ -43,22 +47,21 @@ TEST_F(SpeechSynthesisUTest, speak)
     EXPECT_EQ(*result, 42U);
 }
 
-TEST_F(SpeechSynthesisUTest, speak_payloadIncludesOnlyProvidedOptionalFields)
+TEST_F(SpeechSynthesisUTest, speak_payloadMatchesContract)
 {
     EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
         .WillOnce(Invoke(
             [&](const std::string& /*methodName*/, const nlohmann::json& parameters)
             {
-                nlohmann::json expected;
-                expected["text"] = "payload";
-                expected["language"] = "en-US";
-                expected["pitch"] = "medium";
+                const nlohmann::json expected = {{"text", "payload"}, {"lang", "en-US"}, {"voice", "Salli"},
+                                                 {"volume", 0.8},     {"rate", 1.25},    {"pitch", 1.1},
+                                                 {"pii", false}};
                 EXPECT_EQ(parameters, expected);
                 return Firebolt::Result<nlohmann::json>{7};
             }));
 
-    auto result = speechSynthesisImpl_.speak("payload", std::nullopt, std::string("en-US"), std::nullopt, std::nullopt,
-                                             std::nullopt, std::string("medium"));
+    auto result =
+        speechSynthesisImpl_.speak("payload", std::string("en-US"), std::string("Salli"), 0.8, 1.25, 1.1, false);
 
     ASSERT_TRUE(result);
     EXPECT_EQ(*result, 7U);
@@ -146,7 +149,7 @@ TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged_subscribeError)
 TEST_F(SpeechSynthesisUTest, cancel)
 {
     nlohmann::json expectedParams;
-    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+    expectedParams["utteranceId"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
 
     EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.cancel", expectedParams))
         .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
@@ -168,7 +171,7 @@ TEST_F(SpeechSynthesisUTest, cancel_invokeError)
 TEST_F(SpeechSynthesisUTest, pause)
 {
     nlohmann::json expectedParams;
-    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+    expectedParams["utteranceId"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
 
     EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.pause", expectedParams))
         .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
@@ -190,7 +193,7 @@ TEST_F(SpeechSynthesisUTest, pause_invokeError)
 TEST_F(SpeechSynthesisUTest, resume)
 {
     nlohmann::json expectedParams;
-    expectedParams["id"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
+    expectedParams["utteranceId"] = static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123);
 
     EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.resume", expectedParams))
         .WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
@@ -235,19 +238,29 @@ TEST_F(SpeechSynthesisUTest, subscribeOnUtteranceEvent_subscribeError)
 TEST_F(SpeechSynthesisUTest, utteranceEventResponse_parsesValidPayload)
 {
     Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse response;
-    nlohmann::json payload = {{"id", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)}, {"event", "resumed"}};
+    nlohmann::json payload = {{"utteranceId", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)},
+                              {"event", "resumed"}};
 
     response.fromJson(payload);
     auto value = response.value();
 
-    EXPECT_EQ(value.id, static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77));
+    EXPECT_EQ(value.utteranceId, static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77));
     EXPECT_EQ(value.event, Firebolt::SpeechSynthesis::UtteranceEventEnum::resumed);
 }
 
 TEST_F(SpeechSynthesisUTest, utteranceEventResponse_rejectsUnknownEvent)
 {
     Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse response;
-    nlohmann::json payload = {{"id", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)}, {"event", "not-valid"}};
+    nlohmann::json payload = {{"utteranceId", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)},
+                              {"event", "not-valid"}};
+
+    EXPECT_THROW(response.fromJson(payload), std::invalid_argument);
+}
+
+TEST_F(SpeechSynthesisUTest, utteranceEventResponse_rejectsLegacyIdField)
+{
+    Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse response;
+    nlohmann::json payload = {{"id", static_cast<Firebolt::SpeechSynthesis::UtteranceId>(77)}, {"event", "resumed"}};
 
     EXPECT_THROW(response.fromJson(payload), std::invalid_argument);
 }

@@ -329,6 +329,36 @@ public:
                 refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R5994;
                 return;
             }
+
+            // A whole-number rate can still arrive as a float on the wire (e.g. 24.0); fall back to
+            // the integer table instead of rejecting it outright.
+            const auto rounded = std::llround(value);
+            if (std::fabs(value - static_cast<double>(rounded)) < 0.001)
+            {
+                switch (rounded)
+                {
+                case 0:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R0;
+                    return;
+                case 24:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R24;
+                    return;
+                case 25:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R25;
+                    return;
+                case 30:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R30;
+                    return;
+                case 50:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R50;
+                    return;
+                case 60:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R60;
+                    return;
+                default:
+                    break;
+                }
+            }
             throw std::out_of_range("Unsupported refresh rate value");
         }
 

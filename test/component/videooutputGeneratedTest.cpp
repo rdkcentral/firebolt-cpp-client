@@ -90,6 +90,15 @@ TEST(VideooutputGeneratedCTest, RefreshRateMarshallerParsesWireString)
     EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R5994);
 }
 
+TEST(VideooutputGeneratedCTest, RefreshRateMarshallerParsesWholeNumberFloat)
+{
+    // Some servers encode a whole-number refresh rate (e.g. 24) as a JSON float literal (24.0).
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json::parse("24.0"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R24);
+}
+
 TEST(VideooutputGeneratedCTest, MarshallersRejectUnknownWireValues)
 {
     Firebolt::VideoOutput::JsonData::HdcpStateJson hdcpJson;
@@ -213,6 +222,33 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringP
 
     resetEventState();
     triggerEvent("VideoOutput.onHdcpChanged", R"("invalid-hdcp")");
+    verifyEventNotReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}
+
+TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWireNumericPayload)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnRefreshRateChanged(
+        [&](const Firebolt::VideoOutput::RefreshRateValue& value)
+        {
+            EXPECT_EQ(value, Firebolt::VideoOutput::RefreshRateValue::R24);
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+    // Whole-number rates can be encoded as a float on the wire (e.g. 24.0); the marshaller must still
+    // resolve it to R24 instead of rejecting it.
+    triggerEvent("VideoOutput.onRefreshRateChanged", "24.0");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    resetEventState();
+    triggerEvent("VideoOutput.onRefreshRateChanged", "61.0");
     verifyEventNotReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().unsubscribe(id.value());

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "installer_version": "1.0.0",
+  "installed_at": "2026-06-29T23:05:35Z",
+  "modules": [
+    {
+      "module": "sync-branches",
+      "version": "1.0.99-test",
+      "source": "sync-branches-1.0.99-test.tar.gz",
+      "managed_files": [
+        ".github/actions/sync-branches/action.yml",
+        ".github/actions/sync-branches/consumer-template.yml",
+        ".github/actions/sync-branches/README.md",
+        ".github/actions/sync-branches/scripts/move-major-tag.sh",
+        ".github/workflows/sync-develop-to-main.yml"
+      ],
+      "template_values": {
+        "source_branch": "develop",
+        "target_branch": "main",
+        "runner": "comcast-ubuntu-latest",
+        "secret_name": "SEMANTIC_RELEASE_TOKEN"
+      }
+    }
+  ]
+}

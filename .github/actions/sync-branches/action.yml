@@ -1,0 +1,225 @@
+name: Sync Branches
+description: >
+  Merge source branch into target branch and push directly.
+  On conflict or push failure, opens a fallback PR instead.
+  All logic is here — callers only need concurrency + permissions + triggers.
+
+inputs:
+  source_branch:
+    description: "Branch to sync from"
+    required: false
+    default: "develop"
+  target_branch:
+    description: "Branch to sync to"
+    required: false
+    default: "main"
+  token:
+    description: "PAT with contents:write + pull-requests:write + issues:write. Falls back to GITHUB_TOKEN then github.token."
+    required: false
+    default: ""
+  git_user_name:
+    description: "Git committer name"
+    required: false
+    default: "github-actions[bot]"
+  git_user_email:
+    description: "Git committer email"
+    required: false
+    default: "github-actions[bot]@users.noreply.github.com"
+  pr_branch_prefix:
+    description: "Prefix for fallback PR branch"
+    required: false
+    default: "auto-sync"
+  assign_reviewers:
+    description: "Comma-separated reviewers to assign to fallback PR"
+    required: false
+    default: ""
+  pr_labels:
+    description: "Comma-separated labels to apply to fallback PR"
+    required: false
+    default: "auto-sync,needs-manual-merge"
+
+outputs:
+  result:
+    description: "Outcome: merged | skipped | pr-opened"
+    value: ${{ steps.outcome.outputs.result }}
+  pr_number:
+    description: "Fallback PR number (if opened)"
+    value: ${{ steps.outcome.outputs.pr_number }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve authentication token
+      id: token
+      shell: bash
+      env:
+        INPUT_TOKEN: ${{ inputs.token }}
+      run: |
+        if [ -n "${INPUT_TOKEN}" ]; then
+          echo "token=${INPUT_TOKEN}" >> "$GITHUB_OUTPUT"
+          echo "source=input:token" >> "$GITHUB_OUTPUT"
+        elif [ -n "${GITHUB_TOKEN}" ]; then
+          echo "token=${GITHUB_TOKEN}" >> "$GITHUB_OUTPUT"
+          echo "source=env:GITHUB_TOKEN" >> "$GITHUB_OUTPUT"
+        else
+          echo "token=${{ github.token }}" >> "$GITHUB_OUTPUT"
+          echo "source=implicit:github.token" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Checkout full history
+      uses: actions/checkout@v4
+      with:
+        token: ${{ steps.token.outputs.token }}
+        fetch-depth: 0
+
+    - name: Configure git identity
+      shell: bash
+      run: |
+        git config user.name  "${{ inputs.git_user_name }}"
+        git config user.email "${{ inputs.git_user_email }}"
+
+    - name: Check if sync is needed
+      id: check
+      shell: bash
+      run: |
+        git fetch origin \
+          "refs/heads/${{ inputs.source_branch }}:refs/remotes/origin/${{ inputs.source_branch }}" \
+          "refs/heads/${{ inputs.target_branch }}:refs/remotes/origin/${{ inputs.target_branch }}"
+        if git merge-base --is-ancestor "origin/${{ inputs.source_branch }}" "origin/${{ inputs.target_branch }}"; then
+          echo "already_synced=true" >> "$GITHUB_OUTPUT"
+          echo "${{ inputs.target_branch }} already contains all commits from ${{ inputs.source_branch }} — nothing to do."
+        else
+          echo "already_synced=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Attempt merge
+      if: steps.check.outputs.already_synced == 'false'
+      id: merge
+      shell: bash
+      run: |
+        git checkout -B "${{ inputs.target_branch }}" "origin/${{ inputs.target_branch }}"
+        if git merge --no-edit "origin/${{ inputs.source_branch }}"; then
+          echo "conflict=false" >> "$GITHUB_OUTPUT"
+        else
+          echo "conflict=true" >> "$GITHUB_OUTPUT"
+          git merge --abort || true
+        fi
+
+    - name: Push merged result
+      if: steps.check.outputs.already_synced == 'false' && steps.merge.outputs.conflict == 'false'
+      id: push
+      shell: bash
+      run: |
+        if git push origin "${{ inputs.target_branch }}"; then
+          echo "push_failed=false" >> "$GITHUB_OUTPUT"
+          echo "✅ Pushed ${{ inputs.source_branch }} → ${{ inputs.target_branch }} successfully."
+        else
+          echo "push_failed=true" >> "$GITHUB_OUTPUT"
+          echo "Direct push failed (branch protection). Falling back to PR."
+        fi
+
+    - name: Ensure labels exist
+      if: steps.check.outputs.already_synced == 'false' && (steps.merge.outputs.conflict == 'true' || steps.push.outputs.push_failed == 'true')
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.token.outputs.token }}
+      run: |
+        IFS=',' read -ra LABELS <<< "${{ inputs.pr_labels }}"
+        for label in "${LABELS[@]}"; do
+          label=$(echo "$label" | xargs)
+          [ -n "$label" ] && gh label create "$label" --force || true
+        done
+
+    - name: Open or update fallback PR
+      if: steps.check.outputs.already_synced == 'false' && (steps.merge.outputs.conflict == 'true' || steps.push.outputs.push_failed == 'true')
+      id: pr_fallback
+      shell: bash
+      env:
+        GH_TOKEN: ${{ steps.token.outputs.token }}
+      run: |
+        PR_BRANCH="${{ inputs.pr_branch_prefix }}/${{ inputs.source_branch }}-to-${{ inputs.target_branch }}"
+        REASON="merge conflict"
+        if [ "${{ steps.merge.outputs.conflict }}" != "true" ]; then
+          REASON="direct push failure (branch protection)"
+        fi
+
+          EXISTING=$(gh pr list \
+            --base "${{ inputs.target_branch }}" \
+            --state open \
+            --json number,headRefName 2>/dev/null | \
+            jq -r --arg prefix "$PR_BRANCH" 'map(select(.headRefName | startswith($prefix))) | .[0].number // empty' || echo "")
+
+        if [ -z "$EXISTING" ]; then
+          if git ls-remote --exit-code --heads origin "$PR_BRANCH" >/dev/null 2>&1; then
+            PR_BRANCH="${PR_BRANCH}-${GITHUB_RUN_ID}"
+          fi
+          git checkout -B "$PR_BRANCH" "origin/${{ inputs.source_branch }}"
+          git push origin "$PR_BRANCH"
+
+          PR_CREATE_ARGS=(
+            "pr" "create"
+            "--base" "${{ inputs.target_branch }}"
+            "--head" "$PR_BRANCH"
+            "--title" "chore: auto-sync ${{ inputs.source_branch }} → ${{ inputs.target_branch }} (${REASON})"
+            "--body" "Automatic sync of \`${{ inputs.source_branch }}\` → \`${{ inputs.target_branch }}\` could not complete. **Action required:** resolve then merge. **Reason:** ${REASON}. Triggered by: ${{ github.sha }} on ${{ github.ref_name }}"
+          )
+
+          if [ -n "${{ inputs.pr_labels }}" ]; then
+            IFS=',' read -ra LABELS <<< "${{ inputs.pr_labels }}"
+            for label in "${LABELS[@]}"; do
+              label=$(echo "$label" | xargs)
+              [ -n "$label" ] && PR_CREATE_ARGS+=("--label" "$label")
+            done
+          fi
+
+          if [ -n "${{ inputs.assign_reviewers }}" ]; then
+            IFS=',' read -ra REVIEWERS <<< "${{ inputs.assign_reviewers }}"
+            for reviewer in "${REVIEWERS[@]}"; do
+              reviewer=$(echo "$reviewer" | xargs)
+              [ -n "$reviewer" ] && PR_CREATE_ARGS+=("--reviewer" "$reviewer")
+            done
+          fi
+
+          PR_URL=$(gh "${PR_CREATE_ARGS[@]}")
+          PR_NUM=$(gh pr view "$PR_URL" --json number --jq .number 2>/dev/null || echo "")
+          if [ -z "$PR_NUM" ]; then
+            PR_NUM=$(gh pr list \
+              --base "${{ inputs.target_branch }}" \
+              --head "$PR_BRANCH" \
+              --state open \
+              --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
+          fi
+          if [ -z "$PR_NUM" ]; then
+            echo "Failed to resolve fallback PR number after creation."
+            exit 1
+          fi
+          echo "pr_number=${PR_NUM}" >> "$GITHUB_OUTPUT"
+          echo "PR #${PR_NUM} opened for manual resolution."
+        else
+          echo "pr_number=${EXISTING}" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.merge.outputs.conflict }}" != "true" ]; then
+            # Push-failure: update branch to latest source (no conflict resolution in progress)
+              UPDATE_BRANCH=$(gh pr view "$EXISTING" --json headRefName --jq .headRefName 2>/dev/null || echo "$PR_BRANCH")
+              git checkout -B "$UPDATE_BRANCH" "origin/${{ inputs.source_branch }}"
+              git push --force-with-lease origin "$UPDATE_BRANCH"
+              echo "PR #${EXISTING} branch updated to latest ${{ inputs.source_branch }} commits on $UPDATE_BRANCH."
+          else
+            echo "PR #${EXISTING} already open with merge conflict — leaving branch untouched."
+          fi
+        fi
+
+    - name: Determine outcome
+      id: outcome
+      if: always()
+      shell: bash
+      run: |
+        if [ "${{ steps.check.outputs.already_synced }}" = "true" ]; then
+          echo "result=skipped" >> "$GITHUB_OUTPUT"
+        elif [ "${{ steps.merge.outputs.conflict }}" = "false" ] && [ "${{ steps.push.outputs.push_failed }}" = "false" ]; then
+          echo "result=merged" >> "$GITHUB_OUTPUT"
+        else
+          echo "result=pr-opened" >> "$GITHUB_OUTPUT"
+          [ -n "${{ steps.pr_fallback.outputs.pr_number }}" ] && \
+            echo "pr_number=${{ steps.pr_fallback.outputs.pr_number }}" >> "$GITHUB_OUTPUT"
+          exit 1
+        fi

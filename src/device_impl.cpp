@@ -111,4 +111,14 @@ Result<SubscriptionId> DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChang
     return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged",
                                                                    std::move(notification));
 }
+
+Result<std::string> DeviceImpl::name() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.name");
+}
+
+Result<SubscriptionId> DeviceImpl::subscribeOnNameChanged(std::function<void(const std::string&)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::String>("Device.onNameChanged", std::move(notification));
+}
 } // namespace Firebolt::Device

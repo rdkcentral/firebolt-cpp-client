@@ -53,6 +53,9 @@ public:
     Result<SubscriptionId>
     subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) override;
 
+    [[nodiscard]] Result<std::string> name() const override;
+    Result<SubscriptionId> subscribeOnNameChanged(std::function<void(const std::string&)>&& notification) override;
+
 private:
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;

@@ -187,3 +187,34 @@ TEST_F(DeviceCTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
     auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
+
+TEST_F(DeviceCTest, Name)
+{
+    auto expectedValue = jsonEngine.get_value("Device.name");
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().name();
+    ASSERT_TRUE(result) << "DeviceImpl::name() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceCTest, SubscribeOnNameChanged)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().DeviceInterface().subscribeOnNameChanged(
+        [&](const std::string& value)
+        {
+            std::cout << "[Subscription] Device name changed" << '\n';
+            EXPECT_EQ(value, "Living Room TV");
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+
+    triggerEvent("Device.onNameChanged", R"("Living Room TV")");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().DeviceInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}

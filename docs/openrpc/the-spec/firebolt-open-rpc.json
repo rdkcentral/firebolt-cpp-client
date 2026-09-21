@@ -4193,7 +4193,13 @@
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "object",
+					"required": ["value"],
+					"properties": {
+						"value": {
+							"type": "string"
+						}
+					}
 				}
 			}
 		},

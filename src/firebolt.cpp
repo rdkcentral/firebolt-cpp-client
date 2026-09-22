@@ -98,6 +98,7 @@ private:
     {
         accessibility_.unsubscribeAll();
         actions_.unsubscribeAll();
+        device_.unsubscribeAll();
         lifecycle_.unsubscribeAll();
         localization_.unsubscribeAll();
         network_.unsubscribeAll();

@@ -224,3 +224,33 @@ TEST_F(DeviceUTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
 
     deviceImpl_.unsubscribe(*result);
 }
+
+TEST_F(DeviceUTest, Name)
+{
+    mock("Device.name");
+    auto expectedValue = jsonEngine.get_value("Device.name");
+
+    auto result = deviceImpl_.name();
+    ASSERT_TRUE(result) << "DeviceImpl::name() returned an error";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(DeviceUTest, NameBadResponse)
+{
+    mock_with_response("Device.name", 12345);
+    ASSERT_FALSE(deviceImpl_.name()) << "DeviceImpl::name() did not return an error";
+}
+
+TEST_F(DeviceUTest, SubscribeOnNameChanged)
+{
+    nlohmann::json expectedValue = 1;
+    mockSubscribe("Device.onNameChanged");
+
+    auto result = deviceImpl_.subscribeOnNameChanged([&](const std::string& /*value*/) {});
+
+    ASSERT_TRUE(result) << "DeviceImpl::subscribeOnNameChanged() returned an error";
+    EXPECT_EQ(*result, expectedValue);
+
+    deviceImpl_.unsubscribe(*result);
+}

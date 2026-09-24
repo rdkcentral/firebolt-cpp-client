@@ -143,7 +143,7 @@ TEST_F(TextToSpeechCTest, subscribeOnWillSpeak)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onWillspeak", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onWillSpeak", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -171,7 +171,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechStart)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechstart", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechStart", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -199,7 +199,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechComplete)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechcomplete", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechComplete", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -227,7 +227,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechPause)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechpause", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechPause", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -255,7 +255,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechResume)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechresume", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechResume", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -282,7 +282,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechInterrupted)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechinterrupted", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechInterrupted", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -310,7 +310,7 @@ TEST_F(TextToSpeechCTest, subscribeOnNetworkError)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onNetworkerror", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onNetworkError", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -338,7 +338,7 @@ TEST_F(TextToSpeechCTest, subscribeOnPlaybackError)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onPlaybackerror", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onPlaybackError", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 

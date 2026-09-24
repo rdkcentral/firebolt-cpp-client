@@ -3490,7 +3490,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onWillspeak",
+			"name": "TextToSpeech.onWillSpeak",
 			"summary": "Text to speech conversion is about to start.",
 			"tags": [
 				{
@@ -3498,7 +3498,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onWillspeak"
+					"x-notifier": "TextToSpeech.onWillSpeak"
 				},
 				{
 					"name": "capabilities",
@@ -3538,7 +3538,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechstart",
+			"name": "TextToSpeech.onSpeechStart",
 			"summary": "Utterance is about to be spoken.",
 			"tags": [
 				{
@@ -3546,7 +3546,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechstart"
+					"x-notifier": "TextToSpeech.onSpeechStart"
 				},
 				{
 					"name": "capabilities",
@@ -3586,7 +3586,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechpause",
+			"name": "TextToSpeech.onSpeechPause",
 			"summary": "Ongoing speech was paused.",
 			"tags": [
 				{
@@ -3594,7 +3594,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechpause"
+					"x-notifier": "TextToSpeech.onSpeechPause"
 				},
 				{
 					"name": "capabilities",
@@ -3634,7 +3634,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechresume",
+			"name": "TextToSpeech.onSpeechResume",
 			"summary": "Paused speech was resumed.",
 			"tags": [
 				{
@@ -3642,7 +3642,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechresume"
+					"x-notifier": "TextToSpeech.onSpeechResume"
 				},
 				{
 					"name": "capabilities",
@@ -3682,7 +3682,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechcomplete",
+			"name": "TextToSpeech.onSpeechComplete",
 			"summary": "Speech completed successfully.",
 			"tags": [
 				{
@@ -3690,7 +3690,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechcomplete"
+					"x-notifier": "TextToSpeech.onSpeechComplete"
 				},
 				{
 					"name": "capabilities",
@@ -3730,7 +3730,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechinterrupted",
+			"name": "TextToSpeech.onSpeechInterrupted",
 			"summary": "Speech was stopped, due to another call to speak or cancel.",
 			"tags": [
 				{
@@ -3738,7 +3738,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechinterrupted"
+					"x-notifier": "TextToSpeech.onSpeechInterrupted"
 				},
 				{
 					"name": "capabilities",
@@ -3778,7 +3778,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onNetworkerror",
+			"name": "TextToSpeech.onNetworkError",
 			"summary": "Utterance failed due to network error.",
 			"tags": [
 				{
@@ -3786,7 +3786,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onNetworkerror"
+					"x-notifier": "TextToSpeech.onNetworkError"
 				},
 				{
 					"name": "capabilities",
@@ -3826,7 +3826,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onPlaybackerror",
+			"name": "TextToSpeech.onPlaybackError",
 			"summary": "Utterance failed during playback.",
 			"tags": [
 				{
@@ -3834,7 +3834,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onPlaybackerror"
+					"x-notifier": "TextToSpeech.onPlaybackError"
 				},
 				{
 					"name": "capabilities",

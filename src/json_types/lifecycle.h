@@ -38,6 +38,7 @@ inline const Firebolt::JSON::EnumType<::Firebolt::Lifecycle::LifecycleState> Lif
     {"suspended", ::Firebolt::Lifecycle::LifecycleState::SUSPENDED},
     {"hibernated", ::Firebolt::Lifecycle::LifecycleState::HIBERNATED},
     {"terminating", ::Firebolt::Lifecycle::LifecycleState::TERMINATING},
+    {"unloaded", ::Firebolt::Lifecycle::LifecycleState::UNLOADED},
 });
 
 class LifecycleState : public Firebolt::JSON::NL_Json_Basic<::Firebolt::Lifecycle::LifecycleState>

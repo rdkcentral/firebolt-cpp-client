@@ -4966,7 +4966,8 @@
 					"paused",
 					"suspended",
 					"hibernated",
-					"terminating"
+					"terminating",
+					"unloaded"
 				]
 			},
 			"StateChange": {

@@ -36,6 +36,7 @@ enum class LifecycleState
     SUSPENDED,
     HIBERNATED,
     TERMINATING,
+    UNLOADED,
 };
 
 /**

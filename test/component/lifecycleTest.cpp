@@ -132,3 +132,28 @@ TEST_F(LifecycleCTest, subscribeOnState_noValue)
     auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
 }
+
+TEST_F(LifecycleCTest, subscribeOnState_unloaded)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
+        [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
+        {
+            EXPECT_TRUE(!changes.empty());
+            EXPECT_EQ(changes[0].newState, Firebolt::Lifecycle::LifecycleState::UNLOADED);
+            EXPECT_EQ(changes[0].oldState, Firebolt::Lifecycle::LifecycleState::TERMINATING);
+
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+    verifyEventSubscription(id);
+
+    triggerEvent("Lifecycle2.onStateChanged", R"({"value":[{"newState":"unloaded","oldState":"terminating"}]})");
+
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}

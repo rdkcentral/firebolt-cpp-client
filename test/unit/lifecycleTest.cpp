@@ -71,6 +71,14 @@ TEST_F(LifecycleUTest, stateBadResponse)
     ASSERT_FALSE(result) << "LifecycleImpl::state() did not return an error";
 }
 
+TEST_F(LifecycleUTest, stateUnloaded)
+{
+    mock_with_response("Lifecycle2.state", "unloaded");
+    Firebolt::Result<Firebolt::Lifecycle::LifecycleState> result = lifecycleImpl_.state();
+    ASSERT_TRUE(result) << "Failed to retrieve current state from Lifecycle.state() method";
+    EXPECT_EQ(*result, Firebolt::Lifecycle::LifecycleState::UNLOADED);
+}
+
 TEST_F(LifecycleUTest, subscribeOnStateChanged)
 {
     EXPECT_CALL(mockHelper, subscribe(_, "Lifecycle2.onStateChanged", _, _))

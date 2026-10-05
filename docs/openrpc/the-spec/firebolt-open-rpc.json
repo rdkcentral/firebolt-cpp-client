@@ -75,25 +75,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -111,6 +93,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -153,25 +139,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -195,6 +163,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -219,25 +191,7 @@
 					"name": "intent",
 					"summary": "The intent to send, as a JSON document.",
 					"required": true,
-					"schema": {
-						"type": "object",
-						"required": [
-							"action"
-						],
-						"properties": {
-							"action": {
-								"type": "string"
-							},
-							"context": {
-								"type": "object",
-								"properties": {
-									"source": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
+					"schema": {}
 				},
 				{
 					"name": "handlerAppId",
@@ -264,6 +218,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							}
 						}

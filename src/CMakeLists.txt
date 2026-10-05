@@ -51,9 +51,8 @@ configure_file(
 )
 
 target_link_libraries(${TARGET}
-    PRIVATE
-        nlohmann_json::nlohmann_json
     PUBLIC
+        nlohmann_json::nlohmann_json
         FireboltTransport::FireboltTransport
 )
 

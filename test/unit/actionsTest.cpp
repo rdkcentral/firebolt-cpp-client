@@ -30,17 +30,24 @@ protected:
 
 TEST_F(ActionsUTest, Intent)
 {
-    mock_with_response("Actions.intent",
-                       nlohmann::json({{"intent", {{"action", "pre-load"}, {"context", {{"source", "system"}}}}},
-                                       {"intentId", 0U}}));
+    const auto expectedIntent = nlohmann::json::parse(
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+    mock_with_response("Actions.intent", {{"intent", expectedIntent}, {"intentId", 0U}});
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
-    EXPECT_EQ(result->intent.action, "pre-load");
-    ASSERT_TRUE(result->intent.context);
-    ASSERT_TRUE(result->intent.context->source);
-    EXPECT_EQ(*result->intent.context->source, "system");
+    EXPECT_EQ(result->intent, expectedIntent);
     EXPECT_EQ(result->intentId, 0U);
+}
+
+TEST_F(ActionsUTest, IntentPreservesNonObjectPayload)
+{
+    const auto expectedIntent = nlohmann::json::array({"future-intent", 42, true, nullptr, {{"nested", {1, 2}}}});
+    mock_with_response("Actions.intent", {{"intent", expectedIntent}, {"intentId", 1U}});
+
+    auto result = actionsImpl_.intent();
+    ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
+    EXPECT_EQ(result->intent, expectedIntent);
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)
@@ -59,13 +66,15 @@ TEST_F(ActionsUTest, SubscribeOnIntent)
 
 TEST_F(ActionsUTest, Start)
 {
+    const auto intentPayload =
+        nlohmann::json::parse(R"({"action":"pre-load","data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
     nlohmann::json expectedParams;
-    expectedParams["intent"] = {{"action", "pre-load"}, {"context", {{"source", "system"}}}};
+    expectedParams["intent"] = intentPayload;
+    expectedParams["handlerAppId"] = "com.example.handler";
     EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result =
-        actionsImpl_.start(Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
+    auto result = actionsImpl_.start(intentPayload, "com.example.handler");
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }

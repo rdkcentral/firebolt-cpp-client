@@ -78,3 +78,16 @@ TEST_F(ActionsUTest, Start)
     auto result = actionsImpl_.start(intentPayload, "com.example.handler");
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }
+
+TEST_F(ActionsUTest, StartPreservesNonObjectPayload)
+{
+    const auto intentPayload = nlohmann::json::array({"future-intent", 42, true, nullptr, {{"nested", {1, 2}}}});
+    nlohmann::json expectedParams;
+    expectedParams["intent"] = intentPayload;
+    EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<void>{Firebolt::Error::None}; }));
+
+    auto result = actionsImpl_.start(intentPayload);
+    ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
+}

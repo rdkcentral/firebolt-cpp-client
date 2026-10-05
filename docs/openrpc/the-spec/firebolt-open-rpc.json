@@ -3484,14 +3484,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3532,14 +3534,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3580,14 +3584,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3628,14 +3634,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3676,14 +3684,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3724,14 +3734,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3772,14 +3784,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3820,14 +3834,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},

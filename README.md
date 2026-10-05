@@ -20,6 +20,10 @@ Examples:
 For the device websocket tunnel, use `setup-device-tunnel.sh`.
 Before running it, export `DEVICE_SSH_USER`, `DEVICE_SSH_HOST`, and `DEVICE_SSH_PORT`.
 
+Temporary CI note:
+
+- `component_tests` currently excludes a small TextToSpeech event-test set while an OpenRPC/mock/test-fixture mismatch is resolved. See [docs/ci/text-to-speech-component-test-exclusion.md](docs/ci/text-to-speech-component-test-exclusion.md).
+
 ## Lint
 
 Use `lint.sh` to run the same clang-format lint that CI enforces.

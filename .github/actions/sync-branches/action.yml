@@ -568,15 +568,19 @@ runs:
       if: always()
       shell: bash
       env:
+        ALREADY_SYNCED: ${{ steps.check.outputs.already_synced }}
+        MERGE_CONFLICT: ${{ steps.merge.outputs.conflict }}
+        PUSH_FAILED: ${{ steps.push.outputs.push_failed }}
+        ALREADY_SYNCED_AFTER_PUSH_REJECT: ${{ steps.push.outputs.already_synced_after_push_reject }}
         FAIL_ON_HUMAN_INTERVENTION: ${{ inputs.fail_on_human_intervention }}
       run: |
-        if [[ "${{ steps.check.outputs.already_synced }}" == "true" ]]; then
+        if [[ "$ALREADY_SYNCED" == "true" ]]; then
           echo "result=skipped" >> "$GITHUB_OUTPUT"
           exit 0
         fi
 
-        if [[ "${{ steps.merge.outputs.conflict }}" == "false" && "${{ steps.push.outputs.push_failed }}" == "false" ]]; then
-          if [[ "${{ steps.push.outputs.already_synced_after_push_reject }}" == "true" ]]; then
+        if [[ "$MERGE_CONFLICT" == "false" && "$PUSH_FAILED" == "false" ]]; then
+          if [[ "$ALREADY_SYNCED_AFTER_PUSH_REJECT" == "true" ]]; then
             echo "result=skipped" >> "$GITHUB_OUTPUT"
             exit 0
           fi

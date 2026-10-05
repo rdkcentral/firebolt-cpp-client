@@ -35,7 +35,9 @@ jobs:
     name: Merge ${{ github.event.inputs.source_branch || 'develop' }} → ${{ github.event.inputs.target_branch || 'main' }}
     runs-on: comcast-ubuntu-latest
     steps:
-      - uses: rdk-e/app-gateway-automation/actions/sync-branches@actions-v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/sync-branches
         with:
           source_branch: ${{ github.event.inputs.source_branch || 'develop' }}
           target_branch: ${{ github.event.inputs.target_branch || 'main' }}

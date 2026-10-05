@@ -102,7 +102,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
-
+  issues: write
 jobs:
   sync:
     runs-on: comcast-ubuntu-latest

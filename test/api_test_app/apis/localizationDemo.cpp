@@ -30,6 +30,7 @@ LocalizationDemo::LocalizationDemo()
     methods_.push_back("Localization.country");
     methods_.push_back("Localization.preferredAudioLanguages");
     methods_.push_back("Localization.presentationLanguage");
+    methods_.push_back("Localization.timeZone");
 }
 
 void LocalizationDemo::runOption(const std::string& method)
@@ -61,6 +62,14 @@ void LocalizationDemo::runOption(const std::string& method)
         if (succeed(r))
         {
             std::cout << "Presentation Language: " << *r << std::endl;
+        }
+    }
+    else if (method == "Localization.timeZone")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().LocalizationInterface().timeZone();
+        if (succeed(r))
+        {
+            std::cout << "TimeZone: " << *r << std::endl;
         }
     }
 }

@@ -47,7 +47,7 @@ public:
             voices_.push_back(voice.get<std::string>());
         }
     }
-    ::Firebolt::TextToSpeech::ListVoicesResponse value() const override
+    [[nodiscard]] ::Firebolt::TextToSpeech::ListVoicesResponse value() const override
     {
         return ::Firebolt::TextToSpeech::ListVoicesResponse{ttsStatus_, voices_};
     }
@@ -68,7 +68,7 @@ public:
         }
         speechId_ = json["speechid"].get<uint32_t>();
     }
-    ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
+    [[nodiscard]] ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechIdEvent{speechId_};
     }
@@ -90,7 +90,7 @@ public:
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
-    ::Firebolt::TextToSpeech::SpeechResponse value() const override
+    [[nodiscard]] ::Firebolt::TextToSpeech::SpeechResponse value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechResponse{speechId_, ttsStatus_, success_};
     }
@@ -114,7 +114,7 @@ public:
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
-    ::Firebolt::TextToSpeech::SpeechStateResponse value() const override
+    [[nodiscard]] ::Firebolt::TextToSpeech::SpeechStateResponse value() const override
     {
         return ::Firebolt::TextToSpeech::SpeechStateResponse{speechState_, ttsStatus_, success_};
     }
@@ -137,7 +137,7 @@ public:
         ttsStatus_ = json["TTS_Status"].get<uint32_t>();
         success_ = json["success"].get<bool>();
     }
-    ::Firebolt::TextToSpeech::TTSStatusResponse value() const override
+    [[nodiscard]] ::Firebolt::TextToSpeech::TTSStatusResponse value() const override
     {
         return ::Firebolt::TextToSpeech::TTSStatusResponse{ttsStatus_, success_};
     }

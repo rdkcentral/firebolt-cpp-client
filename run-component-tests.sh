@@ -44,6 +44,21 @@ Examples:
 EOF
 }
 
+clear_stale_coverage_data() {
+  local target_dir="$1"
+  if [[ ! -d "$target_dir" ]]; then
+    return
+  fi
+
+  # Old .gcda/.gcov files can carry checksums from a different binary revision.
+  # Remove them before test execution to prevent libgcov overwrite warnings.
+  mapfile -t stale_files < <(find "$target_dir" -type f \( -name '*.gcda' -o -name '*.gcov' \))
+  if [[ ${#stale_files[@]} -gt 0 ]]; then
+    printf '[run-component-tests] Removing %d stale coverage files from %s\n' "${#stale_files[@]}" "$target_dir"
+    rm -f "${stale_files[@]}"
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --clean)
@@ -91,6 +106,8 @@ if [[ "$BUILD_ONLY" == true ]]; then
   echo "Build complete. Skipping test execution (--build-only)."
   exit 0
 fi
+
+clear_stale_coverage_data "$BUILD_DIR"
 
 cd "$BUILD_DIR/test"
 export LD_LIBRARY_PATH="../src:${LD_LIBRARY_PATH:-}"

@@ -32,7 +32,7 @@ public:
 
     ~AdvertisingImpl() override = default;
 
-    Result<Ifa> advertisingId() const override;
+    [[nodiscard]] Result<Ifa> advertisingId() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

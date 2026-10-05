@@ -39,16 +39,15 @@ public:
     LifecycleImpl& operator=(const LifecycleImpl&) = delete;
     ~LifecycleImpl() override;
 
-    virtual Result<void> close(const CloseType& type) const override;
-    virtual Result<LifecycleState> state() const override;
+    [[nodiscard]] Result<void> close(const CloseType& type) const override;
+    [[nodiscard]] Result<LifecycleState> state() const override;
 
     Result<SubscriptionId>
     subscribeOnStateChanged(std::function<void(const std::vector<StateChange>&)>&& notification) override;
 
-    virtual Result<void> unsubscribe(SubscriptionId id) override;
-    virtual void unsubscribeAll() override;
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
 
-private:
 private:
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;

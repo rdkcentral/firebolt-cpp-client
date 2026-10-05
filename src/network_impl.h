@@ -32,7 +32,7 @@ public:
 
     ~NetworkImpl() override = default;
 
-    Result<bool> connected() const override;
+    [[nodiscard]] Result<bool> connected() const override;
 
     Result<SubscriptionId> subscribeOnConnectedChanged(std::function<void(bool)>&& notification) override;
 

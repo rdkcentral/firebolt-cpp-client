@@ -59,9 +59,9 @@ TEST_F(LifecycleCTest, subscribeOnState_JSON_RPC_compliant)
     auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
         [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
         {
-            EXPECT_TRUE(changes.size() > 0);
+            EXPECT_TRUE(!changes.empty());
             std::cout << "[Subscription] Lifecycle state changed: " << static_cast<int>(changes[0].newState)
-                      << ", old state: " << static_cast<int>(changes[0].oldState) << std::endl;
+                      << ", old state: " << static_cast<int>(changes[0].oldState) << '\n';
 
             EXPECT_EQ(changes[0].newState, Firebolt::Lifecycle::LifecycleState::PAUSED);
             EXPECT_EQ(changes[0].oldState, Firebolt::Lifecycle::LifecycleState::INITIALIZING);
@@ -91,9 +91,9 @@ TEST_F(LifecycleCTest, subscribeOnState_noValue)
     auto id = Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(
         [&](const std::vector<Firebolt::Lifecycle::StateChange>& changes)
         {
-            EXPECT_TRUE(changes.size() > 0);
+            EXPECT_TRUE(!changes.empty());
             std::cout << "[Subscription] Lifecycle state changed: " << static_cast<int>(changes[0].newState)
-                      << ", old state: " << static_cast<int>(changes[0].oldState) << std::endl;
+                      << ", old state: " << static_cast<int>(changes[0].oldState) << '\n';
 
             EXPECT_EQ(changes[0].newState, Firebolt::Lifecycle::LifecycleState::PAUSED);
             EXPECT_EQ(changes[0].oldState, Firebolt::Lifecycle::LifecycleState::INITIALIZING);
@@ -109,7 +109,7 @@ TEST_F(LifecycleCTest, subscribeOnState_noValue)
     Firebolt::Config config;
     if (config.legacyRPCv1)
     {
-        std::cout << "Commented out as it cannot be tested in CI/CI due to unknown 'id' value" << std::endl;
+        std::cout << "Commented out as it cannot be tested in CI/CI due to unknown 'id' value" << '\n';
         /*
         nlohmann::json p;
         p["id"] = 30;

@@ -56,6 +56,6 @@ public:
      * @return Ifa struct or error
      *
      */
-    virtual Result<Ifa> advertisingId() const = 0;
+    [[nodiscard]] virtual Result<Ifa> advertisingId() const = 0;
 };
 } // namespace Firebolt::Advertising

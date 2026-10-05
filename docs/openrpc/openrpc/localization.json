@@ -118,6 +118,39 @@
           }
         }
       ]
+    },
+    {
+      "name": "timeZone",
+      "tags": [
+        {
+          "name": "property:readonly"
+        },
+        {
+          "name": "capabilities",
+          "x-uses": [
+            "xrn:firebolt:capability:localization:time-zone"
+          ]
+        }
+      ],
+      "summary": "Get the IANA timezone of the device.",
+      "params": [],
+      "result": {
+        "name": "timeZone",
+        "summary": "The device timezone.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "examples": [
+        {
+          "name": "Default example",
+          "params": [],
+          "result": {
+            "name": "Default Result",
+            "value": "America/New_York"
+          }
+        }
+      ]
     }
   ],
   "components": {

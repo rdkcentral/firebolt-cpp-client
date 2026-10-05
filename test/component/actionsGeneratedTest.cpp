@@ -36,15 +36,23 @@ TEST_F(ActionsGeneratedCTest, Intent)
 {
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(*result, "launch");
+    EXPECT_EQ(result->intent.action, "pre-load");
+    ASSERT_TRUE(result->intent.context);
+    ASSERT_TRUE(result->intent.context->source);
+    EXPECT_EQ(*result->intent.context->source, "system");
+    EXPECT_EQ(result->intentId, 0U);
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
-        [&](const std::string& intent)
+        [&](const Firebolt::Actions::Intent& payload)
         {
-            EXPECT_EQ(intent, "launch");
+            EXPECT_EQ(payload.intent.action, "pre-load");
+            ASSERT_TRUE(payload.intent.context);
+            ASSERT_TRUE(payload.intent.context->source);
+            EXPECT_EQ(*payload.intent.context->source, "system");
+            EXPECT_EQ(payload.intentId, 0U);
             {
                 std::lock_guard<std::mutex> lock(mtx);
                 eventReceived = true;
@@ -55,9 +63,16 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
-    triggerEvent("Actions.onIntent", R"("launch")");
+    triggerEvent("Actions.onIntent", R"({"intent":{"action":"pre-load","context":{"source":"system"}},"intentId":0})");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());
     verifyUnsubscribeResult(result);
+}
+
+TEST_F(ActionsGeneratedCTest, Start)
+{
+    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(
+        Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
+    ASSERT_TRUE(result) << toError(result);
 }

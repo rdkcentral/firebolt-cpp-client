@@ -35,10 +35,10 @@ TEST_F(StatsUTest, MemoryUsage)
 
     ASSERT_TRUE(result) << "StatsImpl::memoryUsage() returned an error";
 
-    EXPECT_EQ(result->userMemoryUsed, expectedValue.at("userMemoryUsedKiB").get<uint32_t>());
-    EXPECT_EQ(result->userMemoryLimit, expectedValue.at("userMemoryLimitKiB").get<uint32_t>());
-    EXPECT_EQ(result->gpuMemoryUsed, expectedValue.at("gpuMemoryUsedKiB").get<uint32_t>());
-    EXPECT_EQ(result->gpuMemoryLimit, expectedValue.at("gpuMemoryLimitKiB").get<uint32_t>());
+    EXPECT_EQ(result->userMemoryUsed, expectedValue.at("userMemoryUsed").get<uint64_t>());
+    EXPECT_EQ(result->userMemoryLimit, expectedValue.at("userMemoryLimit").get<uint64_t>());
+    EXPECT_EQ(result->gpuMemoryUsed, expectedValue.at("gpuMemoryUsed").get<uint64_t>());
+    EXPECT_EQ(result->gpuMemoryLimit, expectedValue.at("gpuMemoryLimit").get<uint64_t>());
 }
 
 TEST_F(StatsUTest, MemoryUsageBadResponse)

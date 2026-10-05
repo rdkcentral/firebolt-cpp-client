@@ -36,9 +36,12 @@ public:
     ActionsImpl& operator=(const ActionsImpl&) = delete;
     ~ActionsImpl() override = default;
 
-    Result<std::string> intent() const override;
+    [[nodiscard]] Result<Intent> intent() const override;
 
-    Result<SubscriptionId> subscribeOnIntent(std::function<void(const std::string&)>&& notification) override;
+    Result<SubscriptionId> subscribeOnIntent(std::function<void(const Intent&)>&& notification) override;
+
+    [[nodiscard]] Result<void> start(const IntentData& intent,
+                                     std::optional<std::string> handlerAppId = std::nullopt) const override;
 
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;

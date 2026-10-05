@@ -20,6 +20,7 @@
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
 #include "utils.h"
+#include <gtest/gtest.h>
 
 class TextToSpeechCTest : public ::testing::Test
 {
@@ -42,6 +43,37 @@ TEST_F(TextToSpeechCTest, speak)
     auto speakResult =
         Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.");
     ASSERT_TRUE(speakResult) << "Error on speak";
+
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
+    EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());
+    EXPECT_EQ(speakResult->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speakResult->success, expectedValue["success"].get<bool>());
+}
+
+TEST_F(TextToSpeechCTest, speak_withAllOptionalArguments)
+{
+    auto speakResult =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
+                                                                              std::string("AppA"), std::string("en-US"),
+                                                                              std::string("female-1"),
+                                                                              std::string("80"), std::string("normal"),
+                                                                              std::string("medium"));
+    ASSERT_TRUE(speakResult) << "Error on speak with all optional arguments";
+
+    auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
+    EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());
+    EXPECT_EQ(speakResult->ttsStatus, expectedValue["TTS_Status"].get<int32_t>());
+    EXPECT_EQ(speakResult->success, expectedValue["success"].get<bool>());
+}
+
+TEST_F(TextToSpeechCTest, speak_withSelectedOptionalArguments)
+{
+    auto speakResult =
+        Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
+                                                                              std::nullopt, std::string("en-US"),
+                                                                              std::nullopt, std::nullopt,
+                                                                              std::string("normal"), std::nullopt);
+    ASSERT_TRUE(speakResult) << "Error on speak with selected optional arguments";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
     EXPECT_EQ(speakResult->speechId, expectedValue["speechid"].get<int32_t>());
@@ -111,7 +143,7 @@ TEST_F(TextToSpeechCTest, subscribeOnWillSpeak)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onWillspeak", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onWillSpeak", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -139,7 +171,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechStart)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechstart", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechStart", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -167,7 +199,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechComplete)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechcomplete", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechComplete", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -195,7 +227,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechPause)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechpause", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechPause", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -223,7 +255,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechResume)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechresume", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechResume", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -250,7 +282,7 @@ TEST_F(TextToSpeechCTest, subscribeOnSpeechInterrupted)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onSpeechinterrupted", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onSpeechInterrupted", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -278,7 +310,7 @@ TEST_F(TextToSpeechCTest, subscribeOnNetworkError)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onNetworkerror", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onNetworkError", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 
@@ -306,7 +338,7 @@ TEST_F(TextToSpeechCTest, subscribeOnPlaybackError)
 
     verifyEventSubscription(id);
 
-    triggerEvent("TextToSpeech.onPlaybackerror", R"({ "speechid": 1 })");
+    triggerEvent("TextToSpeech.onPlaybackError", R"({ "speechid": 1 })");
 
     verifyEventReceived(mtx, cv, eventReceived);
 

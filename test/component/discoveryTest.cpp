@@ -30,7 +30,7 @@ protected:
 TEST_F(DiscoveryCTest, Watched)
 {
     auto expectedValue = jsonEngine.get_value("Discovery.watched");
-    auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched("entity123", 0.75f, true,
+    auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watched("entity123", 0.75F, true,
                                                                                        "2024-10-01T12:00:00Z",
                                                                                        Firebolt::AgePolicy::ADULT);
     ASSERT_TRUE(result) << "Failed to call watched";
@@ -40,10 +40,8 @@ TEST_F(DiscoveryCTest, Watched)
 
 TEST_F(DiscoveryCTest, WatchedV2)
 {
-    auto expectedValue = jsonEngine.get_value("Discovery.watchedV2");
-    auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watchedV2("entity123", 0.75f, true,
+    auto result = Firebolt::IFireboltAccessor::Instance().DiscoveryInterface().watchedV2("entity123", 0.75F, true,
                                                                                          "2024-10-01T12:00:00Z",
                                                                                          Firebolt::AgePolicy::ADULT);
     ASSERT_TRUE(result) << "Failed to call watchedV2";
-    EXPECT_EQ(*result, expectedValue.get<bool>());
 }

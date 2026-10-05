@@ -113,3 +113,31 @@ TEST_F(LocalizationUTest, subscribeOnPresentationLanguageChanged)
     auto result = localizationImpl_.unsubscribe(id.value_or(0));
     ASSERT_TRUE(result) << "error on unsubscribe ";
 }
+
+TEST_F(LocalizationUTest, TimeZone)
+{
+    auto expectedValue = jsonEngine.get_value("Localization.timeZone").get<std::string>();
+    mock("Localization.timeZone");
+
+    auto result = localizationImpl_.timeZone();
+    ASSERT_TRUE(result) << "error on get";
+
+    EXPECT_EQ(*result, expectedValue);
+}
+
+TEST_F(LocalizationUTest, TimeZoneBadResponse)
+{
+    mock_with_response("Localization.timeZone", 12345);
+    ASSERT_FALSE(localizationImpl_.timeZone()) << "LocalizationImpl::timeZone() did not return an error";
+}
+
+TEST_F(LocalizationUTest, subscribeOnTimeZoneChanged)
+{
+    mockSubscribe("Localization.onTimeZoneChanged");
+
+    auto id = localizationImpl_.subscribeOnTimeZoneChanged([](auto) {});
+    ASSERT_TRUE(id) << "error on subscribe ";
+    EXPECT_TRUE(id.has_value()) << "error on id";
+    auto result = localizationImpl_.unsubscribe(id.value_or(0));
+    ASSERT_TRUE(result) << "error on unsubscribe ";
+}

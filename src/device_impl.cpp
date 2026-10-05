@@ -37,6 +37,35 @@ Result<DeviceClass> DeviceImpl::deviceClass() const
     return Result(helper_.get<JsonData::DeviceClassJson, DeviceClass>("Device.deviceClass"));
 }
 
+Result<std::string> DeviceImpl::osName() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.osName");
+}
+
+Result<void> DeviceImpl::setOsName(const std::string& osName)
+{
+    nlohmann::json params;
+    params["value"] = osName;
+    return helper_.invoke("Device.setOsName", params);
+}
+
+Result<std::string> DeviceImpl::osVersion() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.osVersion");
+}
+
+Result<void> DeviceImpl::setOsVersion(const std::string& osVersion)
+{
+    nlohmann::json params;
+    params["value"] = osVersion;
+    return helper_.invoke("Device.setOsVersion", params);
+}
+
+Result<std::string> DeviceImpl::firmware() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.firmware");
+}
+
 Result<HDRFormat> DeviceImpl::hdr() const
 {
     return Result(helper_.get<JsonData::HDRFormat, HDRFormat>("Device.hdr"));
@@ -70,5 +99,26 @@ Result<void> DeviceImpl::unsubscribe(SubscriptionId id)
 void DeviceImpl::unsubscribeAll()
 {
     subscriptionManager_.unsubscribeAll();
+}
+
+Result<bool> DeviceImpl::dolbyAtmosExperienceAvailable() const
+{
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Device.dolbyAtmosExperienceAvailable");
+}
+
+Result<SubscriptionId> DeviceImpl::subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Device.onDolbyAtmosExperienceAvailableChanged",
+                                                                   std::move(notification));
+}
+
+Result<std::string> DeviceImpl::name() const
+{
+    return helper_.get<Firebolt::JSON::String, std::string>("Device.name");
+}
+
+Result<SubscriptionId> DeviceImpl::subscribeOnNameChanged(std::function<void(const std::string&)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::String>("Device.onNameChanged", std::move(notification));
 }
 } // namespace Firebolt::Device

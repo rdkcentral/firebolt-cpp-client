@@ -26,16 +26,42 @@
 #include "firebolt/actions.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
-#include <type_traits>
+#include <stdexcept>
 
-namespace Firebolt::Actions
+namespace Firebolt::Actions::JsonData
 {
 
-namespace JsonData
+// Deserialises the wire object {"intent":{"action":"...","context":{"source":"..."}},"intentId":N}
+// into Firebolt::Actions::Intent. nlohmann stays hidden in this impl-layer header.
+class JsonValue : public Firebolt::JSON::NL_Json_Basic<Intent>
 {
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        value_ = {};
+        if (!checkRequiredFields(json, {"intent", "intentId"}) || !json["intent"].is_object() ||
+            !checkRequiredFields(json["intent"], {"action"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
+        value_.intent.action = json["intent"]["action"].get<std::string>();
+        if (json["intent"].contains("context") && json["intent"]["context"].is_object())
+        {
+            IntentContext ctx;
+            if (json["intent"]["context"].contains("source"))
+            {
+                ctx.source = json["intent"]["context"]["source"].get<std::string>();
+            }
+            value_.intent.context = ctx;
+        }
+        value_.intentId = json["intentId"].get<uint32_t>();
+    }
+    [[nodiscard]] Intent value() const override { return value_; }
 
-} // namespace JsonData
+private:
+    Intent value_;
+};
 
-} // namespace Firebolt::Actions
+} // namespace Firebolt::Actions::JsonData
 
 #endif // FIREBOLT_ACTIONS_JSON_H

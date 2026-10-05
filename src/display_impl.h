@@ -32,9 +32,9 @@ public:
 
     ~DisplayImpl() override = default;
 
-    Result<std::string> edid() const override;
-    Result<DisplaySize> maxResolution() const override;
-    Result<DisplaySize> size() const override;
+    [[nodiscard]] Result<std::string> edid() const override;
+    [[nodiscard]] Result<DisplaySize> maxResolution() const override;
+    [[nodiscard]] Result<DisplaySize> size() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

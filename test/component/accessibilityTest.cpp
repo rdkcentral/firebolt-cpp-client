@@ -50,7 +50,7 @@ TEST_F(AccessibilityCTest, SubscribeOnAudioDescriptionChanged)
 
         [&](const bool& enabled)
         {
-            std::cout << "[Subscription] Accessibility audio description changed" << std::endl;
+            std::cout << "[Subscription] Accessibility audio description changed" << '\n';
 
             EXPECT_EQ(enabled, true);
             {
@@ -83,7 +83,7 @@ TEST_F(AccessibilityCTest, SubscribeOnClosedCaptionsSettingsChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnClosedCaptionsSettingsChanged(
         [&](const Firebolt::Accessibility::ClosedCaptionsSettings& settings)
         {
-            std::cout << "[Subscription] Accessibility closed captions settings changed" << std::endl;
+            std::cout << "[Subscription] Accessibility closed captions settings changed" << '\n';
 
             EXPECT_EQ(settings.enabled, true);
             EXPECT_EQ(settings.preferredLanguages.size(), 2);
@@ -126,7 +126,7 @@ TEST_F(AccessibilityCTest, SubscribeOnHighContrastUIChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnHighContrastUIChanged(
         [&](const bool& enabled)
         {
-            std::cout << "[Subscription] Accessibility high contrast UI changed" << std::endl;
+            std::cout << "[Subscription] Accessibility high contrast UI changed" << '\n';
 
             EXPECT_EQ(enabled, true);
             {
@@ -161,7 +161,7 @@ TEST_F(AccessibilityCTest, SubscribeOnVoiceGuidanceSettingsChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().AccessibilityInterface().subscribeOnVoiceGuidanceSettingsChanged(
         [&](const Firebolt::Accessibility::VoiceGuidanceSettings& settings)
         {
-            std::cout << "[Subscription] Accessibility voice guidance settings changed" << std::endl;
+            std::cout << "[Subscription] Accessibility voice guidance settings changed" << '\n';
 
             EXPECT_EQ(settings.enabled, true);
             EXPECT_EQ(settings.rate, 0.8);

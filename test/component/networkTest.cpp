@@ -47,7 +47,7 @@ TEST_F(NetworkCTest, SubscribeOnConnectedChanged)
     auto id = Firebolt::IFireboltAccessor::Instance().NetworkInterface().subscribeOnConnectedChanged(
         [&](const bool& value)
         {
-            std::cout << "[Subscription] Network connected changed" << std::endl;
+            std::cout << "[Subscription] Network connected changed" << '\n';
             EXPECT_EQ(value, true);
             {
                 std::lock_guard<std::mutex> lock(mtx);

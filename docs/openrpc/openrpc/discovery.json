@@ -126,7 +126,7 @@
     },
     {
       "name": "watchedV2",
-      "summary": "Notify the platform that content was partially or completely watched, returns whether the notification was accepted",
+      "summary": "Notify the platform that content was partially or completely watched",
       "tags": [
         {
           "name": "polymorphic-reducer"
@@ -180,9 +180,8 @@
       ],
       "result": {
         "name": "result",
-        "summary": "Whether the platform accepted the watched notification",
         "schema": {
-          "type": "boolean"
+          "type": "null"
         }
       },
       "examples": [
@@ -208,7 +207,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         },
         {
@@ -237,7 +236,7 @@
           ],
           "result": {
             "name": "result",
-            "value": true
+            "value": null
           }
         }
       ]

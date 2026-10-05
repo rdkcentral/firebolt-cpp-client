@@ -24,10 +24,10 @@ namespace Firebolt::Stats
 {
 struct MemoryInfo
 {
-    uint32_t userMemoryUsed;
-    uint32_t userMemoryLimit;
-    uint32_t gpuMemoryUsed;
-    uint32_t gpuMemoryLimit;
+    uint64_t userMemoryUsed;
+    uint64_t userMemoryLimit;
+    uint64_t gpuMemoryUsed;
+    uint64_t gpuMemoryLimit;
 };
 
 class IStats
@@ -36,11 +36,11 @@ public:
     virtual ~IStats() = default;
 
     /**
-     @brief Returns information about container memory usage, in units of 1024 bytes
-    *
-    * @retval MemoryInfo struct or error
-    */
-    virtual Result<MemoryInfo> memoryUsage() const = 0;
+     * @brief Returns information about container memory usage in bytes.
+     *
+     * @retval MemoryInfo struct or error
+     */
+    [[nodiscard]] virtual Result<MemoryInfo> memoryUsage() const = 0;
 };
 
 } // namespace Firebolt::Stats

@@ -24,6 +24,19 @@ die() {
     exit 1
 }
 
+clear_stale_coverage_data() {
+  local target_dir="$1" stale_files=()
+  if [[ -d "$target_dir" ]]; then
+    # Remove stale coverage artifacts before running ctApp to avoid checksum
+    # mismatches when binaries were rebuilt between runs.
+    mapfile -t stale_files < <(find "$target_dir" -type f \( -name '*.gcda' -o -name '*.gcov' \))
+    if [[ ${#stale_files[@]} -gt 0 ]]; then
+      printf '[run-component-tests-ci] Removing %d stale coverage files from %s\n' "${#stale_files[@]}" "$target_dir"
+      rm -f "${stale_files[@]}"
+    fi
+  fi
+}
+
 kill-rec() {
   local pid="$1" i= children=
   if children="$(pgrep -P "$pid")"; then
@@ -96,6 +109,7 @@ done
 
 echo "Starting Component Tests"
 cd "$(dirname "$testExe")"
+clear_stale_coverage_data "$(pwd)/.."
 "./$(basename "$testExe")"
 exitCode=$?
 

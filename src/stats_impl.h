@@ -32,7 +32,7 @@ public:
     StatsImpl& operator=(const StatsImpl&) = delete;
     ~StatsImpl() override;
 
-    virtual Result<MemoryInfo> memoryUsage() const override;
+    [[nodiscard]] Result<MemoryInfo> memoryUsage() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

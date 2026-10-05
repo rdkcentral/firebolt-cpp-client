@@ -1,0 +1,107 @@
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//
+#include "videooutput_impl.h"
+#include "json_types/videooutput.h"
+#include <nlohmann/json.hpp>
+
+namespace Firebolt::VideoOutput
+{
+VideoOutputImpl::VideoOutputImpl(Firebolt::Helpers::IHelper& helper)
+    : helper_(helper),
+      subscriptionManager_(helper, this)
+{
+}
+
+Result<VideoOutputResolution> VideoOutputImpl::resolution() const
+{
+    return helper_.get<JsonData::VideoOutputResolution, VideoOutputResolution>("VideoOutput.resolution");
+}
+Result<SubscriptionId>
+VideoOutputImpl::subscribeOnResolutionChanged(std::function<void(const VideoOutputResolution&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::VideoOutputResolution>("VideoOutput.onResolutionChanged",
+                                                                           std::move(notification));
+}
+
+Result<HdcpState> VideoOutputImpl::hdcp() const
+{
+    return helper_.get<JsonData::HdcpStateJson, HdcpState>("VideoOutput.hdcp");
+}
+Result<SubscriptionId> VideoOutputImpl::subscribeOnHdcpChanged(std::function<void(const HdcpState&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::HdcpStateJson>("VideoOutput.onHdcpChanged", std::move(notification));
+}
+
+Result<CecStateValue> VideoOutputImpl::cecState() const
+{
+    return helper_.get<JsonData::CecStateValueJson, CecStateValue>("VideoOutput.cecState");
+}
+Result<SubscriptionId> VideoOutputImpl::subscribeOnCecStateChanged(std::function<void(const CecStateValue&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::CecStateValueJson>("VideoOutput.onCecStateChanged",
+                                                                       std::move(notification));
+}
+
+Result<RefreshRateValue> VideoOutputImpl::refreshRate() const
+{
+    return helper_.get<JsonData::RefreshRateValueJson, RefreshRateValue>("VideoOutput.refreshRate");
+}
+Result<SubscriptionId>
+VideoOutputImpl::subscribeOnRefreshRateChanged(std::function<void(const RefreshRateValue&)>&& notification)
+{
+    return subscriptionManager_.subscribe<JsonData::RefreshRateValueJson>("VideoOutput.onRefreshRateChanged",
+                                                                          std::move(notification));
+}
+
+Result<ColorDepthValue> VideoOutputImpl::colorDepth() const
+{
+    return helper_.get<JsonData::ColorDepthValueJson, ColorDepthValue>("VideoOutput.colorDepth");
+}
+
+Result<ColorFormatValue> VideoOutputImpl::colorFormat() const
+{
+    return helper_.get<JsonData::ColorFormatValueJson, ColorFormatValue>("VideoOutput.colorFormat");
+}
+
+Result<OutputColorimetry> VideoOutputImpl::colorimetry() const
+{
+    return helper_.get<JsonData::OutputColorimetryJson, OutputColorimetry>("VideoOutput.colorimetry");
+}
+
+Result<DynamicRangeValue> VideoOutputImpl::dynamicRange() const
+{
+    return helper_.get<JsonData::DynamicRangeValueJson, DynamicRangeValue>("VideoOutput.dynamicRange");
+}
+
+Result<QuantizationRangeValue> VideoOutputImpl::quantizationRange() const
+{
+    return helper_.get<JsonData::QuantizationRangeValueJson, QuantizationRangeValue>("VideoOutput.quantizationRange");
+}
+
+Result<void> VideoOutputImpl::unsubscribe(SubscriptionId id)
+{
+    return subscriptionManager_.unsubscribe(id);
+}
+
+void VideoOutputImpl::unsubscribeAll()
+{
+    subscriptionManager_.unsubscribeAll();
+}
+
+} // namespace Firebolt::VideoOutput

@@ -73,15 +73,17 @@ void LifecycleDemo::runOption(const std::string& method)
             Firebolt::IFireboltAccessor::Instance().LifecycleInterface().subscribeOnStateChanged(std::move(callback));
         if (succeed(r))
         {
+            lastSubscriptionId_ = *r;
             std::cout << "Subscribed to Lifecycle state changes with Subscription ID: " << *r << std::endl;
         }
     }
     else if (method == "Lifecycle2.unsubscribe")
     {
-        SubscriptionId id = 0;
+        SubscriptionId id = lastSubscriptionId_;
         try
         {
-            id = static_cast<SubscriptionId>(std::stoul(paramFromConsole("Subscription ID to unsubscribe", "0")));
+            id = static_cast<SubscriptionId>(
+                std::stoul(paramFromConsole("Subscription ID to unsubscribe", std::to_string(lastSubscriptionId_))));
         }
         catch (const std::exception&)
         {

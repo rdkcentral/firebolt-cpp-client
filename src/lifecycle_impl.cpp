@@ -32,7 +32,7 @@ LifecycleImpl::LifecycleImpl(Firebolt::Helpers::IHelper& helper)
 {
 }
 
-LifecycleImpl::~LifecycleImpl() {}
+LifecycleImpl::~LifecycleImpl() = default;
 
 Result<void> LifecycleImpl::close(const CloseType& reason) const
 {

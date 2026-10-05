@@ -91,17 +91,26 @@ public:
      *
      * @retval The list of voices supported for the language
      */
-    virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
+    [[nodiscard]] virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
 
     /**
      * @brief Speak the uttered text using the TTS engine
      *
      * @param[in] text : String to be converted to Audio for speech
+     * @param[in] callSign : Optional call sign for the app making the request
+     * @param[in] language : Optional language for the speech request
+     * @param[in] voice : Optional voice for the speech request
+     * @param[in] volume : Optional volume for the speech request
+     * @param[in] rate : Optional rate for the speech request
+     * @param[in] pitch : Optional pitch for the speech request
      *
      * @retval Result for Speak
      */
-    virtual Result<SpeechResponse> speak(const std::string& text) const = 0;
-
+    [[nodiscard]] virtual Result<SpeechResponse>
+    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
+          std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
+          std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
+          std::optional<std::string> pitch = std::nullopt) const = 0;
     /**
      * @brief Pauses the speech for given speech id
      *
@@ -109,7 +118,7 @@ public:
      *
      * @retval Result for Pause
      */
-    virtual Result<TTSStatusResponse> pause(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> pause(SpeechId speechId) const = 0;
 
     /**
      * @brief Resumes the speech for given speech id
@@ -118,7 +127,7 @@ public:
      *
      * @retval Result for Resume
      */
-    virtual Result<TTSStatusResponse> resume(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> resume(SpeechId speechId) const = 0;
 
     /**
      * @brief Cancels the speech for given speech id
@@ -127,7 +136,7 @@ public:
      *
      * @retval Result for cancel
      */
-    virtual Result<TTSStatusResponse> cancel(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<TTSStatusResponse> cancel(SpeechId speechId) const = 0;
 
     /**
      * @brief Returns the current state of the speech request.
@@ -136,7 +145,7 @@ public:
      *
      * @retval Result for speech state
      */
-    virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const = 0;
+    [[nodiscard]] virtual Result<SpeechStateResponse> getSpeechState(SpeechId speechId) const = 0;
 
     /**
      * @brief Triggered when the text to speech conversion is about to start. It

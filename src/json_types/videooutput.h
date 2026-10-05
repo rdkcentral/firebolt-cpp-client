@@ -1,0 +1,403 @@
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+//
+#ifndef FIREBOLT_VIDEOOUTPUT_JSON_H
+#define FIREBOLT_VIDEOOUTPUT_JSON_H
+
+#include "firebolt/videooutput.h"
+#include <cmath>
+#include <firebolt/json_types.h>
+#include <nlohmann/json.hpp>
+
+namespace Firebolt::VideoOutput::JsonData
+{
+
+NLOHMANN_JSON_SERIALIZE_ENUM(CecStateValue, {
+                                                {CecStateValue::Active, "active"},
+                                                {CecStateValue::Inactive, "inactive"},
+                                                {CecStateValue::Unsupported, "unsupported"},
+                                            })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(ColorDepthValue, {
+                                                  {ColorDepthValue::D0, "0"},
+                                                  {ColorDepthValue::D10, "10"},
+                                                  {ColorDepthValue::D12, "12"},
+                                                  {ColorDepthValue::D8, "8"},
+                                              })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(ColorFormatValue, {
+                                                   {ColorFormatValue::None, "none"},
+                                                   {ColorFormatValue::Rgb444, "rgb444"},
+                                                   {ColorFormatValue::Ycbcr420, "ycbcr420"},
+                                                   {ColorFormatValue::Ycbcr422, "ycbcr422"},
+                                                   {ColorFormatValue::Ycbcr444, "ycbcr444"},
+                                               })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(DynamicRangeValue, {
+                                                    {DynamicRangeValue::DolbyVision, "dolbyVision"},
+                                                    {DynamicRangeValue::Hdr10, "hdr10"},
+                                                    {DynamicRangeValue::Hdr10plus, "hdr10plus"},
+                                                    {DynamicRangeValue::Hlg, "hlg"},
+                                                    {DynamicRangeValue::None, "none"},
+                                                    {DynamicRangeValue::Sdr, "sdr"},
+                                                })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(HdcpState, {
+                                            {HdcpState::Direct, "direct"},
+                                            {HdcpState::Hdcp14, "hdcp1.4"},
+                                            {HdcpState::Hdcp22, "hdcp2.2"},
+                                            {HdcpState::None, "none"},
+                                        })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(OutputColorimetry, {
+                                                    {OutputColorimetry::Bt2020rgb, "bt2020rgb"},
+                                                    {OutputColorimetry::Bt2020ycc, "bt2020ycc"},
+                                                    {OutputColorimetry::Bt709, "bt709"},
+                                                    {OutputColorimetry::None, "none"},
+                                                    {OutputColorimetry::Oprgb, "oprgb"},
+                                                })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(QuantizationRangeValue, {
+                                                         {QuantizationRangeValue::Full, "full"},
+                                                         {QuantizationRangeValue::Limited, "limited"},
+                                                         {QuantizationRangeValue::None, "none"},
+                                                     })
+
+NLOHMANN_JSON_SERIALIZE_ENUM(RefreshRateValue, {
+                                                   {RefreshRateValue::R0, "0"},
+                                                   {RefreshRateValue::R23976, "23.976"},
+                                                   {RefreshRateValue::R24, "24"},
+                                                   {RefreshRateValue::R25, "25"},
+                                                   {RefreshRateValue::R2997, "29.97"},
+                                                   {RefreshRateValue::R30, "30"},
+                                                   {RefreshRateValue::R50, "50"},
+                                                   {RefreshRateValue::R5994, "59.94"},
+                                                   {RefreshRateValue::R60, "60"},
+                                               })
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::CecStateValue> CecStateValueEnum({
+    {"active", ::Firebolt::VideoOutput::CecStateValue::Active},
+    {"inactive", ::Firebolt::VideoOutput::CecStateValue::Inactive},
+    {"unsupported", ::Firebolt::VideoOutput::CecStateValue::Unsupported},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorDepthValue> ColorDepthValueEnum({
+    {"0", ::Firebolt::VideoOutput::ColorDepthValue::D0},
+    {"10", ::Firebolt::VideoOutput::ColorDepthValue::D10},
+    {"12", ::Firebolt::VideoOutput::ColorDepthValue::D12},
+    {"8", ::Firebolt::VideoOutput::ColorDepthValue::D8},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::ColorFormatValue> ColorFormatValueEnum({
+    {"none", ::Firebolt::VideoOutput::ColorFormatValue::None},
+    {"rgb444", ::Firebolt::VideoOutput::ColorFormatValue::Rgb444},
+    {"ycbcr420", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr420},
+    {"ycbcr422", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr422},
+    {"ycbcr444", ::Firebolt::VideoOutput::ColorFormatValue::Ycbcr444},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::DynamicRangeValue> DynamicRangeValueEnum({
+    {"dolbyVision", ::Firebolt::VideoOutput::DynamicRangeValue::DolbyVision},
+    {"hdr10", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10},
+    {"hdr10plus", ::Firebolt::VideoOutput::DynamicRangeValue::Hdr10plus},
+    {"hlg", ::Firebolt::VideoOutput::DynamicRangeValue::Hlg},
+    {"none", ::Firebolt::VideoOutput::DynamicRangeValue::None},
+    {"sdr", ::Firebolt::VideoOutput::DynamicRangeValue::Sdr},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::HdcpState> HdcpStateEnum({
+    {"direct", ::Firebolt::VideoOutput::HdcpState::Direct},
+    {"hdcp1.4", ::Firebolt::VideoOutput::HdcpState::Hdcp14},
+    {"hdcp2.2", ::Firebolt::VideoOutput::HdcpState::Hdcp22},
+    {"none", ::Firebolt::VideoOutput::HdcpState::None},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::OutputColorimetry> OutputColorimetryEnum({
+    {"bt2020rgb", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020rgb},
+    {"bt2020ycc", ::Firebolt::VideoOutput::OutputColorimetry::Bt2020ycc},
+    {"bt709", ::Firebolt::VideoOutput::OutputColorimetry::Bt709},
+    {"none", ::Firebolt::VideoOutput::OutputColorimetry::None},
+    {"oprgb", ::Firebolt::VideoOutput::OutputColorimetry::Oprgb},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::QuantizationRangeValue> QuantizationRangeValueEnum({
+    {"full", ::Firebolt::VideoOutput::QuantizationRangeValue::Full},
+    {"limited", ::Firebolt::VideoOutput::QuantizationRangeValue::Limited},
+    {"none", ::Firebolt::VideoOutput::QuantizationRangeValue::None},
+});
+
+inline const Firebolt::JSON::EnumType<::Firebolt::VideoOutput::RefreshRateValue> RefreshRateValueEnum({
+    {"0", ::Firebolt::VideoOutput::RefreshRateValue::R0},
+    {"23.976", ::Firebolt::VideoOutput::RefreshRateValue::R23976},
+    {"24", ::Firebolt::VideoOutput::RefreshRateValue::R24},
+    {"25", ::Firebolt::VideoOutput::RefreshRateValue::R25},
+    {"29.97", ::Firebolt::VideoOutput::RefreshRateValue::R2997},
+    {"30", ::Firebolt::VideoOutput::RefreshRateValue::R30},
+    {"50", ::Firebolt::VideoOutput::RefreshRateValue::R50},
+    {"59.94", ::Firebolt::VideoOutput::RefreshRateValue::R5994},
+    {"60", ::Firebolt::VideoOutput::RefreshRateValue::R60},
+});
+
+class CecStateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::CecStateValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        cecStateValue_ = CecStateValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::CecStateValue value() const override { return cecStateValue_; }
+
+private:
+    ::Firebolt::VideoOutput::CecStateValue cecStateValue_;
+};
+
+class ColorDepthValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::ColorDepthValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        if (json.is_string())
+        {
+            colorDepthValue_ = ColorDepthValueEnum.at(json.get<std::string>());
+            return;
+        }
+
+        if (json.is_number_integer() || json.is_number_unsigned())
+        {
+            const auto value = json.get<int>();
+            switch (value)
+            {
+            case 0:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D0;
+                return;
+            case 8:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D8;
+                return;
+            case 10:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D10;
+                return;
+            case 12:
+                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D12;
+                return;
+            default:
+                throw std::out_of_range("Unsupported color depth value");
+            }
+        }
+
+        throw std::invalid_argument("ColorDepthValue must be a string or integer");
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::ColorDepthValue value() const override { return colorDepthValue_; }
+
+private:
+    ::Firebolt::VideoOutput::ColorDepthValue colorDepthValue_;
+};
+
+class ColorFormatValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::ColorFormatValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        colorFormatValue_ = ColorFormatValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::ColorFormatValue value() const override { return colorFormatValue_; }
+
+private:
+    ::Firebolt::VideoOutput::ColorFormatValue colorFormatValue_;
+};
+
+class DynamicRangeValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::DynamicRangeValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        dynamicRangeValue_ = DynamicRangeValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::DynamicRangeValue value() const override { return dynamicRangeValue_; }
+
+private:
+    ::Firebolt::VideoOutput::DynamicRangeValue dynamicRangeValue_;
+};
+
+class HdcpStateJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::HdcpState>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { hdcpState_ = HdcpStateEnum.at(json.get<std::string>()); }
+    [[nodiscard]] ::Firebolt::VideoOutput::HdcpState value() const override { return hdcpState_; }
+
+private:
+    ::Firebolt::VideoOutput::HdcpState hdcpState_;
+};
+
+class OutputColorimetryJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::OutputColorimetry>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        outputColorimetry_ = OutputColorimetryEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::OutputColorimetry value() const override { return outputColorimetry_; }
+
+private:
+    ::Firebolt::VideoOutput::OutputColorimetry outputColorimetry_;
+};
+
+class QuantizationRangeValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::QuantizationRangeValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        quantizationRangeValue_ = QuantizationRangeValueEnum.at(json.get<std::string>());
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::QuantizationRangeValue value() const override
+    {
+        return quantizationRangeValue_;
+    }
+
+private:
+    ::Firebolt::VideoOutput::QuantizationRangeValue quantizationRangeValue_;
+};
+
+class RefreshRateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::RefreshRateValue>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        if (json.is_string())
+        {
+            refreshRateValue_ = RefreshRateValueEnum.at(json.get<std::string>());
+            return;
+        }
+
+        if (json.is_number_integer() || json.is_number_unsigned())
+        {
+            const auto value = json.get<int>();
+            switch (value)
+            {
+            case 0:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R0;
+                return;
+            case 24:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R24;
+                return;
+            case 25:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R25;
+                return;
+            case 30:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R30;
+                return;
+            case 50:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R50;
+                return;
+            case 60:
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R60;
+                return;
+            default:
+                throw std::out_of_range("Unsupported refresh rate value");
+            }
+        }
+
+        if (json.is_number_float())
+        {
+            const auto value = json.get<double>();
+            if (std::fabs(value - 23.976) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R23976;
+                return;
+            }
+            if (std::fabs(value - 29.97) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R2997;
+                return;
+            }
+            if (std::fabs(value - 59.94) < 0.001)
+            {
+                refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R5994;
+                return;
+            }
+
+            // A whole-number rate can still arrive as a float on the wire (e.g. 24.0); fall back to
+            // the integer table instead of rejecting it outright.
+            const auto rounded = std::llround(value);
+            if (std::fabs(value - static_cast<double>(rounded)) < 0.001)
+            {
+                switch (rounded)
+                {
+                case 0:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R0;
+                    return;
+                case 24:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R24;
+                    return;
+                case 25:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R25;
+                    return;
+                case 30:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R30;
+                    return;
+                case 50:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R50;
+                    return;
+                case 60:
+                    refreshRateValue_ = ::Firebolt::VideoOutput::RefreshRateValue::R60;
+                    return;
+                default:
+                    break;
+                }
+            }
+            throw std::out_of_range("Unsupported refresh rate value");
+        }
+
+        throw std::invalid_argument("RefreshRateValue must be a string or number");
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::RefreshRateValue value() const override { return refreshRateValue_; }
+
+private:
+    ::Firebolt::VideoOutput::RefreshRateValue refreshRateValue_;
+};
+
+class VideoOutputResolution : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::VideoOutputResolution>
+{
+public:
+    void fromJson(const nlohmann::json& json) override
+    {
+        if (!checkRequiredFields(json, {"height", "width"}))
+        {
+            throw std::invalid_argument("Missing required fields in JSON");
+        }
+        height_ = json["height"].get<uint32_t>();
+        width_ = json["width"].get<uint32_t>();
+    }
+    [[nodiscard]] ::Firebolt::VideoOutput::VideoOutputResolution value() const override
+    {
+        return ::Firebolt::VideoOutput::VideoOutputResolution{height_, width_};
+    }
+
+private:
+    uint32_t height_{};
+    uint32_t width_{};
+};
+
+inline void to_json(nlohmann::json& j, const Firebolt::VideoOutput::VideoOutputResolution& v)
+{
+    j = nlohmann::json::object();
+    j["height"] = v.height;
+    j["width"] = v.width;
+}
+} // namespace Firebolt::VideoOutput::JsonData
+
+#endif // FIREBOLT_VIDEOOUTPUT_JSON_H

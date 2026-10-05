@@ -87,7 +87,7 @@ void DiscoveryDemo::runOption(const std::string& method)
                                                                                         watchedOn, agePolicyOpt);
         if (succeed(r))
         {
-            std::cout << "Discovery.watchedV2: " << (*r ? "true" : "false") << std::endl;
+            std::cout << "Discovery.watchedV2: Success" << std::endl;
         }
     }
 }

@@ -33,22 +33,22 @@ public:
 
     ~AccessibilityImpl() override = default;
 
-    Result<bool> audioDescription() const override;
+    [[nodiscard]] Result<bool> audioDescription() const override;
     Result<SubscriptionId> subscribeOnAudioDescriptionChanged(std::function<void(bool)>&& notification) override;
-    Result<ClosedCaptionsSettings> closedCaptionsSettings() const override;
+    [[nodiscard]] Result<ClosedCaptionsSettings> closedCaptionsSettings() const override;
     Result<SubscriptionId>
     subscribeOnClosedCaptionsSettingsChanged(std::function<void(const ClosedCaptionsSettings&)>&& notification) override;
 
-    Result<bool> highContrastUI() const override;
+    [[nodiscard]] Result<bool> highContrastUI() const override;
 
     Result<SubscriptionId> subscribeOnHighContrastUIChanged(std::function<void(bool)>&& notification) override;
 
-    Result<VoiceGuidanceSettings> voiceGuidanceSettings() const override;
+    [[nodiscard]] Result<VoiceGuidanceSettings> voiceGuidanceSettings() const override;
     Result<SubscriptionId>
     subscribeOnVoiceGuidanceSettingsChanged(std::function<void(const VoiceGuidanceSettings&)>&& notification) override;
 
-    virtual Result<void> unsubscribe(SubscriptionId id) override;
-    virtual void unsubscribeAll() override;
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;

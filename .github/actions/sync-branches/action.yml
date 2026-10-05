@@ -268,7 +268,7 @@ runs:
           reason="direct push failed"
         fi
 
-        pr_list_json="$(gh pr list --base "$TARGET_BRANCH" --state open --json headRefName 2>/dev/null || echo '[]')"
+          pr_list_json="$(gh pr list --base "$TARGET_BRANCH" --state open --limit 200 --json headRefName 2>/dev/null || echo '[]')"
         existing_head="$(echo "$pr_list_json" | jq -r --arg prefix "$branch_prefix" 'map(select(.headRefName | startswith($prefix))) | .[0].headRefName // empty')"
 
         if [[ -n "$existing_head" ]]; then
@@ -574,9 +574,21 @@ runs:
         ALREADY_SYNCED_AFTER_PUSH_REJECT: ${{ steps.push.outputs.already_synced_after_push_reject }}
         FAIL_ON_HUMAN_INTERVENTION: ${{ inputs.fail_on_human_intervention }}
       run: |
+        if [[ -z "${ALREADY_SYNCED:-}" ]]; then
+          echo "result=failed" >> "$GITHUB_OUTPUT"
+          echo "Unable to determine sync result because a prior step did not publish required outputs." >&2
+          exit 1
+        fi
+
         if [[ "$ALREADY_SYNCED" == "true" ]]; then
           echo "result=skipped" >> "$GITHUB_OUTPUT"
           exit 0
+        fi
+
+        if [[ -z "${MERGE_CONFLICT:-}" || -z "${PUSH_FAILED:-}" ]]; then
+          echo "result=failed" >> "$GITHUB_OUTPUT"
+          echo "Unable to determine merge/push outcome from prior steps." >&2
+          exit 1
         fi
 
         if [[ "$MERGE_CONFLICT" == "false" && "$PUSH_FAILED" == "false" ]]; then

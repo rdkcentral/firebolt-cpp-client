@@ -8,7 +8,7 @@ Automated branch synchronization that keeps a target branch (for example `main`)
 - **Clean merges**: Direct push to target branch when no conflicts exist
 - **Conflict handling**: Opens or updates fallback PR and fallback issue artifacts for manual resolution
 - **Idempotent**: Skips sync if source is already in target (no unnecessary merges)
-- **Safer token policy**: Push-triggered runs use `github.token`; optional PAT is limited to manual dispatch
+- **Safer token policy**: Sync operations prefer the configured PAT and fall back to `github.token`
 - **Policy-compliant fallback titles**: Fallback PR titles include a Jira key (derived or override)
 - **Customizable**: Configure branches, labels, reviewers, and commit identity
 
@@ -322,8 +322,6 @@ Notes:
 - The webhook payload is JSON: `{ "text": "..." }`, which works with Slack Incoming Webhooks and many webhook relays.
 - If `notification_webhook_url` is not set, no notification is sent.
 - Notification delivery is best-effort and non-blocking: webhook failures emit a warning but do not fail the sync workflow.
-```
-
 ### Fallback Case: Conflict or Protected Branch
 ```
 push to develop

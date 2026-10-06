@@ -28,7 +28,7 @@
 namespace Firebolt::Actions::JsonData
 {
 
-// Deserialises the intent envelope while preserving the intent payload as generic JSON.
+// Deserialises the intent envelope while preserving the intent payload as raw JSON text.
 class JsonValue : public Firebolt::JSON::NL_Json_Basic<Intent>
 {
 public:
@@ -36,7 +36,7 @@ public:
     {
         if (!checkRequiredFields(json, {"intent", "intentId"}))
             throw std::invalid_argument("Missing required fields in JSON");
-        value_.intent = json["intent"];
+        value_.intent = json["intent"].dump();
         value_.intentId = json["intentId"].get<uint32_t>();
     }
     [[nodiscard]] Intent value() const override { return value_; }

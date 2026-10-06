@@ -19,6 +19,7 @@
 #include "actionsDemo.h"
 #include <firebolt/firebolt.h>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <utility>
 
@@ -44,7 +45,7 @@ void ActionsDemo::runOption(const std::string& method)
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
         if (succeed(r))
         {
-            std::cout << "Current Intent: " << r->intent.dump() << ", intentId: " << r->intentId << std::endl;
+            std::cout << "Current Intent: " << r->intent << ", intentId: " << r->intentId << std::endl;
         }
     }
     else if (method == "Actions.start")
@@ -61,7 +62,7 @@ void ActionsDemo::runOption(const std::string& method)
                                        {"metadata", {{"source", "demo"}}}}}};
         if (!sourceStr.empty())
             intentData["context"]["source"] = sourceStr;
-        auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intentData, handlerAppId);
+        auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intentData.dump(), handlerAppId);
         if (succeed(r))
         {
             std::cout << "Actions.start: Success" << std::endl;
@@ -69,9 +70,8 @@ void ActionsDemo::runOption(const std::string& method)
     }
     else if (method == "Actions.onIntent")
     {
-        auto callback = [&](const Intent& payload) {
-            std::cout << "Intent received: " << payload.intent.dump() << ", intentId: " << payload.intentId << std::endl;
-        };
+        auto callback = [&](const Intent& payload)
+        { std::cout << "Intent received: " << payload.intent << ", intentId: " << payload.intentId << std::endl; };
         auto r = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(std::move(callback));
         if (succeed(r))
         {

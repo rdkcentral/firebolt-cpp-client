@@ -75,7 +75,7 @@ TEST_F(ActionsGeneratedUTest, SubscribeOnIntentDispatchesGenericPayload)
         [&](const Firebolt::Actions::Intent& intent)
         {
             notified = true;
-            EXPECT_EQ(intent.intent, expectedIntent);
+            EXPECT_EQ(intent.intent, expectedIntent.dump());
             EXPECT_EQ(intent.intentId, 11U);
         });
 

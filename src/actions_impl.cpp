@@ -39,10 +39,20 @@ Result<SubscriptionId> ActionsImpl::subscribeOnIntent(std::function<void(const I
     return subscriptionManager_.subscribe<JsonData::JsonValue>("Actions.onIntent", std::move(notification));
 }
 
-Result<void> ActionsImpl::start(const nlohmann::json& intent, std::optional<std::string> handlerAppId) const
+Result<void> ActionsImpl::start(const std::string& intent, std::optional<std::string> handlerAppId) const
 {
+    nlohmann::json intentJson;
+    try
+    {
+        intentJson = nlohmann::json::parse(intent);
+    }
+    catch (const nlohmann::json::parse_error&)
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json params;
-    params["intent"] = intent;
+    params["intent"] = std::move(intentJson);
     if (handlerAppId)
     {
         params["handlerAppId"] = *handlerAppId;

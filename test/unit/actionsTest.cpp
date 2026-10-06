@@ -30,13 +30,14 @@ protected:
 
 TEST_F(ActionsUTest, Intent)
 {
-    const auto expectedIntent = nlohmann::json::parse(
-        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+    constexpr auto intentJsonText =
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})";
+    const auto expectedIntent = nlohmann::json::parse(intentJsonText);
     mock_with_response("Actions.intent", {{"intent", expectedIntent}, {"intentId", 0U}});
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
-    EXPECT_EQ(result->intent, expectedIntent);
+    EXPECT_EQ(result->intent, expectedIntent.dump());
     EXPECT_EQ(result->intentId, 0U);
 }
 
@@ -47,7 +48,7 @@ TEST_F(ActionsUTest, IntentPreservesNonObjectPayload)
 
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
-    EXPECT_EQ(result->intent, expectedIntent);
+    EXPECT_EQ(result->intent, expectedIntent.dump());
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)
@@ -66,28 +67,35 @@ TEST_F(ActionsUTest, SubscribeOnIntent)
 
 TEST_F(ActionsUTest, Start)
 {
-    const auto intentPayload =
-        nlohmann::json::parse(R"({"action":"pre-load","data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+    constexpr auto intentJsonText =
+        R"({"action":"pre-load","data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})";
     nlohmann::json expectedParams;
-    expectedParams["intent"] = intentPayload;
+    expectedParams["intent"] = nlohmann::json::parse(intentJsonText);
     expectedParams["handlerAppId"] = "com.example.handler";
     EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.start(intentPayload, "com.example.handler");
+    auto result = actionsImpl_.start(intentJsonText, "com.example.handler");
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
 }
 
 TEST_F(ActionsUTest, StartPreservesNonObjectPayload)
 {
-    const auto intentPayload = nlohmann::json::array({"future-intent", 42, true, nullptr, {{"nested", {1, 2}}}});
+    const auto intentJson = nlohmann::json::array({"future-intent", 42, true, nullptr, {{"nested", {1, 2}}}});
     nlohmann::json expectedParams;
-    expectedParams["intent"] = intentPayload;
+    expectedParams["intent"] = intentJson;
     EXPECT_CALL(mockHelper, invoke("Actions.start", expectedParams))
         .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
                          { return Firebolt::Result<void>{Firebolt::Error::None}; }));
 
-    auto result = actionsImpl_.start(intentPayload);
+    auto result = actionsImpl_.start(intentJson.dump());
     ASSERT_TRUE(result) << "ActionsImpl::start() returned an error";
+}
+
+TEST_F(ActionsUTest, StartRejectsMalformedJsonWithoutThrowing)
+{
+    auto result = actionsImpl_.start("{not valid json");
+    ASSERT_FALSE(result) << "ActionsImpl::start() should reject malformed JSON";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

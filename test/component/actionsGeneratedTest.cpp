@@ -21,6 +21,7 @@
 #include <condition_variable>
 #include <gtest/gtest.h>
 #include <mutex>
+#include <nlohmann/json.hpp>
 
 class ActionsGeneratedCTest : public ::testing::Test
 {
@@ -38,7 +39,7 @@ TEST_F(ActionsGeneratedCTest, Intent)
         R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(result->intent, expectedIntent);
+    EXPECT_EQ(nlohmann::json::parse(result->intent), expectedIntent);
     EXPECT_EQ(result->intentId, 0U);
 }
 
@@ -49,7 +50,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
         [&](const Firebolt::Actions::Intent& payload)
         {
-            EXPECT_EQ(payload.intent, expectedIntent);
+            EXPECT_EQ(nlohmann::json::parse(payload.intent), expectedIntent);
             EXPECT_EQ(payload.intentId, 0U);
             {
                 std::lock_guard<std::mutex> lock(mtx);
@@ -71,8 +72,8 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 
 TEST_F(ActionsGeneratedCTest, Start)
 {
-    const auto intentPayload = nlohmann::json::parse(
-        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+    const auto intentPayload =
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})";
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intentPayload);
     ASSERT_TRUE(result) << toError(result);
 }

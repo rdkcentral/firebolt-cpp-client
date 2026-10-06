@@ -21,7 +21,6 @@
 
 #include <firebolt/types.h>
 #include <functional>
-#include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <utility>
@@ -29,9 +28,10 @@
 namespace Firebolt::Actions
 {
 
+// intent holds the raw JSON document text, exactly as received from (or sent to) the platform.
 struct Intent
 {
-    nlohmann::json intent;
+    std::string intent;
     uint32_t intentId{0};
 };
 
@@ -51,7 +51,8 @@ public:
     virtual Result<void> unsubscribe(SubscriptionId id) = 0;
     virtual void unsubscribeAll() = 0;
 
-    [[nodiscard]] virtual Result<void> start(const nlohmann::json& intent,
+    // intent is a raw JSON document (any shape); malformed JSON yields Error::InvalidParams, not an exception.
+    [[nodiscard]] virtual Result<void> start(const std::string& intent,
                                              std::optional<std::string> handlerAppId = std::nullopt) const = 0;
 
 }; // class IActions

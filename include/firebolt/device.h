@@ -166,6 +166,20 @@ public:
      */
     virtual Result<SubscriptionId>
     subscribeOnDolbyAtmosExperienceAvailableChanged(std::function<void(bool)>&& notification) = 0;
+
+    /**
+     * @brief Returns the device friendly name
+     *
+     * @retval The device name string or error
+     */
+    [[nodiscard]] virtual Result<std::string> name() const = 0;
+
+    /**
+     * @brief Subscribe to device friendly name changes
+     *
+     * @retval SubscriptionId or error
+     */
+    virtual Result<SubscriptionId> subscribeOnNameChanged(std::function<void(const std::string&)>&& notification) = 0;
 };
 
 } // namespace Firebolt::Device

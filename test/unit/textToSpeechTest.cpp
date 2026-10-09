@@ -246,7 +246,7 @@ TEST_F(TextToSpeechUTest, getSpeechState)
 
 TEST_F(TextToSpeechUTest, subscribeOnWillSpeak)
 {
-    mockSubscribe("TextToSpeech.onWillspeak");
+    mockSubscribe("TextToSpeech.onWillSpeak");
 
     auto id = ttsImpl.subscribeOnWillSpeak([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -257,7 +257,7 @@ TEST_F(TextToSpeechUTest, subscribeOnWillSpeak)
 
 TEST_F(TextToSpeechUTest, subscribeOnSpeechStart)
 {
-    mockSubscribe("TextToSpeech.onSpeechstart");
+    mockSubscribe("TextToSpeech.onSpeechStart");
 
     auto id = ttsImpl.subscribeOnSpeechStart([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -268,7 +268,7 @@ TEST_F(TextToSpeechUTest, subscribeOnSpeechStart)
 
 TEST_F(TextToSpeechUTest, subscribeOnSpeechPause)
 {
-    mockSubscribe("TextToSpeech.onSpeechpause");
+    mockSubscribe("TextToSpeech.onSpeechPause");
 
     auto id = ttsImpl.subscribeOnSpeechPause([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -279,7 +279,7 @@ TEST_F(TextToSpeechUTest, subscribeOnSpeechPause)
 
 TEST_F(TextToSpeechUTest, subscribeOnSpeechResume)
 {
-    mockSubscribe("TextToSpeech.onSpeechresume");
+    mockSubscribe("TextToSpeech.onSpeechResume");
 
     auto id = ttsImpl.subscribeOnSpeechResume([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -290,7 +290,7 @@ TEST_F(TextToSpeechUTest, subscribeOnSpeechResume)
 
 TEST_F(TextToSpeechUTest, subscribeOnSpeechComplete)
 {
-    mockSubscribe("TextToSpeech.onSpeechcomplete");
+    mockSubscribe("TextToSpeech.onSpeechComplete");
 
     auto id = ttsImpl.subscribeOnSpeechComplete([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -301,7 +301,7 @@ TEST_F(TextToSpeechUTest, subscribeOnSpeechComplete)
 
 TEST_F(TextToSpeechUTest, subscribeOnSpeechInterrupted)
 {
-    mockSubscribe("TextToSpeech.onSpeechinterrupted");
+    mockSubscribe("TextToSpeech.onSpeechInterrupted");
 
     auto id = ttsImpl.subscribeOnSpeechInterrupted([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -312,7 +312,7 @@ TEST_F(TextToSpeechUTest, subscribeOnSpeechInterrupted)
 
 TEST_F(TextToSpeechUTest, subscribeOnNetworkError)
 {
-    mockSubscribe("TextToSpeech.onNetworkerror");
+    mockSubscribe("TextToSpeech.onNetworkError");
 
     auto id = ttsImpl.subscribeOnNetworkError([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";
@@ -323,7 +323,7 @@ TEST_F(TextToSpeechUTest, subscribeOnNetworkError)
 
 TEST_F(TextToSpeechUTest, subscribeOnPlaybackError)
 {
-    mockSubscribe("TextToSpeech.onPlaybackerror");
+    mockSubscribe("TextToSpeech.onPlaybackError");
 
     auto id = ttsImpl.subscribeOnPlaybackError([](auto) {});
     ASSERT_TRUE(id) << "error on subscribe ";

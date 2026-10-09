@@ -75,25 +75,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -111,6 +93,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -153,25 +139,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -195,6 +163,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -219,25 +191,7 @@
 					"name": "intent",
 					"summary": "The intent to send, as a JSON document.",
 					"required": true,
-					"schema": {
-						"type": "object",
-						"required": [
-							"action"
-						],
-						"properties": {
-							"action": {
-								"type": "string"
-							},
-							"context": {
-								"type": "object",
-								"properties": {
-									"source": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
+					"schema": {}
 				},
 				{
 					"name": "handlerAppId",
@@ -264,6 +218,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							}
 						}
@@ -879,6 +837,39 @@
 					"result": {
 						"name": "Default Result",
 						"value": true
+					}
+				}
+			]
+		},
+		{
+			"name": "Device.name",
+			"summary": "Returns the device friendly name",
+			"params": [],
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"result": {
+				"name": "name",
+				"summary": "The device friendly name",
+				"schema": {
+					"type": "string"
+				}
+			},
+			"examples": [
+				{
+					"name": "Getting the device friendly name",
+					"params": [],
+					"result": {
+						"name": "Default Result",
+						"value": "Living Room TV"
 					}
 				}
 			]
@@ -2652,7 +2643,7 @@
 		{
 			"name": "TextToSpeech.speak",
 			"summary": "Speak the utterance immediately. Any ongoing speech is interrupted.",
-			"description": "Text argument is either plain text or a well-formed SSML document TTS_status, not success attribute, to be used by caller to indicate success of call 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration Raises onSpeechinterrupted if speaking is interrupted",
+			"description": "Text argument is either plain text or a well-formed SSML document TTS_status, not success attribute, to be used by caller to indicate success of call 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration Raises onSpeechInterrupted if speaking is interrupted",
 			"params": [
 				{
 					"name": "text",
@@ -2770,7 +2761,7 @@
 		{
 			"name": "TextToSpeech.pause",
 			"summary": "Pauses the speech for given speech id",
-			"description": "Pauses the utterance. Raises onSpeechpause if ongoing speech is paused. Does nothing if utterance is already paused",
+			"description": "Pauses the utterance. Raises onSpeechPause if ongoing speech is paused. Does nothing if utterance is already paused",
 			"params": [
 				{
 					"name": "speechid",
@@ -2821,7 +2812,7 @@
 		{
 			"name": "TextToSpeech.resume",
 			"summary": "Resumes the speech for given speech id",
-			"description": "Continue the paused utterance. Raises onSpeechresume if paused speech is resumed. Does nothing if the utterance is not paused",
+			"description": "Continue the paused utterance. Raises onSpeechResume if paused speech is resumed. Does nothing if the utterance is not paused",
 			"params": [
 				{
 					"name": "speechid",
@@ -2872,7 +2863,7 @@
 		{
 			"name": "TextToSpeech.cancel",
 			"summary": "Cancels the speech for given speech id",
-			"description": "Stop speaking if utterance is currently being spoken. Raises onSpeechinterrupted if speaking was interrupted.",
+			"description": "Stop speaking if utterance is currently being spoken. Raises onSpeechInterrupted if speaking was interrupted.",
 			"params": [
 				{
 					"name": "speechid",
@@ -3457,7 +3448,7 @@
 			}
 		},
 		{
-			"name": "TextToSpeech.onWillspeak",
+			"name": "TextToSpeech.onWillSpeak",
 			"summary": "Text to speech conversion is about to start.",
 			"tags": [
 				{
@@ -3465,7 +3456,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onWillspeak"
+					"x-notifier": "TextToSpeech.onWillSpeak"
 				},
 				{
 					"name": "capabilities",
@@ -3493,19 +3484,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechstart",
+			"name": "TextToSpeech.onSpeechStart",
 			"summary": "Utterance is about to be spoken.",
 			"tags": [
 				{
@@ -3513,7 +3506,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechstart"
+					"x-notifier": "TextToSpeech.onSpeechStart"
 				},
 				{
 					"name": "capabilities",
@@ -3541,19 +3534,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechpause",
+			"name": "TextToSpeech.onSpeechPause",
 			"summary": "Ongoing speech was paused.",
 			"tags": [
 				{
@@ -3561,7 +3556,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechpause"
+					"x-notifier": "TextToSpeech.onSpeechPause"
 				},
 				{
 					"name": "capabilities",
@@ -3589,19 +3584,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechresume",
+			"name": "TextToSpeech.onSpeechResume",
 			"summary": "Paused speech was resumed.",
 			"tags": [
 				{
@@ -3609,7 +3606,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechresume"
+					"x-notifier": "TextToSpeech.onSpeechResume"
 				},
 				{
 					"name": "capabilities",
@@ -3637,19 +3634,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechcomplete",
+			"name": "TextToSpeech.onSpeechComplete",
 			"summary": "Speech completed successfully.",
 			"tags": [
 				{
@@ -3657,7 +3656,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechcomplete"
+					"x-notifier": "TextToSpeech.onSpeechComplete"
 				},
 				{
 					"name": "capabilities",
@@ -3685,19 +3684,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onSpeechinterrupted",
+			"name": "TextToSpeech.onSpeechInterrupted",
 			"summary": "Speech was stopped, due to another call to speak or cancel.",
 			"tags": [
 				{
@@ -3705,7 +3706,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onSpeechinterrupted"
+					"x-notifier": "TextToSpeech.onSpeechInterrupted"
 				},
 				{
 					"name": "capabilities",
@@ -3733,19 +3734,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onNetworkerror",
+			"name": "TextToSpeech.onNetworkError",
 			"summary": "Utterance failed due to network error.",
 			"tags": [
 				{
@@ -3753,7 +3756,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onNetworkerror"
+					"x-notifier": "TextToSpeech.onNetworkError"
 				},
 				{
 					"name": "capabilities",
@@ -3781,19 +3784,21 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
 		{
-			"name": "TextToSpeech.onPlaybackerror",
+			"name": "TextToSpeech.onPlaybackError",
 			"summary": "Utterance failed during playback.",
 			"tags": [
 				{
@@ -3801,7 +3806,7 @@
 				},
 				{
 					"name": "event",
-					"x-notifier": "TextToSpeech.onPlaybackerror"
+					"x-notifier": "TextToSpeech.onPlaybackError"
 				},
 				{
 					"name": "capabilities",
@@ -3829,14 +3834,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -4115,6 +4122,52 @@
 				"name": "result",
 				"schema": {
 					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "Device.onNameChanged",
+			"summary": "Returns the device friendly name",
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Device.onNameChanged",
+					"x-subscriber-for": "Device.name"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:device:info"
+					]
+				}
+			],
+			"examples": [
+				{
+					"name": "Getting the device friendly name",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "string"
 				}
 			}
 		},

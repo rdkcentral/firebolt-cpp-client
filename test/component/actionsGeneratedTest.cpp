@@ -21,6 +21,7 @@
 #include <condition_variable>
 #include <gtest/gtest.h>
 #include <mutex>
+#include <nlohmann/json.hpp>
 
 class ActionsGeneratedCTest : public ::testing::Test
 {
@@ -34,24 +35,22 @@ protected:
 
 TEST_F(ActionsGeneratedCTest, Intent)
 {
+    const auto expectedIntent = nlohmann::json::parse(
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
     ASSERT_TRUE(result) << toError(result);
-    EXPECT_EQ(result->intent.action, "pre-load");
-    ASSERT_TRUE(result->intent.context);
-    ASSERT_TRUE(result->intent.context->source);
-    EXPECT_EQ(*result->intent.context->source, "system");
+    EXPECT_EQ(nlohmann::json::parse(result->intent), expectedIntent);
     EXPECT_EQ(result->intentId, 0U);
 }
 
 TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 {
+    const auto expectedIntent = nlohmann::json::parse(
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
     auto id = Firebolt::IFireboltAccessor::Instance().ActionsInterface().subscribeOnIntent(
         [&](const Firebolt::Actions::Intent& payload)
         {
-            EXPECT_EQ(payload.intent.action, "pre-load");
-            ASSERT_TRUE(payload.intent.context);
-            ASSERT_TRUE(payload.intent.context->source);
-            EXPECT_EQ(*payload.intent.context->source, "system");
+            EXPECT_EQ(nlohmann::json::parse(payload.intent), expectedIntent);
             EXPECT_EQ(payload.intentId, 0U);
             {
                 std::lock_guard<std::mutex> lock(mtx);
@@ -63,7 +62,8 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     ASSERT_TRUE(id) << toError(id);
     verifyEventSubscription(id);
 
-    triggerEvent("Actions.onIntent", R"({"intent":{"action":"pre-load","context":{"source":"system"}},"intentId":0})");
+    triggerEvent("Actions.onIntent",
+                 R"({"intent":{"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}},"intentId":0})");
     verifyEventReceived(mtx, cv, eventReceived);
 
     auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().unsubscribe(id.value());
@@ -72,7 +72,8 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
 
 TEST_F(ActionsGeneratedCTest, Start)
 {
-    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(
-        Firebolt::Actions::IntentData{"pre-load", Firebolt::Actions::IntentContext{{"system"}}});
+    const auto intentPayload =
+        R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})";
+    auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().start(intentPayload);
     ASSERT_TRUE(result) << toError(result);
 }

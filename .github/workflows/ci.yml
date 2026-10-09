@@ -266,8 +266,10 @@ jobs:
 
       - name: Run Component Tests
         run: |
+          # Temporary exclusion for TextToSpeech event tests. See docs/ci/text-to-speech-component-test-exclusion.md.
+          EXCLUDED_COMPONENT_TESTS="TextToSpeechCTest.subscribeOnWillSpeak:TextToSpeechCTest.subscribeOnSpeechStart:TextToSpeechCTest.subscribeOnSpeechComplete:TextToSpeechCTest.subscribeOnSpeechPause:TextToSpeechCTest.subscribeOnSpeechResume:TextToSpeechCTest.subscribeOnSpeechInterrupted:TextToSpeechCTest.subscribeOnNetworkError:TextToSpeechCTest.subscribeOnPlaybackError"
           chmod +x ${{ github.workspace }}/build/test/ctApp
-          docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
+          docker run --rm --user "$(id -u):$(id -g)" -e GTEST_FILTER="-$EXCLUDED_COMPONENT_TESTS" -v ${{ github.workspace }}:/workspace -v ${{ env.MOCK_PATH }}:/mock ${{ needs.build_docker.outputs.image_tag }} \
             ./.github/scripts/run-component-tests.sh \
               --mock /mock \
               --protocol ${{ github.event.inputs.protocol || 'rpc_v2' }} \

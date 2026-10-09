@@ -54,3 +54,32 @@ TEST_F(ActionsGeneratedUTest, ForwardsIntentTransportErrors)
     auto result = impl.intent();
     EXPECT_FALSE(result) << "Expected error propagation when helper getJson fails";
 }
+
+TEST_F(ActionsGeneratedUTest, SubscribeOnIntentDispatchesGenericPayload)
+{
+    bool notified = false;
+    const auto expectedIntent =
+        nlohmann::json::parse(R"({"action":"pre-load","data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "Actions.onIntent", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, {{"intent", expectedIntent}, {"intentId", 11U}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{99};
+            }));
+
+    auto result = impl.subscribeOnIntent(
+        [&](const Firebolt::Actions::Intent& intent)
+        {
+            notified = true;
+            EXPECT_EQ(intent.intent, expectedIntent.dump());
+            EXPECT_EQ(intent.intentId, 11U);
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 99U);
+    EXPECT_TRUE(notified);
+}

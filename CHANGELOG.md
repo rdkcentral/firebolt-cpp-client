@@ -1,3 +1,15 @@
+## [0.7.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.7.0...v0.7.1)
+
+### Added
+- `Device.name` getter and `onNameChanged` event
+
+### Changed
+- **Breaking**: `Actions.start()` now takes the intent as a JSON string (`const std::string&`) instead of `const IntentData&`; malformed JSON returns `Error::InvalidParams` instead of throwing
+- **Breaking**: `Firebolt::Actions::IntentData` and `IntentContext` have been removed; `Intent::intent` is now a `std::string` holding a JSON-serialized representation of the payload
+
+### Fixed
+- `TextToSpeech` event subscriptions (`onWillSpeak`, `onSpeechStart`, `onSpeechPause`, `onSpeechResume`, `onSpeechComplete`, `onSpeechInterrupted`, `onNetworkError`, etc.) used incorrect lowercase wire method names and never received platform events
+
 ## [0.7.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.4...v0.7.0)
 
 ### Added

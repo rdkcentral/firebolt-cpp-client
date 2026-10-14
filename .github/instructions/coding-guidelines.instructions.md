@@ -22,13 +22,13 @@ Markers:
 
 When sources disagree, resolve in this order:
 
-1. **`Firebolt_9_API_Oct1.md`** (repo root, status DRAFT) — authoritative for the API surface: method names, parameters, return types, error semantics, and whether a method is in scope for C++17 (`C++17: ✅/❌`).
+1. **`Firebolt_9_API_Oct1.md`** (repo root, status DRAFT; currently untracked in this checkout) — the task-supplied API reference when available: method names, parameters, return types, error semantics, and C++17 approval (`C++17: ✅/❌`). It is absent from clean clones unless separately provided.
 2. **Merged code in this repo** — authoritative for structure and conventions.
 3. **`docs/openrpc/the-spec/firebolt-open-rpc.json`** — test fixture consumed by mock-firebolt. Secondary evidence only; it can lag or diverge from the spec (see §18).
 4. **This document** — a summary of 1–3; it never overrides them.
 
 Rules:
-- Only implement methods marked **Approved** with `C++17: ✅` in the spec. `Firebolt.apiVersion` and `ParentalControl.*` are *Not approved* and must not be implemented without owner approval.
+- Only implement methods marked **Approved** with `C++17: ✅` in the spec. If the spec is unavailable, do not infer approval from the code or fixture; obtain an authoritative spec or owner confirmation first. `Firebolt.apiVersion` and `ParentalControl.*` are *Not approved* and must not be implemented without owner approval.
 - A method marked `Deprecated API version: 9.0.0` (all of `TextToSpeech`) is kept for compatibility. New speech work targets `SpeechSynthesis`.
 - If code or fixture disagrees with the spec, do not copy the code's behaviour into new work. Follow the spec, and add the disagreement to §18 if it is not already there.
 - The spec file name is date-stamped. If it is replaced, update every reference in this document.
@@ -260,7 +260,7 @@ Do not use `friend` declarations to grant test classes access to implementation 
 
 **Anti-pattern:** Do not throw exceptions from public interface methods. Do not return bare `T` where failure is possible. Do not use `std::optional<T>` as a substitute for `Result<T>` — `optional` cannot carry an error code.
 
-**Constraint (no exceptions across the library boundary):** the library is consumed by a porting layer that may be built without C++ exceptions, so no exception may propagate out of any public method. Public signatures take plain types (`std::string`, `uint32_t`, `std::optional<...>`), not types whose construction can throw. For any entry point that parses caller-supplied text, catch the parse failure inside the impl and return `Error::InvalidParams`. Reference: `ActionsImpl::start()` in `src/actions_impl.cpp`. `[VERIFY]` the original design decision (recorded for RDKEMW-26413) with the library owners if you need to relax it.
+**Constraint (no exceptions across the library boundary):** the library is consumed by a porting layer that may be built without C++ exceptions, so no exception may propagate out of any public method. Public signatures use standard API types (`std::string`, `uint32_t`, `std::optional<...>`) and do not expose parser-specific types such as `nlohmann::json`. For any entry point that parses caller-supplied text, catch the parse failure inside the impl and return `Error::InvalidParams`. Reference: `ActionsImpl::start()` in `src/actions_impl.cpp`. `[VERIFY]` the original design decision (recorded for RDKEMW-26413) with the library owners if you need to relax it.
 
 ### 5.2 Error Propagation in Implementations
 
@@ -512,7 +512,7 @@ Exception: `test/component/actionsGeneratedTest.cpp` hardcodes the intent payloa
 - `.github/mock-firebolt/config.json` enables validation of `method`, `params`, `response`, and `events`. A `triggerEvent` payload that fails validation is dropped, and the test fails with `Did not receive event within timeout`.
 - Observed rule (recorded 2026-10-05 for the TextToSpeech events): for an event **with** `x-subscriber-for`, mock-firebolt validates the payload against the linked getter's result schema, so the event's own `result` may be `{"type": "null"}`. For a pure notifier **without** `x-subscriber-for` (all `TextToSpeech.on*`, `SpeechSynthesis.on*`), it validates against the event's own `result` schema, which must therefore describe the real payload (e.g. `$ref: SpeechIdEvent`).
 - `[VERIFY]` `Lifecycle2.onStateChanged` is a pure notifier whose fixture `result` is `{"type": "null"}`, yet its component tests deliver payloads successfully. The rule above is therefore incomplete; confirm the exact behaviour against the pinned mock-firebolt revision before relying on it.
-- The mock-firebolt branch and commit are pinned in two places that must stay identical: `MOCK_BRANCH` / `MOCK_SHA1SUM` in `.github/workflows/tests-trigger.yml`, and the same two variables in `run-component-tests-local.sh`. Update both together.
+- The mock-firebolt branch and commit used by CI are defined in `.github/workflows/L2-tests.yml`; local component tests pin the same values in `run-component-tests-local.sh`. Keep these two operative pins identical. The duplicate variables formerly declared in `tests-trigger.yml` were unused and are not inherited by reusable workflows.
 - With `--protocol legacy`, `.github/scripts/run-component-tests.sh` switches to `*--legacy.json` variants of the mock config and the OpenRPC fixture. `[VERIFY]` those variants exist in the repo before relying on the legacy path.
 
 ---
@@ -572,7 +572,9 @@ Do not add `nlohmann` types to `include/firebolt/actions.h`, and do not compare 
 
 **Formatting enforced by CI:** `clang-format` with the project's `.clang-format` (LLVM-based, column limit 120, 4-space indent, Allman braces, C++17). The `format_check` job in `.github/workflows/tests-trigger.yml` runs `git ls-files -- '*.cpp' '*.h' | xargs clang-format --dry-run --Werror`. Do not bypass it. Locally use `./lint.sh` (`--fix` to reformat); see §17 for a caveat that can make it check zero files.
 
-**CI compatibility:** All build and source changes must remain compatible with the CI workflows. Do not modify build configuration in a way that passes locally but diverges from the Docker-based environment defined by `.github/Dockerfile`, `.github/workflows/tests-trigger.yml` (jobs: `build_docker`, `format_check`, `build_project`, `coverage_gate`, `update_baseline`), `.github/workflows/L1-tests.yml` (unit tests and coverage), `.github/workflows/L2-tests.yml` (component tests and `api_test_app`), and `.github/scripts/run-component-tests.sh`.\n\n**Coverage gate:** `coverage_gate` compares unit and component coverage against a baseline (`.github/scripts/compare_coverage.py`). New or changed code must come with tests (\u00a710.3) or the gate can fail.
+**CI compatibility:** All build and source changes must remain compatible with the CI workflows. Do not modify build configuration in a way that passes locally but diverges from the Docker-based environment defined by `.github/Dockerfile`, `.github/workflows/tests-trigger.yml` (jobs: `build_docker`, `format_check`, `build_project`, `coverage_gate`, `update_baseline`), `.github/workflows/L1-tests.yml` (unit tests and coverage), `.github/workflows/L2-tests.yml` (component tests and `api_test_app`), and `.github/scripts/run-component-tests.sh`.
+
+**Coverage gate:** `coverage_gate` compares unit and component coverage against a baseline (`.github/scripts/compare_coverage.py`). New or changed code must come with tests (§10.3) or the gate can fail.
 
 ---
 

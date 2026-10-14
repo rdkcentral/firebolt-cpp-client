@@ -22,16 +22,16 @@ Markers:
 
 When sources disagree, resolve in this order:
 
-1. **`Firebolt_9_API_Oct1.md`** (repo root, status DRAFT; currently untracked in this checkout) — the task-supplied API reference when available: method names, parameters, return types, error semantics, and C++17 approval (`C++17: ✅/❌`). It is absent from clean clones unless separately provided.
+1. **The official Firebolt API specification maintained in Confluence** — the single source of truth for method names, parameters, return types, error semantics, and C++17 compatibility (`C++17: ✅/❌`). Do not substitute a local export, implementation, or fixture for the specification.
 2. **Merged code in this repo** — authoritative for structure and conventions.
-3. **`docs/openrpc/the-spec/firebolt-open-rpc.json`** — test fixture consumed by mock-firebolt. Secondary evidence only; it can lag or diverge from the spec (see §18).
-4. **This document** — a summary of 1–3; it never overrides them.
+3. **`docs/openrpc/the-spec/firebolt-open-rpc.json`** — test fixture consumed by mock-firebolt. Secondary evidence only; it can lag or diverge from the specification (see §18).
+4. **This document** — a summary of the specification and repository practice; it never overrides the specification.
 
 Rules:
-- Only implement methods marked **Approved** with `C++17: ✅` in the spec. If the spec is unavailable, do not infer approval from the code or fixture; obtain an authoritative spec or owner confirmation first. `Firebolt.apiVersion` and `ParentalControl.*` are *Not approved* and must not be implemented without owner approval.
+- Only implement methods marked **Approved** with `C++17: ✅` in the specification. If you cannot access it, request access or confirmation from the API owners; do not infer approval from code or fixtures. `Firebolt.apiVersion` and `ParentalControl.*` are *Not approved* and must not be implemented without owner approval.
 - A method marked `Deprecated API version: 9.0.0` (all of `TextToSpeech`) is kept for compatibility. New speech work targets `SpeechSynthesis`.
-- If code or fixture disagrees with the spec, do not copy the code's behaviour into new work. Follow the spec, and add the disagreement to §18 if it is not already there.
-- The spec file name is date-stamped. If it is replaced, update every reference in this document.
+- If implementation code, fixtures, or tests disagree with the specification, follow the specification for API behavior and record the discrepancy in §18.
+- Revalidate this guidance when the applicable specification changes.
 - **Maintenance:** when a statement here contradicts the code, fix the statement in the same change. If you cannot tell which is right, mark it `[VERIFY]` and add it to §18 rather than guessing.
 - Last verified against the repository on 2026-10-14.
 
@@ -73,11 +73,11 @@ Reference: `src/firebolt.cpp` (`FireboltAccessorImpl` ctor initializer list and 
 
 ### 1.3 API-Facing Change Discipline
 
-When making an API-facing change — adding or modifying an interface method, changing a return type, or adding a subscription — first check the method against `Firebolt_9_API_Oct1.md` (§0), then update all of these in a single commit:
+When making an API-facing change — adding or modifying an interface method, changing a return type, or adding a subscription — first check it against the applicable API specification (§0), then update all of these in a single commit:
 1. `include/firebolt/<module>.h`
 2. `src/<module>_impl.h` and `src/<module>_impl.cpp` (and `src/json_types/<module>.h` if the payload is a struct/enum)
 3. `test/unit/<module>Test.cpp` and `test/component/<module>Test.cpp`
-4. `docs/openrpc/the-spec/firebolt-open-rpc.json` — method, schema, and examples (component tests read it).
+4. The relevant OpenRPC test fixture — method, schema, and examples used by component tests. Keep it consistent with the specification; it is not an API authority.
 5. `test/api_test_app/apis/<module>Demo.{h,cpp}` — where a demo exists for the module. Demos currently exist for accessibility, actions, advertising, device, discovery, display, lifecycle, localization, metrics, network, presentation, stats, texttospeech; none for speechsynthesis or videooutput.
 
 Never leave the layers out of sync after a commit. A compile-passing diff that omits a test update or fixture update is incomplete.
@@ -125,17 +125,17 @@ After the change, run `./run-unit-tests.sh`, `./run-component-tests-local.sh`, a
 - Getter/invoke RPC name: `"<Module>.<methodName>"` in camelCase (e.g., `"Device.chipsetId"`, `"Metrics.startContent"`).
 - Event name: `"<Module>.on<EventName>"` (e.g., `"Device.onHdrChanged"`, `"Actions.onIntent"`, `"Lifecycle2.onStateChanged"`).
 - `Lifecycle2` is the correct wire name for lifecycle RPCs in this version — do not use `Lifecycle`.
-- TextToSpeech event names are camelCase like every other module (`"TextToSpeech.onWillSpeak"`, `"TextToSpeech.onSpeechStart"`, `"TextToSpeech.onSpeechComplete"`). Only two TextToSpeech *method* names are all-lowercase: `"TextToSpeech.listvoices"` and `"TextToSpeech.getspeechstate"`. Both must match the OpenRPC fixture exactly.
+- TextToSpeech event names are camelCase like every other module (`"TextToSpeech.onWillSpeak"`, `"TextToSpeech.onSpeechStart"`, `"TextToSpeech.onSpeechComplete"`). Two TextToSpeech *method* names differ in case from the specification: the client and fixture use `"TextToSpeech.listvoices"` and `"TextToSpeech.getspeechstate"`, while the specification names them `listVoices` and `getSpeechState` (§18, O-13). Do not change these wire strings without owner confirmation.
 
 **Anti-patterns:**
-- Do not guess RPC or event string names. Always derive them from `docs/openrpc/the-spec/firebolt-open-rpc.json`.
+- Do not guess RPC or event string names. Derive them from the applicable API specification; use fixtures and tests as verification only.
 
 ### 2.5 Enum Names
 
 **Current practice:**
 - C++ enum class names: `SCREAMING_SNAKE_CASE` (e.g., `INITIALIZING`, `ACTIVE`, `KILL_RELOAD`).
 - `EnumType` instance variable names: `<EnumClass>Enum` (e.g., `LifecycleStateEnum`, `CloseReasonEnum`, `DeviceClassEnum`, `AgePolicyEnum`).
-- Wire values in `EnumType` map: lowercase strings matching the OpenRPC fixture (e.g., `{"initializing", ...}`, `{"killReload", ...}`).
+- Wire values in `EnumType` map: lowercase or camelCase strings as defined by the API specification (e.g., `{"initializing", ...}`, `{"killReload", ...}`).
 
 ### 2.6 JSON Adapter Classes
 
@@ -323,13 +323,13 @@ inline const Firebolt::JSON::EnumType<::<NativeEnum>> <EnumName>Enum({
     ...
 });
 ```
-Wire strings are lowercase or camelCase matching the OpenRPC fixture exactly.
+Wire strings are lowercase or camelCase as defined by the API specification.
 
 Reference: `src/json_types/lifecycle.h` (`LifecycleStateEnum`, `CloseReasonEnum`), `src/json_types/device.h` (`DeviceClassEnum`), `src/json_types/common.h` (`AgePolicyEnum`).
 
 ### 6.4 Units in JSON Adapters (Stats)
 
-**Current practice:** `Stats.memoryUsage` carries `userMemoryUsed`, `userMemoryLimit`, `gpuMemoryUsed`, `gpuMemoryLimit` in **bytes**, matching `Firebolt_9_API_Oct1.md` and the fixture. `src/json_types/stats.h` reads them as `uint64_t` with no conversion, and `Stats::MemoryInfo` exposes `uint64_t`. Tests compare against the fixture values directly.
+**Current practice:** `Stats.memoryUsage` carries `userMemoryUsed`, `userMemoryLimit`, `gpuMemoryUsed`, `gpuMemoryLimit` in **bytes**, as defined by the API specification. The current fixture and tests provide validation evidence. `src/json_types/stats.h` reads them as `uint64_t` with no conversion, and `Stats::MemoryInfo` exposes `uint64_t`.
 
 `[VERIFY]` The spec types these as 32-bit `unsigned`; the code uses `uint64_t`. See §18.
 
@@ -492,8 +492,8 @@ Exception: `test/component/actionsGeneratedTest.cpp` hardcodes the intent payloa
 ### 11.1 Fixture Examples and Enum Alignment
 
 **Current practice:**
-- Fixture location: `docs/openrpc/the-spec/firebolt-open-rpc.json`
-- Both unit and component test binaries read this file at runtime (path injected via `UT_OPEN_RPC_FILE` define in `test/CMakeLists.txt`).
+- Fixture location: `docs/openrpc/the-spec/firebolt-open-rpc.json`.
+- Both unit and component test binaries read this file at runtime (path injected via the `UT_OPEN_RPC_FILE` define in `test/CMakeLists.txt`).
 - When adding or changing a method, the fixture must be updated to include the method, its parameters schema, and at least one example.
 - Enum values in code must match `components.schemas.<EnumName>.enum` in the fixture — validated by `validate_enum()`.
 
@@ -512,7 +512,7 @@ Exception: `test/component/actionsGeneratedTest.cpp` hardcodes the intent payloa
 - `.github/mock-firebolt/config.json` enables validation of `method`, `params`, `response`, and `events`. A `triggerEvent` payload that fails validation is dropped, and the test fails with `Did not receive event within timeout`.
 - Observed rule (recorded 2026-10-05 for the TextToSpeech events): for an event **with** `x-subscriber-for`, mock-firebolt validates the payload against the linked getter's result schema, so the event's own `result` may be `{"type": "null"}`. For a pure notifier **without** `x-subscriber-for` (all `TextToSpeech.on*`, `SpeechSynthesis.on*`), it validates against the event's own `result` schema, which must therefore describe the real payload (e.g. `$ref: SpeechIdEvent`).
 - `[VERIFY]` `Lifecycle2.onStateChanged` is a pure notifier whose fixture `result` is `{"type": "null"}`, yet its component tests deliver payloads successfully. The rule above is therefore incomplete; confirm the exact behaviour against the pinned mock-firebolt revision before relying on it.
-- The mock-firebolt branch and commit used by CI are defined in `.github/workflows/L2-tests.yml`; local component tests pin the same values in `run-component-tests-local.sh`. Keep these two operative pins identical. The duplicate variables formerly declared in `tests-trigger.yml` were unused and are not inherited by reusable workflows.
+- The mock-firebolt branch and commit used by CI are defined in `.github/workflows/L2-tests.yml`; local component tests pin the same values in `run-component-tests-local.sh`. Keep these two pins identical.
 - With `--protocol legacy`, `.github/scripts/run-component-tests.sh` switches to `*--legacy.json` variants of the mock config and the OpenRPC fixture. `[VERIFY]` those variants exist in the repo before relying on the legacy path.
 
 ---
@@ -541,7 +541,7 @@ New modules follow the structure of the `#pragma once` modules (for example `spe
 
 ### 12.4 Actions Module API Contract
 
-Spec: `Firebolt_9_API_Oct1.md` #5 `start` and #6 `intent` / `onIntent` (API 9.0.0). `intentId` is an unsigned, monotonic value; `intent` is a JSON document.
+The API specification defines `start`, `intent`, and `onIntent` for API 9.0.0. `intentId` is an unsigned, monotonic value; `intent` is a JSON document.
 
 - `IActions::intent()` is a getter with no parameters. It returns `Result<Actions::Intent>`, where `struct Intent { std::string intent; uint32_t intentId{0}; }`. `intent` holds **raw JSON text**; it is not a plain scalar and not an `nlohmann::json`.
 - `subscribeOnIntent(std::function<void(const Intent&)>&&)` delivers the same struct. `subscribeOnIntentChanged` is a default alias that forwards to it.
@@ -599,7 +599,7 @@ The following patterns are explicitly wrong for this codebase. Each entry notes 
 | AP-13 | Defining a new header without `#pragma once` | New headers use `#pragma once`; `#ifndef` guards exist only in the `actions` and `videooutput` modules (§3.1) |
 | AP-14 | Large structural rewrites of `actions` / `videooutput` files before provenance is confirmed | They may be generator-originated (§12.1); small targeted edits are fine and have precedent |
 | AP-15 | Treating `./lint.sh` printing "Formatting OK" as proof of a clean format on macOS/Docker | The script pipes `git ls-files` into `xargs` without `pipefail`; if Git rejects the repo as "dubious ownership", zero files are checked. Confirm the file count (§17) |
-| AP-16 | Regenerating `docs/openrpc/the-spec/*.json` (`npm run the-spec`) and committing without diffing | The per-module sources under `docs/openrpc/openrpc/` use different TextToSpeech event names (`onWillspeak`) than the merged fixture and client (`onWillSpeak`). A blind regeneration can break component tests (§18, O-5) |
+| AP-16 | Regenerating `docs/openrpc/the-spec/*.json` (`npm run the-spec`) and committing without diffing | The per-module sources under `docs/openrpc/openrpc/` use different TextToSpeech event names (`onWillspeak`) than the merged fixture and client (`onWillSpeak`). Blind regeneration can break component tests (§18, O-5) |
 
 ---
 
@@ -664,7 +664,7 @@ Each item is unverified or unresolved. Do not "fix" these by assumption; confirm
 | O-2 | Client methods that are not in the spec | `Device.setOsName`, `Device.setOsVersion`; `Discovery.watchedV2`; extra optional `TextToSpeech.speak` parameters (`callSign`, `language`, `voice`, `volume`, `rate`, `pitch`) appear in the fixture but spec #73 lists only `text` | Confirm they are intended extensions or align to the spec |
 | O-3 | `Discovery.watched` shape | Spec #22 returns None. `watched()` returns `Result<bool>` (fixture agrees); `watchedV2()` returns `Result<void>` but invokes wire method `"Discovery.watched"` (unit tests assert this), while the fixture defines a separate `Discovery.watchedV2` returning null | Decide the canonical wire method and return type |
 | O-4 | Stats type width | Spec #72 says 32-bit `unsigned`; `Stats::MemoryInfo` and `json_types/stats.h` use `uint64_t` (bytes, no conversion) | Confirm `uint64_t` is intended; update spec or code |
-| O-5 | TextToSpeech event names diverge between OpenRPC sources | Per-module `docs/openrpc/openrpc/text_to_speech.json` uses `onWillspeak`/`onSpeechstart`/... (`x-event`); tracked merged fixture `docs/openrpc/the-spec/firebolt-open-rpc.json` and the client use `onWillSpeak`/`onSpeechStart`/... Merged fixture appears to be edited directly | Define the official regeneration process (`npm run the-spec` in `docs/openrpc`), fix the sources, or document that the merged file is hand-maintained |
+| O-5 | TextToSpeech event names diverge between OpenRPC sources | Per-module `docs/openrpc/openrpc/text_to_speech.json` uses `onWillspeak`/`onSpeechstart`/... (`x-event`); the tracked merged fixture `docs/openrpc/the-spec/firebolt-open-rpc.json` and the client use `onWillSpeak`/`onSpeechStart`/... The merged fixture appears to be edited directly | Define the official regeneration process (`npm run the-spec` in `docs/openrpc`), fix the sources, or document that the merged file is hand-maintained |
 | O-6 | Event validation rule in mock-firebolt (§11.3) is incomplete | `Lifecycle2.onStateChanged` has a `null` result schema and no `x-subscriber-for`, yet its component tests deliver payloads | Confirm validation behaviour at the pinned mock revision |
 | O-7 | Canonical scalar event payload form | Both `{"value": x}` and bare `x` are used in component tests | Confirm what the mock/gateway emit on the real wire |
 | O-8 | Spec error semantics | Spec lists codes (-32601, -40300, -32602, -32100, -50100) and unassigned `-xxxxx` for *App state invalid*, *Speech synthesis engine error*, *Wrong device class* | Verify how these map to `Firebolt::Error` (defined in the transport dependency, not in this repo) |
@@ -672,3 +672,4 @@ Each item is unverified or unresolved. Do not "fix" these by assumption; confirm
 | O-10 | Lifecycle state set | Spec #31 lists six states with no `unloaded`; the current enum matches the spec. A backend `unloaded` response was handled on a separate branch (RDKEMW-26354) | Confirm whether `unloaded` is a real wire value and update the spec/enum together |
 | O-11 | Open cleanups from §4 and §3.1 | Deleted moves everywhere; `explicit` on three impls; empty destructors on two; `u_int32_t` in `src/device_impl.h`; `friend class ::LifecycleTest` in `src/lifecycle_impl.h`; `using namespace` in two `.cpp` files; double guards in `src/json_types/actions.h` and `src/videooutput_impl.h` | Schedule a single cleanup change |
 | O-12 | Script defects in §17 | `lint.sh` no `pipefail`/safe-directory; `run-component-tests-local.sh` safe-directory, `npm`/`PATH`, and cache handling. Whether CI's `format_check` is exposed to the same ownership problem is unverified | Fix scripts; confirm CI behaviour |
+| O-13 | TextToSpeech method names differ in case from the specification | The specification names `getSpeechState` (#77) and `listVoices` (#86); `src/texttospeech_impl.cpp` and the fixture use `listvoices` and `getspeechstate`. The module is deprecated at API 9.0.0 | Confirm the lowercase wire names are intended for the backend, then align the specification or the client and fixture together |

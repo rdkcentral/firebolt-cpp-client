@@ -22,7 +22,7 @@ Covers:
   - Integration tests (subprocess) simulating all gate scenarios listed in the
     Coverage Gate implementation spec.
 
-Workflow-level scenarios (unit_tests fails / component_tests fails / both fail) are handled
+Workflow-level scenarios (L1 fails / L2 fails / both fail) are handled
 by GitHub Actions' implicit success() dependency check on the coverage-gate job
 and cannot be tested at the Python script level; they are documented inline.
 """
@@ -628,12 +628,12 @@ class TestMainIntegration(unittest.TestCase):
         self.assertEqual(r.returncode, 0, msg=r.stdout + r.stderr)
 
     # ===========================================================================
-    # SCENARIO 10 — unit_tests job fails
+    # SCENARIO 10 — L1 (unit) job fails
     # Coverage Gate does NOT trigger (workflow-level behaviour).
     #
-    # GitHub Actions: coverage_gate has `needs: [unit_tests, component_tests]`
+    # GitHub Actions: coverage_gate has `needs: [trigger-L1, trigger-L2]`
     # with no custom `if:`.  The implicit success() check means coverage_gate
-    # is SKIPPED whenever unit_tests fails.  This cannot be unit-tested here;
+    # is SKIPPED whenever trigger-L1 fails.  This cannot be unit-tested here;
     # it is enforced by the workflow graph.
     # ===========================================================================
 
@@ -652,7 +652,7 @@ class TestMainIntegration(unittest.TestCase):
         self.assertIn("[WARN]", r.stdout)
 
     # ===========================================================================
-    # SCENARIO 11 — component_tests job fails (symmetric to scenario 10)
+    # SCENARIO 11 — L2 (component) job fails (symmetric to scenario 10)
     # ===========================================================================
 
     def test_s11_component_artifacts_absent_unit_passes(self):
@@ -664,7 +664,7 @@ class TestMainIntegration(unittest.TestCase):
         self.assertIn("[WARN]", r.stdout)
 
     # ===========================================================================
-    # SCENARIO 12 — Both unit_tests AND component_tests jobs fail
+    # SCENARIO 12 — Both L1 AND L2 jobs fail
     # Coverage Gate does NOT trigger (workflow-level).  At script level, both
     # .info files are absent → both SKIP → exit 0 (harmless; gate is already
     # blocked at the workflow graph layer before the script is ever called).

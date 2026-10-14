@@ -24,7 +24,7 @@ on:
 
 jobs:
   release:
-    if: github.ref_type == 'branch' && (github.ref_name == 'main' || endsWith(github.ref_name, '.rc') || endsWith(github.ref_name, '.x-maintenance'))
+    if: github.ref_type == 'branch' && (github.ref_name == 'main' || endsWith(github.ref_name, '.rc'))
     runs-on: ubuntu-latest
     concurrency:
       group: release
@@ -46,11 +46,11 @@ jobs:
         run: |
           branch="${GITHUB_REF_NAME}"
           case "$branch" in
-            main|*.rc|*.*.x-maintenance)
+            main|*.rc)
               echo "Release allowed from branch: $branch"
               ;;
             *)
-              echo "Release blocked: branch '$branch' is not allowed. Use 'main', a '*.rc' branch, or a '*.*.x-maintenance' branch."
+              echo "Release blocked: branch '$branch' is not allowed. Use 'main' or a branch ending in '.rc'."
               exit 1
               ;;
           esac
@@ -135,10 +135,10 @@ jobs:
         run: |
           if [ "$IS_PROMOTION" = "true" ]; then
             if ! git merge-base --is-ancestor "${BASELINE}" HEAD; then
-              echo "ERROR: ${BASELINE} is not an ancestor of HEAD; select a descendant commit from this branch before promoting to stable."
+              echo "ERROR: ${BASELINE} is neither an ancestor of nor equal to HEAD; promote from a branch containing the RC commit."
               exit 1
             fi
-            echo "Promoting ${BASELINE} to stable release; current HEAD is a descendant."
+            echo "Promoting ${BASELINE} to stable; the RC commit is HEAD or an ancestor of HEAD."
             exit 0
           fi
           # BASELINE may not be a true git ancestor of HEAD (e.g. it was squash-merged
@@ -170,7 +170,7 @@ jobs:
       - name: Create tag
         env:
           TAG: ${{ steps.version.outputs.next }}
-          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN }}
         shell: bash
         run: |
           if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
@@ -182,7 +182,7 @@ jobs:
             echo "Tag ${TAG} already exists at the current HEAD; resuming the release."
             exit 0
           fi
-          # Identity is just for the annotated tag's metadata -- SEMANTIC_RELEASE_TOKEN is
+          # Identity is just for the annotated tag's metadata -- AUTOMATION_TOKEN is
           # fine for this lookup, it doesn't touch ref creation.
           author_login="$(gh api user --jq '.login')"
           author_name="$(gh api user --jq '.name // .login')"
@@ -206,7 +206,7 @@ jobs:
 
       - name: Create GitHub release
         env:
-          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTOMATION_TOKEN }}
           TAG: ${{ steps.version.outputs.next }}
           IS_RC: ${{ steps.version.outputs.is_rc }}
           ARCHIVE: ${{ steps.asset.outputs.archive }}

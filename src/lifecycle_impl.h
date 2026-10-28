@@ -20,8 +20,7 @@
 
 #include "firebolt/lifecycle.h"
 #include <firebolt/helpers.h>
-
-class LifecycleTest;
+#include <optional>
 
 namespace Firebolt::Lifecycle
 {
@@ -34,9 +33,11 @@ struct LifecycleEvent
 class LifecycleImpl : public ILifecycle
 {
 public:
-    LifecycleImpl(Firebolt::Helpers::IHelper& helper);
+    explicit LifecycleImpl(Firebolt::Helpers::IHelper& helper);
     LifecycleImpl(const LifecycleImpl&) = delete;
     LifecycleImpl& operator=(const LifecycleImpl&) = delete;
+    LifecycleImpl(LifecycleImpl&&) = delete;
+    LifecycleImpl& operator=(LifecycleImpl&&) = delete;
     ~LifecycleImpl() override;
 
     [[nodiscard]] Result<void> close(const CloseType& type) const override;
@@ -48,11 +49,14 @@ public:
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 
+    // Called after a transport resume: queries Lifecycle2.state and, if it differs from the last
+    // state delivered to the app, delivers one corrective {last -> current} change to subscribers.
+    void reconcile();
+
 private:
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
-
-public:
-    friend class ::LifecycleTest;
+    // Only touched on the transport notification worker (event wrappers and the resume listener).
+    std::optional<LifecycleState> lastDelivered_;
 };
 } // namespace Firebolt::Lifecycle

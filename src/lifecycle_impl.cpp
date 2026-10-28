@@ -19,10 +19,10 @@
 #include "lifecycle_impl.h"
 #include "json_types/lifecycle.h"
 #include <cctype>
+#include <firebolt/logger.h>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
-
-using namespace Firebolt::Helpers;
 
 namespace Firebolt::Lifecycle
 {
@@ -49,9 +49,26 @@ Result<LifecycleState> LifecycleImpl::state() const
 Result<SubscriptionId>
 LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<StateChange>&)>&& notification)
 {
+    auto lastSeen = std::make_shared<std::optional<LifecycleState>>();
+    std::function<void(const std::vector<StateChange>&)> wrapper =
+        [this, lastSeen, notification = std::move(notification)](const std::vector<StateChange>& changes)
+    {
+        if (!changes.empty())
+        {
+            // A change ending where this subscriber already is, without starting there, repeats one it
+            // has seen (e.g. a held event after a synthesized resume change); round trips still pass.
+            if (*lastSeen == changes.back().newState && changes.front().oldState != changes.back().newState)
+            {
+                return;
+            }
+            *lastSeen = changes.back().newState;
+            lastDelivered_ = changes.back().newState;
+        }
+        notification(changes);
+    };
     return subscriptionManager_
         .subscribe<Firebolt::JSON::NL_Json_Array<JsonData::StateChange, StateChange>>("Lifecycle2.onStateChanged",
-                                                                                      std::move(notification));
+                                                                                      std::move(wrapper));
 }
 
 Result<void> LifecycleImpl::unsubscribe(SubscriptionId id)
@@ -62,5 +79,29 @@ Result<void> LifecycleImpl::unsubscribe(SubscriptionId id)
 void LifecycleImpl::unsubscribeAll()
 {
     subscriptionManager_.unsubscribeAll();
+}
+void LifecycleImpl::reconcile()
+{
+    if (!lastDelivered_)
+    {
+        return;
+    }
+    Result<LifecycleState> current = state();
+    if (!current)
+    {
+        FIREBOLT_LOG_WARNING("Lifecycle", "Cannot reconcile state after resume, error: %d",
+                             static_cast<int>(current.error()));
+        return;
+    }
+    if (*current == *lastDelivered_)
+    {
+        return;
+    }
+    const nlohmann::json change = {
+        {"oldState", Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *lastDelivered_)},
+        {"newState", Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *current)},
+    };
+    FIREBOLT_LOG_NOTICE("Lifecycle", "Reconciling state after resume: %s", change.dump().c_str());
+    (void)subscriptionManager_.dispatch("Lifecycle2.onStateChanged", nlohmann::json::array({change}));
 }
 } // namespace Firebolt::Lifecycle

@@ -1,3 +1,14 @@
+## [Unreleased]
+
+Requires firebolt-cpp-transport **1.2.0** (`IGateway::setResumeListener`, `SubscriptionManager::dispatch`); `.transport.version` raised accordingly.
+
+### Added
+- Lifecycle reconciliation after container hibernation: when the transport reports a resume, the client queries `Lifecycle2.state` and, if it differs from the last state delivered to the app, delivers one `onStateChanged` change `{last -> current}` to each subscriber. No application changes are needed
+- Duplicate suppression for `onStateChanged`: a held event that repeats a change the subscriber already received (e.g. after reconciliation) is not delivered again
+
+### Changed
+- `IFireboltAccessor::Connect` registers the transport resume listener; `Disconnect` clears it
+
 ## [0.7.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.4...v0.7.0)
 
 ### Added

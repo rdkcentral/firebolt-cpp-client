@@ -75,25 +75,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -111,6 +93,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -153,25 +139,7 @@
 						"intentId"
 					],
 					"properties": {
-						"intent": {
-							"type": "object",
-							"required": [
-								"action"
-							],
-							"properties": {
-								"action": {
-									"type": "string"
-								},
-								"context": {
-									"type": "object",
-									"properties": {
-										"source": {
-											"type": "string"
-										}
-									}
-								}
-							}
-						},
+						"intent": {},
 						"intentId": {
 							"type": "integer",
 							"minimum": 0
@@ -195,6 +163,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							},
 							"intentId": 0
@@ -219,25 +191,7 @@
 					"name": "intent",
 					"summary": "The intent to send, as a JSON document.",
 					"required": true,
-					"schema": {
-						"type": "object",
-						"required": [
-							"action"
-						],
-						"properties": {
-							"action": {
-								"type": "string"
-							},
-							"context": {
-								"type": "object",
-								"properties": {
-									"source": {
-										"type": "string"
-									}
-								}
-							}
-						}
-					}
+					"schema": {}
 				},
 				{
 					"name": "handlerAppId",
@@ -264,6 +218,10 @@
 								"action": "pre-load",
 								"context": {
 									"source": "system"
+								},
+								"data": {
+									"ids": [1, "two", true, null],
+									"future": {"enabled": false}
 								}
 							}
 						}
@@ -2685,7 +2643,7 @@
 		{
 			"name": "TextToSpeech.speak",
 			"summary": "Speak the utterance immediately. Any ongoing speech is interrupted.",
-			"description": "Text argument is either plain text or a well-formed SSML document TTS_status, not success attribute, to be used by caller to indicate success of call 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration Raises onSpeechinterrupted if speaking is interrupted",
+			"description": "Text argument is either plain text or a well-formed SSML document TTS_status, not success attribute, to be used by caller to indicate success of call 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration Raises onSpeechInterrupted if speaking is interrupted",
 			"params": [
 				{
 					"name": "text",
@@ -2803,7 +2761,7 @@
 		{
 			"name": "TextToSpeech.pause",
 			"summary": "Pauses the speech for given speech id",
-			"description": "Pauses the utterance. Raises onSpeechpause if ongoing speech is paused. Does nothing if utterance is already paused",
+			"description": "Pauses the utterance. Raises onSpeechPause if ongoing speech is paused. Does nothing if utterance is already paused",
 			"params": [
 				{
 					"name": "speechid",
@@ -2854,7 +2812,7 @@
 		{
 			"name": "TextToSpeech.resume",
 			"summary": "Resumes the speech for given speech id",
-			"description": "Continue the paused utterance. Raises onSpeechresume if paused speech is resumed. Does nothing if the utterance is not paused",
+			"description": "Continue the paused utterance. Raises onSpeechResume if paused speech is resumed. Does nothing if the utterance is not paused",
 			"params": [
 				{
 					"name": "speechid",
@@ -2905,7 +2863,7 @@
 		{
 			"name": "TextToSpeech.cancel",
 			"summary": "Cancels the speech for given speech id",
-			"description": "Stop speaking if utterance is currently being spoken. Raises onSpeechinterrupted if speaking was interrupted.",
+			"description": "Stop speaking if utterance is currently being spoken. Raises onSpeechInterrupted if speaking was interrupted.",
 			"params": [
 				{
 					"name": "speechid",
@@ -3526,14 +3484,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3574,14 +3534,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3622,14 +3584,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3670,14 +3634,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3718,14 +3684,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3766,14 +3734,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3814,14 +3784,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},
@@ -3862,14 +3834,16 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": {
+							"speechid": 1
+						}
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"$ref": "#/components/schemas/SpeechIdEvent"
 				}
 			}
 		},

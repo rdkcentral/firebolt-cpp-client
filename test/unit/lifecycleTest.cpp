@@ -23,6 +23,7 @@
 
 #include <chrono>
 #include <future>
+#include <stdexcept>
 #include <thread>
 
 using ::testing::_;
@@ -330,6 +331,118 @@ TEST_F(LifecycleReconcileUTest, DuplicatePrefixDoesNotDropFollowingRoundTrip)
     EXPECT_EQ(received.back()[0].newState, LifecycleState::PAUSED);
     EXPECT_EQ(received.back()[1].oldState, LifecycleState::PAUSED);
     EXPECT_EQ(received.back()[1].newState, LifecycleState::SUSPENDED);
+}
+
+TEST_F(LifecycleReconcileUTest, CorrectionTokenExpiresAfterFirstNonmatchingTransition)
+{
+    using Firebolt::Lifecycle::LifecycleState;
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+
+    emit(nlohmann::json::array(
+        {{{"oldState", "suspended"}, {"newState", "active"}}, {{"oldState", "active"}, {"newState", "suspended"}}}));
+
+    ASSERT_EQ(received.size(), 3u);
+    ASSERT_EQ(received.back().size(), 2u);
+    EXPECT_EQ(received.back()[0].oldState, LifecycleState::SUSPENDED);
+    EXPECT_EQ(received.back()[0].newState, LifecycleState::ACTIVE);
+    EXPECT_EQ(received.back()[1].oldState, LifecycleState::ACTIVE);
+    EXPECT_EQ(received.back()[1].newState, LifecycleState::SUSPENDED);
+}
+
+TEST_F(LifecycleReconcileUTest, PendingCorrectionsSurviveRepeatedResumes)
+{
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+    mock_with_response("Lifecycle2.state", "paused");
+    lifecycleImpl_.reconcile();
+
+    emit(nlohmann::json::array(
+        {{{"oldState", "active"}, {"newState", "suspended"}}, {{"oldState", "suspended"}, {"newState", "paused"}}}));
+
+    EXPECT_EQ(received.size(), 3u);
+}
+
+TEST_F(LifecycleReconcileUTest, CallbackExceptionDoesNotPreventOtherSubscribersFromReceivingCorrection)
+{
+    std::vector<Changes> received;
+    int throwingCallbackCalls = 0;
+    auto throwingId = lifecycleImpl_.subscribeOnStateChanged(
+        [&throwingCallbackCalls](const Changes&)
+        {
+            ++throwingCallbackCalls;
+            throw std::runtime_error("subscriber failure");
+        });
+    ASSERT_TRUE(throwingId);
+    subscribe(received);
+    emit(change("initializing", "active"));
+
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+
+    ASSERT_EQ(received.size(), 2u);
+    EXPECT_EQ(throwingCallbackCalls, 2);
+    emit(change("active", "suspended"));
+    EXPECT_EQ(received.size(), 2u);
+    EXPECT_EQ(throwingCallbackCalls, 2);
+}
+
+TEST_F(LifecycleReconcileUTest, UnsubscribeAllCancelsInFlightSubscription)
+{
+    std::promise<void> subscribeEntered;
+    auto subscribeEnteredFuture = subscribeEntered.get_future();
+    std::promise<void> allowSubscribeToFinish;
+    auto allowSubscribeToFinishFuture = allowSubscribeToFinish.get_future();
+    std::optional<Firebolt::Result<Firebolt::SubscriptionId>> result;
+
+    EXPECT_CALL(mockHelper, subscribe(_, "Lifecycle2.onStateChanged", _, _))
+        .WillOnce(Invoke(
+            [&](void* /*owner*/, const std::string& /*eventName*/, std::any&& /*notification*/,
+                void (* /*callback*/)(void*, const nlohmann::json&))
+            {
+                subscribeEntered.set_value();
+                allowSubscribeToFinishFuture.wait();
+                return Firebolt::Result<Firebolt::SubscriptionId>{1};
+            }));
+    EXPECT_CALL(mockHelper, unsubscribeAll(_)).Times(::testing::AtLeast(1));
+
+    std::thread subscribeThread([&] { result.emplace(lifecycleImpl_.subscribeOnStateChanged([](const Changes&) {})); });
+    const auto waitResult = subscribeEnteredFuture.wait_for(std::chrono::seconds(1));
+    EXPECT_EQ(waitResult, std::future_status::ready);
+    std::promise<void> unsubscribeStarted;
+    auto unsubscribeStartedFuture = unsubscribeStarted.get_future();
+    std::promise<void> unsubscribeFinished;
+    auto unsubscribeFinishedFuture = unsubscribeFinished.get_future();
+    std::thread unsubscribeThread;
+    if (waitResult == std::future_status::ready)
+    {
+        unsubscribeThread = std::thread(
+            [&]
+            {
+                unsubscribeStarted.set_value();
+                lifecycleImpl_.unsubscribeAll();
+                unsubscribeFinished.set_value();
+            });
+        EXPECT_EQ(unsubscribeStartedFuture.wait_for(std::chrono::seconds(1)), std::future_status::ready);
+        EXPECT_EQ(unsubscribeFinishedFuture.wait_for(std::chrono::milliseconds(10)), std::future_status::timeout);
+    }
+    allowSubscribeToFinish.set_value();
+    subscribeThread.join();
+    if (unsubscribeThread.joinable())
+    {
+        unsubscribeThread.join();
+    }
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_TRUE(*result);
+    EXPECT_CALL(mockHelper, getJson("Lifecycle2.state", _)).Times(0);
+    lifecycleImpl_.reconcile();
 }
 
 TEST_F(LifecycleReconcileUTest, RoundTripToLastSeenStateWithoutCorrectionIsDelivered)

@@ -49,6 +49,7 @@ Result<LifecycleState> LifecycleImpl::state() const
 Result<SubscriptionId>
 LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<StateChange>&)>&& notification)
 {
+    std::lock_guard<std::mutex> subscriptionLock(subscriptionMutex_);
     {
         std::lock_guard<std::recursive_mutex> lock(stateMutex_);
         if (subscribers_.empty())
@@ -69,16 +70,15 @@ LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<Stat
                 return;
             }
 
-            auto pendingCorrection = state->pendingCorrection;
-            state->pendingCorrection.reset();
             for (const StateChange& change : changes)
             {
-                if (pendingCorrection && pendingCorrection->first == change.oldState &&
-                    pendingCorrection->second == change.newState)
+                if (!state->pendingCorrections.empty() && state->pendingCorrections.front().first == change.oldState &&
+                    state->pendingCorrections.front().second == change.newState)
                 {
-                    pendingCorrection.reset();
+                    state->pendingCorrections.pop_front();
                     continue;
                 }
+                state->pendingCorrections.clear();
                 filtered.push_back(change);
             }
             if (!filtered.empty())
@@ -88,7 +88,14 @@ LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<Stat
         }
         if (!filtered.empty())
         {
-            state->notification(filtered);
+            try
+            {
+                state->notification(filtered);
+            }
+            catch (...)
+            {
+                FIREBOLT_LOG_WARNING("Lifecycle", "Lifecycle subscriber callback threw an exception");
+            }
         }
     };
     auto result =
@@ -123,6 +130,7 @@ Result<void> LifecycleImpl::unsubscribe(SubscriptionId id)
 
 void LifecycleImpl::unsubscribeAll()
 {
+    std::lock_guard<std::mutex> subscriptionLock(subscriptionMutex_);
     {
         std::lock_guard<std::recursive_mutex> lock(stateMutex_);
         for (auto& subscriber : subscribers_)
@@ -178,7 +186,7 @@ void LifecycleImpl::reconcile()
             auto it = subscribers_.find(recipient.first);
             if (it != subscribers_.end() && it->second == recipient.second && recipient.second->active)
             {
-                recipient.second->pendingCorrection = std::make_pair(*previous, *current);
+                recipient.second->pendingCorrections.emplace_back(*previous, *current);
                 activeRecipients.push_back(recipient.second);
             }
         }
@@ -203,7 +211,14 @@ void LifecycleImpl::reconcile()
         }
         if (active)
         {
-            recipient->notification(changes);
+            try
+            {
+                recipient->notification(changes);
+            }
+            catch (...)
+            {
+                FIREBOLT_LOG_WARNING("Lifecycle", "Lifecycle subscriber callback threw an exception");
+            }
         }
     }
 }

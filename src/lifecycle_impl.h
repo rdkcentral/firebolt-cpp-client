@@ -19,6 +19,8 @@
 #pragma once
 
 #include "firebolt/lifecycle.h"
+#include <cstdint>
+#include <deque>
 #include <firebolt/helpers.h>
 #include <map>
 #include <memory>
@@ -66,12 +68,13 @@ private:
         }
 
         std::function<void(const std::vector<StateChange>&)> notification;
-        std::optional<std::pair<LifecycleState, LifecycleState>> pendingCorrection;
+        std::deque<std::pair<LifecycleState, LifecycleState>> pendingCorrections;
         bool active{true};
     };
 
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
+    std::mutex subscriptionMutex_;
     std::recursive_mutex dispatchMutex_;
     std::recursive_mutex stateMutex_;
     std::map<SubscriptionId, std::shared_ptr<SubscriberState>> subscribers_;

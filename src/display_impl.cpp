@@ -18,12 +18,34 @@
 
 #include "display_impl.h"
 #include "json_types/display.h"
+#include <utility>
 
 namespace Firebolt::Display
 {
 DisplayImpl::DisplayImpl(Firebolt::Helpers::IHelper& helper)
-    : helper_(helper)
+    : helper_(helper),
+      subscriptionManager_(helper, this)
 {
+}
+
+Result<bool> DisplayImpl::connected() const
+{
+    return helper_.get<Firebolt::JSON::Boolean, bool>("Display.connected");
+}
+
+Result<SubscriptionId> DisplayImpl::subscribeOnConnectedChanged(std::function<void(bool)>&& notification)
+{
+    return subscriptionManager_.subscribe<Firebolt::JSON::Boolean>("Display.onConnectedChanged", std::move(notification));
+}
+
+Result<void> DisplayImpl::unsubscribe(SubscriptionId id)
+{
+    return subscriptionManager_.unsubscribe(id);
+}
+
+void DisplayImpl::unsubscribeAll()
+{
+    subscriptionManager_.unsubscribeAll();
 }
 
 Result<std::string> DisplayImpl::edid() const

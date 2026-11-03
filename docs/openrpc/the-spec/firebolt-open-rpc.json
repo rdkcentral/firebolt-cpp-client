@@ -1110,6 +1110,38 @@
 			]
 		},
 		{
+			"name": "Display.connected",
+			"summary": "Returns whether the device is connected to an external or integrated display. Most apps should use VideoOutput.hdcp for display connectivity. OTT/STB devices report whether a TV is connected over HDMI; TV devices always report connected.",
+			"tags": [
+				{
+					"name": "property:readonly"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:display:info"
+					]
+				}
+			],
+			"params": [],
+			"result": {
+				"name": "connected",
+				"schema": {
+					"type": "boolean"
+				}
+			},
+			"examples": [
+				{
+					"name": "Connected example",
+					"params": [],
+					"result": {
+						"name": "success",
+						"value": true
+					}
+				}
+			]
+		},
+		{
 			"name": "Display.edid",
 			"summary": "Returns the EDID (and extensions) of the connected or integral display, as a Base64 encoded string",
 			"params": [],
@@ -4743,6 +4775,52 @@
 			"examples": [
 				{
 					"name": "Default example",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": null
+					}
+				}
+			],
+			"result": {
+				"name": "result",
+				"schema": {
+					"type": "null"
+				}
+			}
+		},
+		{
+			"name": "Display.onConnectedChanged",
+			"summary": "Returns whether the device is connected to an external or integrated display. Most apps should use VideoOutput.hdcp for display connectivity. OTT/STB devices report whether a TV is connected over HDMI; TV devices always report connected.",
+			"tags": [
+				{
+					"name": "event",
+					"x-notifier": "Display.onConnectedChanged",
+					"x-subscriber-for": "Display.connected"
+				},
+				{
+					"name": "capabilities",
+					"x-uses": [
+						"xrn:firebolt:capability:display:info"
+					]
+				}
+			],
+			"params": [
+				{
+					"name": "listen",
+					"schema": {
+						"type": "boolean"
+					}
+				}
+			],
+			"examples": [
+				{
+					"name": "Connected example",
 					"params": [
 						{
 							"name": "listen",

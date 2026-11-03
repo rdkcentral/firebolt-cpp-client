@@ -19,6 +19,7 @@
 #pragma once
 
 #include <firebolt/types.h>
+#include <functional>
 
 namespace Firebolt::Display
 {
@@ -35,6 +36,37 @@ class IDisplay
 {
 public:
     virtual ~IDisplay() = default;
+
+    /**
+     * @brief Returns whether the device is connected to an external or integrated display
+     *
+     * Most apps should use VideoOutput.hdcp for display connectivity. OTT/STB devices report whether a TV is connected
+     * over HDMI; TV devices always report connected.
+     *
+     * @retval The connection state or error
+     */
+    [[nodiscard]] virtual Result<bool> connected() const = 0;
+
+    /**
+     * @brief Subscribe to display connection changes
+     *
+     * @param notification The callback invoked when the display connection state changes
+     * @retval SubscriptionId or error
+     */
+    virtual Result<SubscriptionId> subscribeOnConnectedChanged(std::function<void(bool)>&& notification) = 0;
+
+    /**
+     * @brief Remove a subscription
+     *
+     * @param id The subscription id
+     * @retval The status
+     */
+    virtual Result<void> unsubscribe(SubscriptionId id) = 0;
+
+    /**
+     * @brief Remove all active subscriptions
+     */
+    virtual void unsubscribeAll() = 0;
 
     /**
      * @brief Returns the EDID (and extensions) of the connected or integral display, as a Base64 encoded string

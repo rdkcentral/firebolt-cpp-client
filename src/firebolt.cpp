@@ -102,6 +102,7 @@ private:
         lifecycle_.unsubscribeAll();
         localization_.unsubscribeAll();
         network_.unsubscribeAll();
+        display_.unsubscribeAll();
         presentation_.unsubscribeAll();
         textToSpeech_.unsubscribeAll();
         videooutput_.unsubscribeAll();

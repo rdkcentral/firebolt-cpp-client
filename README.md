@@ -45,6 +45,13 @@ The explicit root enables the development mismatch override, and CMake warns if
 the installed package is below `.transport.version`. This affects build-time
 package selection only; BitBake continues to control runtime versions.
 
+For CI on paired pull requests, push matching branch names to both repositories
+and apply the `paired-transport` label to the client PR. CI then builds the
+transport branch with the same name instead of downloading a release. You can
+also run `main-workflow` manually and set its `transport_ref` input to a
+transport branch or tag. Without the label or input, CI uses the pinned release
+archive.
+
 To return to the pinned release dependency, unset `FIREBOLT_TRANSPORT_ROOT` and
 run `./run-all-test.sh --clean` to discard the cached development package path.
 

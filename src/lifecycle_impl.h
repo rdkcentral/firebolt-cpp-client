@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <utility>
 
 namespace Firebolt::Lifecycle
 {
@@ -59,12 +60,19 @@ public:
 private:
     struct SubscriberState
     {
-        std::optional<LifecycleState> lastSeen;
+        explicit SubscriberState(std::function<void(const std::vector<StateChange>&)> callback)
+            : notification(std::move(callback))
+        {
+        }
+
+        std::function<void(const std::vector<StateChange>&)> notification;
+        std::optional<std::pair<LifecycleState, LifecycleState>> pendingCorrection;
         bool active{true};
     };
 
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
+    std::recursive_mutex dispatchMutex_;
     std::recursive_mutex stateMutex_;
     std::map<SubscriptionId, std::shared_ptr<SubscriberState>> subscribers_;
     std::optional<LifecycleState> lastDelivered_;

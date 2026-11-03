@@ -82,18 +82,23 @@ RUN pip install --break-system-packages gcovr
 # --- Transport should be always at the very end as it changes most often
 ARG DEPS_TRANSPORT_V
 ARG DEPS_TRANSPORT_REF=""
+ARG DEPS_TRANSPORT_COMMIT=""
 ARG DEPS_TRANSPORT_PROTOCOL=rpc_v2
 RUN cd /deps \
         && if [ -n "${DEPS_TRANSPORT_REF}" ]; then \
                  dir="firebolt-cpp-transport-src"; \
-                 git clone --depth 1 --branch "${DEPS_TRANSPORT_REF}" https://github.com/rdkcentral/firebolt-cpp-transport.git "$dir"; \
+                 test -n "${DEPS_TRANSPORT_COMMIT}" || { echo "DEPS_TRANSPORT_COMMIT is required when using DEPS_TRANSPORT_REF" >&2; exit 1; }; \
+                 git init "$dir"; \
+                 git -C "$dir" remote add origin https://github.com/rdkcentral/firebolt-cpp-transport.git; \
+                 git -C "$dir" fetch --depth 1 origin "${DEPS_TRANSPORT_COMMIT}"; \
+                 git -C "$dir" checkout --detach FETCH_HEAD; \
              else \
                  dir="firebolt-cpp-transport-${DEPS_TRANSPORT_V}"; \
                  i=0; while ! curl -sL https://github.com/rdkcentral/firebolt-cpp-transport/releases/download/v${DEPS_TRANSPORT_V}/firebolt-cpp-transport-${DEPS_TRANSPORT_V}.tar.gz | tar xzf - ; do test "$i" -eq 5 && exit 1; i=$((i+1)); sleep 1; done; \
              fi \
         && if [ -n "${DEPS_TRANSPORT_REF}" ]; then \
                  transport_sha="$(git -C "$dir" rev-parse HEAD)"; \
-                 echo "Using firebolt-cpp-transport ref ${DEPS_TRANSPORT_REF} at ${transport_sha}"; \
+                 echo "Using firebolt-cpp-transport ref ${DEPS_TRANSPORT_REF} at requested commit ${DEPS_TRANSPORT_COMMIT} (checked out ${transport_sha})"; \
              else \
                  echo "Using firebolt-cpp-transport release ${DEPS_TRANSPORT_V}"; \
              fi \

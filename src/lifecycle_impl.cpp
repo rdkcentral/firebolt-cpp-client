@@ -49,43 +49,46 @@ Result<LifecycleState> LifecycleImpl::state() const
 Result<SubscriptionId>
 LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<StateChange>&)>&& notification)
 {
-    std::lock_guard<std::recursive_mutex> lock(stateMutex_);
-    if (subscribers_.empty())
     {
-        lastDelivered_.reset();
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+        if (subscribers_.empty())
+        {
+            lastDelivered_.reset();
+        }
     }
 
-    auto state = std::make_shared<SubscriberState>();
-    std::function<void(const std::vector<StateChange>&)> wrapper =
-        [this, state, notification = std::move(notification)](const std::vector<StateChange>& changes)
+    auto state = std::make_shared<SubscriberState>(std::move(notification));
+    std::function<void(const std::vector<StateChange>&)> wrapper = [this, state](const std::vector<StateChange>& changes)
     {
+        std::lock_guard<std::recursive_mutex> dispatchLock(dispatchMutex_);
         std::vector<StateChange> filtered;
         {
-            std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+            std::lock_guard<std::recursive_mutex> stateLock(stateMutex_);
             if (!state->active)
             {
                 return;
             }
 
-            std::optional<LifecycleState> current = state->lastSeen;
+            auto pendingCorrection = state->pendingCorrection;
+            state->pendingCorrection.reset();
             for (const StateChange& change : changes)
             {
-                if (current && *current == change.newState && change.oldState != change.newState)
+                if (pendingCorrection && pendingCorrection->first == change.oldState &&
+                    pendingCorrection->second == change.newState)
                 {
+                    pendingCorrection.reset();
                     continue;
                 }
                 filtered.push_back(change);
-                current = change.newState;
             }
             if (!filtered.empty())
             {
-                state->lastSeen = current;
-                lastDelivered_ = current;
+                lastDelivered_ = filtered.back().newState;
             }
         }
         if (!filtered.empty())
         {
-            notification(filtered);
+            state->notification(filtered);
         }
     };
     auto result =
@@ -94,21 +97,16 @@ LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<Stat
                                                                                           std::move(wrapper));
     if (result)
     {
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
         subscribers_.emplace(result.value(), std::move(state));
-    }
-    else if (subscribers_.empty())
-    {
-        lastDelivered_.reset();
     }
     return result;
 }
 
 Result<void> LifecycleImpl::unsubscribe(SubscriptionId id)
 {
-    std::lock_guard<std::recursive_mutex> lock(stateMutex_);
-    auto result = subscriptionManager_.unsubscribe(id);
-    if (result)
     {
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
         auto it = subscribers_.find(id);
         if (it != subscribers_.end())
         {
@@ -120,32 +118,42 @@ Result<void> LifecycleImpl::unsubscribe(SubscriptionId id)
             lastDelivered_.reset();
         }
     }
-    return result;
+    return subscriptionManager_.unsubscribe(id);
 }
 
 void LifecycleImpl::unsubscribeAll()
 {
-    std::lock_guard<std::recursive_mutex> lock(stateMutex_);
-    subscriptionManager_.unsubscribeAll();
-    for (auto& subscriber : subscribers_)
     {
-        subscriber.second->active = false;
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+        for (auto& subscriber : subscribers_)
+        {
+            subscriber.second->active = false;
+        }
+        subscribers_.clear();
+        lastDelivered_.reset();
     }
-    subscribers_.clear();
-    lastDelivered_.reset();
+    subscriptionManager_.unsubscribeAll();
 }
 void LifecycleImpl::reconcile()
 {
-    std::lock_guard<std::recursive_mutex> lock(stateMutex_);
-    if (subscribers_.empty())
+    std::lock_guard<std::recursive_mutex> dispatchLock(dispatchMutex_);
+    std::optional<LifecycleState> previous;
+    std::vector<std::pair<SubscriptionId, std::shared_ptr<SubscriberState>>> recipients;
     {
-        lastDelivered_.reset();
-        return;
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+        if (subscribers_.empty())
+        {
+            lastDelivered_.reset();
+            return;
+        }
+        if (!lastDelivered_)
+        {
+            return;
+        }
+        previous = lastDelivered_;
+        recipients.assign(subscribers_.begin(), subscribers_.end());
     }
-    if (!lastDelivered_)
-    {
-        return;
-    }
+
     Result<LifecycleState> current = state();
     if (!current)
     {
@@ -153,15 +161,50 @@ void LifecycleImpl::reconcile()
                              static_cast<int>(current.error()));
         return;
     }
-    if (*current == *lastDelivered_)
+    if (*current == *previous)
     {
         return;
     }
-    const nlohmann::json change = {
-        {"oldState", Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *lastDelivered_)},
-        {"newState", Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *current)},
-    };
-    FIREBOLT_LOG_NOTICE("Lifecycle", "Reconciling state after resume: %s", change.dump().c_str());
-    (void)subscriptionManager_.dispatch("Lifecycle2.onStateChanged", nlohmann::json::array({change}));
+
+    std::vector<std::shared_ptr<SubscriberState>> activeRecipients;
+    {
+        std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+        if (!lastDelivered_ || *lastDelivered_ != *previous)
+        {
+            return;
+        }
+        for (const auto& recipient : recipients)
+        {
+            auto it = subscribers_.find(recipient.first);
+            if (it != subscribers_.end() && it->second == recipient.second && recipient.second->active)
+            {
+                recipient.second->pendingCorrection = std::make_pair(*previous, *current);
+                activeRecipients.push_back(recipient.second);
+            }
+        }
+        if (activeRecipients.empty())
+        {
+            return;
+        }
+        lastDelivered_ = *current;
+    }
+
+    const StateChange change{*previous, *current};
+    FIREBOLT_LOG_NOTICE("Lifecycle", "Reconciling state after resume: %s -> %s",
+                        Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *previous).c_str(),
+                        Firebolt::JSON::toString(JsonData::LifecycleStateEnum, *current).c_str());
+    const std::vector<StateChange> changes{change};
+    for (const auto& recipient : activeRecipients)
+    {
+        bool active = false;
+        {
+            std::lock_guard<std::recursive_mutex> lock(stateMutex_);
+            active = recipient->active;
+        }
+        if (active)
+        {
+            recipient->notification(changes);
+        }
+    }
 }
 } // namespace Firebolt::Lifecycle

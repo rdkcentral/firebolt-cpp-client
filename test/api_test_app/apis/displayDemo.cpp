@@ -18,6 +18,7 @@
 
 #include "displayDemo.h"
 #include <firebolt/firebolt.h>
+#include <ios>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -28,6 +29,7 @@ using namespace Firebolt::Display;
 DisplayDemo::DisplayDemo()
     : DemoBase("Display")
 {
+    methods_.push_back("Display.connected");
     methods_.push_back("Display.edid");
     methods_.push_back("Display.maxResolution");
     methods_.push_back("Display.size");
@@ -36,7 +38,15 @@ DisplayDemo::DisplayDemo()
 void DisplayDemo::runOption(const std::string& method)
 {
     std::cout << "Running Display method: " << method << std::endl;
-    if (method == "Display.edid")
+    if (method == "Display.connected")
+    {
+        auto r = Firebolt::IFireboltAccessor::Instance().DisplayInterface().connected();
+        if (succeed(r))
+        {
+            std::cout << "Display Connected: " << std::boolalpha << *r << std::endl;
+        }
+    }
+    else if (method == "Display.edid")
     {
         auto r = Firebolt::IFireboltAccessor::Instance().DisplayInterface().edid();
         if (succeed(r))

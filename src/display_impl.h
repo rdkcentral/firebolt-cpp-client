@@ -32,12 +32,18 @@ public:
 
     ~DisplayImpl() override = default;
 
+    [[nodiscard]] Result<bool> connected() const override;
+    Result<SubscriptionId> subscribeOnConnectedChanged(std::function<void(bool)>&& notification) override;
+    Result<void> unsubscribe(SubscriptionId id) override;
+    void unsubscribeAll() override;
+
     [[nodiscard]] Result<std::string> edid() const override;
     [[nodiscard]] Result<DisplaySize> maxResolution() const override;
     [[nodiscard]] Result<DisplaySize> size() const override;
 
 private:
     Firebolt::Helpers::IHelper& helper_;
+    Firebolt::Helpers::SubscriptionManager subscriptionManager_;
     // Methods
 };
 } // namespace Firebolt::Display

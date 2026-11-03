@@ -26,6 +26,44 @@ protected:
     Firebolt::Display::DisplayImpl displayImpl_{mockHelper};
 };
 
+TEST_F(DisplayUTest, Connected)
+{
+    mock("Display.connected");
+    auto expectedValue = jsonEngine.get_value("Display.connected");
+
+    auto result = displayImpl_.connected();
+    ASSERT_TRUE(result) << "DisplayImpl::connected() returned an error";
+
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DisplayUTest, ConnectedFalse)
+{
+    mock_with_response("Display.connected", false);
+
+    auto result = displayImpl_.connected();
+    ASSERT_TRUE(result) << "DisplayImpl::connected() returned an error";
+
+    EXPECT_FALSE(*result);
+}
+
+TEST_F(DisplayUTest, ConnectedBadResponse)
+{
+    mock_with_response("Display.connected", "bad_response");
+    ASSERT_FALSE(displayImpl_.connected()) << "DisplayImpl::connected() did not return an error";
+}
+
+TEST_F(DisplayUTest, SubscribeOnConnectedChanged)
+{
+    mockSubscribe("Display.onConnectedChanged");
+
+    auto result = displayImpl_.subscribeOnConnectedChanged([](bool /* value */) {});
+    ASSERT_TRUE(result) << "DisplayImpl::subscribeOnConnectedChanged() returned an error";
+
+    auto unsubscribeResult = displayImpl_.unsubscribe(*result);
+    ASSERT_TRUE(unsubscribeResult) << "DisplayImpl::unsubscribe() returned an error";
+}
+
 TEST_F(DisplayUTest, Edid)
 {
     mock("Display.edid");

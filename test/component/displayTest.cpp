@@ -18,13 +18,51 @@
 
 #include "firebolt/firebolt.h"
 #include "json_engine.h"
+#include "utils.h"
+#include <condition_variable>
 #include <gtest/gtest.h>
+#include <mutex>
 
 class DisplayCTest : public ::testing::Test
 {
 protected:
+    void SetUp() override { eventReceived = false; }
+
+    std::condition_variable cv;
+    std::mutex mtx;
+    bool eventReceived;
+
     JsonEngine jsonEngine;
 };
+
+TEST_F(DisplayCTest, Connected)
+{
+    auto expectedValue = jsonEngine.get_value("Display.connected");
+    auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().connected();
+    ASSERT_TRUE(result) << "DisplayImpl::connected() returned an error";
+    EXPECT_EQ(*result, expectedValue.get<bool>());
+}
+
+TEST_F(DisplayCTest, SubscribeOnConnectedChanged)
+{
+    auto id = Firebolt::IFireboltAccessor::Instance().DisplayInterface().subscribeOnConnectedChanged(
+        [&](bool connected)
+        {
+            EXPECT_FALSE(connected);
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                eventReceived = true;
+            }
+            cv.notify_one();
+        });
+
+    verifyEventSubscription(id);
+    triggerEvent("Display.onConnectedChanged", R"({ "value": false })");
+    verifyEventReceived(mtx, cv, eventReceived);
+
+    auto result = Firebolt::IFireboltAccessor::Instance().DisplayInterface().unsubscribe(id.value());
+    verifyUnsubscribeResult(result);
+}
 
 TEST_F(DisplayCTest, Edid)
 {

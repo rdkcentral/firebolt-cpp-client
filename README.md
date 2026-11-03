@@ -17,6 +17,37 @@ Examples:
 - `./run-unit-tests.sh --unit-filter "ActionsUTest.*"`
 - `./run-component-tests.sh --component-filter "*Localization*"`
 
+### Testing Against Unreleased Transport Changes
+
+For interdependent client and transport development, build the transport into a
+separate install prefix and point the client build at it. This keeps the host
+package untouched and opts into the development version mismatch explicitly:
+
+```bash
+TRANSPORT_DIR=/path/to/firebolt-cpp-transport
+TRANSPORT_BUILD=/tmp/firebolt-transport-build
+TRANSPORT_PREFIX=/tmp/firebolt-transport-install
+
+cmake -S "$TRANSPORT_DIR" -B "$TRANSPORT_BUILD" \
+	-DCMAKE_BUILD_TYPE=Debug \
+	-DCMAKE_INSTALL_PREFIX="$TRANSPORT_PREFIX" \
+	-DFIREBOLT_TRANSPORT_VERSION=1.2.1-dev.local
+cmake --build "$TRANSPORT_BUILD" --parallel
+cmake --install "$TRANSPORT_BUILD"
+
+cmake -S . -B build-dev -DENABLE_TESTS=ON \
+	-DFIREBOLT_TRANSPORT_ROOT="$TRANSPORT_PREFIX" \
+	-DBUILD_WITH_INSTALLED_TRANSPORT=ON
+./run-all-test.sh
+```
+
+The explicit root enables the development mismatch override, and CMake warns if
+the installed package is below `.transport.version`. This affects build-time
+package selection only; BitBake continues to control runtime versions.
+
+To return to the pinned release dependency, unset `FIREBOLT_TRANSPORT_ROOT` and
+run `./run-all-test.sh --clean` to discard the cached development package path.
+
 For the device websocket tunnel, use `setup-device-tunnel.sh`.
 Before running it, export `DEVICE_SSH_USER`, `DEVICE_SSH_HOST`, and `DEVICE_SSH_PORT`.
 

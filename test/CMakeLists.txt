@@ -15,6 +15,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 find_package(Curl REQUIRED )
+find_package(websocketpp CONFIG REQUIRED)
 
 set(FIREBOLT_GTEST_PREFIXES
     /usr/local
@@ -207,6 +208,7 @@ target_link_libraries(${HIBERNATION_INTEGRATION_APP}
     PRIVATE
         FireboltClient
         FireboltTransport::FireboltTransport
+        websocketpp::websocketpp
         nlohmann_json::nlohmann_json
 )
 

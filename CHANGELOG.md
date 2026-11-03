@@ -1,6 +1,6 @@
 ## [Unreleased]
 
-Requires firebolt-cpp-transport **1.2.0** (`IGateway::setResumeListener`, `SubscriptionManager::dispatch`); `.transport.version` raised accordingly.
+Requires firebolt-cpp-transport **1.2.1** (`IGateway::setResumeListener`, `SubscriptionManager::dispatch`); `.transport.version` raised accordingly.
 
 ### Added
 - Lifecycle reconciliation after container hibernation: when the transport reports a resume, the client queries `Lifecycle2.state` and, if it differs from the last state delivered to the app, delivers one `onStateChanged` change `{last -> current}` to each subscriber. No application changes are needed
@@ -8,6 +8,19 @@ Requires firebolt-cpp-transport **1.2.0** (`IGateway::setResumeListener`, `Subsc
 
 ### Changed
 - `IFireboltAccessor::Connect` registers the transport resume listener; `Disconnect` clears it
+- CMake requires the pinned transport version by default; a development mismatch requires both an explicit `FIREBOLT_TRANSPORT_ROOT` and `BUILD_WITH_INSTALLED_TRANSPORT=ON`
+
+## [0.7.1](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.7.0...v0.7.1)
+
+### Added
+- `Device.name` getter and `onNameChanged` event
+
+### Changed
+- **Breaking**: `Actions.start()` now takes the intent as a JSON string (`const std::string&`) instead of `const IntentData&`; malformed JSON returns `Error::InvalidParams` instead of throwing
+- **Breaking**: `Firebolt::Actions::IntentData` and `IntentContext` have been removed; `Intent::intent` is now a `std::string` holding a JSON-serialized representation of the payload
+
+### Fixed
+- `TextToSpeech` event subscriptions (`onWillSpeak`, `onSpeechStart`, `onSpeechPause`, `onSpeechResume`, `onSpeechComplete`, `onSpeechInterrupted`, `onNetworkError`, etc.) used incorrect lowercase wire method names and never received platform events
 
 ## [0.7.0](https://github.com/rdkcentral/firebolt-cpp-client/compare/v0.6.4...v0.7.0)
 

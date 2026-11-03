@@ -33,7 +33,6 @@ public:
     MOCK_METHOD(Firebolt::Error, connect, (const Firebolt::Config&, Firebolt::Transport::ConnectionChangeCallback),
                 (override));
     MOCK_METHOD(Firebolt::Error, disconnect, (), (override));
-    MOCK_METHOD(Firebolt::Error, send, (const std::string&, const nlohmann::json&), (override));
     MOCK_METHOD(std::future<Firebolt::Result<nlohmann::json>>, request, (const std::string&, const nlohmann::json&),
                 (override));
     MOCK_METHOD(Firebolt::Error, subscribe, (const std::string&, Firebolt::Transport::EventCallback, void*), (override));
@@ -58,6 +57,8 @@ TEST_F(FireboltAccessorUTest, ConnectRegistersResumeListenerBeforeConnecting)
     InSequence seq;
     EXPECT_CALL(mockGateway, setResumeListener(Truly(isSet)));
     EXPECT_CALL(mockGateway, connect(_, _)).WillOnce(Return(Firebolt::Error::None));
+    EXPECT_CALL(mockGateway, setResumeListener(Truly(isCleared)));
+    EXPECT_CALL(mockGateway, disconnect()).WillOnce(Return(Firebolt::Error::None));
 
     EXPECT_EQ(accessor_.Connect(Firebolt::Config{}, nullptr), Firebolt::Error::None);
 }
@@ -67,8 +68,17 @@ TEST_F(FireboltAccessorUTest, DisconnectClearsResumeListener)
     InSequence seq;
     EXPECT_CALL(mockGateway, setResumeListener(Truly(isCleared)));
     EXPECT_CALL(mockGateway, disconnect()).WillOnce(Return(Firebolt::Error::None));
+    EXPECT_CALL(mockGateway, setResumeListener(Truly(isCleared)));
+    EXPECT_CALL(mockGateway, disconnect()).WillOnce(Return(Firebolt::Error::None));
 
     EXPECT_EQ(accessor_.Disconnect(), Firebolt::Error::None);
+}
+
+TEST_F(FireboltAccessorUTest, DestructorClearsResumeListenerAndDisconnects)
+{
+    InSequence seq;
+    EXPECT_CALL(mockGateway, setResumeListener(Truly(isCleared)));
+    EXPECT_CALL(mockGateway, disconnect()).WillOnce(Return(Firebolt::Error::None));
 }
 
 TEST_F(FireboltAccessorUTest, ResumeListenerReconcilesLifecycle)
@@ -76,6 +86,8 @@ TEST_F(FireboltAccessorUTest, ResumeListenerReconcilesLifecycle)
     using Firebolt::Lifecycle::LifecycleState;
     Firebolt::Transport::ResumeCallback listener;
     EXPECT_CALL(mockGateway, setResumeListener(Truly(isSet))).WillOnce(SaveArg<0>(&listener));
+    EXPECT_CALL(mockGateway, setResumeListener(Truly(isCleared)));
+    EXPECT_CALL(mockGateway, disconnect()).WillOnce(Return(Firebolt::Error::None));
     ON_CALL(mockGateway, connect(_, _)).WillByDefault(Return(Firebolt::Error::None));
     ASSERT_EQ(accessor_.Connect(Firebolt::Config{}, nullptr), Firebolt::Error::None);
     ASSERT_TRUE(listener);

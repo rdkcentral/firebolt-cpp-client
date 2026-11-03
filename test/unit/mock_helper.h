@@ -27,8 +27,6 @@
 class MockHelper : public Firebolt::Helpers::IHelper
 {
 public:
-    MOCK_METHOD(Firebolt::Result<void>, set, (const std::string& methodName, const nlohmann::json& parameters),
-                (override));
     MOCK_METHOD(Firebolt::Result<void>, invoke, (const std::string& methodName, const nlohmann::json& parameters),
                 (override));
 

@@ -65,7 +65,13 @@ public:
     FireboltAccessorImpl(const FireboltAccessorImpl&) = delete;
     FireboltAccessorImpl& operator=(const FireboltAccessorImpl&) = delete;
 
-    ~FireboltAccessorImpl() override { unsubscribeAll(); }
+    ~FireboltAccessorImpl() override
+    {
+        gateway_.setResumeListener(nullptr);
+        // Disconnect joins the notification worker before lifecycle_ is destroyed.
+        gateway_.disconnect();
+        unsubscribeAll();
+    }
 
     Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
     {

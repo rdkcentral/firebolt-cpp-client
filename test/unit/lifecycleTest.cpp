@@ -245,3 +245,65 @@ TEST_F(LifecycleReconcileUTest, RoundTripFromLastDeliveredStateIsDelivered)
     ASSERT_EQ(received.size(), 2u);
     EXPECT_EQ(received.back().size(), 2u);
 }
+
+TEST_F(LifecycleReconcileUTest, DuplicatePrefixDoesNotDropFollowingRoundTrip)
+{
+    using Firebolt::Lifecycle::LifecycleState;
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+
+    emit(nlohmann::json::array({{{"oldState", "active"}, {"newState", "suspended"}},
+                                {{"oldState", "suspended"}, {"newState", "paused"}},
+                                {{"oldState", "paused"}, {"newState", "suspended"}}}));
+
+    ASSERT_EQ(received.size(), 3u);
+    ASSERT_EQ(received.back().size(), 2u);
+    EXPECT_EQ(received.back()[0].oldState, LifecycleState::SUSPENDED);
+    EXPECT_EQ(received.back()[0].newState, LifecycleState::PAUSED);
+    EXPECT_EQ(received.back()[1].oldState, LifecycleState::PAUSED);
+    EXPECT_EQ(received.back()[1].newState, LifecycleState::SUSPENDED);
+}
+
+TEST_F(LifecycleReconcileUTest, UnsubscribeAndResubscribeClearsStaleReconciliationState)
+{
+    using Firebolt::Lifecycle::LifecycleState;
+    std::vector<Changes> original;
+    auto originalId =
+        lifecycleImpl_.subscribeOnStateChanged([&original](const Changes& changes) { original.push_back(changes); });
+    ASSERT_TRUE(originalId);
+    emit(change("initializing", "active"));
+
+    ASSERT_TRUE(lifecycleImpl_.unsubscribe(originalId.value()));
+    EXPECT_CALL(mockHelper, getJson("Lifecycle2.state", _)).Times(0);
+    lifecycleImpl_.reconcile();
+
+    std::vector<Changes> replacement;
+    subscribe(replacement);
+    lifecycleImpl_.reconcile();
+    EXPECT_TRUE(replacement.empty());
+
+    emit(change("suspended", "paused"));
+    ASSERT_EQ(replacement.size(), 1u);
+    ASSERT_EQ(replacement.back().size(), 1u);
+    EXPECT_EQ(replacement.back()[0].oldState, LifecycleState::SUSPENDED);
+    EXPECT_EQ(replacement.back()[0].newState, LifecycleState::PAUSED);
+}
+
+TEST_F(LifecycleReconcileUTest, UnsubscribeAllClearsStaleReconciliationState)
+{
+    std::vector<Changes> original;
+    subscribe(original);
+    emit(change("initializing", "active"));
+
+    lifecycleImpl_.unsubscribeAll();
+    EXPECT_CALL(mockHelper, getJson("Lifecycle2.state", _)).Times(0);
+    lifecycleImpl_.reconcile();
+
+    std::vector<Changes> replacement;
+    subscribe(replacement);
+    lifecycleImpl_.reconcile();
+    EXPECT_TRUE(replacement.empty());
+}

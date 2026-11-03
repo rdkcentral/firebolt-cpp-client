@@ -20,6 +20,9 @@
 
 #include "firebolt/lifecycle.h"
 #include <firebolt/helpers.h>
+#include <map>
+#include <memory>
+#include <mutex>
 #include <optional>
 
 namespace Firebolt::Lifecycle
@@ -54,9 +57,16 @@ public:
     void reconcile();
 
 private:
+    struct SubscriberState
+    {
+        std::optional<LifecycleState> lastSeen;
+        bool active{true};
+    };
+
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
-    // Only touched on the transport notification worker (event wrappers and the resume listener).
+    std::recursive_mutex stateMutex_;
+    std::map<SubscriptionId, std::shared_ptr<SubscriberState>> subscribers_;
     std::optional<LifecycleState> lastDelivered_;
 };
 } // namespace Firebolt::Lifecycle

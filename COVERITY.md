@@ -37,12 +37,20 @@ Faster local loop when dependencies are already present in the container image:
 make -f Makefile.act act-native-fast
 ```
 
+For paired development with an unreleased transport branch, pass its ref explicitly:
+
+```bash
+COV_TRANSPORT_REF=RDKEMW-19306 ./cov_build.sh
+```
+
+The paired ref takes precedence over installed/system transports, is built into `COV_DEPS_PREFIX`, and enables the client's explicit installed-transport version override. In GitHub Actions, dispatch the native build with `transport_ref`, or label a supported client pull request `paired-transport` to select the same-name transport branch. Without a paired ref, the build uses the pinned release path.
+
 ## Dependency Resolution Order
 
 `cov_build.sh` resolves FireboltTransport in this order.
 
-1. Explicit `FireboltTransport_DIR` if provided.
-2. Local bootstrap prefix (`COV_DEPS_PREFIX`, default `.cov-deps`).
+1. Explicit `COV_TRANSPORT_REF`, when provided.
+2. Explicit `FireboltTransport_DIR` or local bootstrap prefix (`COV_DEPS_PREFIX`, default `.cov-deps`).
 3. System CMake package paths (`/usr/local/...`, `/usr/...`) unless disabled.
 4. Sibling repo bootstrap from `../firebolt-cpp-transport`.
 5. Release tarball bootstrap using pinned version from `.transport.version`.
@@ -72,6 +80,7 @@ The transport bootstrap passes:
 ```
 
 This keeps package version compatibility aligned with client `find_package(FireboltTransport <major> CONFIG REQUIRED)`.
+Paired refs omit this override, preserving the transport branch's actual version for the explicit development-version check.
 
 ## Environment Variables
 
@@ -98,6 +107,11 @@ When set to `1`, do not reuse an already-discovered transport package. Force boo
 ### `COV_FORCE_RELEASE_TRANSPORT`
 
 When set to `1`, bypass sibling repo bootstrap and force release tarball bootstrap.
+This cannot be combined with `COV_TRANSPORT_REF`.
+
+### `COV_TRANSPORT_REF`
+
+Optional Firebolt Transport branch or tag to clone and build for paired development. When set, this ref takes precedence over system packages and sibling checkouts.
 
 ## CMake Root Hinting
 

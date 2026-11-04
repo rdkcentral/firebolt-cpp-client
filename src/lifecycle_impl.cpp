@@ -72,9 +72,18 @@ LifecycleImpl::subscribeOnStateChanged(std::function<void(const std::vector<Stat
 
             for (const StateChange& change : changes)
             {
-                if (!state->pendingCorrections.empty() && state->pendingCorrections.front().first == change.oldState &&
-                    state->pendingCorrections.front().second == change.newState)
+                auto correction = state->pendingCorrections.begin();
+                for (; correction != state->pendingCorrections.end(); ++correction)
                 {
+                    if (correction->first == change.oldState && correction->second == change.newState)
+                    {
+                        break;
+                    }
+                }
+                if (correction != state->pendingCorrections.end())
+                {
+                    // Wire notifications are ordered; a later match retires missing earlier corrections too.
+                    state->pendingCorrections.erase(state->pendingCorrections.begin(), correction);
                     state->pendingCorrections.pop_front();
                     continue;
                 }
@@ -186,6 +195,19 @@ void LifecycleImpl::reconcile()
             auto it = subscribers_.find(recipient.first);
             if (it != subscribers_.end() && it->second == recipient.second && recipient.second->active)
             {
+                auto& corrections = recipient.second->pendingCorrections;
+                for (auto correction = corrections.begin(); correction != corrections.end();)
+                {
+                    if (correction->first == *current)
+                    {
+                        // The same transition can now be genuine; do not let an old token suppress it.
+                        correction = corrections.erase(correction);
+                    }
+                    else
+                    {
+                        ++correction;
+                    }
+                }
                 recipient.second->pendingCorrections.emplace_back(*previous, *current);
                 activeRecipients.push_back(recipient.second);
             }

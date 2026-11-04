@@ -369,6 +369,53 @@ TEST_F(LifecycleReconcileUTest, PendingCorrectionsSurviveRepeatedResumes)
     EXPECT_EQ(received.size(), 3u);
 }
 
+TEST_F(LifecycleReconcileUTest, NewTransitionIsNotSuppressedAfterStateReturnsToCorrectionOrigin)
+{
+    using Firebolt::Lifecycle::LifecycleState;
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+    mock_with_response("Lifecycle2.state", "active");
+    lifecycleImpl_.reconcile();
+
+    emit(change("active", "suspended"));
+
+    ASSERT_EQ(received.size(), 4u);
+    expectSingle(received.back(), LifecycleState::ACTIVE, LifecycleState::SUSPENDED);
+}
+
+TEST_F(LifecycleReconcileUTest, DelayedCorrectionIsSuppressedWhenEarlierCorrectionNeverArrives)
+{
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+    mock_with_response("Lifecycle2.state", "active");
+    lifecycleImpl_.reconcile();
+
+    emit(change("suspended", "active"));
+
+    EXPECT_EQ(received.size(), 3u);
+}
+
+TEST_F(LifecycleReconcileUTest, LaterCorrectionMatchesAfterEarlierWireNotificationWasDropped)
+{
+    std::vector<Changes> received;
+    subscribe(received);
+    emit(change("initializing", "active"));
+    mock_with_response("Lifecycle2.state", "suspended");
+    lifecycleImpl_.reconcile();
+    mock_with_response("Lifecycle2.state", "paused");
+    lifecycleImpl_.reconcile();
+
+    emit(change("suspended", "paused"));
+
+    EXPECT_EQ(received.size(), 3u);
+}
+
 TEST_F(LifecycleReconcileUTest, CallbackExceptionDoesNotPreventOtherSubscribersFromReceivingCorrection)
 {
     std::vector<Changes> received;

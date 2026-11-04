@@ -23,11 +23,16 @@ on:
         required: false
         default: false
         type: boolean
+      transport_ref:
+        description: Optional Firebolt Transport branch or tag for paired development
+        required: false
+        type: string
   push:
     branches: [ main, '*.*.x-maintenance' ]
     paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh', '.github/workflows/native_full_build.yml']
   pull_request:
     branches: [ main, '*.*.x-maintenance' ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths: ['**/*.c', '**/*.cpp', '**/*.cc', '**/*.cxx', '**/*.h', '**/*.hpp', 'CMakeLists.txt', 'cmake/**', 'build_dependencies.sh', 'cov_build.sh', '.github/workflows/native_full_build.yml']
 
 permissions:
@@ -52,10 +57,26 @@ jobs:
         if: ${{ github.event_name != 'workflow_dispatch' || !fromJSON(github.event.inputs.skip_build_dependencies || 'false') }}
         run: bash -x build_dependencies.sh
 
+      - name: Select paired transport ref
+        id: transport_ref
+        env:
+          DISPATCH_TRANSPORT_REF: ${{ inputs.transport_ref }}
+          PULL_REQUEST_HEAD_REF: ${{ github.head_ref }}
+          PAIRED_TRANSPORT: ${{ contains(github.event.pull_request.labels.*.name, 'paired-transport') }}
+        run: |
+          if [[ -n "$DISPATCH_TRANSPORT_REF" ]]; then
+            echo "ref=$DISPATCH_TRANSPORT_REF" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_EVENT_NAME" == "pull_request" && "$PAIRED_TRANSPORT" == "true" ]]; then
+            echo "ref=$PULL_REQUEST_HEAD_REF" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build
         run: bash -x cov_build.sh
         env:
           COV_DEPS_PREFIX: ${{ github.workspace }}/.cov-deps
+          COV_TRANSPORT_REF: ${{ steps.transport_ref.outputs.ref }}
           COV_FORCE_BOOTSTRAP_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
           COV_SKIP_SYSTEM_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.strict_transport_bootstrap && '1' || '0' }}
           COV_FORCE_RELEASE_TRANSPORT: ${{ github.event_name == 'workflow_dispatch' && inputs.force_release_transport && '1' || '0' }}

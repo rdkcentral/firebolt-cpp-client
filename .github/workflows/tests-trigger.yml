@@ -11,10 +11,15 @@ on:
         options:
           - rpc_v2
           - legacy
+      transport_ref:
+        description: 'Optional firebolt-cpp-transport branch or tag for paired development'
+        required: false
+        type: string
   push:
     branches: [ main, develop, '*.rc' ]
   pull_request:
     branches: [ main, develop, '*.rc' ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 defaults:
   run:
@@ -31,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.meta.outputs.tags }}
+      transport_ref: ${{ steps.transport_version.outputs.ref }}
+      transport_commit: ${{ steps.transport_version.outputs.commit }}
     steps:
       - name: Log in to the Container registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
@@ -54,7 +61,42 @@ jobs:
 
       - name: Get Transport Version for Build-Arg
         id: transport_version
-        run: echo "version=$(cat ${{ github.workspace }}/.transport.version)" >> $GITHUB_OUTPUT
+        env:
+          DISPATCH_TRANSPORT_REF: ${{ github.event.inputs.transport_ref }}
+          PULL_REQUEST_HEAD_REF: ${{ github.head_ref }}
+          PAIRED_TRANSPORT: ${{ contains(github.event.pull_request.labels.*.name, 'paired-transport') }}
+        run: |
+          transport_ref=""
+          if [[ -n "$DISPATCH_TRANSPORT_REF" ]]; then
+            transport_ref="$DISPATCH_TRANSPORT_REF"
+          elif [[ "$GITHUB_EVENT_NAME" == "pull_request" && "$PAIRED_TRANSPORT" == "true" ]]; then
+            transport_ref="$PULL_REQUEST_HEAD_REF"
+          fi
+
+          echo "version=$(cat .transport.version)" >> "$GITHUB_OUTPUT"
+          echo "ref=$transport_ref" >> "$GITHUB_OUTPUT"
+          if [[ -n "$transport_ref" ]]; then
+            transport_commit=$(git ls-remote https://github.com/rdkcentral/firebolt-cpp-transport.git \
+              "refs/heads/${transport_ref}" "refs/tags/${transport_ref}" "refs/tags/${transport_ref}^{}" |
+              awk -v ref="$transport_ref" '
+                $2 == "refs/heads/" ref { branch = $1 }
+                $2 == "refs/tags/" ref { tag = $1 }
+                $2 == "refs/tags/" ref "^{}" { peeled = $1 }
+                END {
+                  if (branch != "") print branch
+                  else if (peeled != "") print peeled
+                  else if (tag != "") print tag
+                }
+              ')
+            if [[ -z "$transport_commit" ]]; then
+              echo "Could not resolve Firebolt Transport ref: $transport_ref" >&2
+              exit 1
+            fi
+            echo "Resolved Firebolt Transport $transport_ref to $transport_commit"
+            echo "commit=$transport_commit" >> "$GITHUB_OUTPUT"
+          else
+            echo "commit=" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -66,6 +108,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             DEPS_TRANSPORT_V=${{ steps.transport_version.outputs.version }}
+            DEPS_TRANSPORT_REF=${{ steps.transport_version.outputs.ref }}
+            DEPS_TRANSPORT_COMMIT=${{ steps.transport_version.outputs.commit }}
             DEPS_TRANSPORT_PROTOCOL=${{ github.event.inputs.protocol || 'rpc_v2' }}
           cache-from: type=gha,scope=${{ github.workflow }}
           cache-to: type=gha,mode=max,scope=${{ github.workflow }}
@@ -117,19 +161,26 @@ jobs:
       - name: Get version
         run: |
           VERSION=$(git describe --tags --dirty --match "v[0-9]*")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "version: $VERSION"
 
       - name: Configure Project
+        env:
+          TRANSPORT_REF: ${{ needs.build_docker.outputs.transport_ref }}
         run: |
-          docker run --rm --user "$(id -u):$(id -g)" -v ${{ github.workspace }}:/workspace ${{ needs.build_docker.outputs.image_tag }} \
-            bash -c " \
-              set -e \
-              && cmake -B build -S . \
-                    -DCMAKE_BUILD_TYPE=Debug \
-                    -DENABLE_TESTS=ON \
-              && cp docs/openrpc/the-spec/firebolt-open-rpc.json build/test/ \
-            "
+          docker run --rm --user "$(id -u):$(id -g)" -e TRANSPORT_REF -v "${{ github.workspace }}:/workspace" "${{ needs.build_docker.outputs.image_tag }}" \
+            bash -c '
+              set -e
+              cmake_args=()
+              if [[ -n "$TRANSPORT_REF" ]]; then
+                cmake_args+=(-DFIREBOLT_TRANSPORT_ROOT=/usr/local -DBUILD_WITH_INSTALLED_TRANSPORT=ON)
+              fi
+              cmake -B build -S . \
+                -DCMAKE_BUILD_TYPE=Debug \
+                -DENABLE_TESTS=ON \
+                "${cmake_args[@]}"
+              cp docs/openrpc/the-spec/firebolt-open-rpc.json build/test/
+            '
 
       - name: Build Project
         run: |

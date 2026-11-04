@@ -15,6 +15,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 find_package(Curl REQUIRED )
+find_package(websocketpp CONFIG REQUIRED)
 
 set(FIREBOLT_GTEST_PREFIXES
     /usr/local
@@ -196,6 +197,39 @@ if(DISCOVER_CT)
             ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/src"
     )
 endif()
+
+set(HIBERNATION_INTEGRATION_APP lifecycleHibernationHarness)
+
+add_executable(${HIBERNATION_INTEGRATION_APP}
+    integration/lifecycleHibernationHarness.cpp
+)
+
+target_link_libraries(${HIBERNATION_INTEGRATION_APP}
+    PRIVATE
+        FireboltClient
+        FireboltTransport::FireboltTransport
+        websocketpp::websocketpp
+        nlohmann_json::nlohmann_json
+)
+
+target_include_directories(${HIBERNATION_INTEGRATION_APP}
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/>
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+)
+
+set_target_properties(${HIBERNATION_INTEGRATION_APP} PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED YES
+    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
+)
+
+add_test(NAME LifecycleHibernationDropAndResume COMMAND ${HIBERNATION_INTEGRATION_APP})
+set_tests_properties(LifecycleHibernationDropAndResume PROPERTIES
+    TIMEOUT 45
+    LABELS "integration;hibernation"
+    ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/src"
+)
 
 if(ENABLE_COVERAGE)
     include(${CMAKE_SOURCE_DIR}/cmake/CodeCoverage.cmake)

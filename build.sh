@@ -69,7 +69,19 @@ fi
 
 $cleanFirst && rm -rf $bdir
 
-if [[ ! -e "$bdir" || -n "$@" ]]; then
+needsConfigure=false
+if [[ ! -e "$bdir" || ! -e "$bdir/CMakeCache.txt" || -n "$@" ]]; then
+  needsConfigure=true
+else
+  generator="$(sed -n 's/^CMAKE_GENERATOR:INTERNAL=//p' "$bdir/CMakeCache.txt")"
+  case "$generator" in
+    Ninja*) [[ -e "$bdir/build.ninja" ]] || needsConfigure=true ;;
+    *Makefiles*) [[ -e "$bdir/Makefile" ]] || needsConfigure=true ;;
+    *) [[ -e "$bdir/Makefile" || -e "$bdir/build.ninja" ]] || needsConfigure=true ;;
+  esac
+fi
+
+if [[ "$needsConfigure" == true ]]; then
   params+=" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
   command -v ccache >/dev/null 2>&1 && params+=" -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
   cmake -B $bdir \

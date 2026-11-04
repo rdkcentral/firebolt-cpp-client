@@ -78,6 +78,7 @@ bootstrap_transport_if_missing() {
     local release_url_v=""
     local transport_config_dir=""
     local transport_cmake_args=()
+    local transport_ref="${COV_TRANSPORT_REF:-}"
     local force_bootstrap="${COV_FORCE_BOOTSTRAP_TRANSPORT:-0}"
     local force_release="${COV_FORCE_RELEASE_TRANSPORT:-0}"
 
@@ -88,7 +89,12 @@ bootstrap_transport_if_missing() {
         transport_version="$(tr -d '[:space:]' < "${GITHUB_WORKSPACE}/.transport.version")"
     fi
 
-    if [[ "${force_bootstrap}" != "1" ]]; then
+    if [[ -n "${transport_ref}" && "${force_release}" == "1" ]]; then
+        echo "COV_TRANSPORT_REF and COV_FORCE_RELEASE_TRANSPORT cannot be used together." >&2
+        return 1
+    fi
+
+    if [[ -z "${transport_ref}" && "${force_bootstrap}" != "1" ]]; then
         if transport_config_dir="$(find_transport_config_dir)"; then
             echo "Using FireboltTransport from ${transport_config_dir}"
             FireboltTransport_DIR="${transport_config_dir}"
@@ -100,7 +106,14 @@ bootstrap_transport_if_missing() {
         transport_repo=""
     fi
 
-    if [[ ! -d "${transport_repo}" ]]; then
+    if [[ -n "${transport_ref}" ]]; then
+        mkdir -p "${transport_src_dir}"
+        transport_repo="$(mktemp -d "${transport_src_dir}/firebolt-cpp-transport.XXXXXX")"
+        git clone --depth 1 --branch "${transport_ref}" \
+            https://github.com/rdkcentral/firebolt-cpp-transport.git "${transport_repo}"
+        transport_build_dir="${transport_repo}/build-cov"
+        echo "Using FireboltTransport ref ${transport_ref} at $(git -C "${transport_repo}" rev-parse HEAD)"
+    elif [[ ! -d "${transport_repo}" ]]; then
         if [[ ! -f "${GITHUB_WORKSPACE}/.transport.version" ]]; then
             echo "FireboltTransport not found and no .transport.version file is available." >&2
             echo "Provide FireboltTransport_DIR, add sibling firebolt-cpp-transport, or add .transport.version." >&2
@@ -161,7 +174,7 @@ bootstrap_transport_if_missing() {
         fi
     fi
 
-    if [[ -n "${transport_version}" ]]; then
+    if [[ -n "${transport_version}" && -z "${transport_ref}" ]]; then
         transport_cmake_args+=("-DFIREBOLT_TRANSPORT_VERSION=${transport_version}")
     fi
 
@@ -191,10 +204,19 @@ bootstrap_transport_if_missing() {
 
 bootstrap_transport_if_missing
 
-cmake -B build-dev -S . \
+client_cmake_args=(
     -UGTest_DIR \
     -DCMAKE_BUILD_TYPE=Debug \
     -DFireboltTransport_DIR="${FireboltTransport_DIR}" \
     -DENABLE_TESTS=ON
+)
+if [[ -n "${COV_TRANSPORT_REF:-}" ]]; then
+    client_cmake_args+=(
+        -DFIREBOLT_TRANSPORT_ROOT="${COV_DEPS_PREFIX:-${GITHUB_WORKSPACE}/.cov-deps}"
+        -DBUILD_WITH_INSTALLED_TRANSPORT=ON
+    )
+fi
+
+cmake -B build-dev -S . "${client_cmake_args[@]}"
 
 cmake --build build-dev --parallel

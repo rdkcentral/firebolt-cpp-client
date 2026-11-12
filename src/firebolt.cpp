@@ -16,118 +16,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "firebolt/firebolt.h"
-#include "accessibility_impl.h"
-#include "actions_impl.h"
-#include "advertising_impl.h"
-#include "device_impl.h"
-#include "discovery_impl.h"
-#include "display_impl.h"
-#include "firebolt/client_version.h"
-#include "lifecycle_impl.h"
-#include "localization_impl.h"
-#include "metrics_impl.h"
-#include "network_impl.h"
-#include "presentation_impl.h"
-#include "speechsynthesis_impl.h"
-#include "stats_impl.h"
-#include "texttospeech_impl.h"
-#include "videooutput_impl.h"
+#include "firebolt_impl.h"
 #include <firebolt/gateway.h>
+#include <firebolt/helpers.h>
 
 namespace Firebolt
 {
-class FireboltAccessorImpl : public IFireboltAccessor
-{
-public:
-    FireboltAccessorImpl()
-        : accessibility_(Firebolt::Helpers::GetHelperInstance()),
-          advertising_(Firebolt::Helpers::GetHelperInstance()),
-          actions_(Firebolt::Helpers::GetHelperInstance()),
-          device_(Firebolt::Helpers::GetHelperInstance()),
-          discovery_(Firebolt::Helpers::GetHelperInstance()),
-          display_(Firebolt::Helpers::GetHelperInstance()),
-          lifecycle_(Firebolt::Helpers::GetHelperInstance()),
-          localization_(Firebolt::Helpers::GetHelperInstance()),
-          metrics_(Firebolt::Helpers::GetHelperInstance()),
-          network_(Firebolt::Helpers::GetHelperInstance()),
-          presentation_(Firebolt::Helpers::GetHelperInstance()),
-          speechSynthesis_(Firebolt::Helpers::GetHelperInstance()),
-          stats_(Firebolt::Helpers::GetHelperInstance()),
-          textToSpeech_(Firebolt::Helpers::GetHelperInstance()),
-          videooutput_(Firebolt::Helpers::GetHelperInstance())
-    {
-    }
-
-    FireboltAccessorImpl(const FireboltAccessorImpl&) = delete;
-    FireboltAccessorImpl& operator=(const FireboltAccessorImpl&) = delete;
-
-    ~FireboltAccessorImpl() override { unsubscribeAll(); }
-
-    Firebolt::Error Connect(const Firebolt::Config& config, OnConnectionChanged listener) override
-    {
-        auto result = Firebolt::Transport::GetGatewayInstance().connect(config, listener);
-        FIREBOLT_LOG_NOTICE("Client", "Version: %s", Version::String);
-        return result;
-    }
-
-    Firebolt::Error Disconnect() override
-    {
-        unsubscribeAll();
-        return Firebolt::Transport::GetGatewayInstance().disconnect();
-    }
-
-    Accessibility::IAccessibility& AccessibilityInterface() override { return accessibility_; }
-    Advertising::IAdvertising& AdvertisingInterface() override { return advertising_; }
-    Device::IDevice& DeviceInterface() override { return device_; }
-    Discovery::IDiscovery& DiscoveryInterface() override { return discovery_; }
-    Display::IDisplay& DisplayInterface() override { return display_; }
-    Lifecycle::ILifecycle& LifecycleInterface() override { return lifecycle_; }
-    Localization::ILocalization& LocalizationInterface() override { return localization_; }
-    Metrics::IMetrics& MetricsInterface() override { return metrics_; }
-    Network::INetwork& NetworkInterface() override { return network_; }
-    Presentation::IPresentation& PresentationInterface() override { return presentation_; }
-    SpeechSynthesis::ISpeechSynthesis& SpeechSynthesisInterface() override { return speechSynthesis_; }
-    Stats::IStats& StatsInterface() override { return stats_; }
-    TextToSpeech::ITextToSpeech& TextToSpeechInterface() override { return textToSpeech_; }
-    Actions::IActions& ActionsInterface() override { return actions_; }
-    VideoOutput::IVideoOutput& VideoOutputInterface() override { return videooutput_; }
-
-private:
-    void unsubscribeAll()
-    {
-        accessibility_.unsubscribeAll();
-        actions_.unsubscribeAll();
-        device_.unsubscribeAll();
-        lifecycle_.unsubscribeAll();
-        localization_.unsubscribeAll();
-        network_.unsubscribeAll();
-        presentation_.unsubscribeAll();
-        textToSpeech_.unsubscribeAll();
-        videooutput_.unsubscribeAll();
-        speechSynthesis_.unsubscribeAll();
-    }
-
-    Accessibility::AccessibilityImpl accessibility_;
-    Advertising::AdvertisingImpl advertising_;
-    Actions::ActionsImpl actions_;
-    Device::DeviceImpl device_;
-    Discovery::DiscoveryImpl discovery_;
-    Display::DisplayImpl display_;
-    Lifecycle::LifecycleImpl lifecycle_;
-    Localization::LocalizationImpl localization_;
-    Metrics::MetricsImpl metrics_;
-    Network::NetworkImpl network_;
-    Presentation::PresentationImpl presentation_;
-    SpeechSynthesis::SpeechSynthesisImpl speechSynthesis_;
-    Stats::StatsImpl stats_;
-    TextToSpeech::TextToSpeechImpl textToSpeech_;
-    VideoOutput::VideoOutputImpl videooutput_;
-};
-
 /* static */ IFireboltAccessor& IFireboltAccessor::Instance()
 {
-    static FireboltAccessorImpl impl;
+    static FireboltAccessorImpl impl{Firebolt::Transport::GetGatewayInstance(), Firebolt::Helpers::GetHelperInstance()};
     return impl;
 }
 } // namespace Firebolt

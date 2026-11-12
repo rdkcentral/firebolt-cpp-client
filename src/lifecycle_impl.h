@@ -19,9 +19,14 @@
 #pragma once
 
 #include "firebolt/lifecycle.h"
+#include <cstdint>
+#include <deque>
 #include <firebolt/helpers.h>
-
-class LifecycleTest;
+#include <map>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <utility>
 
 namespace Firebolt::Lifecycle
 {
@@ -34,9 +39,11 @@ struct LifecycleEvent
 class LifecycleImpl : public ILifecycle
 {
 public:
-    LifecycleImpl(Firebolt::Helpers::IHelper& helper);
+    explicit LifecycleImpl(Firebolt::Helpers::IHelper& helper);
     LifecycleImpl(const LifecycleImpl&) = delete;
     LifecycleImpl& operator=(const LifecycleImpl&) = delete;
+    LifecycleImpl(LifecycleImpl&&) = delete;
+    LifecycleImpl& operator=(LifecycleImpl&&) = delete;
     ~LifecycleImpl() override;
 
     [[nodiscard]] Result<void> close(const CloseType& type) const override;
@@ -48,11 +55,29 @@ public:
     Result<void> unsubscribe(SubscriptionId id) override;
     void unsubscribeAll() override;
 
+    // Called after a transport resume: queries Lifecycle2.state and, if it differs from the last
+    // state delivered to the app, delivers one corrective {last -> current} change to subscribers.
+    void reconcile();
+
 private:
+    struct SubscriberState
+    {
+        explicit SubscriberState(std::function<void(const std::vector<StateChange>&)> callback)
+            : notification(std::move(callback))
+        {
+        }
+
+        std::function<void(const std::vector<StateChange>&)> notification;
+        std::deque<std::pair<LifecycleState, LifecycleState>> pendingCorrections;
+        bool active{true};
+    };
+
     Firebolt::Helpers::IHelper& helper_;
     Firebolt::Helpers::SubscriptionManager subscriptionManager_;
-
-public:
-    friend class ::LifecycleTest;
+    std::mutex subscriptionMutex_;
+    std::recursive_mutex dispatchMutex_;
+    std::recursive_mutex stateMutex_;
+    std::map<SubscriptionId, std::shared_ptr<SubscriberState>> subscribers_;
+    std::optional<LifecycleState> lastDelivered_;
 };
 } // namespace Firebolt::Lifecycle

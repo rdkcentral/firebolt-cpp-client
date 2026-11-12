@@ -27,6 +27,7 @@ runs:
         git fetch --shallow-since=2026-01-01
         git checkout ${{ env.MOCK_SHA1SUM }}
         cd server
+        npm install --package-lock-only --ignore-scripts --no-audit --no-fund
         npm ci
         echo "Mock-Firebolt built and installed to ${{ env.MOCK_PATH }}"
 

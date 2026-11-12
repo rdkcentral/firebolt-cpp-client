@@ -27,8 +27,6 @@
 class MockHelper : public Firebolt::Helpers::IHelper
 {
 public:
-    MOCK_METHOD(Firebolt::Result<void>, set, (const std::string& methodName, const nlohmann::json& parameters),
-                (override));
     MOCK_METHOD(Firebolt::Result<void>, invoke, (const std::string& methodName, const nlohmann::json& parameters),
                 (override));
 
@@ -43,6 +41,9 @@ public:
 
     MOCK_METHOD(Firebolt::Result<nlohmann::json>, getJson,
                 (const std::string& methodName, const nlohmann::json& parameters), (override));
+
+    MOCK_METHOD(Firebolt::Result<void>, dispatchLocal,
+                (void* owner, const std::string& eventName, const nlohmann::json& payload), (override));
 };
 
 class MockBase

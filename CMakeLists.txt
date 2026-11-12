@@ -29,7 +29,6 @@ option(ENABLE_TESTS "Build tests" OFF)
 option(DISCOVER_UT "Discover all Unit Tests" ON)
 option(DISCOVER_CT "Discover all Component Tests" OFF)
 option(ENABLE_DEMO_APP "Build demo app" OFF)
-option(BUILD_WITH_INSTALLED_TRANSPORT "Build the library with the transport that is installed, even if its version mismatches" ON)
 option(DISABLE_SO_VERSION "Disable SONAME/SOVERSION of shared library" OFF)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -55,6 +54,7 @@ if(NOT FIREBOLT_TRANSPORT_ROOT AND DEFINED ENV{FIREBOLT_TRANSPORT_ROOT} AND NOT 
 endif()
 
 if(FIREBOLT_TRANSPORT_ROOT)
+    unset(FireboltTransport_DIR CACHE)
     list(INSERT CMAKE_PREFIX_PATH 0 "${FIREBOLT_TRANSPORT_ROOT}")
 endif()
 
@@ -66,15 +66,37 @@ if(NOT FireboltTransport_ROOT AND FIREBOLT_TRANSPORT_ROOT)
     set(FireboltTransport_ROOT "${FIREBOLT_TRANSPORT_ROOT}")
 endif()
 
+set(BUILD_WITH_INSTALLED_TRANSPORT_DEFAULT OFF)
+if(FIREBOLT_TRANSPORT_ROOT OR FireboltTransport_ROOT)
+    set(BUILD_WITH_INSTALLED_TRANSPORT_DEFAULT ON)
+endif()
+option(BUILD_WITH_INSTALLED_TRANSPORT
+    "Allow a version mismatch when an explicit transport root is supplied"
+    ${BUILD_WITH_INSTALLED_TRANSPORT_DEFAULT}
+)
+
 find_package(nlohmann_json CONFIG REQUIRED)
 
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/.transport.version"
+)
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/.transport.version" FIREBOLT_TRANSPORT_VERSION_RAW)
 string(STRIP "${FIREBOLT_TRANSPORT_VERSION_RAW}" FIREBOLT_TRANSPORT_VERSION)
-string(REGEX REPLACE "^v?([0-9]+)\\.([0-9]+)\\.([0-9]+).*" "\\1" FIREBOLT_TRANSPORT_MAJOR_VERSION "${FIREBOLT_TRANSPORT_VERSION}")
 
-find_package(FireboltTransport ${FIREBOLT_TRANSPORT_MAJOR_VERSION} CONFIG REQUIRED)
-
-message(STATUS "Transport: installed version: ${FireboltTransport_VERSION}, expected: ${FIREBOLT_TRANSPORT_VERSION}")
+if(BUILD_WITH_INSTALLED_TRANSPORT AND (FIREBOLT_TRANSPORT_ROOT OR FireboltTransport_ROOT))
+    find_package(FireboltTransport CONFIG REQUIRED)
+    if(FireboltTransport_VERSION VERSION_LESS FIREBOLT_TRANSPORT_VERSION)
+        message(WARNING "Using FireboltTransport ${FireboltTransport_VERSION} although ${FIREBOLT_TRANSPORT_VERSION} is required; development version mismatch is enabled")
+    else()
+        message(STATUS "Transport: installed version: ${FireboltTransport_VERSION}, minimum required: ${FIREBOLT_TRANSPORT_VERSION}")
+    endif()
+else()
+    if(BUILD_WITH_INSTALLED_TRANSPORT)
+        message(STATUS "Ignoring BUILD_WITH_INSTALLED_TRANSPORT without an explicit FireboltTransport root")
+    endif()
+    find_package(FireboltTransport ${FIREBOLT_TRANSPORT_VERSION} CONFIG REQUIRED)
+    message(STATUS "Transport: installed version: ${FireboltTransport_VERSION}, minimum required: ${FIREBOLT_TRANSPORT_VERSION}")
+endif()
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 

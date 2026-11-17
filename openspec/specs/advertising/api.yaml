@@ -1,0 +1,26 @@
+# Advertising API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Advertising
+header: include/firebolt/advertising.h
+interface: Firebolt::Advertising::IAdvertising
+description: A module for platform provided advertising settings and functionality.
+types:
+- name: AdvertisingIdResult
+  type: object
+  fields:
+  - {name: ifa, type: string, required: true, description: UUID conforming to IAB standard}
+  - {name: ifa_type, type: string, required: true, description: Source of the IFA as defined by IAB}
+  - name: lmt
+    type: string
+    enum: ['0', '1']
+    required: true
+    description: Boolean that if set to 1, user has requested ad tracking and measurement is disabled
+methods:
+- name: Advertising.advertisingId
+  cpp: advertisingId
+  summary: Returns the IFA.
+  result: AdvertisingIdResult
+  examples:
+  - result: {ifa: bd87dd10-8d1d-4b93-b1a6-a8e5d410e400, ifa_type: sspid, lmt: '0'}

@@ -1,0 +1,234 @@
+# Metrics API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Metrics
+header: include/firebolt/metrics.h
+interface: Firebolt::Metrics::IMetrics
+description: Methods for sending metrics
+types:
+- name: ErrorType
+  type: string
+  enum: [network, media, restriction, entitlement, other]
+- name: MediaPosition
+  schema:
+    title: MediaPosition
+    description: Represents a position inside playback content, as a decimal percentage (0-0.999) for content with a known duration, or an integer
+      number of seconds (0-86400) for content with an unknown duration.
+    oneOf:
+    - {const: 0}
+    - {type: number, exclusiveMinimum: 0, exclusiveMaximum: 1}
+    - {type: integer, minimum: 1, maximum: 86400}
+- name: Types.FlatMap
+  schema:
+    type: object
+    additionalProperties:
+      oneOf:
+      - {type: string}
+      - {type: number}
+      - {type: boolean}
+methods:
+- name: Metrics.ready
+  cpp: ready
+  summary: Inform the platform that your app is minimally usable. This method is called automatically by `Lifecycle.ready()`
+  result: 'null'
+  examples:
+  - {result: null}
+- name: Metrics.signIn
+  cpp: signIn
+  summary: Log a sign in event, called by Discovery.signIn().
+  result: 'null'
+  examples:
+  - {result: null}
+- name: Metrics.signOut
+  cpp: signOut
+  summary: Log a sign out event, called by Discovery.signOut().
+  result: 'null'
+  examples:
+  - {result: null}
+- name: Metrics.startContent
+  cpp: startContent
+  summary: Inform the platform that your user has started content.
+  params:
+  - {name: entityId, type: string, description: Optional entity ID of the content.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - {result: null}
+- name: Metrics.stopContent
+  cpp: stopContent
+  summary: Inform the platform that your user has stopped content.
+  params:
+  - {name: entityId, type: string, description: Optional entity ID of the content.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - {result: null}
+- name: Metrics.page
+  cpp: page
+  summary: Inform the platform that your user has navigated to a page or view.
+  params:
+  - {name: pageId, type: string, required: true, description: Page ID of the content.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {pageId: xyz}
+    result: null
+- name: Metrics.error
+  cpp: error
+  summary: Inform the platform of an error that has occurred in your app.
+  params:
+  - {name: type, type: ErrorType, required: true, description: The type of error}
+  - {name: code, type: string, required: true, description: an app-specific error code}
+  - {name: description, type: string, required: true, description: A short description of the error}
+  - {name: visible, type: boolean, required: true, description: Whether or not this error was visible to the user.}
+  - {name: parameters, type: Types.FlatMap, description: Optional additional parameters to be logged with the error}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {type: media, code: MEDIA-STALLED, description: playback stalled, visible: true}
+    result: null
+- name: Metrics.mediaLoadStart
+  cpp: mediaLoadStart
+  summary: Called when setting the URL of a media asset to play, in order to infer load time.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.mediaPlay
+  cpp: mediaPlay
+  summary: Called when media playback should start due to autoplay, user-initiated play, or unpausing.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.mediaPlaying
+  cpp: mediaPlaying
+  summary: Called when media playback actually starts due to autoplay, user-initiated play, unpausing, or recovering from a buffering interruption.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.mediaPause
+  cpp: mediaPause
+  summary: Called when media playback will pause due to an intentional pause operation.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.mediaWaiting
+  cpp: mediaWaiting
+  summary: Called when media playback will halt due to a network, buffer, or other unintentional constraint.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.mediaSeeking
+  cpp: mediaSeeking
+  summary: Called when a seek is initiated during media playback.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: target, type: MediaPosition, required: true, description: 'Target destination of the seek, as a decimal percentage (0-0.999) for content
+      with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.'}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345', target: 0.5}
+    result: null
+- name: Metrics.mediaSeeked
+  cpp: mediaSeeked
+  summary: Called when a seek is completed during media playback.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: position, type: MediaPosition, required: true, description: 'Resulting position of the seek operation, as a decimal percentage (0-0.999)
+      for content with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.'}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345', position: 0.51}
+    result: null
+- name: Metrics.mediaRateChanged
+  cpp: mediaRateChanged
+  summary: Called when the playback rate of media is changed.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: rate, type: number, required: true, description: The new playback rate.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345', rate: 2}
+    result: null
+- name: Metrics.mediaRenditionChanged
+  cpp: mediaRenditionChanged
+  summary: Called when the playback rendition (e.g. bitrate, dimensions, profile, etc) is changed.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: bitrate, type: number, required: true, description: The new bitrate in kbps.}
+  - {name: width, type: number, required: true, description: The new resolution width.}
+  - {name: height, type: number, required: true, description: The new resolution height.}
+  - {name: profile, type: string, description: 'A description of the new profile, e.g. ''HDR'' etc.'}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345', bitrate: 5000, width: 1920, height: 1080, profile: HDR+}
+    result: null
+- name: Metrics.mediaEnded
+  cpp: mediaEnded
+  summary: Called when playback has stopped because the end of the media was reached.
+  params:
+  - {name: entityId, type: string, required: true, description: The entityId of the media.}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: '345'}
+    result: null
+- name: Metrics.event
+  cpp: event
+  summary: Inform the platform of 1st party distributor metrics. 'data' parameter is a JSON document
+  params:
+  - {name: schema, type: string, format: uri, required: true, description: The schema URI of the metric type}
+  - {name: data, type: string, required: true, description: A JSON payload}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy to associate with the metrics event. The age policy describes the
+      age group to which content is directed.}
+  result: 'null'
+  examples:
+  - params: {schema: 'http://meta.rdkcentral.com/some/schema', data: foo}
+    result: null
+- name: Metrics.appInfo
+  cpp: appInfo
+  summary: Inform the platform about an app's build info.
+  params:
+  - {name: build, type: string, required: true, description: The build / version of this app.}
+  result: 'null'
+  examples:
+  - params: {build: 1.2.2}
+    result: null

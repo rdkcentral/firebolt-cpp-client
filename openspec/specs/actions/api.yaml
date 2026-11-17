@@ -1,0 +1,62 @@
+# Actions API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Actions
+header: include/firebolt/actions.h
+interface: Firebolt::Actions::IActions
+description: Methods for getting and observing app intents.
+methods:
+- name: Actions.intent
+  cpp: intent
+  kind: property
+  summary: Returns the current intent.
+  result:
+    type: object
+    fields:
+    - {name: intent, type: any, required: true}
+    - {name: intentId, type: integer, minimum: 0, required: true}
+  examples:
+  - result:
+      intent:
+        action: pre-load
+        context: {source: system}
+        data:
+          ids: [1, two, true, null]
+          future: {enabled: false}
+      intentId: 0
+- name: Actions.onIntent
+  cpp: subscribeOnIntent
+  kind: event
+  summary: Notifies when the current intent changes.
+  payload_of: Actions.intent
+  result:
+    type: object
+    fields:
+    - {name: intent, type: any, required: true}
+    - {name: intentId, type: integer, minimum: 0, required: true}
+  examples:
+  - result:
+      intent:
+        action: pre-load
+        context: {source: system}
+        data:
+          ids: [1, two, true, null]
+          future: {enabled: false}
+      intentId: 0
+- name: Actions.start
+  cpp: start
+  summary: Sends an intent to the platform.
+  params:
+  - {name: intent, type: any, required: true, description: 'The intent to send, as a JSON document.'}
+  - {name: handlerAppId, type: string, description: Optional ID of the application that should handle the intent.}
+  result: 'null'
+  examples:
+  - params:
+      intent:
+        action: pre-load
+        context: {source: system}
+        data:
+          ids: [1, two, true, null]
+          future: {enabled: false}
+    result: null

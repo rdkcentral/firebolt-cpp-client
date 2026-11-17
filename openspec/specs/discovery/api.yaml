@@ -1,0 +1,62 @@
+# Discovery API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Discovery
+header: include/firebolt/discovery.h
+interface: Firebolt::Discovery::IDiscovery
+description: |-
+  Your App likely wants to integrate with the Platform's discovery capabilities. For example to add a "Watch Next" tile that links to your app from the platform's home screen.
+
+  Getting access to this information requires to connect to lower level APIs made available by the platform. Since implementations differ between operators and platforms, the Firebolt SDK offers a Discovery module, that exposes a generic, agnostic interface to the developer.
+
+  Under the hood, an underlaying transport layer will then take care of calling the right APIs for the actual platform implementation that your App is running on.
+
+  The Discovery plugin is used to _send_ information to the Platform.
+
+  ### Localization
+  Apps should provide all user-facing strings in the device's language, as specified by the Firebolt `Localization.language` property.
+
+  Apps should provide prices in the same currency presented in the app. If multiple currencies are supported in the app, the app should provide prices in the user's current default currency.
+types:
+- name: Policies.AgePolicy
+  schema:
+    title: AgePolicy
+    description: The policy that describes various age groups to which content is directed. See distributor documentation for further details.
+    anyOf:
+    - {type: string}
+    - type: string
+      enum: ['app:adult', 'app:child', 'app:teen']
+methods:
+- name: Discovery.watched
+  cpp: watched
+  note: polymorphic-reducer
+  summary: Notify the platform that content was partially or completely watched
+  params:
+  - {name: entityId, type: string, required: true, description: The entity Id of the watched content.}
+  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (percentage as (0-0.999) for VOD, number
+      of seconds for live)'}
+  - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, ISO 8601 Date/Time'}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
+      groups to which content may be directed.}
+  result: boolean
+  examples:
+  - params: {entityId: partner.com/entity/123, progress: 0.95, completed: true, watchedOn: '2021-04-23T18:25:43.511Z'}
+    result: true
+- name: Discovery.watchedV2
+  cpp: watchedV2
+  note: polymorphic-reducer
+  summary: Notify the platform that content was partially or completely watched
+  params:
+  - {name: entityId, type: string, required: true, description: The entity Id of the watched content.}
+  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (percentage as (0-0.999) for VOD, number
+      of seconds for live)'}
+  - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, ISO 8601 Date/Time'}
+  - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
+      groups to which content may be directed.}
+  result: 'null'
+  examples:
+  - params: {entityId: partner.com/entity/123, progress: 0.95, completed: true, watchedOn: '2021-04-23T18:25:43.511Z'}
+    result: null

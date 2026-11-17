@@ -1,0 +1,24 @@
+# Stats API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Stats
+header: include/firebolt/stats.h
+interface: Firebolt::Stats::IStats
+description: Provides methods to retrieve application-level system information.
+types:
+- name: MemoryUsage
+  type: object
+  fields:
+  - {name: userMemoryUsed, type: integer, minimum: 0, required: true, description: 'User memory currently used, in bytes.'}
+  - {name: userMemoryLimit, type: integer, minimum: 0, required: true, description: 'Maximum user memory available, in bytes.'}
+  - {name: gpuMemoryUsed, type: integer, minimum: 0, required: true, description: 'GPU memory currently used, in bytes.'}
+  - {name: gpuMemoryLimit, type: integer, minimum: 0, required: true, description: 'Maximum GPU memory available, in bytes.'}
+  description: Describes current and maximum memory usage of the container.
+methods:
+- name: Stats.memoryUsage
+  cpp: memoryUsage
+  summary: Returns information about container memory usage in bytes.
+  result: MemoryUsage
+  examples:
+  - result: {userMemoryUsed: 126418944, userMemoryLimit: 807948288, gpuMemoryUsed: 353974272, gpuMemoryLimit: 922863616}

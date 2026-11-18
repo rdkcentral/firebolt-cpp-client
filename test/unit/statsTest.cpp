@@ -44,5 +44,7 @@ TEST_F(StatsUTest, MemoryUsage)
 TEST_F(StatsUTest, MemoryUsageBadResponse)
 {
     mock_with_response("Stats.memoryUsage", "bad_response");
-    ASSERT_FALSE(statsImpl_.memoryUsage()) << "StatsImpl::memoryUsage() did not return an error";
+    auto result = statsImpl_.memoryUsage();
+    ASSERT_FALSE(result) << "StatsImpl::memoryUsage() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

@@ -272,6 +272,9 @@ private:
     ::Firebolt::VideoOutput::QuantizationRangeValue quantizationRangeValue_;
 };
 
+// Firebolt 9 defines refreshRate and colorDepth as numbers, and the platform sends numbers. Text ("59.94") is still
+// accepted so that an older or differently serialising platform keeps working; the value must in every case be one of
+// the values defined by Firebolt 9.
 class RefreshRateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::RefreshRateValue>
 {
 public:

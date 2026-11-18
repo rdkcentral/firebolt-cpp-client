@@ -39,8 +39,48 @@ TEST_F(AdvertisingUTest, advertisingId)
     EXPECT_EQ(result->lmt, expectedValue["lmt"].get<std::string>());
 }
 
+TEST_F(AdvertisingUTest, acceptsAllDefinedIfaTypesAndLmtValues)
+{
+    for (const char* ifaType : {"dpid", "sspid", "sessionid"})
+    {
+        for (const char* lmt : {"0", "1"})
+        {
+            mock_with_response("Advertising.advertisingId",
+                               nlohmann::json{{"ifa", "bd87dd10-8d1d-4b93-b1a6-a8e5d410e400"},
+                                              {"ifa_type", ifaType},
+                                              {"lmt", lmt}});
+            auto result = advertisingImpl_.advertisingId();
+            ASSERT_TRUE(result) << ifaType << "/" << lmt;
+            EXPECT_EQ(result->ifa_type, ifaType);
+            EXPECT_EQ(result->lmt, lmt);
+        }
+    }
+}
+
+TEST_F(AdvertisingUTest, unknownIfaTypeReturnsInvalidParams)
+{
+    mock_with_response("Advertising.advertisingId", nlohmann::json{{"ifa", "bd87dd10-8d1d-4b93-b1a6-a8e5d410e400"},
+                                                                   {"ifa_type", "idfa"},
+                                                                   {"lmt", "0"}});
+    auto result = advertisingImpl_.advertisingId();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(AdvertisingUTest, unknownLmtReturnsInvalidParams)
+{
+    mock_with_response("Advertising.advertisingId", nlohmann::json{{"ifa", "bd87dd10-8d1d-4b93-b1a6-a8e5d410e400"},
+                                                                   {"ifa_type", "sspid"},
+                                                                   {"lmt", "2"}});
+    auto result = advertisingImpl_.advertisingId();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(AdvertisingUTest, advertisingTestBadResponse)
 {
     mock_with_response("Advertising.advertisingId", "bad_response");
-    ASSERT_FALSE(advertisingImpl_.advertisingId()) << "AdvertisingImpl::advertisingId() did not return an error";
+    auto result = advertisingImpl_.advertisingId();
+    ASSERT_FALSE(result) << "AdvertisingImpl::advertisingId() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

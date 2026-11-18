@@ -31,19 +31,22 @@ public:
     /**
      * @brief Notify the platform that content was partially or completely watched
      *
-     * @param[in]  entityId    : The entity Id of the watched content
-     * @param[in]  progress    : How much of the content has been watched (percentage as (0-0.999) for VOD, number of
-     *                           seconds for live)
+     * @param[in]  entityId    : The entity Id of the watched content; must not be empty
+     * @param[in]  progress    : How much of the content has been watched (0 to 0.99 for VOD, number of seconds
+     *                           for live)
      * @param[in]  completed   : Whether or not this viewing is considered "complete" per the app's definition thereof
-     * @param[in]  watchedOn   : The ISO 8601 timestamp of when the content was watched
+     * @param[in]  watchedOn   : The UTC timestamp of when the content was watched, "YYYY-MM-DDThh:mm:ss.sssZ"
+     *                           (whole seconds without the fraction are also accepted)
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
-     * @retval Whether the platform successfully recorded the watched notification, or an error
+     * @retval Whether the platform successfully recorded the watched notification, or an error. InvalidParams is
+     *         returned, without contacting the platform, if entityId is empty, progress is negative or not finite, or
+     *         watchedOn is not a valid UTC timestamp
      *
-     * @note   This method is retained for backward compatibility with the original Discovery spec.
-     *         Prefer watchedV2() for new integrations, which returns Result<void> and omits the
-     *         redundant boolean payload.
+     * @deprecated Retained only for existing applications. Firebolt 9 defines Discovery.watched with no return
+     *         value, which is what watchedV2() implements. Use watchedV2(); it will be renamed to watched() and this
+     *         method removed in a future release.
      */
     [[nodiscard]] virtual Result<bool> watched(const std::string& entityId, std::optional<double> progress,
                                                std::optional<bool> completed, std::optional<std::string> watchedOn,
@@ -52,15 +55,20 @@ public:
     /**
      * @brief Notify the platform that content was partially or completely watched
      *
-     * @param[in]  entityId    : The entity Id of the watched content
-     * @param[in]  progress    : How much of the content has been watched (percentage as (0-0.999) for VOD, number of
-     *                           seconds for live)
+     * @param[in]  entityId    : The entity Id of the watched content; must not be empty
+     * @param[in]  progress    : How much of the content has been watched (0 to 0.99 for VOD, number of seconds
+     *                           for live)
      * @param[in]  completed   : Whether or not this viewing is considered "complete" per the app's definition thereof
-     * @param[in]  watchedOn   : The ISO 8601 timestamp of when the content was watched
+     * @param[in]  watchedOn   : The UTC timestamp of when the content was watched, "YYYY-MM-DDThh:mm:ss.sssZ"
+     *                           (whole seconds without the fraction are also accepted)
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
-     * @retval An ok Result on success, or an error; no value is returned
+     * @retval An ok Result on success, or an error; no value is returned. InvalidParams is returned, without
+     *         contacting the platform, if entityId is empty, progress is negative or not finite, or watchedOn is not a
+     *         valid UTC timestamp
+     *
+     * @note   Matches the Firebolt 9 definition of Discovery.watched (no return value). Planned to replace watched().
      */
     [[nodiscard]] virtual Result<void> watchedV2(const std::string& entityId, std::optional<double> progress,
                                                  std::optional<bool> completed, std::optional<std::string> watchedOn,

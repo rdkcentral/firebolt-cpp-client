@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "firebolt/firebolt.h"
 #include "firebolt/videooutput.h"
+#include "firebolt/firebolt.h"
 #include "json_engine.h"
 #include "json_types/videooutput.h"
 #include "utils.h"
@@ -25,7 +25,7 @@
 #include <gtest/gtest.h>
 #include <mutex>
 
-class VideooutputGeneratedRuntimeCTest : public ::testing::Test
+class VideoOutputCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -42,7 +42,7 @@ protected:
     JsonEngine jsonEngine;
 };
 
-TEST_F(VideooutputGeneratedRuntimeCTest, ResolutionReturnsParsedValue)
+TEST_F(VideoOutputCTest, ResolutionReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.resolution");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().resolution();
@@ -52,7 +52,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, ResolutionReturnsParsedValue)
     EXPECT_EQ(result->width, expected.at("width").get<uint32_t>());
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, HdcpReturnsParsedValue)
+TEST_F(VideoOutputCTest, HdcpReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.hdcp");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().hdcp();
@@ -61,7 +61,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, HdcpReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::HdcpStateEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, CecStateReturnsParsedValue)
+TEST_F(VideoOutputCTest, CecStateReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.cecState");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().cecState();
@@ -70,7 +70,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, CecStateReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::CecStateValueEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, RefreshRateReturnsParsedNumericValue)
+TEST_F(VideoOutputCTest, RefreshRateReturnsParsedNumericValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.refreshRate");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().refreshRate();
@@ -80,7 +80,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, RefreshRateReturnsParsedNumericValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, ColorDepthReturnsParsedNumericValue)
+TEST_F(VideoOutputCTest, ColorDepthReturnsParsedNumericValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.colorDepth");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorDepth();
@@ -90,7 +90,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, ColorDepthReturnsParsedNumericValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D8);
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, ColorFormatReturnsParsedValue)
+TEST_F(VideoOutputCTest, ColorFormatReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.colorFormat");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorFormat();
@@ -99,7 +99,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, ColorFormatReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::ColorFormatValueEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, ColorimetryReturnsParsedValue)
+TEST_F(VideoOutputCTest, ColorimetryReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.colorimetry");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().colorimetry();
@@ -108,7 +108,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, ColorimetryReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::OutputColorimetryEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, DynamicRangeReturnsParsedValue)
+TEST_F(VideoOutputCTest, DynamicRangeReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.dynamicRange");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().dynamicRange();
@@ -117,7 +117,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, DynamicRangeReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::DynamicRangeValueEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, QuantizationRangeReturnsParsedValue)
+TEST_F(VideoOutputCTest, QuantizationRangeReturnsParsedValue)
 {
     const auto expected = jsonEngine.get_value("VideoOutput.quantizationRange");
     const auto result = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().quantizationRange();
@@ -126,7 +126,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, QuantizationRangeReturnsParsedValue)
     EXPECT_EQ(*result, Firebolt::VideoOutput::JsonData::QuantizationRangeValueEnum.at(expected.get<std::string>()));
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnResolutionChangedParsesWireObjectPayload)
+TEST_F(VideoOutputCTest, SubscribeOnResolutionChangedParsesWireObjectPayload)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnResolutionChanged(
         [&](const Firebolt::VideoOutput::VideoOutputResolution& value)
@@ -152,7 +152,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnResolutionChangedParsesWireO
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringPayload)
+TEST_F(VideoOutputCTest, SubscribeOnHdcpChangedParsesWireStringPayload)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnHdcpChanged(
         [&](const Firebolt::VideoOutput::HdcpState& value)
@@ -177,7 +177,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnHdcpChangedParsesWireStringP
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWireNumericPayload)
+TEST_F(VideoOutputCTest, SubscribeOnRefreshRateChangedParsesWireNumericPayload)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnRefreshRateChanged(
         [&](const Firebolt::VideoOutput::RefreshRateValue& value)
@@ -204,7 +204,7 @@ TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnRefreshRateChangedParsesWire
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(VideooutputGeneratedRuntimeCTest, SubscribeOnCecStateChangedParsesWireStringPayload)
+TEST_F(VideoOutputCTest, SubscribeOnCecStateChangedParsesWireStringPayload)
 {
     auto id = Firebolt::IFireboltAccessor::Instance().VideoOutputInterface().subscribeOnCecStateChanged(
         [&](const Firebolt::VideoOutput::CecStateValue& value)

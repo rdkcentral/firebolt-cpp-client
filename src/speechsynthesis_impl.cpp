@@ -17,12 +17,22 @@
  */
 
 #include "speechsynthesis_impl.h"
+#include "bcp47.h"
 #include "json_types/speechsynthesis.h"
 #include <firebolt/json_types.h>
 #include <firebolt/types.h>
 
 namespace Firebolt::SpeechSynthesis
 {
+namespace
+{
+bool isInRange(const std::optional<double>& value, double min, double max)
+{
+    // Written so that NaN is rejected
+    return !value || (*value >= min && *value <= max);
+}
+} // namespace
+
 SpeechSynthesisImpl::SpeechSynthesisImpl(Firebolt::Helpers::IHelper& helper)
     : helper_(helper),
       subscriptionManager_(helper, this)
@@ -34,6 +44,13 @@ Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::option
                                             std::optional<double> rate, std::optional<double> pitch,
                                             std::optional<bool> pii) const
 {
+    // Firebolt 9: lang is BCP 47, volume 0 to 1, rate 0.1 to 10, pitch 0 to 2 (all inclusive)
+    if ((lang && !Bcp47::isValid(*lang)) || !isInRange(volume, 0.0, 1.0) || !isInRange(rate, 0.1, 10.0) ||
+        !isInRange(pitch, 0.0, 2.0))
+    {
+        return Result<unsigned>{Error::InvalidParams};
+    }
+
     nlohmann::json params;
     params["text"] = text;
 

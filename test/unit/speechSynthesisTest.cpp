@@ -19,6 +19,7 @@
 #include "json_types/speechsynthesis.h"
 #include "mock_helper.h"
 #include "speechsynthesis_impl.h"
+#include <limits>
 
 class SpeechSynthesisUTest : public ::testing::Test, protected MockBase
 {
@@ -67,6 +68,38 @@ TEST_F(SpeechSynthesisUTest, speak_payloadMatchesContract)
     EXPECT_EQ(*result, 7U);
 }
 
+TEST_F(SpeechSynthesisUTest, speak_acceptsBoundaryValues)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+        .Times(2)
+        .WillRepeatedly(
+            Invoke([](const std::string&, const nlohmann::json&) { return Firebolt::Result<nlohmann::json>{1}; }));
+
+    EXPECT_TRUE(speechSynthesisImpl_.speak("t", std::nullopt, std::nullopt, 0.0, 0.1, 0.0));
+    EXPECT_TRUE(speechSynthesisImpl_.speak("t", std::nullopt, std::nullopt, 1.0, 10.0, 2.0));
+}
+
+TEST_F(SpeechSynthesisUTest, speak_rejectsInvalidArgumentsWithoutCallingPlatform)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _)).Times(0);
+    const std::optional<std::string> none;
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+
+    const auto expectInvalid = [](const auto& result)
+    {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    };
+    expectInvalid(speechSynthesisImpl_.speak("t", std::string("en--US")));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, -0.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, 1.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, nan));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, 0.09));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, 10.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, -0.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, 2.1));
+}
+
 TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
 {
     mock_with_response("SpeechSynthesis.speak", "not-a-number");
@@ -74,6 +107,8 @@ TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
     auto result = speechSynthesisImpl_.speak("Hello from speech synthesis");
 
     ASSERT_FALSE(result);
+
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(SpeechSynthesisUTest, voices)
@@ -122,6 +157,8 @@ TEST_F(SpeechSynthesisUTest, voices_invalidResponse)
     auto result = speechSynthesisImpl_.voices();
 
     ASSERT_FALSE(result);
+
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged)
@@ -166,6 +203,68 @@ TEST_F(SpeechSynthesisUTest, cancel_invokeError)
     auto result = speechSynthesisImpl_.cancel(static_cast<Firebolt::SpeechSynthesis::UtteranceId>(123));
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+namespace
+{
+constexpr auto appStateInvalid = static_cast<Firebolt::Error>(-50110);
+constexpr auto engineError = static_cast<Firebolt::Error>(-50130);
+} // namespace
+
+TEST_F(SpeechSynthesisUTest, speak_passesThroughPlatformSpecificErrors)
+{
+    for (const auto error : {appStateInvalid, engineError})
+    {
+        EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+            .WillOnce(Invoke([error](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                             { return Firebolt::Result<nlohmann::json>{error}; }));
+
+        auto result = speechSynthesisImpl_.speak("Hello");
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), error);
+    }
+}
+
+TEST_F(SpeechSynthesisUTest, voices_emptyListWhenNoEngineIsNotAnError)
+{
+    mock_with_response("SpeechSynthesis.voices", nlohmann::json::array());
+
+    auto result = speechSynthesisImpl_.voices();
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->empty());
+}
+
+TEST_F(SpeechSynthesisUTest, cancel_passesThroughEngineError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.cancel", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{engineError}));
+
+    auto result = speechSynthesisImpl_.cancel(1);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), engineError);
+}
+
+TEST_F(SpeechSynthesisUTest, pause_passesThroughEngineError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.pause", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{engineError}));
+
+    auto result = speechSynthesisImpl_.pause(1);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), engineError);
+}
+
+TEST_F(SpeechSynthesisUTest, resume_passesThroughPlatformSpecificErrors)
+{
+    for (const auto error : {appStateInvalid, engineError})
+    {
+        EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.resume", _))
+            .WillOnce(::testing::Return(Firebolt::Result<void>{error}));
+
+        auto result = speechSynthesisImpl_.resume(1);
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), error);
+    }
 }
 
 TEST_F(SpeechSynthesisUTest, pause)

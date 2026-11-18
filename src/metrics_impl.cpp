@@ -19,10 +19,43 @@
 #include "metrics_impl.h"
 #include "json_types/common.h"
 #include "json_types/metrics.h"
+#include <algorithm>
+#include <cctype>
 #include <firebolt/json_types.h>
 
 namespace Firebolt::Metrics
 {
+namespace
+{
+// Firebolt 9: schema is a URI. Checks the RFC 3986 shape "scheme:rest" with no whitespace or control characters.
+bool isUri(const std::string& value)
+{
+    const auto colon = value.find(':');
+    if (colon == std::string::npos || colon == 0 || colon + 1 == value.size())
+    {
+        return false;
+    }
+    if (!std::isalpha(static_cast<unsigned char>(value[0])))
+    {
+        return false;
+    }
+    for (size_t i = 0; i < colon; ++i)
+    {
+        const auto c = static_cast<unsigned char>(value[i]);
+        if (!std::isalnum(c) && c != '+' && c != '-' && c != '.')
+        {
+            return false;
+        }
+    }
+    return std::none_of(value.begin(), value.end(),
+                        [](char c)
+                        {
+                            return std::isspace(static_cast<unsigned char>(c)) ||
+                                   std::iscntrl(static_cast<unsigned char>(c));
+                        });
+}
+} // namespace
+
 MetricsImpl::MetricsImpl(Firebolt::Helpers::IHelper& helper)
     : helper_(helper)
 {
@@ -88,8 +121,14 @@ Result<void> MetricsImpl::error(const ErrorType type, const std::string& code, c
                                 const bool visible, const std::optional<std::map<std::string, std::string>>& parameters,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    const std::string typeName = Firebolt::JSON::toString(JsonData::ErrorTypeEnum, type);
+    if (typeName.empty())
+    {
+        return Result<void>{Error::InvalidParams}; // not one of the defined error types
+    }
+
     nlohmann::json jsonParameters;
-    jsonParameters["type"] = Firebolt::JSON::toString(JsonData::ErrorTypeEnum, type);
+    jsonParameters["type"] = typeName;
     jsonParameters["code"] = code;
     jsonParameters["description"] = description;
     jsonParameters["visible"] = visible;
@@ -240,6 +279,12 @@ Result<void> MetricsImpl::mediaEnded(const std::string& entityId, const std::opt
 Result<void> MetricsImpl::event(const std::string& schema, const std::string& data,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    // Firebolt 9: schema is a URI, data is a JSON document forwarded as given
+    if (!isUri(schema) || !nlohmann::json::accept(data))
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["schema"] = schema;
     parameters["data"] = data;

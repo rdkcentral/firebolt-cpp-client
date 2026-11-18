@@ -11,7 +11,7 @@ types:
   type: object
   fields:
   - {name: ifa, type: string, required: true, description: UUID conforming to IAB standard}
-  - {name: ifa_type, type: string, required: true, description: Source of the IFA as defined by IAB}
+  - {name: ifa_type, type: string, required: true, description: 'Source of the IFA as defined by IAB; one of dpid, sspid, sessionid'}
   - name: lmt
     type: string
     enum: ['0', '1']

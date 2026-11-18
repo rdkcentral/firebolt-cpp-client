@@ -428,7 +428,7 @@
 						"name": "Default Result",
 						"value": {
 							"ifa": "bd87dd10-8d1d-4b93-b1a6-a8e5d410e400",
-							"ifa_type": "idfa",
+							"ifa_type": "dpid",
 							"lmt": "0"
 						}
 					}
@@ -899,7 +899,7 @@
 				},
 				{
 					"name": "progress",
-					"summary": "How much of the content has been watched (percentage as (0-0.999) for VOD, number of seconds for live)",
+					"summary": "How much of the content has been watched (0 to 0.99 for VOD, number of seconds for live)",
 					"schema": {
 						"type": "number",
 						"minimum": 0
@@ -914,7 +914,7 @@
 				},
 				{
 					"name": "watchedOn",
-					"summary": "Date/Time the content was watched, ISO 8601 Date/Time",
+					"summary": "Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ",
 					"schema": {
 						"type": "string",
 						"format": "date-time"
@@ -1017,7 +1017,7 @@
 				},
 				{
 					"name": "progress",
-					"summary": "How much of the content has been watched (percentage as (0-0.999) for VOD, number of seconds for live)",
+					"summary": "How much of the content has been watched (0 to 0.99 for VOD, number of seconds for live)",
 					"schema": {
 						"type": "number",
 						"minimum": 0
@@ -1032,7 +1032,7 @@
 				},
 				{
 					"name": "watchedOn",
-					"summary": "Date/Time the content was watched, ISO 8601 Date/Time",
+					"summary": "Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ",
 					"schema": {
 						"type": "string",
 						"format": "date-time"
@@ -1476,7 +1476,7 @@
 					]
 				}
 			],
-			"summary": "Inform the platform that your app is minimally usable. This method is called automatically by `Lifecycle.ready()`",
+			"summary": "Inform the platform that the app is minimally usable",
 			"params": [],
 			"result": {
 				"name": "result",
@@ -1508,7 +1508,7 @@
 					]
 				}
 			],
-			"summary": "Log a sign in event, called by Discovery.signIn().",
+			"summary": "Log a sign in event",
 			"params": [],
 			"result": {
 				"name": "result",
@@ -1540,7 +1540,7 @@
 					]
 				}
 			],
-			"summary": "Log a sign out event, called by Discovery.signOut().",
+			"summary": "Log a sign out event",
 			"params": [],
 			"result": {
 				"name": "result",
@@ -2121,9 +2121,9 @@
 				},
 				{
 					"name": "target",
-					"summary": "Target destination of the seek, as a decimal percentage (0-0.999) for content with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.",
+					"summary": "Target destination of the seek",
 					"schema": {
-						"$ref": "#/components/schemas/MediaPosition"
+						"type": "number"
 					},
 					"required": true
 				},
@@ -2183,9 +2183,9 @@
 				},
 				{
 					"name": "position",
-					"summary": "Resulting position of the seek operation, as a decimal percentage (0-0.999) for content with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.",
+					"summary": "Resulting position of the seek operation",
 					"schema": {
-						"$ref": "#/components/schemas/MediaPosition"
+						"type": "number"
 					},
 					"required": true
 				},
@@ -2478,7 +2478,7 @@
 			},
 			"examples": [
 				{
-					"name": "Send foo event",
+					"name": "Send event",
 					"params": [
 						{
 							"name": "schema",
@@ -2486,7 +2486,7 @@
 						},
 						{
 							"name": "data",
-							"value": "foo"
+							"value": "{\"key\":\"value\"}"
 						}
 					],
 					"result": {
@@ -2654,43 +2654,43 @@
 					"required": true
 				},
 				{
-					"name": "callSign",
-					"summary": "Optional call sign for the app making the request",
+					"name": "callsign",
+					"summary": "Optional application call sign; required if setACL was called before speak",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "language",
-					"summary": "Optional language override as a BCP 47 locale tag",
+					"summary": "Optional language of the text as a BCP 47 tag",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "voice",
-					"summary": "Optional voice identifier",
+					"summary": "Optional voice identifier returned by getVoices",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "volume",
-					"summary": "Optional volume override",
+					"summary": "Optional speaking volume, float string from 0 to 1 inclusive; default 1",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "rate",
-					"summary": "Optional speech rate override",
+					"summary": "Optional speaking rate, float string from 0.1 to 10 inclusive; default 1",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "pitch",
-					"summary": "Optional pitch override",
+					"summary": "Optional speaking pitch, float string from 0 to 2 inclusive; default 1; not currently supported",
 					"schema": {
 						"type": "string"
 					}
@@ -2723,7 +2723,7 @@
 							"value": "I am a text waiting for speech."
 						},
 						{
-							"name": "callSign",
+							"name": "callsign",
 							"value": "AppA"
 						},
 						{
@@ -2736,15 +2736,15 @@
 						},
 						{
 							"name": "volume",
-							"value": "80"
+							"value": "0.8"
 						},
 						{
 							"name": "rate",
-							"value": "normal"
+							"value": "1"
 						},
 						{
 							"name": "pitch",
-							"value": "medium"
+							"value": "1"
 						}
 					],
 					"result": {
@@ -3017,10 +3017,12 @@
 		},
 		{
 			"name": "SpeechSynthesis.speak",
-			"summary": "Speak an utterance.",
+			"summary": "Requests the system to speak an utterance. Returns an utteranceId if the request is accepted, otherwise an error is returned. A successful new request is processed asynchronously: any utterance that is currently being spoken is interrupted and notified by onUtteranceEvent(interrupted), and events for the new request are raised using onUtteranceEvent",
+			"description": "For Voice Guidance, the app SHOULD either supply the text parameter as plain text and the lang parameter, or supply text as a well-formed SSML document. If text is plain text and lang is not supplied then the default speech synthesis language is used - this is not recommended usage",
 			"params": [
 				{
 					"name": "text",
+					"summary": "Plain text or a well-formed SSML document",
 					"schema": {
 						"type": "string"
 					},
@@ -3028,18 +3030,21 @@
 				},
 				{
 					"name": "lang",
+					"summary": "The language of the text in BCP 47",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "voice",
+					"summary": "A voice name as returned by the voices method",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "volume",
+					"summary": "The speaking volume, 0 (lowest) to 1 (highest) inclusive",
 					"schema": {
 						"type": "number",
 						"minimum": 0,
@@ -3048,6 +3053,7 @@
 				},
 				{
 					"name": "rate",
+					"summary": "The speaking rate, 0.1 (slowest) to 10 (fastest) inclusive",
 					"schema": {
 						"type": "number",
 						"minimum": 0.1,
@@ -3056,6 +3062,7 @@
 				},
 				{
 					"name": "pitch",
+					"summary": "The speaking pitch, 0 (lowest) to 2 (highest) inclusive",
 					"schema": {
 						"type": "number",
 						"minimum": 0,
@@ -3064,6 +3071,7 @@
 				},
 				{
 					"name": "pii",
+					"summary": "True if the text contains personally identifiable information, indicating that functionality such as logging and telemetry should be restricted, false if not set",
 					"schema": {
 						"type": "boolean"
 					}
@@ -3403,7 +3411,7 @@
 					]
 				}
 			],
-			"summary": "Notification of lifecycle state change, raised after the platform has transitioned the app/runtime to the new lifecycle state",
+			"summary": "Notification of lifecycle state change, raised after the platform has transitioned the app/runtime to the new lifecycle state. The list always carries exactly one lifecycle state change",
 			"params": [
 				{
 					"name": "listen",
@@ -3414,19 +3422,6 @@
 			],
 			"examples": [
 				{
-					"name": "App is active after being initialized",
-					"params": [
-						{
-							"name": "listen",
-							"value": true
-						}
-					],
-					"result": {
-						"name": "result",
-						"value": null
-					}
-				},
-				{
 					"name": "Single transition to paused state",
 					"params": [
 						{
@@ -3436,14 +3431,42 @@
 					],
 					"result": {
 						"name": "result",
-						"value": null
+						"value": [
+							{
+								"oldState": "initializing",
+								"newState": "paused"
+							}
+						]
+					}
+				},
+				{
+					"name": "Single transition to active state",
+					"params": [
+						{
+							"name": "listen",
+							"value": true
+						}
+					],
+					"result": {
+						"name": "result",
+						"value": [
+							{
+								"oldState": "paused",
+								"newState": "active"
+							}
+						]
 					}
 				}
 			],
 			"result": {
 				"name": "result",
 				"schema": {
-					"type": "null"
+					"type": "array",
+					"minItems": 1,
+					"maxItems": 1,
+					"items": {
+						"$ref": "#/components/schemas/StateChange"
+					}
 				}
 			}
 		},
@@ -4953,25 +4976,10 @@
 					"oldState": {
 						"$ref": "#/components/schemas/LifecycleState"
 					}
-				}
-			},
-			"MediaPosition": {
-				"title": "MediaPosition",
-				"description": "Represents a position inside playback content, as a decimal percentage (0-0.999) for content with a known duration, or an integer number of seconds (0-86400) for content with an unknown duration.",
-				"oneOf": [
-					{
-						"const": 0
-					},
-					{
-						"type": "number",
-						"exclusiveMinimum": 0,
-						"exclusiveMaximum": 1
-					},
-					{
-						"type": "integer",
-						"minimum": 1,
-						"maximum": 86400
-					}
+				},
+				"required": [
+					"oldState",
+					"newState"
 				]
 			},
 			"ErrorType": {
@@ -4983,27 +4991,6 @@
 					"restriction",
 					"entitlement",
 					"other"
-				]
-			},
-			"EventObjectPrimitives": {
-				"title": "EventObjectPrimitives",
-				"anyOf": [
-					{
-						"type": "string",
-						"maxLength": 256
-					},
-					{
-						"type": "number"
-					},
-					{
-						"type": "integer"
-					},
-					{
-						"type": "boolean"
-					},
-					{
-						"type": "null"
-					}
 				]
 			},
 			"Connected": {
@@ -5043,22 +5030,6 @@
 					"gpuMemoryLimit"
 				]
 			},
-			"TTSEnabled": {
-				"title": "TTSEnabled",
-				"type": "object",
-				"required": [
-					"TTS_Status",
-					"isenabled"
-				],
-				"properties": {
-					"TTS_Status": {
-						"$ref": "#/components/schemas/TTSStatus"
-					},
-					"isenabled": {
-						"type": "boolean"
-					}
-				}
-			},
 			"ListVoicesResponse": {
 				"title": "ListVoicesResponse",
 				"type": "object",
@@ -5075,88 +5046,6 @@
 						"items": {
 							"type": "string"
 						}
-					}
-				}
-			},
-			"TTSConfiguration": {
-				"title": "TTSConfiguration",
-				"type": "object",
-				"required": [
-					"success"
-				],
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"ttsendpoint": {
-						"type": "string",
-						"description": "URL for Text to Speech API"
-					},
-					"ttsendpointsecured": {
-						"type": "string",
-						"description": "Secure URL for Text to Speech API"
-					},
-					"language": {
-						"type": "string",
-						"description": "Language used by Text to speech"
-					},
-					"voice": {
-						"type": "string",
-						"description": "Voice used by Text to speech"
-					},
-					"volume": {
-						"type": "integer",
-						"description": "Volume for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"primvolduckpercent": {
-						"type": "integer",
-						"description": "Prime Volume duck percent for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"rate": {
-						"type": "integer",
-						"description": "Speech rate for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"speechrate": {
-						"description": "Rate for speech",
-						"$ref": "#/components/schemas/SpeechRate"
-					},
-					"fallbacktext": {
-						"description": "Fallback text for TTS",
-						"$ref": "#/components/schemas/FallbackText"
-					}
-				},
-				"examples": [
-					{}
-				]
-			},
-			"SpeechRate": {
-				"title": "SpeechRate",
-				"type": "string",
-				"enum": [
-					"slow",
-					"medium",
-					"fast",
-					"faster",
-					"fastest"
-				]
-			},
-			"FallbackText": {
-				"title": "FallbackText",
-				"type": "object",
-				"properties": {
-					"scenario": {
-						"type": "string",
-						"description": "Scenario for fallback Text"
-					},
-					"value": {
-						"type": "string",
-						"description": "Value for fallback Text"
 					}
 				}
 			},
@@ -5245,30 +5134,6 @@
 				"required": [
 					"TTS_Status",
 					"success"
-				]
-			},
-			"TTSState": {
-				"title": "TTSState",
-				"type": "object",
-				"properties": {
-					"state": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"state"
-				]
-			},
-			"TTSVoice": {
-				"title": "TTSVoice",
-				"type": "object",
-				"properties": {
-					"voice": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"voice"
 				]
 			}
 		}
@@ -5395,17 +5260,7 @@
 			"FlatMap": {
 				"type": "object",
 				"additionalProperties": {
-					"oneOf": [
-						{
-							"type": "string"
-						},
-						{
-							"type": "number"
-						},
-						{
-							"type": "boolean"
-						}
-					]
+					"type": "string"
 				}
 			}
 		}

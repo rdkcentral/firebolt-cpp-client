@@ -17,10 +17,44 @@
  */
 
 #include "texttospeech_impl.h"
+#include "bcp47.h"
 #include "json_types/texttospeech.h"
+
+#include <algorithm>
+#include <cmath>
+#include <locale>
+#include <sstream>
 
 namespace Firebolt::TextToSpeech
 {
+namespace
+{
+// Accepts only an unsigned plain decimal number (digits and at most one '.'; no sign, exponent or spaces) within [min, max].
+bool isNumberInRange(const std::string& value, double min, double max)
+{
+    if (std::count(value.begin(), value.end(), '.') > 1 || value.find_first_not_of("0123456789.") != std::string::npos ||
+        value.find_first_of("0123456789") == std::string::npos)
+    {
+        return false;
+    }
+
+    std::istringstream stream(value);
+    stream.imbue(std::locale::classic());
+    stream >> std::noskipws;
+    double number = 0.0;
+    stream >> number;
+    return !stream.fail() && stream.peek() == std::char_traits<char>::eof() && std::isfinite(number) && number >= min &&
+           number <= max;
+}
+
+bool isValidSpeakOptions(const std::optional<std::string>& language, const std::optional<std::string>& volume,
+                         const std::optional<std::string>& rate, const std::optional<std::string>& pitch)
+{
+    return (!language || Bcp47::isValid(*language)) && (!volume || isNumberInRange(*volume, 0.0, 1.0)) &&
+           (!rate || isNumberInRange(*rate, 0.1, 10.0)) && (!pitch || isNumberInRange(*pitch, 0.0, 2.0));
+}
+} // namespace
+
 TextToSpeechImpl::TextToSpeechImpl(Firebolt::Helpers::IHelper& helper)
     : helper_(helper),
       subscriptionManager_(helper, this)
@@ -29,21 +63,31 @@ TextToSpeechImpl::TextToSpeechImpl(Firebolt::Helpers::IHelper& helper)
 
 Result<ListVoicesResponse> TextToSpeechImpl::listVoices(const std::string& language) const
 {
+    if (!Bcp47::isValid(language))
+    {
+        return Result<ListVoicesResponse>{Error::InvalidParams};
+    }
+
     nlohmann::json params;
     params["language"] = language;
     return helper_.get<JsonData::ListVoicesResponse, ListVoicesResponse>("TextToSpeech.listvoices", params);
 }
 
-Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, std::optional<std::string> callSign,
+Result<SpeechResponse> TextToSpeechImpl::speak(const std::string& text, std::optional<std::string> callsign,
                                                std::optional<std::string> language, std::optional<std::string> voice,
                                                std::optional<std::string> volume, std::optional<std::string> rate,
                                                std::optional<std::string> pitch) const
 {
+    if (!isValidSpeakOptions(language, volume, rate, pitch))
+    {
+        return Result<SpeechResponse>{Error::InvalidParams};
+    }
+
     nlohmann::json params;
     params["text"] = text;
-    if (callSign)
+    if (callsign)
     {
-        params["callSign"] = *callSign;
+        params["callsign"] = *callsign;
     }
     if (language)
     {

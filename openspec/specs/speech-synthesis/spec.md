@@ -44,3 +44,25 @@ An utterance event SHALL carry `utteranceId` and an `event` from the known set (
 #### Scenario: Unknown event
 - **WHEN** the platform sends an event name that is not in the known set
 - **THEN** the payload is rejected
+
+### Requirement: Platform errors pass through
+The client SHALL return platform errors unchanged and SHALL NOT create them. Firebolt 9 defines the specific errors -50110 (app state invalid, requires focus; `speak`, `resume`) and -50130 (speech synthesis engine error; `speak`, `cancel`, `pause`, `resume`). `voices` SHALL return an empty list, not an error, when no speech synthesis engine is available.
+
+#### Scenario: Engine error
+- **WHEN** the platform answers `SpeechSynthesis.speak` with error -50130
+- **THEN** the caller receives that same error code
+
+#### Scenario: No engine for voices
+- **WHEN** the platform answers `SpeechSynthesis.voices` with an empty list
+- **THEN** the caller receives an empty list as a successful result
+
+### Requirement: Speak arguments are checked
+`speak` SHALL return `InvalidParams`, without making a platform request, when `lang` is not a syntactically valid BCP 47 tag, or when `volume` is outside 0 to 1, `rate` outside 0.1 to 10, or `pitch` outside 0 to 2 (inclusive; NaN is rejected). `text` and `voice` are not checked by the client.
+
+#### Scenario: Value out of range
+- **WHEN** the caller calls speak with `volume` 1.1
+- **THEN** the caller receives `InvalidParams` and no request is sent
+
+#### Scenario: Boundary values
+- **WHEN** the caller calls speak with volume 0, rate 0.1 and pitch 2
+- **THEN** the request is sent

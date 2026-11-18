@@ -41,8 +41,9 @@ TEST_F(AccessibilityUTest, AudioDescription)
 TEST_F(AccessibilityUTest, AudioDescriptionBadResponse)
 {
     mock_with_response("Accessibility.audioDescription", "invalid_response");
-    ASSERT_FALSE(accessibilityImpl_.audioDescription())
-        << "AccessibilityImpl::audioDescription() did not return an error";
+    auto result = accessibilityImpl_.audioDescription();
+    ASSERT_FALSE(result) << "AccessibilityImpl::audioDescription() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(AccessibilityUTest, SubscribeOnAudioDescriptionChanged)
@@ -73,8 +74,9 @@ TEST_F(AccessibilityUTest, ClosedCaptionsSettings)
 TEST_F(AccessibilityUTest, ClosedCaptionsSettingsBadResponse)
 {
     mock_with_response("Accessibility.closedCaptionsSettings", "invalid_response");
-    ASSERT_FALSE(accessibilityImpl_.closedCaptionsSettings())
-        << "AccessibilityImpl::closedCaptionsSettings() did not return an error";
+    auto result = accessibilityImpl_.closedCaptionsSettings();
+    ASSERT_FALSE(result) << "AccessibilityImpl::closedCaptionsSettings() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(AccessibilityUTest, SubscribeOnClosedCaptionsSettingsChanged)
@@ -106,7 +108,9 @@ TEST_F(AccessibilityUTest, HighContrastUI)
 TEST_F(AccessibilityUTest, HighContrastUIBadResponse)
 {
     mock_with_response("Accessibility.highContrastUI", "invalid_response");
-    ASSERT_FALSE(accessibilityImpl_.highContrastUI()) << "AccessibilityImpl::highContrastUI() did not return an error";
+    auto result = accessibilityImpl_.highContrastUI();
+    ASSERT_FALSE(result) << "AccessibilityImpl::highContrastUI() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(AccessibilityUTest, SubscribeOnHighContrastUIChanged)
@@ -146,8 +150,9 @@ TEST_F(AccessibilityUTest, VoiceGuidanceSettingsPartial)
 TEST_F(AccessibilityUTest, VoiceGuidanceSettingsBadResponse)
 {
     mock_with_response("Accessibility.voiceGuidanceSettings", "invalid_response");
-    ASSERT_FALSE(accessibilityImpl_.voiceGuidanceSettings())
-        << "AccessibilityImpl::voiceGuidanceSettings() did not return an error";
+    auto result = accessibilityImpl_.voiceGuidanceSettings();
+    ASSERT_FALSE(result) << "AccessibilityImpl::voiceGuidanceSettings() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(AccessibilityUTest, SubscribeOnVoiceGuidanceSettingsChanged)

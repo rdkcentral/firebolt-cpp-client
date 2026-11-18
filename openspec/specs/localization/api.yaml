@@ -1,0 +1,49 @@
+# Localization API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Localization
+header: include/firebolt/localization.h
+interface: Firebolt::Localization::ILocalization
+description: Methods for accessing location and language preferences.
+types:
+- {name: Localization.CountryCode, type: string, pattern: '^[A-Z]{2}$'}
+- {name: Localization.ISO639_2Language, type: string, pattern: '^[a-z]{3}$'}
+- {name: Localization.Locale, type: string, pattern: '^[a-zA-Z]+([a-zA-Z0-9\-]*)$'}
+methods:
+- name: Localization.country
+  cpp: country
+  kind: property
+  summary: Returns the ISO 3166-1 alpha-2 code for the country device is located in.
+  result: Localization.CountryCode
+  examples:
+  - {result: US}
+- name: Localization.preferredAudioLanguages
+  cpp: preferredAudioLanguages
+  kind: property
+  summary: Returns a list of ISO 639-2/B codes for the preferred audio languages on this device.
+  result: array<Localization.ISO639_2Language>
+  examples:
+  - result: [spa, eng]
+- name: Localization.presentationLanguage
+  cpp: presentationLanguage
+  kind: property
+  summary: Get the *full* BCP 47 code, including script, region, variant, etc., for the preferred locale
+  result: Localization.Locale
+  examples:
+  - {result: en-US}
+- name: Localization.timeZone
+  cpp: timeZone
+  kind: property
+  summary: Get the IANA timezone of the device.
+  result: string
+  examples:
+  - {result: America/New_York}
+- {name: Localization.onCountryChanged, cpp: subscribeOnCountryChanged, kind: event, summary: Returns the ISO 3166-1 alpha-2 code for the country
+    device is located in., payload_of: Localization.country, result: Localization.CountryCode}
+- {name: Localization.onPreferredAudioLanguagesChanged, cpp: subscribeOnPreferredAudioLanguagesChanged, kind: event, summary: Returns a list of
+    ISO 639-2/B codes for the preferred audio languages on this device., payload_of: Localization.preferredAudioLanguages, result: array<Localization.ISO639_2Language>}
+- {name: Localization.onPresentationLanguageChanged, cpp: subscribeOnPresentationLanguageChanged, kind: event, summary: 'Get the *full* BCP 47
+    code, including script, region, variant, etc., for the preferred locale', payload_of: Localization.presentationLanguage, result: Localization.Locale}
+- {name: Localization.onTimeZoneChanged, cpp: subscribeOnTimeZoneChanged, kind: event, summary: Get the IANA timezone of the device., payload_of: Localization.timeZone,
+  result: string}

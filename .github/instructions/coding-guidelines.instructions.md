@@ -599,7 +599,7 @@ The following patterns are explicitly wrong for this codebase. Each entry notes 
 | AP-13 | Defining a new header without `#pragma once` | New headers use `#pragma once`; `#ifndef` guards exist only in the `actions` and `videooutput` modules (§3.1) |
 | AP-14 | Large structural rewrites of `actions` / `videooutput` files before provenance is confirmed | They may be generator-originated (§12.1); small targeted edits are fine and have precedent |
 | AP-15 | Treating `./lint.sh` printing "Formatting OK" as proof of a clean format on macOS/Docker | The script pipes `git ls-files` into `xargs` without `pipefail`; if Git rejects the repo as "dubious ownership", zero files are checked. Confirm the file count (§17) |
-| AP-16 | Regenerating `docs/openrpc/the-spec/*.json` (`npm run the-spec`) and committing without diffing | The per-module sources under `docs/openrpc/openrpc/` use different TextToSpeech event names (`onWillspeak`) than the merged fixture and client (`onWillSpeak`). Blind regeneration can break component tests (§18, O-5) |
+| AP-16 | Treating `docs/openrpc/the-spec/*.json` as generated output | These files are hand-maintained. The old generator inputs (per-module sources, `template/`, `schemas/`, `package.json`) were stale and have been removed. Edit the JSON directly and keep it consistent with the client (§18, O-5) |
 
 ---
 
@@ -612,7 +612,7 @@ The following items are inferred from code patterns where no explicit policy doc
 | A-1 | `FIREBOLT_LOG_*` macros come from `FireboltTransport`. Individual module impls intentionally omit logging — inferred from the absence of any logging in all 15 `*_impl.cpp` files. |
 | A-2 | The `using namespace Firebolt::Helpers;` pattern in `stats_impl.cpp` and `lifecycle_impl.cpp` is incidental rather than policy — inferred from its absence in the other 13 impl files. |
 | A-3 | The non-`explicit` constructors of `StatsImpl`, `LifecycleImpl`, and `LocalizationImpl`, and the out-of-line empty destructors of `StatsImpl` and `LifecycleImpl`, are legacy remnants. All other impls use `explicit` and `= default`. Locations: `src/stats_impl.h`, `src/lifecycle_impl.h`, `src/localization_impl.h`. |
-| A-4 | TextToSpeech event wire names are camelCase (`onWillSpeak`, `onSpeechStart`, ...) as used in `src/texttospeech_impl.cpp` and `the-spec/firebolt-open-rpc.json`. Commit `89cb7fc` ("Fix TTS event wire names to use camelCase") corrected earlier lowercase names. The per-module source `docs/openrpc/openrpc/text_to_speech.json` still has lowercase names — see §18, O-5. |
+| A-4 | TextToSpeech event wire names are camelCase (`onWillSpeak`, `onSpeechStart`, ...) as used in `src/texttospeech_impl.cpp` and `the-spec/firebolt-open-rpc.json`. Commit `89cb7fc` ("Fix TTS event wire names to use camelCase") corrected earlier lowercase names. |
 
 ---
 
@@ -664,7 +664,7 @@ Each item is unverified or unresolved. Do not "fix" these by assumption; confirm
 | O-2 | Client methods that are not in the spec | `Device.setOsName`, `Device.setOsVersion`; `Discovery.watchedV2`; extra optional `TextToSpeech.speak` parameters (`callSign`, `language`, `voice`, `volume`, `rate`, `pitch`) appear in the fixture but spec #73 lists only `text` | Confirm they are intended extensions or align to the spec |
 | O-3 | `Discovery.watched` shape | Spec #22 returns None. `watched()` returns `Result<bool>` (fixture agrees); `watchedV2()` returns `Result<void>` but invokes wire method `"Discovery.watched"` (unit tests assert this), while the fixture defines a separate `Discovery.watchedV2` returning null | Decide the canonical wire method and return type |
 | O-4 | Stats type width | Spec #72 says 32-bit `unsigned`; `Stats::MemoryInfo` and `json_types/stats.h` use `uint64_t` (bytes, no conversion) | Confirm `uint64_t` is intended; update spec or code |
-| O-5 | TextToSpeech event names diverge between OpenRPC sources | Per-module `docs/openrpc/openrpc/text_to_speech.json` uses `onWillspeak`/`onSpeechstart`/... (`x-event`); the tracked merged fixture `docs/openrpc/the-spec/firebolt-open-rpc.json` and the client use `onWillSpeak`/`onSpeechStart`/... The merged fixture appears to be edited directly | Define the official regeneration process (`npm run the-spec` in `docs/openrpc`), fix the sources, or document that the merged file is hand-maintained |
+| O-5 | ~~TextToSpeech event names diverge between OpenRPC sources~~ Resolved | The stale per-module sources and generator setup were removed; `docs/openrpc/the-spec/*.json` is hand-maintained and TextToSpeech matches the client | None |
 | O-6 | Event validation rule in mock-firebolt (§11.3) is incomplete | `Lifecycle2.onStateChanged` has a `null` result schema and no `x-subscriber-for`, yet its component tests deliver payloads | Confirm validation behaviour at the pinned mock revision |
 | O-7 | Canonical scalar event payload form | Both `{"value": x}` and bare `x` are used in component tests | Confirm what the mock/gateway emit on the real wire |
 | O-8 | Spec error semantics | Spec lists codes (-32601, -40300, -32602, -32100, -50100) and unassigned `-xxxxx` for *App state invalid*, *Speech synthesis engine error*, *Wrong device class* | Verify how these map to `Firebolt::Error` (defined in the transport dependency, not in this repo) |

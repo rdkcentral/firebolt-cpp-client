@@ -1,0 +1,20 @@
+# Network API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: Network
+header: include/firebolt/network.h
+interface: Firebolt::Network::INetwork
+description: Methods for accessing network information.
+types:
+- {name: Connected, type: boolean, description: Indicates whether the device currently has a usable network connection.}
+methods:
+- name: Network.connected
+  cpp: connected
+  kind: property
+  summary: Returns whether the device currently has a usable network connection.
+  result: Connected
+  examples:
+  - {result: true}
+- {name: Network.onConnectedChanged, cpp: subscribeOnConnectedChanged, kind: event, summary: Returns whether the device currently has a usable
+    network connection., payload_of: Network.connected, result: Connected}

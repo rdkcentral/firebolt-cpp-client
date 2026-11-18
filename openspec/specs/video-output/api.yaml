@@ -1,0 +1,119 @@
+# VideoOutput API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: VideoOutput
+header: include/firebolt/videooutput.h
+interface: Firebolt::VideoOutput::IVideoOutput
+methods:
+- name: VideoOutput.resolution
+  cpp: resolution
+  summary: Returns the resolution for the active video output
+  result:
+    type: object
+    fields:
+    - {name: height, type: integer, minimum: 0, required: true}
+    - {name: width, type: integer, minimum: 0, required: true}
+  examples:
+  - result: {height: 1080, width: 1920}
+- name: VideoOutput.hdcp
+  cpp: hdcp
+  kind: property
+  summary: Returns HDCP state for the active video output
+  result:
+    type: string
+    enum: [direct, hdcp1.4, hdcp2.2, none]
+  examples:
+  - {result: hdcp1.4}
+- name: VideoOutput.cecState
+  cpp: cecState
+  kind: property
+  summary: Returns CEC state for the active video output
+  result:
+    type: string
+    enum: [active, inactive, unsupported]
+  examples:
+  - {result: inactive}
+- name: VideoOutput.refreshRate
+  cpp: refreshRate
+  kind: property
+  summary: Returns refresh rate for the active video output
+  result:
+    type: number
+    enum: [0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60]
+  examples:
+  - {result: 59.94}
+- name: VideoOutput.colorDepth
+  cpp: colorDepth
+  summary: Returns color depth for the active video output
+  result:
+    type: integer
+    enum: [0, 8, 10, 12]
+  examples:
+  - {result: 8}
+- name: VideoOutput.colorFormat
+  cpp: colorFormat
+  summary: Returns color format for the active video output
+  result:
+    type: string
+    enum: [ycbcr420, ycbcr422, ycbcr444, rgb444, none]
+  examples:
+  - {result: ycbcr422}
+- name: VideoOutput.colorimetry
+  cpp: colorimetry
+  summary: Returns colorimetry for the active video output
+  result:
+    type: string
+    enum: [bt2020rgb, bt2020ycc, bt709, oprgb, none]
+  examples:
+  - {result: bt709}
+- name: VideoOutput.dynamicRange
+  cpp: dynamicRange
+  summary: Returns dynamic range for the active video output
+  result:
+    type: string
+    enum: [hdr10, hdr10plus, dolbyVision, hlg, sdr, none]
+  examples:
+  - {result: sdr}
+- name: VideoOutput.quantizationRange
+  cpp: quantizationRange
+  summary: Returns quantization range for the active video output
+  result:
+    type: string
+    enum: [limited, full, none]
+  examples:
+  - {result: limited}
+- name: VideoOutput.onHdcpChanged
+  cpp: subscribeOnHdcpChanged
+  kind: event
+  summary: Returns HDCP state changes for the active video output
+  payload_of: VideoOutput.hdcp
+  result:
+    type: string
+    enum: [direct, hdcp1.4, hdcp2.2, none]
+- name: VideoOutput.onCecStateChanged
+  cpp: subscribeOnCecStateChanged
+  kind: event
+  summary: Returns CEC state changes for the active video output
+  payload_of: VideoOutput.cecState
+  result:
+    type: string
+    enum: [active, inactive, unsupported]
+- name: VideoOutput.onRefreshRateChanged
+  cpp: subscribeOnRefreshRateChanged
+  kind: event
+  summary: Returns refresh rate changes for the active video output
+  payload_of: VideoOutput.refreshRate
+  result:
+    type: number
+    enum: [0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60]
+- name: VideoOutput.onResolutionChanged
+  cpp: subscribeOnResolutionChanged
+  kind: event
+  summary: Returns resolution changes for the active video output
+  payload_of: VideoOutput.resolution
+  result:
+    type: object
+    fields:
+    - {name: height, type: integer, minimum: 0, required: true}
+    - {name: width, type: integer, minimum: 0, required: true}

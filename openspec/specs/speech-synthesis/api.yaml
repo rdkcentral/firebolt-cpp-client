@@ -1,0 +1,91 @@
+# SpeechSynthesis API contract (shapes and wire names only). Behaviour lives in spec.md.
+# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
+# kind: omitted = call; property = read-only getter; event = subscription.
+
+module: SpeechSynthesis
+header: include/firebolt/speechsynthesis.h
+interface: Firebolt::SpeechSynthesis::ISpeechSynthesis
+description: A module for controlling speech synthesis over Firebolt.
+methods:
+- name: SpeechSynthesis.speak
+  cpp: speak
+  summary: Speak an utterance.
+  params:
+  - {name: text, type: string, required: true}
+  - {name: lang, type: string}
+  - {name: voice, type: string}
+  - {name: volume, type: number, minimum: 0, maximum: 1}
+  - {name: rate, type: number, minimum: 0.1, maximum: 10}
+  - {name: pitch, type: number, minimum: 0, maximum: 2}
+  - {name: pii, type: boolean}
+  result: {type: integer, minimum: 0}
+  examples:
+  - params: {text: I am a text waiting for speech., lang: en-US, voice: female-1, volume: 0.8, rate: 1, pitch: 1, pii: false}
+    result: 1
+- name: SpeechSynthesis.voices
+  cpp: voices
+  summary: Get available synthesis voices.
+  result_schema:
+    type: array
+    items:
+      type: object
+      required: [name, lang, default]
+      properties:
+        name: {type: string}
+        lang: {type: string}
+        default: {type: boolean}
+  examples:
+  - result:
+    - {name: Salli, lang: en-US, default: true}
+- name: SpeechSynthesis.cancel
+  cpp: cancel
+  summary: Cancel an utterance.
+  params:
+  - {name: utteranceId, type: integer, minimum: 0, required: true}
+  result: 'null'
+  examples:
+  - params: {utteranceId: 1}
+    result: null
+- name: SpeechSynthesis.pause
+  cpp: pause
+  summary: Pause an utterance.
+  params:
+  - {name: utteranceId, type: integer, minimum: 0, required: true}
+  result: 'null'
+  examples:
+  - params: {utteranceId: 1}
+    result: null
+- name: SpeechSynthesis.resume
+  cpp: resume
+  summary: Resume an utterance.
+  params:
+  - {name: utteranceId, type: integer, minimum: 0, required: true}
+  result: 'null'
+  examples:
+  - params: {utteranceId: 1}
+    result: null
+- name: SpeechSynthesis.onVoicesChanged
+  cpp: subscribeOnVoicesChanged
+  kind: event
+  summary: Notification when available voices change.
+  result_schema:
+    type: array
+    items:
+      type: object
+      required: [name, lang, default]
+      properties:
+        name: {type: string}
+        lang: {type: string}
+        default: {type: boolean}
+- name: SpeechSynthesis.onUtteranceEvent
+  cpp: subscribeOnUtteranceEvent
+  kind: event
+  summary: Notification for utterance lifecycle events.
+  result:
+    type: object
+    fields:
+    - {name: utteranceId, type: integer, minimum: 0, required: true}
+    - name: event
+      type: string
+      enum: [synthesisStarting, playbackStarting, paused, resumed, completed, interrupted, networkFailed, synthesisFailed, playbackFailed]
+      required: true

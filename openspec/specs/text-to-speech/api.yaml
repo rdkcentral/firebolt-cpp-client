@@ -67,15 +67,15 @@ methods:
     summary: Speak the utterance immediately. Any ongoing speech is interrupted.
     params:
       - { name: text, type: string, required: true, description: "Plain text or a well-formed SSML document." }
-      - { name: callSign, type: string, description: Call sign of the app making the request. }
-      - { name: language, type: string, description: Language override as a BCP 47 tag. }
-      - { name: voice, type: string, description: Voice identifier. }
-      - { name: volume, type: string, description: Volume override. }
-      - { name: rate, type: string, description: Speech rate override. }
-      - { name: pitch, type: string, description: Pitch override. }
+      - { name: callsign, type: string, description: "Application call sign; required if setACL was called before speak." }
+      - { name: language, type: string, description: "Language of the text as a BCP 47 tag; invalid syntax returns InvalidParams." }
+      - { name: voice, type: string, description: "Voice identifier returned by getVoices." }
+      - { name: volume, type: string, description: "Decimal string from 0 to 1 inclusive; default 1; invalid values return InvalidParams." }
+      - { name: rate, type: string, description: "Decimal string from 0.1 to 10 inclusive; default 1; invalid values return InvalidParams." }
+      - { name: pitch, type: string, description: "Decimal string from 0 to 2 inclusive; default 1; not currently supported by the platform; invalid values return InvalidParams." }
     result: SpeechResponse
     examples:
-      - params: { text: "I am a text waiting for speech.", callSign: AppA, language: en-US, voice: female-1, volume: "80", rate: normal, pitch: medium }
+      - params: { text: "I am a text waiting for speech.", callsign: AppA, language: en-US, voice: female-1, volume: "0.8", rate: "1", pitch: "1" }
         result: { speechid: 1, TTS_Status: 0, success: true }
 
   - name: TextToSpeech.pause

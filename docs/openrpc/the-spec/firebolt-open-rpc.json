@@ -2654,43 +2654,43 @@
 					"required": true
 				},
 				{
-					"name": "callSign",
-					"summary": "Optional call sign for the app making the request",
+					"name": "callsign",
+					"summary": "Optional application call sign; required if setACL was called before speak",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "language",
-					"summary": "Optional language override as a BCP 47 locale tag",
+					"summary": "Optional language of the text as a BCP 47 tag",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "voice",
-					"summary": "Optional voice identifier",
+					"summary": "Optional voice identifier returned by getVoices",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "volume",
-					"summary": "Optional volume override",
+					"summary": "Optional speaking volume, float string from 0 to 1 inclusive; default 1",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "rate",
-					"summary": "Optional speech rate override",
+					"summary": "Optional speaking rate, float string from 0.1 to 10 inclusive; default 1",
 					"schema": {
 						"type": "string"
 					}
 				},
 				{
 					"name": "pitch",
-					"summary": "Optional pitch override",
+					"summary": "Optional speaking pitch, float string from 0 to 2 inclusive; default 1; not currently supported",
 					"schema": {
 						"type": "string"
 					}
@@ -2723,7 +2723,7 @@
 							"value": "I am a text waiting for speech."
 						},
 						{
-							"name": "callSign",
+							"name": "callsign",
 							"value": "AppA"
 						},
 						{
@@ -2736,15 +2736,15 @@
 						},
 						{
 							"name": "volume",
-							"value": "80"
+							"value": "0.8"
 						},
 						{
 							"name": "rate",
-							"value": "normal"
+							"value": "1"
 						},
 						{
 							"name": "pitch",
-							"value": "medium"
+							"value": "1"
 						}
 					],
 					"result": {

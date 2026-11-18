@@ -1,12 +1,36 @@
 # text-to-speech Specification
 
 ## Purpose
-Behaviour of the C++ TextToSpeech client (`ITextToSpeech`). Method names, params, types and wire names are in `api.yaml` and are not repeated here. Methods are referred to by their wire name, for example `TextToSpeech.speak`.
+Behaviour of the C++ TextToSpeech client (`ITextToSpeech`). Method names, types and wire names are in `api.yaml`; the `speak` parameters are also listed below because their accepted values matter. Methods are referred to by their wire name, for example `TextToSpeech.speak`.
 
 ## Requirements
 
+### Requirement: Module access
+The client SHALL expose TextToSpeech through `IFireboltAccessor::TextToSpeechInterface()`, and SHALL remove all TextToSpeech subscriptions when the accessor removes all subscriptions.
+
+#### Scenario: Interface is available
+- **WHEN** the caller requests `TextToSpeechInterface()` from the accessor
+- **THEN** it receives the `ITextToSpeech` interface
+
+### Requirement: Speak parameters
+`TextToSpeech.speak` SHALL accept the following parameters. Only `text` is defined by Firebolt 9; the rest are defined by the Text To Speech Plugin contract.
+
+| Parameter | Required | Meaning | Accepted values |
+|---|---|---|---|
+| `text` | yes | Utterance | Plain text or a well-formed SSML document (not checked by the client) |
+| `callsign` | no | Application call sign | Any string; the platform requires it when `setACL` was called earlier |
+| `language` | no | Language of the text | BCP 47 tag |
+| `voice` | no | Voice name | A name returned by `listvoices` (not checked by the client) |
+| `volume` | no | Speaking volume | Decimal string, 0 to 1 inclusive, platform default 1 |
+| `rate` | no | Speaking rate | Decimal string, 0.1 to 10 inclusive, platform default 1 |
+| `pitch` | no | Speaking pitch | Decimal string, 0 to 2 inclusive, platform default 1 (not supported by the platform yet) |
+
+#### Scenario: Optional parameters omitted
+- **WHEN** the caller provides only `text`
+- **THEN** the request is valid and the platform applies its defaults
+
 ### Requirement: Speak request payload
-The client SHALL send `text` on every `TextToSpeech.speak` call, and SHALL send each optional argument (`callSign`, `language`, `voice`, `volume`, `rate`, `pitch`) only when the caller provided it.
+The client SHALL send `text` on every `TextToSpeech.speak` call, and SHALL send each optional argument (`callsign`, `language`, `voice`, `volume`, `rate`, `pitch`) only when the caller provided it.
 
 #### Scenario: Only text provided
 - **WHEN** the caller calls speak with text only
@@ -17,12 +41,12 @@ The client SHALL send `text` on every `TextToSpeech.speak` call, and SHALL send 
 - **THEN** the request contains `text`, `language` and `rate` and no other optional keys
 
 #### Scenario: Empty string is a provided value
-- **WHEN** the caller provides an empty string for `callSign` or `rate`
+- **WHEN** the caller provides an empty string for `callsign` or `voice`
 - **THEN** the request still contains that key with the empty string
 
 #### Scenario: Wire key spelling
 - **WHEN** the caller provides a call sign
-- **THEN** the request key is `callSign`, not `callsign`
+- **THEN** the request key is `callsign`
 
 ### Requirement: Speech id requests
 The client SHALL send the caller's id as the `speechid` param for `TextToSpeech.pause`, `TextToSpeech.resume`, `TextToSpeech.cancel` and `TextToSpeech.getspeechstate`.
@@ -31,12 +55,30 @@ The client SHALL send the caller's id as the `speechid` param for `TextToSpeech.
 - **WHEN** the caller calls pause with speech id 1
 - **THEN** the request is `TextToSpeech.pause` with `speechid` 1
 
-### Requirement: Voice list request
-The client SHALL send the caller's language as the `language` param for `TextToSpeech.listvoices`.
+### Requirement: Request arguments are validated
+The client SHALL return `InvalidParams`, without making a platform request, when:
+- the `language` of `TextToSpeech.listvoices`, or of `TextToSpeech.speak` when provided, is not a syntactically valid BCP 47 language tag;
+- the `volume`, `rate` or `pitch` of `TextToSpeech.speak`, when provided, is not a plain unsigned decimal number (empty text, signs, exponents, spaces, `nan`, `inf` and a decimal comma are not accepted) inside its accepted range in the table above.
+
+The client SHALL NOT check `text`, `callsign` or `voice`; the platform validates them.
 
 #### Scenario: List voices
 - **WHEN** the caller calls listVoices with "en-US"
 - **THEN** the request is `TextToSpeech.listvoices` with `language` "en-US"
+
+#### Scenario: Invalid language tag
+- **WHEN** the caller calls listVoices, or speak with a `language`, using a malformed BCP 47 language tag
+- **THEN** the caller receives `InvalidParams`
+- **AND** no platform request is made
+
+#### Scenario: Invalid volume, rate or pitch
+- **WHEN** the caller calls speak with `volume` "1.5", `rate` "fast" or `pitch` ""
+- **THEN** the caller receives `InvalidParams`
+- **AND** no platform request is made
+
+#### Scenario: Boundary values are accepted
+- **WHEN** the caller calls speak with `volume` "0", `rate` "0.1" and `pitch` "2"
+- **THEN** the request is sent
 
 ### Requirement: Responses are returned as typed values
 The client SHALL return each response as the typed struct for that method, with every field of the response copied from the wire, including `TTS_Status` and `success`.
@@ -55,6 +97,25 @@ When the underlying request fails, the client SHALL return that error to the cal
 #### Scenario: Speak fails
 - **WHEN** the request for speak returns a general error
 - **THEN** the caller receives that same error
+
+### Requirement: Invalid response status and state values are rejected
+The client SHALL return `InvalidParams` when a `TextToSpeech.getspeechstate` response omits `speechstate`, supplies a non-integer value, or supplies an integer outside the defined range 0 to 3. For every TextToSpeech response, `TTS_Status` SHALL be an integer in the defined range 0 to 3; other values SHALL return `InvalidParams`.
+
+#### Scenario: Missing speech state
+- **WHEN** the response omits `speechstate`
+- **THEN** the caller receives `InvalidParams`
+
+#### Scenario: Speech state has the wrong type
+- **WHEN** the response supplies a non-integer `speechstate`
+- **THEN** the caller receives `InvalidParams`
+
+#### Scenario: Speech state is unknown
+- **WHEN** the response supplies a `speechstate` outside 0 to 3
+- **THEN** the caller receives `InvalidParams`
+
+#### Scenario: TTS status is outside the defined range
+- **WHEN** a TextToSpeech response supplies `TTS_Status` outside 0 to 3
+- **THEN** the caller receives `InvalidParams`
 
 ### Requirement: Event subscriptions
 The client SHALL provide one subscribe function for each event in `api.yaml`. A subscription SHALL deliver the event's `speechid` to the caller's callback as a `SpeechIdEvent`, and SHALL return a `SubscriptionId`.

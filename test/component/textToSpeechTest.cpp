@@ -55,9 +55,8 @@ TEST_F(TextToSpeechCTest, speak_withAllOptionalArguments)
     auto speakResult =
         Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
                                                                               std::string("AppA"), std::string("en-US"),
-                                                                              std::string("female-1"),
-                                                                              std::string("80"), std::string("normal"),
-                                                                              std::string("medium"));
+                                                                              std::string("female-1"), std::string("0.8"),
+                                                                              std::string("1"), std::string("1"));
     ASSERT_TRUE(speakResult) << "Error on speak with all optional arguments";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");
@@ -72,7 +71,7 @@ TEST_F(TextToSpeechCTest, speak_withSelectedOptionalArguments)
         Firebolt::IFireboltAccessor::Instance().TextToSpeechInterface().speak("I am a text waiting for speech.",
                                                                               std::nullopt, std::string("en-US"),
                                                                               std::nullopt, std::nullopt,
-                                                                              std::string("normal"), std::nullopt);
+                                                                              std::string("1"), std::nullopt);
     ASSERT_TRUE(speakResult) << "Error on speak with selected optional arguments";
 
     auto expectedValue = jsonEngine.get_value("TextToSpeech.speak");

@@ -44,6 +44,14 @@ TEST_F(DisplayUTest, EdidEmptyWhenNoDisplayConnected)
     EXPECT_EQ(*result, "");
 }
 
+TEST_F(DisplayUTest, EdidBadResponse)
+{
+    mock_with_response("Display.edid", 12345);
+    auto result = displayImpl_.edid();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(DisplayUTest, MaxResolution)
 {
     mock("Display.maxResolution");
@@ -59,7 +67,9 @@ TEST_F(DisplayUTest, MaxResolution)
 TEST_F(DisplayUTest, MaxResolutionBadResponse)
 {
     mock_with_response("Display.maxResolution", "bad_response");
-    ASSERT_FALSE(displayImpl_.maxResolution()) << "DisplayImpl::maxResolution() did not return an error";
+    auto result = displayImpl_.maxResolution();
+    ASSERT_FALSE(result) << "DisplayImpl::maxResolution() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DisplayUTest, Size)
@@ -76,5 +86,7 @@ TEST_F(DisplayUTest, Size)
 TEST_F(DisplayUTest, SizeBadResponse)
 {
     mock_with_response("Display.size", "bad_response");
-    ASSERT_FALSE(displayImpl_.size()) << "DisplayImpl::size() did not return an error";
+    auto result = displayImpl_.size();
+    ASSERT_FALSE(result) << "DisplayImpl::size() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

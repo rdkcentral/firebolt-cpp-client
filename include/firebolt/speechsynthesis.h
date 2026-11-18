@@ -76,9 +76,10 @@ public:
      * @param[in] pii    : True if the text contains personally identifiable information, indicating that functionality
      *                     such as logging and telemetry should be restricted; false if not set
      *
-     * @retval The utteranceId if the request is accepted, otherwise an error. The platform may answer with the specific
-     *         errors -50110 (app state invalid, requires focus) or -50130 (speech synthesis engine error); the client
-     *         passes platform errors through unchanged.
+     * @retval The utteranceId if the request is accepted, otherwise an error. InvalidParams is returned, without
+     *         contacting the platform, if lang is not a valid BCP 47 tag or volume, rate or pitch is outside its range
+     *         (or not a number). The platform may answer with the specific errors -50110 (app state invalid, requires
+     * focus) or -50130 (speech synthesis engine error); the client passes platform errors through unchanged.
      */
     [[nodiscard]] virtual Result<unsigned> speak(const std::string& text, std::optional<std::string> lang = std::nullopt,
                                                  std::optional<std::string> voice = std::nullopt,

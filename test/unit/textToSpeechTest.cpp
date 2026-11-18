@@ -119,6 +119,32 @@ TEST(Bcp47Test, rejectsMalformedTags)
     }
 }
 
+TEST_F(TextToSpeechUTest, listVoicesBadResponse)
+{
+    mock_with_response("TextToSpeech.listvoices",
+                       nlohmann::json{{"TTS_Status", 0}, {"voices", "not-an-array-of-strings"}});
+    auto result = ttsImpl.listVoices("en-US");
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(TextToSpeechUTest, pauseResumeCancelBadResponse)
+{
+    EXPECT_CALL(mockHelper, getJson(::testing::_, ::testing::_))
+        .Times(3)
+        .WillRepeatedly(Invoke([](const std::string&, const nlohmann::json&)
+                               { return Firebolt::Result<nlohmann::json>{nlohmann::json{{"success", true}}}; }));
+
+    const auto expectInvalidParams = [](const auto& result)
+    {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    };
+    expectInvalidParams(ttsImpl.pause(1));
+    expectInvalidParams(ttsImpl.resume(1));
+    expectInvalidParams(ttsImpl.cancel(1));
+}
+
 TEST_F(TextToSpeechUTest, speak)
 {
     mock("TextToSpeech.speak");

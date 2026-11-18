@@ -36,8 +36,14 @@ LifecycleImpl::~LifecycleImpl() = default;
 
 Result<void> LifecycleImpl::close(const CloseType& reason) const
 {
+    const std::string typeName = Firebolt::JSON::toString(JsonData::CloseReasonEnum, reason);
+    if (typeName.empty())
+    {
+        return Result<void>{Error::InvalidParams}; // not one of the defined close types
+    }
+
     nlohmann::json params;
-    params["type"] = Firebolt::JSON::toString(JsonData::CloseReasonEnum, reason);
+    params["type"] = typeName;
     return helper_.invoke("Lifecycle2.close", params);
 }
 

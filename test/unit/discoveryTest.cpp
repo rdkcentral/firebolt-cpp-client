@@ -50,6 +50,14 @@ TEST_F(DiscoveryUTest, watched)
     EXPECT_EQ(boolJson.value(), *result);
 }
 
+TEST_F(DiscoveryUTest, watchedBadResponse)
+{
+    mock_with_response("Discovery.watched", "invalid_response");
+    auto result = discoveryImpl_.watched("content123", std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(DiscoveryUTest, watched_payload)
 {
     nlohmann::json expected;

@@ -37,6 +37,14 @@ TEST_F(NetworkUTest, Connected)
     EXPECT_EQ(*result, expectedValue.get<bool>());
 }
 
+TEST_F(NetworkUTest, ConnectedBadResponse)
+{
+    mock_with_response("Network.connected", "invalid_response");
+    auto result = networkImpl_.connected();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(NetworkUTest, SubscribeOnConnectedChanged)
 {
     nlohmann::json expectedValue = 1;

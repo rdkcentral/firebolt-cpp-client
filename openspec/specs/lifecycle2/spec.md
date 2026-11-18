@@ -59,3 +59,10 @@ An exception thrown by one subscriber's callback SHALL NOT stop delivery to othe
 #### Scenario: Unsubscribe and subscribe again
 - **WHEN** all subscriptions are removed and the caller subscribes again
 - **THEN** no earlier delivered state or pending suppression carries over
+
+### Requirement: Close type is checked
+`close` SHALL return `InvalidParams`, without making a platform request, when `type` is not one of `deactivate`, `unload`, `killReload` or `killReactivate`.
+
+#### Scenario: Undefined close type
+- **WHEN** the caller passes a `CloseType` value outside the defined set
+- **THEN** the caller receives `InvalidParams` and no request is sent

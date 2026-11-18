@@ -4993,27 +4993,6 @@
 					"other"
 				]
 			},
-			"EventObjectPrimitives": {
-				"title": "EventObjectPrimitives",
-				"anyOf": [
-					{
-						"type": "string",
-						"maxLength": 256
-					},
-					{
-						"type": "number"
-					},
-					{
-						"type": "integer"
-					},
-					{
-						"type": "boolean"
-					},
-					{
-						"type": "null"
-					}
-				]
-			},
 			"Connected": {
 				"type": "boolean",
 				"description": "Indicates whether the device currently has a usable network connection."
@@ -5051,22 +5030,6 @@
 					"gpuMemoryLimit"
 				]
 			},
-			"TTSEnabled": {
-				"title": "TTSEnabled",
-				"type": "object",
-				"required": [
-					"TTS_Status",
-					"isenabled"
-				],
-				"properties": {
-					"TTS_Status": {
-						"$ref": "#/components/schemas/TTSStatus"
-					},
-					"isenabled": {
-						"type": "boolean"
-					}
-				}
-			},
 			"ListVoicesResponse": {
 				"title": "ListVoicesResponse",
 				"type": "object",
@@ -5083,88 +5046,6 @@
 						"items": {
 							"type": "string"
 						}
-					}
-				}
-			},
-			"TTSConfiguration": {
-				"title": "TTSConfiguration",
-				"type": "object",
-				"required": [
-					"success"
-				],
-				"properties": {
-					"success": {
-						"type": "boolean"
-					},
-					"ttsendpoint": {
-						"type": "string",
-						"description": "URL for Text to Speech API"
-					},
-					"ttsendpointsecured": {
-						"type": "string",
-						"description": "Secure URL for Text to Speech API"
-					},
-					"language": {
-						"type": "string",
-						"description": "Language used by Text to speech"
-					},
-					"voice": {
-						"type": "string",
-						"description": "Voice used by Text to speech"
-					},
-					"volume": {
-						"type": "integer",
-						"description": "Volume for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"primvolduckpercent": {
-						"type": "integer",
-						"description": "Prime Volume duck percent for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"rate": {
-						"type": "integer",
-						"description": "Speech rate for Text to speech",
-						"minimum": 0,
-						"maximum": 100
-					},
-					"speechrate": {
-						"description": "Rate for speech",
-						"$ref": "#/components/schemas/SpeechRate"
-					},
-					"fallbacktext": {
-						"description": "Fallback text for TTS",
-						"$ref": "#/components/schemas/FallbackText"
-					}
-				},
-				"examples": [
-					{}
-				]
-			},
-			"SpeechRate": {
-				"title": "SpeechRate",
-				"type": "string",
-				"enum": [
-					"slow",
-					"medium",
-					"fast",
-					"faster",
-					"fastest"
-				]
-			},
-			"FallbackText": {
-				"title": "FallbackText",
-				"type": "object",
-				"properties": {
-					"scenario": {
-						"type": "string",
-						"description": "Scenario for fallback Text"
-					},
-					"value": {
-						"type": "string",
-						"description": "Value for fallback Text"
 					}
 				}
 			},
@@ -5253,30 +5134,6 @@
 				"required": [
 					"TTS_Status",
 					"success"
-				]
-			},
-			"TTSState": {
-				"title": "TTSState",
-				"type": "object",
-				"properties": {
-					"state": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"state"
-				]
-			},
-			"TTSVoice": {
-				"title": "TTSVoice",
-				"type": "object",
-				"properties": {
-					"voice": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"voice"
 				]
 			}
 		}

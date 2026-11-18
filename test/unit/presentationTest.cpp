@@ -41,7 +41,9 @@ TEST_F(PresentationUTest, Focused)
 TEST_F(PresentationUTest, FocusedBadResponse)
 {
     mock_with_response("Presentation.focused", "invalid_response");
-    ASSERT_FALSE(presentationImpl.focused()) << "Presentation::focused() did not return an error";
+    auto result = presentationImpl.focused();
+    ASSERT_FALSE(result) << "Presentation::focused() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(PresentationUTest, SubscribeOnFocusedChanged)

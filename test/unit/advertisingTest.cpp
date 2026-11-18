@@ -80,5 +80,7 @@ TEST_F(AdvertisingUTest, unknownLmtReturnsInvalidParams)
 TEST_F(AdvertisingUTest, advertisingTestBadResponse)
 {
     mock_with_response("Advertising.advertisingId", "bad_response");
-    ASSERT_FALSE(advertisingImpl_.advertisingId()) << "AdvertisingImpl::advertisingId() did not return an error";
+    auto result = advertisingImpl_.advertisingId();
+    ASSERT_FALSE(result) << "AdvertisingImpl::advertisingId() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }

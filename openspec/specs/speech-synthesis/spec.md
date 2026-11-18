@@ -55,3 +55,14 @@ The client SHALL return platform errors unchanged and SHALL NOT create them. Fir
 #### Scenario: No engine for voices
 - **WHEN** the platform answers `SpeechSynthesis.voices` with an empty list
 - **THEN** the caller receives an empty list as a successful result
+
+### Requirement: Speak arguments are checked
+`speak` SHALL return `InvalidParams`, without making a platform request, when `lang` is not a syntactically valid BCP 47 tag, or when `volume` is outside 0 to 1, `rate` outside 0.1 to 10, or `pitch` outside 0 to 2 (inclusive; NaN is rejected). `text` and `voice` are not checked by the client.
+
+#### Scenario: Value out of range
+- **WHEN** the caller calls speak with `volume` 1.1
+- **THEN** the caller receives `InvalidParams` and no request is sent
+
+#### Scenario: Boundary values
+- **WHEN** the caller calls speak with volume 0, rate 0.1 and pitch 2
+- **THEN** the request is sent

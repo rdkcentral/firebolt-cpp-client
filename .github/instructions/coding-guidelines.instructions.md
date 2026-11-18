@@ -148,7 +148,7 @@ After the change, run `./run-unit-tests.sh`, `./run-component-tests-local.sh`, a
 **Current practice (partial inconsistency — see note):**
 - Unit test class: `<Module>UTest` inheriting `::testing::Test` and `MockBase` (e.g., `DeviceUTest`, `AccessibilityUTest`).
 - Component test class: `<Module>CTest` inheriting `::testing::Test` (e.g., `DeviceCTest`, `LifecycleCTest`).
-- Exceptions, all in files named `*GeneratedTest.cpp` (see §12): `ActionsGeneratedUTest`, `ActionsGeneratedCTest`, `VideooutputGeneratedUTest`, and `VideooutputGeneratedRuntimeCTest`. `ActionsUTest` (in `test/unit/actionsTest.cpp`) follows the standard pattern. The `*GeneratedUTest` classes do not inherit `MockBase`.
+- Every module follows the pattern, including `actions` and `videooutput`: `ActionsUTest`/`ActionsCTest` (`actionsTest.cpp`) and `VideoOutputUTest`/`VideoOutputCTest` (`videoOutputTest.cpp`). The `*Generated*` names were removed because nothing is generated. File names are `<camelCaseModule>Test.cpp` in both `test/unit/` and `test/component/`.
 
 **Recommended going forward:** New manually-authored test files must follow the `<Module>UTest` / `<Module>CTest` naming.
 
@@ -160,7 +160,7 @@ After the change, run `./run-unit-tests.sh`, `./run-component-tests-local.sh`, a
 
 **Current practice:**
 - Most headers (13 of 15 modules' interface and impl headers, and most `json_types/`): use `#pragma once`.
-- The `actions` and `videooutput` modules use `#ifndef FIREBOLT_<NAME>_H` / `#define` / `#endif` guards in their interface, impl, and json_types headers (e.g., `include/firebolt/actions.h`, `src/actions_impl.h`, `src/json_types/videooutput.h`). These two modules also have `*GeneratedTest.cpp` files; see §12 for provenance.
+- The `actions` and `videooutput` modules use `#ifndef FIREBOLT_<NAME>_H` / `#define` / `#endif` guards in their interface, impl, and json_types headers (e.g., `include/firebolt/actions.h`, `src/actions_impl.h`, `src/json_types/videooutput.h`). See §12 for provenance.
 - Do not mix both guards in the same file. Two files currently do: `src/json_types/actions.h` and `src/videooutput_impl.h` carry both `#pragma once` and `#ifndef`. Cleanup: keep one.
 
 **Recommended going forward:** New headers use `#pragma once` exclusively. When editing an `actions`/`videooutput` header, keep its existing `#ifndef` guard rather than converting it.
@@ -407,7 +407,7 @@ Variations that exist today: `TextToSpeechCTest` declares `cv`/`mtx`/`eventRecei
 - Scalar events: two forms are used today. Wrapped: `R"({"value": true})"` (Accessibility, Network, Presentation, Localization, `Device.onDolbyAtmosExperienceAvailableChanged`). Bare: `R"("Living Room TV")"` (`Device.onNameChanged`) and `R"("hdcp1.4")"` (VideoOutput). `[VERIFY]` which form is canonical for mock-firebolt (§18). Copy the form used by the nearest existing test for the same payload type.
 - For `Actions.onIntent`, the payload is an object whose `intent` member is itself a JSON **object**: `R"({"intent":{"action":"pre-load",...},"intentId":0})"`. The callback receives `Actions::Intent` with `intent` as raw JSON text. See §12.4 for the full contract.
 
-Reference: `test/component/actionsGeneratedTest.cpp`, `test/component/deviceTest.cpp`, `test/component/networkTest.cpp`.
+Reference: `test/component/actionsTest.cpp`, `test/component/deviceTest.cpp`, `test/component/networkTest.cpp`.
 
 ---
 
@@ -441,7 +441,7 @@ Reference: `test/component/actionsGeneratedTest.cpp`, `test/component/deviceTest
 
 **Anti-pattern:** Do not test `*Impl` via `IFireboltAccessor::Instance()` in unit tests. Unit tests must isolate the impl with a mock helper, not the full singleton.
 
-**Exception for `*GeneratedTest.cpp` unit tests:** `test/unit/actionsGeneratedTest.cpp` and `test/unit/videooutputGeneratedTest.cpp` instantiate `::testing::NiceMock<MockHelper>` directly without inheriting `MockBase`, and use `EXPECT_CALL(mockHelper, getJson(...))` rather than the `mock()` / `mock_with_response()` wrappers. Do not replicate this in new bespoke test files.
+**Note on `test/unit/videoOutputTest.cpp`:** it instantiates `::testing::NiceMock<MockHelper>` directly without inheriting `MockBase`, and uses `EXPECT_CALL(mockHelper, getJson(...))` rather than the `mock()` / `mock_with_response()` wrappers. Do not replicate this in new test files.
 
 Bespoke tests (`discoveryTest.cpp`, `speechSynthesisTest.cpp`, `textToSpeechTest.cpp`) do use `EXPECT_CALL(mockHelper, getJson/invoke(...))` alongside `MockBase` when they need to assert the exact request payload. That is acceptable for payload assertions.
 
@@ -483,7 +483,7 @@ Negative tests must verify runtime behaviour — specifically that callbacks are
 
 **Current practice:** Both unit and component tests derive expected values from `jsonEngine.get_value("Module.method")` (the first example in the OpenRPC fixture). Do not hardcode values that duplicate the fixture unless the value requires a type conversion (e.g., enum comparison using `static_cast<int>`).
 
-Exception: `test/component/actionsGeneratedTest.cpp` hardcodes the intent payload (`{"action":"pre-load",...}`, `intentId` 0) copied from the fixture's `Actions.intent` / `Actions.onIntent` example. If the fixture example changes, update that test in the same commit.
+Exception: `test/component/actionsTest.cpp` hardcodes the intent payload (`{"action":"pre-load",...}`, `intentId` 0) copied from the fixture's `Actions.intent` / `Actions.onIntent` example. If the fixture example changes, update that test in the same commit.
 
 ---
 
@@ -523,9 +523,9 @@ Exception: `test/component/actionsGeneratedTest.cpp` hardcodes the intent payloa
 
 No file in this repository carries an `AUTO-GENERATED` / `DO NOT EDIT` banner, and neither `firebolt-sdk-gen` nor `sync-plan-checklist.sh` exists in the repo or in the sibling checkouts under `RDKE/`. An earlier version of this document declared `actions` files generator-owned; that cannot be confirmed.
 
-Two modules differ stylistically from the rest and are *possibly* generator-originated: `actions` and `videooutput`. They use `#ifndef` guards (§3.1), their tests are named `*GeneratedTest.cpp` (§2.7, §10.1), and their JSON adapters use a `*Json` / `*Value` naming style. Files:
-- `include/firebolt/actions.h`, `src/actions_impl.{h,cpp}`, `src/json_types/actions.h`, `test/unit/actionsGeneratedTest.cpp`, `test/component/actionsGeneratedTest.cpp`
-- `include/firebolt/videooutput.h`, `src/videooutput_impl.{h,cpp}`, `src/json_types/videooutput.h`, `test/unit/videooutputGeneratedTest.cpp`, `test/component/videooutputGeneratedTest.cpp`
+Two modules differ stylistically from the rest and are *possibly* generator-originated: `actions` and `videooutput`. They use `#ifndef` guards (§3.1), their JSON adapters use a `*Json` / `*Value` naming style. Files:
+- `include/firebolt/actions.h`, `src/actions_impl.{h,cpp}`, `src/json_types/actions.h`, `test/unit/actionsTest.cpp`, `test/component/actionsTest.cpp`
+- `include/firebolt/videooutput.h`, `src/videooutput_impl.{h,cpp}`, `src/json_types/videooutput.h`, `test/unit/videoOutputTest.cpp`, `test/component/videoOutputTest.cpp`
 
 These files have been hand-edited in this repository (for example `ActionsImpl::start()` and `JsonData::JsonValue` for RDKEMW-26413), so "never hand-edit" is not the practice.
 
@@ -547,7 +547,7 @@ The API specification defines `start`, `intent`, and `onIntent` for API 9.0.0. `
 - `subscribeOnIntent(std::function<void(const Intent&)>&&)` delivers the same struct. `subscribeOnIntentChanged` is a default alias that forwards to it.
 - `start(const std::string& intent, std::optional<std::string> handlerAppId = std::nullopt)` returns `Result<void>`. A malformed `intent` string returns `Error::InvalidParams`; it must never throw (§5.1).
 - Wire shape (fixture): `{"intent": {"action": "pre-load", ...}, "intentId": 0}` — `intent` is a JSON object on the wire.
-- Tests compare structurally, not by string equality (`dump()` may reorder keys). Reference: `test/component/actionsGeneratedTest.cpp`:
+- Tests compare structurally, not by string equality (`dump()` may reorder keys). Reference: `test/component/actionsTest.cpp`:
 ```cpp
 auto result = Firebolt::IFireboltAccessor::Instance().ActionsInterface().intent();
 ASSERT_TRUE(result) << toError(result);

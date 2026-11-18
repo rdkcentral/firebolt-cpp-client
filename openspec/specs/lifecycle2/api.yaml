@@ -15,6 +15,11 @@ types:
   type: string
   enum: [initializing, active, paused, suspended, hibernated, terminating]
   description: The application Lifecycle state
+- name: StateChange
+  type: object
+  fields:
+  - {name: oldState, type: LifecycleState, required: true}
+  - {name: newState, type: LifecycleState, required: true}
 methods:
 - name: Lifecycle2.close
   cpp: close
@@ -32,4 +37,4 @@ methods:
   examples:
   - {result: active}
 - {name: Lifecycle2.onStateChanged, cpp: subscribeOnStateChanged, kind: event, summary: 'Notification of lifecycle state change, raised after
-    the platform has transitioned the app/runtime to the new lifecycle state', result: 'null'}
+    the platform has transitioned the app/runtime to the new lifecycle state. The list always carries exactly one state change', result: 'array<StateChange> (exactly one item)'}

@@ -9,15 +9,15 @@ description: A module for controlling speech synthesis over Firebolt.
 methods:
 - name: SpeechSynthesis.speak
   cpp: speak
-  summary: Speak an utterance.
+  summary: Requests the system to speak an utterance. Returns an utteranceId if the request is accepted, otherwise an error is returned.
   params:
-  - {name: text, type: string, required: true}
-  - {name: lang, type: string}
-  - {name: voice, type: string}
-  - {name: volume, type: number, minimum: 0, maximum: 1}
-  - {name: rate, type: number, minimum: 0.1, maximum: 10}
-  - {name: pitch, type: number, minimum: 0, maximum: 2}
-  - {name: pii, type: boolean}
+  - {name: text, type: string, required: true, description: Plain text or a well-formed SSML document}
+  - {name: lang, type: string, description: The language of the text in BCP 47}
+  - {name: voice, type: string, description: A voice name as returned by the voices method}
+  - {name: volume, type: number, minimum: 0, maximum: 1, description: The speaking volume, 0 (lowest) to 1 (highest) inclusive}
+  - {name: rate, type: number, minimum: 0.1, maximum: 10, description: The speaking rate, 0.1 (slowest) to 10 (fastest) inclusive}
+  - {name: pitch, type: number, minimum: 0, maximum: 2, description: The speaking pitch, 0 (lowest) to 2 (highest) inclusive}
+  - {name: pii, type: boolean, description: 'True if the text contains personally identifiable information, so logging and telemetry should be restricted; false if not set'}
   result: {type: integer, minimum: 0}
   examples:
   - params: {text: I am a text waiting for speech., lang: en-US, voice: female-1, volume: 0.8, rate: 1, pitch: 1, pii: false}

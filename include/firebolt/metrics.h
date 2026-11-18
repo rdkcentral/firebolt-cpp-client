@@ -180,8 +180,7 @@ public:
      * @brief Called when a seek is initiated during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] target    : Target destination of the seek, as a decimal percentage (0-0.999) for content with a known
-     *                        duration, or an integer number of seconds (0-86400) for content with an unknown duration
+     * @param[in] target    : Target destination of the seek
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -194,9 +193,7 @@ public:
      * @brief Called when a seek is completed during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] position  : Resulting position of the seek operation, as a decimal percentage (0-0.999) for content
-     *                        with a known duration, or an integer number of seconds (0-86400) for content with an
-     *                        unknown duration
+     * @param[in] position  : Resulting position of the seek operation
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -252,11 +249,11 @@ public:
      * @brief Called to inform the platform of 1st party distributor metrics
      *
      * @param[in] schema    : The schema URI of the metric type
-     * @param[in] data      : A JSON payload
+     * @param[in] data      : A JSON document, as text
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval An ok Result on success, or an error; no value is returned
+     * @retval An ok Result on success, InvalidParams if data is not valid JSON, or an error; no value is returned
      */
     [[nodiscard]] virtual Result<void> event(const std::string& schema, const std::string& data,
                                              const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;

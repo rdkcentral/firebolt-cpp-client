@@ -77,6 +77,8 @@ public:
     /**
      * @brief Set the operating system name
      *
+     * @note  Extension for testing only. Not part of the Firebolt 9 specification; applications must not rely on it.
+     *
      * @retval The status
      */
     [[nodiscard]] virtual Result<void> setOsName(const std::string& osName) = 0;
@@ -90,6 +92,8 @@ public:
 
     /**
      * @brief Set the operating system version
+     *
+     * @note  Extension for testing only. Not part of the Firebolt 9 specification; applications must not rely on it.
      *
      * @retval The status
      */
@@ -110,9 +114,10 @@ public:
     [[nodiscard]] virtual Result<HDRFormat> hdr() const = 0;
 
     /**
-     * @brief Returns number of seconds since most recent device boot, including any time spent during deep sleep
+     * @brief Returns the number of seconds since the device transitioned to the ON power state
      *
-     * @retval The uptime in seconds or error
+     * @retval The time in seconds or error. The platform may answer with the specific error -50110 (app state
+     *         invalid); the client passes any platform error through unchanged.
      */
     [[nodiscard]] virtual Result<uint32_t> timeInActiveState() const = 0;
 

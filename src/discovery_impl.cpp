@@ -18,10 +18,79 @@
 
 #include "discovery_impl.h"
 #include "json_types/common.h"
+#include <algorithm>
+#include <cmath>
 #include <firebolt/json_types.h>
+#include <string_view>
 
 namespace Firebolt::Discovery
 {
+namespace
+{
+// Live content reports seconds, so only the lower bound (and finiteness) can be checked.
+bool isValidProgress(const std::optional<double>& progress)
+{
+    return !progress || (std::isfinite(*progress) && *progress >= 0.0);
+}
+
+bool allDigits(std::string_view text)
+{
+    return !text.empty() && std::all_of(text.begin(), text.end(), [](char c) { return c >= '0' && c <= '9'; });
+}
+
+int toInt(std::string_view digits)
+{
+    int value = 0;
+    for (const char c : digits)
+    {
+        value = value * 10 + (c - '0');
+    }
+    return value;
+}
+
+// Firebolt 9: "YYYY-MM-DDThh:mm:ss.sssZ" (UTC). Whole seconds and other fraction lengths are also accepted.
+bool isValidUtcTimestamp(std::string_view value)
+{
+    constexpr size_t wholeSecondsLength = 19; // YYYY-MM-DDThh:mm:ss
+    if (value.size() < wholeSecondsLength + 1 || value.back() != 'Z' || value[4] != '-' || value[7] != '-' ||
+        value[10] != 'T' || value[13] != ':' || value[16] != ':')
+    {
+        return false;
+    }
+
+    const auto year = value.substr(0, 4);
+    const auto month = value.substr(5, 2);
+    const auto day = value.substr(8, 2);
+    const auto hour = value.substr(11, 2);
+    const auto minute = value.substr(14, 2);
+    const auto second = value.substr(17, 2);
+    if (!allDigits(year) || !allDigits(month) || !allDigits(day) || !allDigits(hour) || !allDigits(minute) ||
+        !allDigits(second))
+    {
+        return false;
+    }
+
+    const auto rest = value.substr(wholeSecondsLength, value.size() - wholeSecondsLength - 1);
+    if (!rest.empty() && (rest.front() != '.' || !allDigits(rest.substr(1))))
+    {
+        return false;
+    }
+
+    const int y = toInt(year);
+    const int m = toInt(month);
+    const bool leapYear = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
+    const int daysInMonth[] = {31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    return m >= 1 && m <= 12 && toInt(day) >= 1 && toInt(day) <= daysInMonth[m - 1] && toInt(hour) < 24 &&
+           toInt(minute) < 60 && toInt(second) < 60;
+}
+
+bool isValidWatchedRequest(const std::string& entityId, const std::optional<double>& progress,
+                           const std::optional<std::string>& watchedOn)
+{
+    return !entityId.empty() && isValidProgress(progress) && (!watchedOn || isValidUtcTimestamp(*watchedOn));
+}
+} // namespace
+
 DiscoveryImpl::DiscoveryImpl(Firebolt::Helpers::IHelper& helper)
     : helper_(helper)
 {
@@ -31,6 +100,11 @@ Result<bool> DiscoveryImpl::watched(const std::string& entityId, std::optional<d
                                     std::optional<bool> completed, std::optional<std::string> watchedOn,
                                     std::optional<Firebolt::AgePolicy> agePolicy) const
 {
+    if (!isValidWatchedRequest(entityId, progress, watchedOn))
+    {
+        return Result<bool>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
     if (progress)
@@ -57,6 +131,11 @@ Result<void> DiscoveryImpl::watchedV2(const std::string& entityId, std::optional
                                       std::optional<bool> completed, std::optional<std::string> watchedOn,
                                       std::optional<Firebolt::AgePolicy> agePolicy) const
 {
+    if (!isValidWatchedRequest(entityId, progress, watchedOn))
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
     if (progress)

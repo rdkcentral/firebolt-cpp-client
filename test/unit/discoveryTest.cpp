@@ -21,6 +21,7 @@
 #include "json_types/common.h"
 #include "mock_helper.h"
 #include <firebolt/json_types.h>
+#include <limits>
 
 class DiscoveryUTest : public ::testing::Test, protected MockBase
 {
@@ -74,6 +75,83 @@ TEST_F(DiscoveryUTest, watched_payload)
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
     EXPECT_EQ(true, *result);
+}
+
+TEST_F(DiscoveryUTest, rejectsNegativeOrNonFiniteProgress)
+{
+    EXPECT_CALL(mockHelper, getJson("Discovery.watched", _)).Times(0);
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _)).Times(0);
+
+    for (double bad : {-0.1, std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity()})
+    {
+        auto watched = discoveryImpl_.watched("entity123", bad, true, std::nullopt, std::nullopt);
+        ASSERT_FALSE(watched);
+        EXPECT_EQ(watched.error(), Firebolt::Error::InvalidParams);
+
+        auto watchedV2 = discoveryImpl_.watchedV2("entity123", bad, true, std::nullopt, std::nullopt);
+        ASSERT_FALSE(watchedV2);
+        EXPECT_EQ(watchedV2.error(), Firebolt::Error::InvalidParams);
+    }
+}
+
+TEST_F(DiscoveryUTest, rejectsEmptyEntityId)
+{
+    EXPECT_CALL(mockHelper, getJson("Discovery.watched", _)).Times(0);
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _)).Times(0);
+
+    auto watched = discoveryImpl_.watched("", std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+    ASSERT_FALSE(watched);
+    EXPECT_EQ(watched.error(), Firebolt::Error::InvalidParams);
+
+    auto watchedV2 = discoveryImpl_.watchedV2("", std::nullopt, std::nullopt, std::nullopt, std::nullopt);
+    ASSERT_FALSE(watchedV2);
+    EXPECT_EQ(watchedV2.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(DiscoveryUTest, rejectsMalformedWatchedOn)
+{
+    EXPECT_CALL(mockHelper, getJson("Discovery.watched", _)).Times(0);
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _)).Times(0);
+
+    for (const char* bad : {"", "2024-06-01", "2024-06-01T12:00:00", "2024-06-01T12:00:00+00:00", "2024-06-01 12:00:00Z",
+                            "2024-06-01T12:00:00.Z", "2024-06-01T12:00:00.5xZ", "2023-02-29T00:00:00Z",
+                            "2024-13-01T00:00:00Z", "2024-00-10T00:00:00Z", "2024-04-31T00:00:00Z",
+                            "2024-06-01T24:00:00Z", "2024-06-01T12:60:00Z", "2024-06-01T12:00:60Z", "24-06-01T12:00:00Z",
+                            "2024-06-01T12:00:0aZ", "1900-02-29T00:00:00Z", "2024-06-01T12:00:00z"})
+    {
+        auto watchedV2 =
+            discoveryImpl_.watchedV2("entity123", std::nullopt, std::nullopt, std::string(bad), std::nullopt);
+        ASSERT_FALSE(watchedV2) << bad;
+        EXPECT_EQ(watchedV2.error(), Firebolt::Error::InvalidParams) << bad;
+    }
+
+    auto watched =
+        discoveryImpl_.watched("entity123", std::nullopt, std::nullopt, std::string("not a date"), std::nullopt);
+    ASSERT_FALSE(watched);
+    EXPECT_EQ(watched.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(DiscoveryUTest, acceptsValidWatchedOn)
+{
+    const char* valid[] = {"2021-04-23T18:25:43.511Z", "2024-06-01T12:00:00Z", "2024-02-29T23:59:59.9Z",
+                           "2000-02-29T00:00:00Z"};
+    EXPECT_CALL(mockHelper, invoke("Discovery.watched", _))
+        .Times(4)
+        .WillRepeatedly(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    for (const char* timestamp : valid)
+    {
+        auto result =
+            discoveryImpl_.watchedV2("entity123", std::nullopt, std::nullopt, std::string(timestamp), std::nullopt);
+        EXPECT_TRUE(result) << timestamp;
+    }
+}
+
+TEST_F(DiscoveryUTest, acceptsLiveSecondsAsProgress)
+{
+    mockInvoke("Discovery.watched");
+    auto result = discoveryImpl_.watchedV2("entity123", 3600.0, std::nullopt, std::nullopt, std::nullopt);
+    ASSERT_TRUE(result);
 }
 
 TEST_F(DiscoveryUTest, watchedV2)

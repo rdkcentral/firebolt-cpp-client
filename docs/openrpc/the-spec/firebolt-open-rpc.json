@@ -428,7 +428,7 @@
 						"name": "Default Result",
 						"value": {
 							"ifa": "bd87dd10-8d1d-4b93-b1a6-a8e5d410e400",
-							"ifa_type": "idfa",
+							"ifa_type": "dpid",
 							"lmt": "0"
 						}
 					}
@@ -899,7 +899,7 @@
 				},
 				{
 					"name": "progress",
-					"summary": "How much of the content has been watched (percentage as (0-0.999) for VOD, number of seconds for live)",
+					"summary": "How much of the content has been watched (0 to 0.99 for VOD, number of seconds for live)",
 					"schema": {
 						"type": "number",
 						"minimum": 0
@@ -914,7 +914,7 @@
 				},
 				{
 					"name": "watchedOn",
-					"summary": "Date/Time the content was watched, ISO 8601 Date/Time",
+					"summary": "Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ",
 					"schema": {
 						"type": "string",
 						"format": "date-time"
@@ -1017,7 +1017,7 @@
 				},
 				{
 					"name": "progress",
-					"summary": "How much of the content has been watched (percentage as (0-0.999) for VOD, number of seconds for live)",
+					"summary": "How much of the content has been watched (0 to 0.99 for VOD, number of seconds for live)",
 					"schema": {
 						"type": "number",
 						"minimum": 0
@@ -1032,7 +1032,7 @@
 				},
 				{
 					"name": "watchedOn",
-					"summary": "Date/Time the content was watched, ISO 8601 Date/Time",
+					"summary": "Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ",
 					"schema": {
 						"type": "string",
 						"format": "date-time"

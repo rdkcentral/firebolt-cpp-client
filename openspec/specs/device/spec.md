@@ -5,6 +5,9 @@ Behaviour of the `IDevice` client: device information, two setters and change ev
 
 ## Requirements
 
+### Requirement: Setters are testing extensions
+`setOsName` and `setOsVersion` are not defined by Firebolt 9 (which has only the `osName` and `osVersion` getters). They are client extensions for testing only; applications SHALL NOT rely on them, and the header SHALL say so. They are non-`const` because they change platform state, unlike the read-only getters.
+
 ### Requirement: Setters send the value param
 `setOsName` and `setOsVersion` SHALL send the caller's text as the `value` param.
 
@@ -25,3 +28,10 @@ Behaviour of the `IDevice` client: device information, two setters and change ev
 #### Scenario: Missing flag
 - **WHEN** the platform sends HDR formats without `hlg`
 - **THEN** the caller receives an error
+
+### Requirement: Platform errors pass through
+`timeInActiveState` SHALL return any platform error unchanged, including the Firebolt 9 specific error -50110 (app state invalid). The client does not itself decide whether the app state is valid.
+
+#### Scenario: App state invalid
+- **WHEN** the platform answers `Device.timeInActiveState` with error -50110
+- **THEN** the caller receives that same error code

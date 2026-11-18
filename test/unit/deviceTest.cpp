@@ -142,6 +142,18 @@ TEST_F(DeviceUTest, TimeInActiveState)
     EXPECT_EQ(*result, expectedValue);
 }
 
+TEST_F(DeviceUTest, TimeInActiveStatePassesThroughAppStateInvalidError)
+{
+    constexpr auto appStateInvalid = static_cast<Firebolt::Error>(-50110);
+    EXPECT_CALL(mockHelper, getJson("Device.timeInActiveState", _))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<nlohmann::json>{appStateInvalid}; }));
+
+    auto result = deviceImpl_.timeInActiveState();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), appStateInvalid);
+}
+
 TEST_F(DeviceUTest, TimeInActiveStateBadResponse)
 {
     mock_with_response("Device.timeInActiveState", "invalid_response");

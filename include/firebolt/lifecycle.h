@@ -70,7 +70,8 @@ public:
      *                 DEACTIVATE - app is deactivated (if active), typically a user closing an app;
      *                 UNLOAD - app is deactivated (if active) and terminated, typically an app has detected an error;
      *                 KILL_RELOAD - app is killed, then reloaded to paused or suspended (by policy);
-     *                 KILL_REACTIVATE - app is killed, reloaded, then activated
+     *                 KILL_REACTIVATE - app is killed, reloaded, then activated.
+     *                 A value that is not one of CloseType returns InvalidParams
      */
     [[nodiscard]] virtual Result<void> close(const CloseType& type) const = 0;
 

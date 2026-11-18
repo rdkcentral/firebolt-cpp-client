@@ -19,6 +19,7 @@
 #include "json_types/speechsynthesis.h"
 #include "mock_helper.h"
 #include "speechsynthesis_impl.h"
+#include <limits>
 
 class SpeechSynthesisUTest : public ::testing::Test, protected MockBase
 {
@@ -67,6 +68,38 @@ TEST_F(SpeechSynthesisUTest, speak_payloadMatchesContract)
     EXPECT_EQ(*result, 7U);
 }
 
+TEST_F(SpeechSynthesisUTest, speak_acceptsBoundaryValues)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+        .Times(2)
+        .WillRepeatedly(
+            Invoke([](const std::string&, const nlohmann::json&) { return Firebolt::Result<nlohmann::json>{1}; }));
+
+    EXPECT_TRUE(speechSynthesisImpl_.speak("t", std::nullopt, std::nullopt, 0.0, 0.1, 0.0));
+    EXPECT_TRUE(speechSynthesisImpl_.speak("t", std::nullopt, std::nullopt, 1.0, 10.0, 2.0));
+}
+
+TEST_F(SpeechSynthesisUTest, speak_rejectsInvalidArgumentsWithoutCallingPlatform)
+{
+    EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _)).Times(0);
+    const std::optional<std::string> none;
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+
+    const auto expectInvalid = [](const auto& result)
+    {
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    };
+    expectInvalid(speechSynthesisImpl_.speak("t", std::string("en--US")));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, -0.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, 1.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, nan));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, 0.09));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, 10.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, -0.1));
+    expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, 2.1));
+}
+
 TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
 {
     mock_with_response("SpeechSynthesis.speak", "not-a-number");
@@ -74,6 +107,8 @@ TEST_F(SpeechSynthesisUTest, speak_invalidResponse)
     auto result = speechSynthesisImpl_.speak("Hello from speech synthesis");
 
     ASSERT_FALSE(result);
+
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(SpeechSynthesisUTest, voices)
@@ -122,6 +157,8 @@ TEST_F(SpeechSynthesisUTest, voices_invalidResponse)
     auto result = speechSynthesisImpl_.voices();
 
     ASSERT_FALSE(result);
+
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(SpeechSynthesisUTest, subscribeOnVoicesChanged)

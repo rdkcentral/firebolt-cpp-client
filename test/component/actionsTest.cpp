@@ -23,7 +23,7 @@
 #include <mutex>
 #include <nlohmann/json.hpp>
 
-class ActionsGeneratedCTest : public ::testing::Test
+class ActionsCTest : public ::testing::Test
 {
 protected:
     void SetUp() override { eventReceived = false; }
@@ -33,7 +33,7 @@ protected:
     bool eventReceived;
 };
 
-TEST_F(ActionsGeneratedCTest, Intent)
+TEST_F(ActionsCTest, Intent)
 {
     const auto expectedIntent = nlohmann::json::parse(
         R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
@@ -43,7 +43,7 @@ TEST_F(ActionsGeneratedCTest, Intent)
     EXPECT_EQ(result->intentId, 0U);
 }
 
-TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
+TEST_F(ActionsCTest, SubscribeOnIntent)
 {
     const auto expectedIntent = nlohmann::json::parse(
         R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
@@ -70,7 +70,7 @@ TEST_F(ActionsGeneratedCTest, SubscribeOnIntent)
     verifyUnsubscribeResult(result);
 }
 
-TEST_F(ActionsGeneratedCTest, Start)
+TEST_F(ActionsCTest, Start)
 {
     const auto intentPayload =
         R"({"action":"pre-load","context":{"source":"system"},"data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})";

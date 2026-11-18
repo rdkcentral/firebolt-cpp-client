@@ -70,11 +70,21 @@ TEST_F(LifecycleUTest, state)
     EXPECT_EQ(*result, Firebolt::Lifecycle::LifecycleState::INITIALIZING);
 }
 
+TEST_F(LifecycleUTest, closeRejectsUndefinedCloseType)
+{
+    EXPECT_CALL(mockHelper, invoke("Lifecycle2.close", _)).Times(0);
+
+    auto result = lifecycleImpl_.close(static_cast<Firebolt::Lifecycle::CloseType>(99));
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(LifecycleUTest, stateBadResponse)
 {
     mock_with_response("Lifecycle2.state", "invalid_response");
     Firebolt::Result<Firebolt::Lifecycle::LifecycleState> result = lifecycleImpl_.state();
     ASSERT_FALSE(result) << "LifecycleImpl::state() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(LifecycleUTest, subscribeOnStateChanged)

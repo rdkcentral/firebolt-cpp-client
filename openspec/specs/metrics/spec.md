@@ -37,8 +37,8 @@ Every call that accepts an age policy SHALL send `agePolicy` only when the calle
 - **WHEN** the caller calls startContent with no entity id and no age policy
 - **THEN** the request has no params
 
-### Requirement: Event data is a JSON document
-`event` SHALL return `InvalidParams`, without making a platform request, when `data` is not valid JSON. Firebolt 9 defines `data` as a string holding a JSON document; any valid JSON value is accepted and `data` is forwarded unchanged. The client does not check `schema`.
+### Requirement: Event schema is a URI and data is a JSON document
+`event` SHALL return `InvalidParams`, without making a platform request, when `schema` is not a URI (a scheme made of letters, digits, `+`, `-` or `.` starting with a letter, then `:`, then a non-empty remainder with no whitespace or control characters), or when `data` is not valid JSON. Firebolt 9 defines `data` as a string holding a JSON document; any valid JSON value is accepted and `data` is forwarded unchanged. The client does not check `schema`.
 
 #### Scenario: Invalid JSON
 - **WHEN** the caller calls event with `data` "foo"
@@ -54,3 +54,10 @@ Every call that accepts an age policy SHALL send `agePolicy` only when the calle
 
 ### Requirement: Seek positions are plain numbers
 `mediaSeeking` `target` and `mediaSeeked` `position` SHALL be sent as plain numbers (`double`), as in Firebolt 9. The client applies no range.
+
+### Requirement: Error type is checked
+`error` SHALL return `InvalidParams`, without making a platform request, when `type` is not one of the defined `ErrorType` values.
+
+#### Scenario: Undefined error type
+- **WHEN** the caller passes an `ErrorType` value outside the defined set
+- **THEN** the caller receives `InvalidParams` and no request is sent

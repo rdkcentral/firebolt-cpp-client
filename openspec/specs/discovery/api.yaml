@@ -31,13 +31,13 @@ methods:
 - name: Discovery.watched
   cpp: watched
   note: polymorphic-reducer
-  summary: Notify the platform that content was partially or completely watched
+  summary: Notify the platform that content was partially or completely watched. Deprecated; use watchedV2 (see DI-1).
   params:
-  - {name: entityId, type: string, required: true, description: The entity Id of the watched content.}
-  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (percentage as (0-0.999) for VOD, number
-      of seconds for live)'}
+  - {name: entityId, type: string, required: true, description: The entity Id of the watched content; must not be empty.}
+  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (0 to 0.99 for VOD, number of seconds
+      for live)'}
   - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
-  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, ISO 8601 Date/Time'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ'}
   - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
       groups to which content may be directed.}
   result: boolean
@@ -49,11 +49,11 @@ methods:
   note: polymorphic-reducer
   summary: Notify the platform that content was partially or completely watched
   params:
-  - {name: entityId, type: string, required: true, description: The entity Id of the watched content.}
-  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (percentage as (0-0.999) for VOD, number
-      of seconds for live)'}
+  - {name: entityId, type: string, required: true, description: The entity Id of the watched content; must not be empty.}
+  - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (0 to 0.99 for VOD, number of seconds
+      for live)'}
   - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
-  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, ISO 8601 Date/Time'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ'}
   - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
       groups to which content may be directed.}
   result: 'null'

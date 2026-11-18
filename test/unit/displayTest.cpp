@@ -36,6 +36,14 @@ TEST_F(DisplayUTest, Edid)
     EXPECT_EQ(*result, expectedValue.get<std::string>());
 }
 
+TEST_F(DisplayUTest, EdidEmptyWhenNoDisplayConnected)
+{
+    mock_with_response("Display.edid", "");
+    auto result = displayImpl_.edid();
+    ASSERT_TRUE(result) << "DisplayImpl::edid() returned an error for an empty EDID";
+    EXPECT_EQ(*result, "");
+}
+
 TEST_F(DisplayUTest, MaxResolution)
 {
     mock("Display.maxResolution");

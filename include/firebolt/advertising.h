@@ -51,9 +51,9 @@ public:
     virtual ~IAdvertising() = default;
 
     /**
-     * @brief Request that the platform move your app out of focus
+     * @brief Returns the IFA
      *
-     * @return Ifa struct or error
+     * @return Ifa struct, or InvalidParams if `ifa_type` is not "dpid", "sspid" or "sessionid", or `lmt` is not "0" or "1"
      *
      */
     [[nodiscard]] virtual Result<Ifa> advertisingId() const = 0;

@@ -34,7 +34,7 @@ public:
 
     [[nodiscard]] Result<ListVoicesResponse> listVoices(const std::string& language) const override;
     [[nodiscard]] Result<SpeechResponse>
-    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
+    speak(const std::string& text, std::optional<std::string> callsign = std::nullopt,
           std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
           std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
           std::optional<std::string> pitch = std::nullopt) const override;

@@ -51,9 +51,25 @@ TEST_F(LocalizationUTest, PreferredAudioLanguages)
     ASSERT_TRUE(result) << "error on get";
 
     auto expectedValue = jsonEngine.get_value("Localization.preferredAudioLanguages");
-    std::set<std::string> expectedSet(expectedValue.begin(), expectedValue.end());
-    std::set<std::string> resultSet(result->begin(), result->end());
-    EXPECT_EQ(resultSet, expectedSet);
+    EXPECT_EQ(*result, expectedValue.get<std::vector<std::string>>());
+}
+
+TEST_F(LocalizationUTest, PreferredAudioLanguagesKeepOrderAndRepeats)
+{
+    mock_with_response("Localization.preferredAudioLanguages", nlohmann::json{"spa", "eng", "spa", "fra"});
+
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, (std::vector<std::string>{"spa", "eng", "spa", "fra"}));
+}
+
+TEST_F(LocalizationUTest, PreferredAudioLanguagesMayBeEmpty)
+{
+    mock_with_response("Localization.preferredAudioLanguages", nlohmann::json::array());
+
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->empty());
 }
 
 TEST_F(LocalizationUTest, PreferredAudioLanguagesBadResponse)

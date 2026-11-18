@@ -168,6 +168,68 @@ TEST_F(SpeechSynthesisUTest, cancel_invokeError)
     EXPECT_EQ(result.error(), Firebolt::Error::General);
 }
 
+namespace
+{
+constexpr auto appStateInvalid = static_cast<Firebolt::Error>(-50110);
+constexpr auto engineError = static_cast<Firebolt::Error>(-50130);
+} // namespace
+
+TEST_F(SpeechSynthesisUTest, speak_passesThroughPlatformSpecificErrors)
+{
+    for (const auto error : {appStateInvalid, engineError})
+    {
+        EXPECT_CALL(mockHelper, getJson("SpeechSynthesis.speak", _))
+            .WillOnce(Invoke([error](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                             { return Firebolt::Result<nlohmann::json>{error}; }));
+
+        auto result = speechSynthesisImpl_.speak("Hello");
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), error);
+    }
+}
+
+TEST_F(SpeechSynthesisUTest, voices_emptyListWhenNoEngineIsNotAnError)
+{
+    mock_with_response("SpeechSynthesis.voices", nlohmann::json::array());
+
+    auto result = speechSynthesisImpl_.voices();
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->empty());
+}
+
+TEST_F(SpeechSynthesisUTest, cancel_passesThroughEngineError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.cancel", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{engineError}));
+
+    auto result = speechSynthesisImpl_.cancel(1);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), engineError);
+}
+
+TEST_F(SpeechSynthesisUTest, pause_passesThroughEngineError)
+{
+    EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.pause", _))
+        .WillOnce(::testing::Return(Firebolt::Result<void>{engineError}));
+
+    auto result = speechSynthesisImpl_.pause(1);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), engineError);
+}
+
+TEST_F(SpeechSynthesisUTest, resume_passesThroughPlatformSpecificErrors)
+{
+    for (const auto error : {appStateInvalid, engineError})
+    {
+        EXPECT_CALL(mockHelper, invoke("SpeechSynthesis.resume", _))
+            .WillOnce(::testing::Return(Firebolt::Result<void>{error}));
+
+        auto result = speechSynthesisImpl_.resume(1);
+        ASSERT_FALSE(result);
+        EXPECT_EQ(result.error(), error);
+    }
+}
+
 TEST_F(SpeechSynthesisUTest, pause)
 {
     nlohmann::json expectedParams;

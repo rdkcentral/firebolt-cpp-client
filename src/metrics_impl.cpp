@@ -240,6 +240,12 @@ Result<void> MetricsImpl::mediaEnded(const std::string& entityId, const std::opt
 Result<void> MetricsImpl::event(const std::string& schema, const std::string& data,
                                 const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    // Firebolt 9: data is a JSON document, forwarded as given
+    if (!nlohmann::json::accept(data))
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["schema"] = schema;
     parameters["data"] = data;

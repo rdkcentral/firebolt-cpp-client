@@ -20,7 +20,7 @@ For `hdcp`, `cecState`, `colorFormat`, `colorimetry`, `dynamicRange`, `quantizat
 - **THEN** the caller receives `InvalidParams`
 
 ### Requirement: Numeric properties
-`refreshRate` and `colorDepth` SHALL accept the platform's value as text (for example "59.94") or as a number (for example 59.94, or a whole number written as a float such as 24.0), and SHALL return `InvalidParams` for a value that is not in the known set.
+`refreshRate` and `colorDepth` SHALL accept the platform's value as a number (for example 59.94, or a whole number written as a float such as 24.0), as Firebolt 9 defines them and as the platform sends them. They SHALL also accept the same value as text (for example "59.94") for compatibility with a platform that serialises them as text; this tolerance is deliberate. In every case the value SHALL be in the Firebolt 9 set, otherwise the client SHALL return `InvalidParams`.
 
 #### Scenario: Refresh rate as text
 - **WHEN** the platform answers `VideoOutput.refreshRate` with "59.94"
@@ -35,7 +35,7 @@ For `hdcp`, `cecState`, `colorFormat`, `colorimetry`, `dynamicRange`, `quantizat
 - **THEN** the caller receives `InvalidParams`
 
 ### Requirement: Events deliver parsed values
-A change subscription SHALL deliver the parsed value to the callback. When an event payload is malformed, the client SHALL NOT call the callback and the subscription SHALL stay active.
+A change subscription SHALL deliver the parsed value to the callback. When an event payload is malformed, the client SHALL NOT call the callback and the subscription SHALL stay active. The caller receives no error; the transport library logs the rejected event at error level (event name and payload), so the client adds no logging of its own.
 
 #### Scenario: Resolution event
 - **WHEN** the platform sends a resolution event with height 2160 and width 3840

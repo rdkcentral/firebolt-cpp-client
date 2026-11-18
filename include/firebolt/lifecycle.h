@@ -64,9 +64,13 @@ public:
     virtual ~ILifecycle() = default;
 
     /**
-     * @brief Request that the platform move your app out of focus
+     * @brief Request the platform to deactivate the app, and possibly take further action
      *
-     * @param[in] type The type of the close app is requesting
+     * @param[in] type The type of the close the app is requesting:
+     *                 DEACTIVATE - app is deactivated (if active), typically a user closing an app;
+     *                 UNLOAD - app is deactivated (if active) and terminated, typically an app has detected an error;
+     *                 KILL_RELOAD - app is killed, then reloaded to paused or suspended (by policy);
+     *                 KILL_REACTIVATE - app is killed, reloaded, then activated
      */
     [[nodiscard]] virtual Result<void> close(const CloseType& type) const = 0;
 
@@ -80,7 +84,8 @@ public:
     /**
      * @brief Subscribe to lifecycle state changes
      *
-     * @param notification : The callback function, which receives a vector of state changes performed by the platform
+     * @param notification : The callback function, which receives a vector of state changes performed by the platform.
+     *                       The platform always sends exactly one state change per notification
      *
      * @retval The subscriptionId or error
      */

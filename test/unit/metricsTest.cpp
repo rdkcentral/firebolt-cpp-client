@@ -170,6 +170,30 @@ TEST_F(MetricsUTest, MediaEnded)
     EXPECT_TRUE(result);
 }
 
+TEST_F(MetricsUTest, EventRejectsInvalidJsonData)
+{
+    EXPECT_CALL(mockHelper, invoke("Metrics.event", _)).Times(0);
+
+    for (const char* bad : {"", "foo", "{\"key\":", "{'key':'value'}"})
+    {
+        auto result = metricsImpl_.event("https://com.example.schema", bad, std::nullopt);
+        ASSERT_FALSE(result) << bad;
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams) << bad;
+    }
+}
+
+TEST_F(MetricsUTest, EventAcceptsAnyValidJsonDocument)
+{
+    EXPECT_CALL(mockHelper, invoke("Metrics.event", _))
+        .Times(4)
+        .WillRepeatedly(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    for (const char* good : {"{}", "[]", "\"text\"", "{\"key\":[1,2,{\"a\":null}]}"})
+    {
+        EXPECT_TRUE(metricsImpl_.event("https://com.example.schema", good, std::nullopt)) << good;
+    }
+}
+
 TEST_F(MetricsUTest, Event)
 {
     mockInvoke("Metrics.event");

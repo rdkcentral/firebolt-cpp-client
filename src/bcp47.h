@@ -163,10 +163,18 @@ inline bool isValid(std::string_view language)
         ++index;
     }
 
+    const size_t variantStart = index;
     while (index < subtags.size() &&
            ((subtags[index].size() >= 5 && subtags[index].size() <= 8 && consistsOf(subtags[index], isAlphanumeric)) ||
             (subtags[index].size() == 4 && isDigit(subtags[index].front()) && consistsOf(subtags[index], isAlphanumeric))))
     {
+        for (size_t previous = variantStart; previous < index; ++previous)
+        {
+            if (equalsIgnoreCase(subtags[previous], subtags[index]))
+            {
+                return false; // RFC 5646: a variant subtag must not be repeated
+            }
+        }
         ++index;
     }
 

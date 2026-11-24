@@ -104,8 +104,8 @@ TEST_F(TextToSpeechUTest, speakRejectsInvalidVolumeRateOrPitch)
 
 TEST(Bcp47Test, acceptsWellFormedTags)
 {
-    for (const char* tag : {"en", "en-US", "zh-Hant-TW", "es-419", "de-CH-1901", "en-US-u-ca-gregory", "x-private",
-                            "i-klingon", "sgn-BE-FR", "EN-us"})
+    for (const char* tag : {"en", "en-US", "zh-Hant-TW", "es-419", "de-CH-1901", "en-US-u-ca-gregory", "sl-rozaj-biske",
+                            "x-private", "i-klingon", "sgn-BE-FR", "EN-us"})
     {
         EXPECT_TRUE(Firebolt::Bcp47::isValid(tag)) << tag;
     }
@@ -113,8 +113,8 @@ TEST(Bcp47Test, acceptsWellFormedTags)
 
 TEST(Bcp47Test, rejectsMalformedTags)
 {
-    for (const char* tag : {"", "-", "en-", "-en", "en--US", "e", "en_US", "en-US-u-a-u-b", "en-x", "x", "en-US-u",
-                            "123", "en-Latn-Latn-US", "toolonglang"})
+    for (const char* tag : {"", "-", "en-", "-en", "en--US", "e", "en_US", "en-US-u-a-u-b", "de-1901-1901",
+                            "sl-rozaj-ROZAJ", "en-x", "x", "en-US-u", "123", "en-Latn-Latn-US", "toolonglang"})
     {
         EXPECT_FALSE(Firebolt::Bcp47::isValid(tag)) << tag;
     }

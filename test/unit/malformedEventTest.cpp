@@ -52,6 +52,10 @@ protected:
 
         fake.emit(event, good);
         EXPECT_EQ(calls, 1) << "a well-formed payload must still be delivered";
+
+        // Release the subscription so the next check in the same test starts from an empty fake
+        ASSERT_TRUE(mockHelper.unsubscribe(*id));
+        EXPECT_EQ(fake.count(), 0U);
     }
 };
 

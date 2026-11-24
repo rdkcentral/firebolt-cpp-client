@@ -61,3 +61,10 @@ Every call that accepts an age policy SHALL send `agePolicy` only when the calle
 #### Scenario: Undefined error type
 - **WHEN** the caller passes an `ErrorType` value outside the defined set
 - **THEN** the caller receives `InvalidParams` and no request is sent
+
+### Requirement: Numeric media arguments are finite
+`mediaSeeking` (`target`), `mediaSeeked` (`position`) and `mediaRateChanged` (`rate`) SHALL return `InvalidParams`, without making a platform request, when the number is NaN or infinite, because such a value cannot be represented in JSON.
+
+#### Scenario: Not a number
+- **WHEN** the caller passes NaN as `target`
+- **THEN** the caller receives `InvalidParams` and no request is sent

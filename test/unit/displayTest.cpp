@@ -19,6 +19,7 @@
 #include "display_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
+#include <vector>
 
 class DisplayUTest : public ::testing::Test, protected MockBase
 {
@@ -50,6 +51,24 @@ TEST_F(DisplayUTest, EdidBadResponse)
     auto result = displayImpl_.edid();
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(DisplayUTest, SizesRejectInvalidUnsignedValues)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        mock_with_response("Display.size", nlohmann::json{{"width", bad}, {"height", 1}});
+        auto size = displayImpl_.size();
+        ASSERT_FALSE(size) << bad.dump();
+        EXPECT_EQ(size.error(), Firebolt::Error::InvalidParams);
+
+        mock_with_response("Display.maxResolution", nlohmann::json{{"width", 1}, {"height", bad}});
+        auto max = displayImpl_.maxResolution();
+        ASSERT_FALSE(max) << bad.dump();
+        EXPECT_EQ(max.error(), Firebolt::Error::InvalidParams);
+    }
 }
 
 TEST_F(DisplayUTest, MaxResolution)

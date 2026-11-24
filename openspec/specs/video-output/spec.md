@@ -20,7 +20,7 @@ For `hdcp`, `cecState`, `colorFormat`, `colorimetry`, `dynamicRange`, `quantizat
 - **THEN** the caller receives `InvalidParams`
 
 ### Requirement: Numeric properties
-`refreshRate` and `colorDepth` SHALL accept the platform's value as a number (for example 59.94, or a whole number written as a float such as 24.0), as Firebolt 9 defines them and as the platform sends them. They SHALL also accept the same value as text (for example "59.94") for compatibility with a platform that serialises them as text; this tolerance is deliberate. In every case the value SHALL be in the Firebolt 9 set, otherwise the client SHALL return `InvalidParams`.
+`refreshRate` and `colorDepth` SHALL accept the platform's value as a number (for example 59.94, or a whole number written as a float such as 24.0 for `refreshRate` or 10.0 for `colorDepth`), as Firebolt 9 defines them and as the platform sends them. They SHALL also accept the same value as text (for example "59.94") for compatibility with a platform that serialises them as text; this tolerance is deliberate. In every case the value SHALL be in the Firebolt 9 set, otherwise the client SHALL return `InvalidParams`; a large integer SHALL NOT wrap into a valid value (for example 4294967320 is not 24). `resolution` `width` and `height` are `unsigned` values (see `common`).
 
 #### Scenario: Refresh rate as text
 - **WHEN** the platform answers `VideoOutput.refreshRate` with "59.94"

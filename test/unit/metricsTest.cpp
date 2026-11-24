@@ -19,6 +19,7 @@
 #include "json_types/metrics.h"
 #include "metrics_impl.h"
 #include "mock_helper.h"
+#include <limits>
 
 class MetricsUTest : public ::testing::Test, protected MockBase
 {
@@ -168,6 +169,23 @@ TEST_F(MetricsUTest, MediaEnded)
     mockInvoke("Metrics.mediaEnded");
     auto result = metricsImpl_.mediaEnded("mediaEntity123", Firebolt::AgePolicy::ADULT);
     EXPECT_TRUE(result);
+}
+
+TEST_F(MetricsUTest, NumericMediaEventsRejectNonFiniteValues)
+{
+    EXPECT_CALL(mockHelper, invoke(_, _)).Times(0);
+
+    for (const double bad : {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::infinity(),
+                             -std::numeric_limits<double>::infinity()})
+    {
+        for (const auto& result :
+             {metricsImpl_.mediaSeeking("m1", bad, std::nullopt), metricsImpl_.mediaSeeked("m1", bad, std::nullopt),
+              metricsImpl_.mediaRateChanged("m1", bad, std::nullopt)})
+        {
+            ASSERT_FALSE(result);
+            EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+        }
+    }
 }
 
 TEST_F(MetricsUTest, EventRejectsInvalidJsonData)

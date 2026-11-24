@@ -180,7 +180,7 @@ public:
      * @brief Called when a seek is initiated during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] target    : Target destination of the seek
+     * @param[in] target    : Target destination of the seek; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -193,7 +193,7 @@ public:
      * @brief Called when a seek is completed during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] position  : Resulting position of the seek operation
+     * @param[in] position  : Resulting position of the seek operation; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -206,7 +206,7 @@ public:
      * @brief Called when the playback rate of media is changed
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] rate      : The new playback rate
+     * @param[in] rate      : The new playback rate; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *

@@ -36,7 +36,7 @@ public:
      *                           for live)
      * @param[in]  completed   : Whether or not this viewing is considered "complete" per the app's definition thereof
      * @param[in]  watchedOn   : The UTC timestamp of when the content was watched, "YYYY-MM-DDThh:mm:ss.sssZ"
-     *                           (whole seconds without the fraction are also accepted)
+     *                           (exactly this format, with three fraction digits)
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *
@@ -60,7 +60,7 @@ public:
      *                           for live)
      * @param[in]  completed   : Whether or not this viewing is considered "complete" per the app's definition thereof
      * @param[in]  watchedOn   : The UTC timestamp of when the content was watched, "YYYY-MM-DDThh:mm:ss.sssZ"
-     *                           (whole seconds without the fraction are also accepted)
+     *                           (exactly this format, with three fraction digits)
      * @param[in]  agePolicy   : The age policy associated with the watch event. The age policy describes the age groups
      *                           to which content may be directed
      *

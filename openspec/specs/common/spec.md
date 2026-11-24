@@ -30,8 +30,15 @@ When a response does not have the expected shape (not the expected JSON type, a 
 - **WHEN** a response contains an enum value the client does not know
 - **THEN** the caller receives `InvalidParams`
 
+### Requirement: Unsigned values are strict
+A response or event field that Firebolt 9 types as `unsigned` (a 32-bit unsigned integer) SHALL be accepted only when it is a JSON integer from 0 to 4294967295. A negative number, a fraction (including `2.0`), a boolean, text, or a number above 4294967295 SHALL be treated as an unexpected response (`InvalidParams` for a getter, dropped for an event) and SHALL NOT be converted. This applies to `uptime`, `timeInActiveState`, `Display.size`, `Display.maxResolution`, `VideoOutput.resolution`, `intentId`, `speechid`, `utteranceId` and the `SpeechSynthesis.speak` result. The one exception is `Stats.memoryUsage`, whose byte counts are 64-bit (see `stats`).
+
+#### Scenario: Negative or oversized number
+- **WHEN** the platform answers `Device.uptime` with -1 or 4294967296
+- **THEN** the caller receives `InvalidParams`, not a wrapped value
+
 ### Requirement: Arguments with a fixed set of values are checked
-Where the accepted values of an argument are limited to a fixed set, a fixed format or a fixed range, the client SHALL return `InvalidParams` without contacting the platform when the caller passes a value outside it. This covers enum arguments cast to an undefined value, BCP 47 language tags, numeric ranges, URIs and JSON text, as stated in each module's spec. The client does not check open-ended text (for example identifiers); the platform does. Platform error codes are never created by the client, only passed through.
+Where the accepted values of an argument are limited to a fixed set, a fixed format or a fixed range, the client SHALL return `InvalidParams` without contacting the platform when the caller passes a value outside it. This covers enum arguments cast to an undefined value, BCP 47 language tags, numeric ranges, non-finite numbers, timestamps, URIs and JSON text, as stated in each module's spec. The client does not check open-ended text (for example identifiers); the platform does. Platform error codes are never created by the client, only passed through.
 
 #### Scenario: Value outside the accepted set
 - **WHEN** the caller passes an argument outside its accepted values

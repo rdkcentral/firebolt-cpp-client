@@ -41,7 +41,7 @@ TEST_F(DiscoveryUTest, watched)
     std::string entityId = "content123";
     std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
-    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00.000Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
@@ -64,7 +64,7 @@ TEST_F(DiscoveryUTest, watched_payload)
     expected["entityId"] = "content123";
     expected["progress"] = 0.75F;
     expected["completed"] = true;
-    expected["watchedOn"] = "2024-06-01T12:00:00Z";
+    expected["watchedOn"] = "2024-06-01T12:00:00.000Z";
     expected["agePolicy"] = "app:adult";
     EXPECT_CALL(mockHelper, getJson("Discovery.watched", _))
         .WillOnce(Invoke(
@@ -78,7 +78,7 @@ TEST_F(DiscoveryUTest, watched_payload)
     std::string entityId = "content123";
     std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
-    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00.000Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watched(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watched";
@@ -121,11 +121,15 @@ TEST_F(DiscoveryUTest, rejectsMalformedWatchedOn)
     EXPECT_CALL(mockHelper, getJson("Discovery.watched", _)).Times(0);
     EXPECT_CALL(mockHelper, invoke("Discovery.watched", _)).Times(0);
 
-    for (const char* bad : {"", "2024-06-01", "2024-06-01T12:00:00", "2024-06-01T12:00:00+00:00", "2024-06-01 12:00:00Z",
-                            "2024-06-01T12:00:00.Z", "2024-06-01T12:00:00.5xZ", "2023-02-29T00:00:00Z",
-                            "2024-13-01T00:00:00Z", "2024-00-10T00:00:00Z", "2024-04-31T00:00:00Z",
-                            "2024-06-01T24:00:00Z", "2024-06-01T12:60:00Z", "2024-06-01T12:00:60Z", "24-06-01T12:00:00Z",
-                            "2024-06-01T12:00:0aZ", "1900-02-29T00:00:00Z", "2024-06-01T12:00:00z"})
+    for (const char* bad :
+         {// wrong shape: missing parts, whole seconds, other fraction lengths, offsets, separators, case, padding
+          "", "2024-06-01", "2024-06-01T12:00:00Z", "2024-06-01T12:00:00.5Z", "2024-06-01T12:00:00.12Z",
+          "2024-06-01T12:00:00.1234Z", "2024-06-01T12:00:00.000", "2024-06-01T12:00:00.000+00:00",
+          "2024-06-01 12:00:00.000Z", "2024-06-01T12:00:00.000z", "2024-06-01T12:00:00.00aZ", "24-06-01T12:00:00.000Z",
+          " 2024-06-01T12:00:00.000Z", "2024-06-01T12:00:00.000Z ", "2024-06-01T12:00:00,000Z",
+          // right shape, field out of range
+          "2024-13-01T00:00:00.000Z", "2024-00-10T00:00:00.000Z", "2024-06-00T00:00:00.000Z", "2024-06-32T00:00:00.000Z",
+          "2024-06-01T24:00:00.000Z", "2024-06-01T12:60:00.000Z", "2024-06-01T12:00:60.000Z"})
     {
         auto watchedV2 =
             discoveryImpl_.watchedV2("entity123", std::nullopt, std::nullopt, std::string(bad), std::nullopt);
@@ -141,8 +145,8 @@ TEST_F(DiscoveryUTest, rejectsMalformedWatchedOn)
 
 TEST_F(DiscoveryUTest, acceptsValidWatchedOn)
 {
-    const char* valid[] = {"2021-04-23T18:25:43.511Z", "2024-06-01T12:00:00Z", "2024-02-29T23:59:59.9Z",
-                           "2000-02-29T00:00:00Z"};
+    const char* valid[] = {"2021-04-23T18:25:43.511Z", "2024-06-01T12:00:00.000Z", "2024-02-29T23:59:59.999Z",
+                           "2000-02-29T00:00:00.000Z"};
     EXPECT_CALL(mockHelper, invoke("Discovery.watched", _))
         .Times(4)
         .WillRepeatedly(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
@@ -168,7 +172,7 @@ TEST_F(DiscoveryUTest, watchedV2)
     std::string entityId = "content123";
     std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
-    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00.000Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watchedV2(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watchedV2";
@@ -180,7 +184,7 @@ TEST_F(DiscoveryUTest, watchedV2_payload)
     expected["entityId"] = "content123";
     expected["progress"] = 0.75F;
     expected["completed"] = true;
-    expected["watchedOn"] = "2024-06-01T12:00:00Z";
+    expected["watchedOn"] = "2024-06-01T12:00:00.000Z";
     expected["agePolicy"] = "app:adult";
     EXPECT_CALL(mockHelper, invoke("Discovery.watched", _))
         .WillOnce(Invoke(
@@ -193,7 +197,7 @@ TEST_F(DiscoveryUTest, watchedV2_payload)
     std::string entityId = "content123";
     std::optional<double> progress = 0.75F;
     std::optional<bool> completed = true;
-    std::optional<std::string> watchedOn = "2024-06-01T12:00:00Z";
+    std::optional<std::string> watchedOn = "2024-06-01T12:00:00.000Z";
     std::optional<Firebolt::AgePolicy> agePolicy = Firebolt::AgePolicy::ADULT;
     auto result = discoveryImpl_.watchedV2(entityId, progress, completed, watchedOn, agePolicy);
     ASSERT_TRUE(result) << "Error on watchedV2";

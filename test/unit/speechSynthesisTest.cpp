@@ -20,6 +20,7 @@
 #include "mock_helper.h"
 #include "speechsynthesis_impl.h"
 #include <limits>
+#include <vector>
 
 class SpeechSynthesisUTest : public ::testing::Test, protected MockBase
 {
@@ -98,6 +99,23 @@ TEST_F(SpeechSynthesisUTest, speak_rejectsInvalidArgumentsWithoutCallingPlatform
     expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, 10.1));
     expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, -0.1));
     expectInvalid(speechSynthesisImpl_.speak("t", none, none, std::nullopt, std::nullopt, 2.1));
+}
+
+TEST_F(SpeechSynthesisUTest, speak_rejectsInvalidUtteranceId)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        mock_with_response("SpeechSynthesis.speak", bad);
+        auto result = speechSynthesisImpl_.speak("t");
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+
+        Firebolt::SpeechSynthesis::JsonData::UtteranceEventResponse event;
+        EXPECT_THROW(event.fromJson(nlohmann::json{{"utteranceId", bad}, {"event", "completed"}}), std::invalid_argument)
+            << bad.dump();
+    }
 }
 
 TEST_F(SpeechSynthesisUTest, speak_invalidResponse)

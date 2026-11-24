@@ -20,6 +20,7 @@
 #include "device_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
+#include <vector>
 
 class DeviceUTest : public ::testing::Test, protected MockBase
 {
@@ -196,6 +197,35 @@ TEST_F(DeviceUTest, TimeInActiveStateBadResponse)
     auto result = deviceImpl_.timeInActiveState();
     ASSERT_FALSE(result) << "DeviceImpl::timeInActiveState() did not return an error";
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(DeviceUTest, UnsignedGettersRejectInvalidNumbers)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const char* method : {"Device.uptime", "Device.timeInActiveState"})
+    {
+        for (const auto& bad : badUnsigned)
+        {
+            mock_with_response(method, bad);
+            auto result = std::string(method) == "Device.uptime" ? deviceImpl_.uptime() : deviceImpl_.timeInActiveState();
+            ASSERT_FALSE(result) << method << " " << bad.dump();
+            EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+        }
+    }
+}
+
+TEST_F(DeviceUTest, UnsignedGettersAcceptTheFullRange)
+{
+    mock_with_response("Device.uptime", 4294967295LL);
+    auto uptime = deviceImpl_.uptime();
+    ASSERT_TRUE(uptime);
+    EXPECT_EQ(*uptime, 4294967295U);
+
+    mock_with_response("Device.timeInActiveState", 0);
+    auto active = deviceImpl_.timeInActiveState();
+    ASSERT_TRUE(active);
+    EXPECT_EQ(*active, 0U);
 }
 
 TEST_F(DeviceUTest, Uid)

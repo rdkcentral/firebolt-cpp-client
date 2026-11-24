@@ -18,7 +18,6 @@
 
 #include "discovery_impl.h"
 #include "json_types/common.h"
-#include <algorithm>
 #include <cmath>
 #include <firebolt/json_types.h>
 #include <string_view>
@@ -33,11 +32,6 @@ bool isValidProgress(const std::optional<double>& progress)
     return !progress || (std::isfinite(*progress) && *progress >= 0.0);
 }
 
-bool allDigits(std::string_view text)
-{
-    return !text.empty() && std::all_of(text.begin(), text.end(), [](char c) { return c >= '0' && c <= '9'; });
-}
-
 int toInt(std::string_view digits)
 {
     int value = 0;
@@ -48,40 +42,28 @@ int toInt(std::string_view digits)
     return value;
 }
 
-// Firebolt 9: "YYYY-MM-DDThh:mm:ss.sssZ" (UTC). Whole seconds and other fraction lengths are also accepted.
+// Firebolt 9: "YYYY-MM-DDThh:mm:ss.sssZ" in UTC. Checks the exact shape ('d' is a digit) and the coarse field ranges;
+// the platform checks the calendar (days per month, leap years).
 bool isValidUtcTimestamp(std::string_view value)
 {
-    constexpr size_t wholeSecondsLength = 19; // YYYY-MM-DDThh:mm:ss
-    if (value.size() < wholeSecondsLength + 1 || value.back() != 'Z' || value[4] != '-' || value[7] != '-' ||
-        value[10] != 'T' || value[13] != ':' || value[16] != ':')
+    constexpr std::string_view pattern = "dddd-dd-ddTdd:dd:dd.dddZ";
+    if (value.size() != pattern.size())
     {
         return false;
     }
-
-    const auto year = value.substr(0, 4);
-    const auto month = value.substr(5, 2);
-    const auto day = value.substr(8, 2);
-    const auto hour = value.substr(11, 2);
-    const auto minute = value.substr(14, 2);
-    const auto second = value.substr(17, 2);
-    if (!allDigits(year) || !allDigits(month) || !allDigits(day) || !allDigits(hour) || !allDigits(minute) ||
-        !allDigits(second))
+    for (size_t i = 0; i < pattern.size(); ++i)
     {
-        return false;
+        const bool matches = pattern[i] == 'd' ? (value[i] >= '0' && value[i] <= '9') : value[i] == pattern[i];
+        if (!matches)
+        {
+            return false;
+        }
     }
 
-    const auto rest = value.substr(wholeSecondsLength, value.size() - wholeSecondsLength - 1);
-    if (!rest.empty() && (rest.front() != '.' || !allDigits(rest.substr(1))))
-    {
-        return false;
-    }
-
-    const int y = toInt(year);
-    const int m = toInt(month);
-    const bool leapYear = (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
-    const int daysInMonth[] = {31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    return m >= 1 && m <= 12 && toInt(day) >= 1 && toInt(day) <= daysInMonth[m - 1] && toInt(hour) < 24 &&
-           toInt(minute) < 60 && toInt(second) < 60;
+    const int month = toInt(value.substr(5, 2));
+    const int day = toInt(value.substr(8, 2));
+    return month >= 1 && month <= 12 && day >= 1 && day <= 31 && toInt(value.substr(11, 2)) < 24 &&
+           toInt(value.substr(14, 2)) < 60 && toInt(value.substr(17, 2)) < 60;
 }
 
 bool isValidWatchedRequest(const std::string& entityId, const std::optional<double>& progress,

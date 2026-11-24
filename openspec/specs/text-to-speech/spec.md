@@ -99,7 +99,7 @@ When the underlying request fails, the client SHALL return that error to the cal
 - **THEN** the caller receives that same error
 
 ### Requirement: Invalid response status and state values are rejected
-The client SHALL return `InvalidParams` when a `TextToSpeech.getspeechstate` response omits `speechstate`, supplies a non-integer value, or supplies an integer outside the defined range 0 to 3. For every TextToSpeech response, `TTS_Status` SHALL be an integer in the defined range 0 to 3; other values SHALL return `InvalidParams`.
+The client SHALL return `InvalidParams` when a `TextToSpeech.getspeechstate` response omits `speechstate`, supplies a non-integer value, or supplies an integer outside the defined range 0 to 3. For every TextToSpeech response, `TTS_Status` SHALL be an unsigned integer (see `common`) and SHALL be returned to the caller as received. Firebolt 9 defines the values 0 to 3, and the platform also sends 4 (no access, when the app is not allowed to speak after `setACL`); the client SHALL NOT restrict the value, because the caller uses `TTS_Status` to judge the call.
 
 #### Scenario: Missing speech state
 - **WHEN** the response omits `speechstate`
@@ -113,8 +113,12 @@ The client SHALL return `InvalidParams` when a `TextToSpeech.getspeechstate` res
 - **WHEN** the response supplies a `speechstate` outside 0 to 3
 - **THEN** the caller receives `InvalidParams`
 
-#### Scenario: TTS status is outside the defined range
-- **WHEN** a TextToSpeech response supplies `TTS_Status` outside 0 to 3
+#### Scenario: TTS status the platform defines beyond Firebolt 9
+- **WHEN** the platform answers speak with `TTS_Status` 4 and `success` false
+- **THEN** the caller receives ttsStatus 4 and success false
+
+#### Scenario: TTS status is not an unsigned integer
+- **WHEN** a TextToSpeech response supplies `TTS_Status` -1, 1.5 or "0"
 - **THEN** the caller receives `InvalidParams`
 
 ### Requirement: Event subscriptions

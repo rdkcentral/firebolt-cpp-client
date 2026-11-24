@@ -21,6 +21,7 @@
 #include "videooutput_impl.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <vector>
 
 class VideoOutputUTest : public ::testing::Test
 {
@@ -110,6 +111,46 @@ TEST_F(VideoOutputUTest, ResolutionReturnsInvalidParamsWhenPayloadIsMalformed)
     auto result = impl.resolution();
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, ResolutionRejectsInvalidUnsignedValues)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        expectGetterResponse("VideoOutput.resolution", nlohmann::json{{"width", bad}, {"height", 1080}});
+        auto result = impl.resolution();
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
+}
+
+TEST_F(VideoOutputUTest, ColorDepthAcceptsWholeNumberFloats)
+{
+    // Like refreshRate, a whole-number depth can arrive as a float on the wire
+    for (const auto& [wire, expected] : {std::pair{"8.0", Firebolt::VideoOutput::ColorDepthValue::D8},
+                                         std::pair{"10.0", Firebolt::VideoOutput::ColorDepthValue::D10},
+                                         std::pair{"12.0", Firebolt::VideoOutput::ColorDepthValue::D12},
+                                         std::pair{"0.0", Firebolt::VideoOutput::ColorDepthValue::D0}})
+    {
+        Firebolt::VideoOutput::JsonData::ColorDepthValueJson parser;
+        parser.fromJson(nlohmann::json::parse(wire));
+        EXPECT_EQ(parser.value(), expected) << wire;
+    }
+
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson parser;
+    EXPECT_THROW(parser.fromJson(nlohmann::json::parse("10.5")), std::out_of_range);
+    EXPECT_THROW(parser.fromJson(nlohmann::json(true)), std::invalid_argument);
+}
+
+TEST_F(VideoOutputUTest, NumericEnumsDoNotWrapLargeIntegersIntoValidValues)
+{
+    // 4294967320 is 24 modulo 2^32 and 4294967306 is 10, which a narrowing conversion would have accepted
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRate;
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepth;
+    EXPECT_THROW(refreshRate.fromJson(nlohmann::json(4294967320LL)), std::out_of_range);
+    EXPECT_THROW(colorDepth.fromJson(nlohmann::json(4294967306LL)), std::out_of_range);
 }
 
 TEST_F(VideoOutputUTest, HdcpReturnsParsedValue)

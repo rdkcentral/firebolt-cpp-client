@@ -19,7 +19,10 @@
 #pragma once
 
 #include "firebolt/common_types.h"
+#include <cstdint>
 #include <firebolt/json_types.h>
+#include <limits>
+#include <stdexcept>
 
 namespace Firebolt::JsonData
 {
@@ -28,4 +31,36 @@ inline const Firebolt::JSON::EnumType<::Firebolt::AgePolicy> AgePolicyEnum({
     {"app:child", ::Firebolt::AgePolicy::CHILD},
     {"app:teen", ::Firebolt::AgePolicy::TEEN},
 });
+
+// nlohmann's get<uint32_t>() would wrap a negative number, truncate a fraction, wrap a value above 4294967295 and
+// accept a boolean, so every unsigned field is parsed with these instead.
+inline uint64_t parseUnsigned64(const nlohmann::json& json)
+{
+    if (json.is_number_unsigned() || (json.is_number_integer() && json.get<int64_t>() >= 0))
+    {
+        return json.get<uint64_t>();
+    }
+    throw std::invalid_argument("Expected an unsigned integer");
+}
+
+// Firebolt 9 `unsigned` is a 32-bit unsigned integer
+inline uint32_t parseUnsigned(const nlohmann::json& json)
+{
+    const auto value = parseUnsigned64(json);
+    if (value > std::numeric_limits<uint32_t>::max())
+    {
+        throw std::invalid_argument("Expected a 32-bit unsigned integer");
+    }
+    return static_cast<uint32_t>(value);
+}
+
+class StrictUnsigned : public Firebolt::JSON::NL_Json_Basic<uint32_t>
+{
+public:
+    void fromJson(const nlohmann::json& json) override { value_ = parseUnsigned(json); }
+    [[nodiscard]] uint32_t value() const override { return value_; }
+
+private:
+    uint32_t value_{0};
+};
 } // namespace Firebolt::JsonData

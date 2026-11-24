@@ -21,6 +21,7 @@
 
 #pragma once
 #include "firebolt/actions.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
@@ -37,7 +38,7 @@ public:
         if (!checkRequiredFields(json, {"intent", "intentId"}))
             throw std::invalid_argument("Missing required fields in JSON");
         value_.intent = json["intent"].dump();
-        value_.intentId = json["intentId"].get<uint32_t>();
+        value_.intentId = ::Firebolt::JsonData::parseUnsigned(json["intentId"]);
     }
     [[nodiscard]] Intent value() const override { return value_; }
 

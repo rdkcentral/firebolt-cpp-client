@@ -35,6 +35,9 @@ enum class SpeechState
 };
 
 // Types
+// Firebolt 9: 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration. The platform also sends 4 (no access, when the
+// app is not allowed to speak after setACL). The client does not interpret the value; callers use it, not `success`,
+// to judge the call.
 using TTSStatus = uint32_t;
 using SpeechId = uint32_t;
 

@@ -37,7 +37,7 @@ methods:
   - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (0 to 0.99 for VOD, number of seconds
       for live)'}
   - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
-  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, exactly YYYY-MM-DDThh:mm:ss.sssZ'}
   - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
       groups to which content may be directed.}
   result: boolean
@@ -53,7 +53,7 @@ methods:
   - {name: progress, type: number, minimum: 0, description: 'How much of the content has been watched (0 to 0.99 for VOD, number of seconds
       for live)'}
   - {name: completed, type: boolean, description: 'Whether or not this viewing is considered "complete," per the app''s definition thereof'}
-  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, YYYY-MM-DDThh:mm:ss.sssZ'}
+  - {name: watchedOn, type: string, format: date-time, description: 'Date/Time the content was watched, UTC, exactly YYYY-MM-DDThh:mm:ss.sssZ'}
   - {name: agePolicy, type: Policies.AgePolicy, description: The age policy associated with the watch event. The age policy describes the age
       groups to which content may be directed.}
   result: 'null'

@@ -79,7 +79,7 @@ Result<unsigned> SpeechSynthesisImpl::speak(const std::string& text, std::option
         params["pii"] = *pii;
     }
 
-    return helper_.get<Firebolt::JSON::Unsigned, unsigned>("SpeechSynthesis.speak", params);
+    return helper_.get<Firebolt::JsonData::StrictUnsigned, unsigned>("SpeechSynthesis.speak", params);
 }
 Result<std::pmr::vector<Voice>> SpeechSynthesisImpl::voices() const
 {

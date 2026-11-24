@@ -9,7 +9,7 @@ Behaviour of the `IDiscovery` client: telling the platform that content was watc
 `watched` SHALL send `entityId` always, and SHALL send `progress`, `completed`, `watchedOn` and `agePolicy` only when the caller provided them. `agePolicy` SHALL be sent as the text `app:adult`, `app:child` or `app:teen`.
 
 #### Scenario: All arguments provided
-- **WHEN** the caller provides entityId, progress 0.75, completed true, watchedOn "2024-06-01T12:00:00Z" and agePolicy ADULT
+- **WHEN** the caller provides entityId, progress 0.75, completed true, watchedOn "2024-06-01T12:00:00.000Z" and agePolicy ADULT
 - **THEN** the request is `Discovery.watched` with exactly those five params and `agePolicy` "app:adult"
 
 ### Requirement: Watched result
@@ -20,7 +20,7 @@ Behaviour of the `IDiscovery` client: telling the platform that content was watc
 - **THEN** the caller receives true
 
 ### Requirement: Entity id and timestamp are checked
-`watched` and `watchedV2` SHALL return `InvalidParams`, without making a platform request, when `entityId` is empty, or when `watchedOn` is provided and is not a valid UTC timestamp. Firebolt 9 defines `watchedOn` as `YYYY-MM-DDThh:mm:ss.sssZ`; the client also accepts whole seconds and other fraction lengths (for example `2024-06-01T12:00:00Z`) so existing callers keep working. The date and time SHALL be real values (month 1 to 12, a day that exists in that month including leap years, hour 0 to 23, minute and second 0 to 59). Time zone offsets such as `+01:00` are not accepted.
+`watched` and `watchedV2` SHALL return `InvalidParams`, without making a platform request, when `entityId` is empty, or when `watchedOn` is provided and is not a valid UTC timestamp. Firebolt 9 defines `watchedOn` as `YYYY-MM-DDThh:mm:ss.sssZ`, and the client SHALL accept exactly this format: UTC with the `Z` suffix and three fraction digits (whole seconds and other fraction lengths are rejected). Each field SHALL be in range (month 1 to 12, day 1 to 31, hour 0 to 23, minute and second 0 to 59); the platform checks the calendar (days per month, leap years). Time zone offsets such as `+01:00` are not accepted.
 
 #### Scenario: Empty entity id
 - **WHEN** the caller provides an empty `entityId`
@@ -28,12 +28,12 @@ Behaviour of the `IDiscovery` client: telling the platform that content was watc
 - **AND** no platform request is made
 
 #### Scenario: Malformed timestamp
-- **WHEN** the caller provides `watchedOn` "2023-02-29T00:00:00Z" or "2024-06-01T12:00:00+00:00"
+- **WHEN** the caller provides `watchedOn` "2024-13-01T00:00:00.000Z", "2024-06-01T12:00:00Z" or "2024-06-01T12:00:00.000+00:00"
 - **THEN** the caller receives `InvalidParams`
 - **AND** no platform request is made
 
-#### Scenario: Valid timestamps
-- **WHEN** the caller provides `watchedOn` "2021-04-23T18:25:43.511Z" or "2024-06-01T12:00:00Z"
+#### Scenario: Valid timestamp
+- **WHEN** the caller provides `watchedOn` "2021-04-23T18:25:43.511Z"
 - **THEN** the request is sent
 
 ### Requirement: Progress meaning

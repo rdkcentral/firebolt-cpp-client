@@ -353,7 +353,7 @@ Reference: `src/json_types/lifecycle.h` (`LifecycleStateEnum`, `CloseReasonEnum`
 
 **Current practice:**
 - No-parameter getters: `helper_.get<Firebolt::JSON::String, std::string>("Module.method")`
-- Primitive types: use `Firebolt::JSON::String`, `Firebolt::JSON::Boolean`, `Firebolt::JSON::Unsigned`, etc.
+- Primitive types: use `Firebolt::JSON::String`, `Firebolt::JSON::Boolean`, etc. For a Firebolt 9 `unsigned` field use `Firebolt::JsonData::StrictUnsigned` (getter) or `parseUnsigned` (inside a struct parser, from `json_types/common.h`), not `Firebolt::JSON::Unsigned` or `get<uint32_t>()`, which wrap negative and oversized numbers.
 - Struct types: use the module's `JsonData` class (e.g., `JsonData::HDRFormat`)
 - Array types: use `Firebolt::JSON::NL_Json_Array<JsonElement, NativeElement>` (e.g., `Localization.preferredAudioLanguages`)
 

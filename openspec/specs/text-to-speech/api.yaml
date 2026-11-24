@@ -17,9 +17,8 @@ types:
   - name: TTSStatus
     type: integer
     minimum: 0
-    maximum: 3
     cpp: uint32_t
-    description: "0 OK, 1 Fail, 2 not enabled, 3 invalid configuration."
+    description: "0 OK, 1 Fail, 2 not enabled, 3 invalid configuration (Firebolt 9). The platform also sends 4 for no access after setACL; any unsigned value is passed through."
 
   - name: SpeechState
     type: integer

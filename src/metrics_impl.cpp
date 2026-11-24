@@ -21,6 +21,7 @@
 #include "json_types/metrics.h"
 #include <algorithm>
 #include <cctype>
+#include <cmath>
 #include <firebolt/json_types.h>
 
 namespace Firebolt::Metrics
@@ -209,6 +210,11 @@ Result<void> MetricsImpl::mediaWaiting(const std::string& entityId,
 Result<void> MetricsImpl::mediaSeeking(const std::string& entityId, const double target,
                                        const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    if (!std::isfinite(target)) // nlohmann would send NaN/infinity as null
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
     parameters["target"] = target;
@@ -222,6 +228,11 @@ Result<void> MetricsImpl::mediaSeeking(const std::string& entityId, const double
 Result<void> MetricsImpl::mediaSeeked(const std::string& entityId, const double position,
                                       const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    if (!std::isfinite(position)) // nlohmann would send NaN/infinity as null
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
     parameters["position"] = position;
@@ -235,6 +246,11 @@ Result<void> MetricsImpl::mediaSeeked(const std::string& entityId, const double 
 Result<void> MetricsImpl::mediaRateChanged(const std::string& entityId, const double rate,
                                            const std::optional<Firebolt::AgePolicy>& agePolicy) const
 {
+    if (!std::isfinite(rate)) // nlohmann would send NaN/infinity as null
+    {
+        return Result<void>{Error::InvalidParams};
+    }
+
     nlohmann::json parameters;
     parameters["entityId"] = entityId;
     parameters["rate"] = rate;

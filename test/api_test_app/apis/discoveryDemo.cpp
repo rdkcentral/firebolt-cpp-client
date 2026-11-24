@@ -53,7 +53,7 @@ void DiscoveryDemo::runOption(const std::string& method)
         {
         }
         std::optional<bool> completed = paramFromConsole("completed (true/false)", "false") == "true";
-        std::string watchedOn = paramFromConsole("watchedOn (ISO 8601 timestamp)", "2024-01-01T00:00:00Z");
+        std::string watchedOn = paramFromConsole("watchedOn (YYYY-MM-DDThh:mm:ss.sssZ)", "2024-01-01T00:00:00.000Z");
 
         std::optional<Firebolt::AgePolicy> agePolicyOpt =
             chooseEnumFromList(Firebolt::JsonData::AgePolicyEnum, "Choose an age policy for the watch event:");
@@ -78,7 +78,7 @@ void DiscoveryDemo::runOption(const std::string& method)
         {
         }
         std::optional<bool> completed = paramFromConsole("completed (true/false)", "false") == "true";
-        std::string watchedOn = paramFromConsole("watchedOn (ISO 8601 timestamp)", "2024-01-01T00:00:00Z");
+        std::string watchedOn = paramFromConsole("watchedOn (YYYY-MM-DDThh:mm:ss.sssZ)", "2024-01-01T00:00:00.000Z");
 
         std::optional<Firebolt::AgePolicy> agePolicyOpt =
             chooseEnumFromList(Firebolt::JsonData::AgePolicyEnum, "Choose an age policy for the watch event:");

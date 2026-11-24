@@ -19,6 +19,7 @@
 #include "actions_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
+#include <vector>
 
 using ::testing::Invoke;
 
@@ -57,6 +58,19 @@ TEST_F(ActionsUTest, IntentBadResponse)
     auto result = actionsImpl_.intent();
     ASSERT_FALSE(result);
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(ActionsUTest, IntentRejectsInvalidIntentId)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        mock_with_response("Actions.intent", {{"intent", {{"action", "x"}}}, {"intentId", bad}});
+        auto result = actionsImpl_.intent();
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)

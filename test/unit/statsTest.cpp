@@ -41,6 +41,31 @@ TEST_F(StatsUTest, MemoryUsage)
     EXPECT_EQ(result->gpuMemoryLimit, expectedValue.at("gpuMemoryLimit").get<uint64_t>());
 }
 
+TEST_F(StatsUTest, MemoryUsageAcceptsValuesAbove4GiB)
+{
+    mock_with_response("Stats.memoryUsage", {{"userMemoryUsed", 8589934592LL},
+                                             {"userMemoryLimit", 17179869184LL},
+                                             {"gpuMemoryUsed", 0},
+                                             {"gpuMemoryLimit", 4294967296LL}});
+    auto result = statsImpl_.memoryUsage();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->userMemoryUsed, 8589934592ULL);
+    EXPECT_EQ(result->userMemoryLimit, 17179869184ULL);
+    EXPECT_EQ(result->gpuMemoryLimit, 4294967296ULL);
+}
+
+TEST_F(StatsUTest, MemoryUsageRejectsNegativeAndNonIntegerValues)
+{
+    for (const nlohmann::json& bad : {nlohmann::json(-1), nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")})
+    {
+        mock_with_response("Stats.memoryUsage",
+                           {{"userMemoryUsed", bad}, {"userMemoryLimit", 1}, {"gpuMemoryUsed", 1}, {"gpuMemoryLimit", 1}});
+        auto result = statsImpl_.memoryUsage();
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
+}
+
 TEST_F(StatsUTest, MemoryUsageBadResponse)
 {
     mock_with_response("Stats.memoryUsage", "bad_response");

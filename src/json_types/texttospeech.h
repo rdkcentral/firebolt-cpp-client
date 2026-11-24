@@ -19,35 +19,11 @@
 #pragma once
 
 #include "firebolt/texttospeech.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 
 namespace Firebolt::TextToSpeech::JsonData
 {
-inline TTSStatus parseTTSStatus(const nlohmann::json& status)
-{
-    if (status.is_number_unsigned())
-    {
-        const auto value = status.get<uint64_t>();
-        if (value > 3)
-        {
-            throw std::out_of_range("Unsupported TTS_Status value");
-        }
-        return static_cast<TTSStatus>(value);
-    }
-
-    if (status.is_number_integer())
-    {
-        const auto value = status.get<int64_t>();
-        if (value < 0 || value > 3)
-        {
-            throw std::out_of_range("Unsupported TTS_Status value");
-        }
-        return static_cast<TTSStatus>(value);
-    }
-
-    throw std::invalid_argument("TTS_Status must be an integer");
-}
-
 class ListVoicesResponse : public Firebolt::JSON::NL_Json_Basic<::Firebolt::TextToSpeech::ListVoicesResponse>
 {
 public:
@@ -57,7 +33,12 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        ttsStatus_ = parseTTSStatus(json["TTS_Status"]);
+        ttsStatus_ = ::Firebolt::JsonData::parseUnsigned(json["TTS_Status"]);
+        // Iterating a non-array JSON value would silently accept a string, a number or null
+        if (!json["voices"].is_array())
+        {
+            throw std::invalid_argument("voices must be an array");
+        }
         voices_.clear();
         for (const auto& voice : json["voices"])
         {
@@ -83,7 +64,7 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        speechId_ = json["speechid"].get<uint32_t>();
+        speechId_ = ::Firebolt::JsonData::parseUnsigned(json["speechid"]);
     }
     [[nodiscard]] ::Firebolt::TextToSpeech::SpeechIdEvent value() const override
     {
@@ -103,8 +84,8 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        speechId_ = json["speechid"].get<uint32_t>();
-        ttsStatus_ = parseTTSStatus(json["TTS_Status"]);
+        speechId_ = ::Firebolt::JsonData::parseUnsigned(json["speechid"]);
+        ttsStatus_ = ::Firebolt::JsonData::parseUnsigned(json["TTS_Status"]);
         success_ = json["success"].get<bool>();
     }
     [[nodiscard]] ::Firebolt::TextToSpeech::SpeechResponse value() const override
@@ -140,7 +121,7 @@ public:
             throw std::out_of_range("Unsupported speechstate value");
         }
         speechState_ = static_cast<SpeechState>(stateValue);
-        ttsStatus_ = parseTTSStatus(json["TTS_Status"]);
+        ttsStatus_ = ::Firebolt::JsonData::parseUnsigned(json["TTS_Status"]);
         success_ = json["success"].get<bool>();
     }
     [[nodiscard]] ::Firebolt::TextToSpeech::SpeechStateResponse value() const override
@@ -163,7 +144,7 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        ttsStatus_ = parseTTSStatus(json["TTS_Status"]);
+        ttsStatus_ = ::Firebolt::JsonData::parseUnsigned(json["TTS_Status"]);
         success_ = json["success"].get<bool>();
     }
     [[nodiscard]] ::Firebolt::TextToSpeech::TTSStatusResponse value() const override

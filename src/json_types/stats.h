@@ -19,6 +19,7 @@
 #pragma once
 
 #include "firebolt/stats.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
 
@@ -33,10 +34,10 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        userMemoryUsed = json["userMemoryUsed"].get<uint64_t>();
-        userMemoryLimit = json["userMemoryLimit"].get<uint64_t>();
-        gpuMemoryUsed = json["gpuMemoryUsed"].get<uint64_t>();
-        gpuMemoryLimit = json["gpuMemoryLimit"].get<uint64_t>();
+        userMemoryUsed = ::Firebolt::JsonData::parseUnsigned64(json["userMemoryUsed"]);
+        userMemoryLimit = ::Firebolt::JsonData::parseUnsigned64(json["userMemoryLimit"]);
+        gpuMemoryUsed = ::Firebolt::JsonData::parseUnsigned64(json["gpuMemoryUsed"]);
+        gpuMemoryLimit = ::Firebolt::JsonData::parseUnsigned64(json["gpuMemoryLimit"]);
     }
     [[nodiscard]] ::Firebolt::Stats::MemoryInfo value() const override
     {

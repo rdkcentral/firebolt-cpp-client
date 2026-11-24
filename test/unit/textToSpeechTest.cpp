@@ -22,6 +22,7 @@
 #include "json_engine.h"
 #include "mock_helper.h"
 #include "texttospeech_impl.h"
+#include <vector>
 
 class TextToSpeechUTest : public ::testing::Test, protected MockBase
 {
@@ -121,11 +122,15 @@ TEST(Bcp47Test, rejectsMalformedTags)
 
 TEST_F(TextToSpeechUTest, listVoicesBadResponse)
 {
-    mock_with_response("TextToSpeech.listvoices",
-                       nlohmann::json{{"TTS_Status", 0}, {"voices", "not-an-array-of-strings"}});
-    auto result = ttsImpl.listVoices("en-US");
-    ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    // A string, null or object instead of an array must not be accepted as a list
+    for (const nlohmann::json& bad : {nlohmann::json("not-an-array"), nlohmann::json(nullptr),
+                                      nlohmann::json{{"a", "b"}}, nlohmann::json::array({1, 2})})
+    {
+        mock_with_response("TextToSpeech.listvoices", nlohmann::json{{"TTS_Status", 0}, {"voices", bad}});
+        auto result = ttsImpl.listVoices("en-US");
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
 }
 
 TEST_F(TextToSpeechUTest, pauseResumeCancelBadResponse)
@@ -143,6 +148,22 @@ TEST_F(TextToSpeechUTest, pauseResumeCancelBadResponse)
     expectInvalidParams(ttsImpl.pause(1));
     expectInvalidParams(ttsImpl.resume(1));
     expectInvalidParams(ttsImpl.cancel(1));
+}
+
+TEST_F(TextToSpeechUTest, SpeechIdRejectsInvalidUnsignedValues)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        mock_with_response("TextToSpeech.speak", nlohmann::json{{"speechid", bad}, {"TTS_Status", 0}, {"success", true}});
+        auto result = ttsImpl.speak("t");
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+
+        Firebolt::TextToSpeech::JsonData::SpeechIdEvent event;
+        EXPECT_THROW(event.fromJson(nlohmann::json{{"speechid", bad}}), std::invalid_argument) << bad.dump();
+    }
 }
 
 TEST_F(TextToSpeechUTest, speak)
@@ -369,13 +390,27 @@ TEST_F(TextToSpeechUTest, getSpeechStateUnknownValueReturnsInvalidParams)
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
-TEST_F(TextToSpeechUTest, speakRejectsOutOfRangeTTSStatus)
+TEST_F(TextToSpeechUTest, speakPassesThroughPlatformStatusBeyondFirebolt9)
 {
-    mock_with_response("TextToSpeech.speak", nlohmann::json{{"speechid", 1}, {"TTS_Status", 4}, {"success", true}});
+    // The platform sends 4 (no access) when the app is not allowed to speak; the caller must see it, not an error
+    mock_with_response("TextToSpeech.speak", nlohmann::json{{"speechid", 0}, {"TTS_Status", 4}, {"success", false}});
 
     auto result = ttsImpl.speak("utterance");
-    ASSERT_FALSE(result);
-    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->ttsStatus, 4U);
+    EXPECT_FALSE(result->success);
+}
+
+TEST_F(TextToSpeechUTest, speakRejectsTTSStatusThatIsNotUnsigned)
+{
+    for (const nlohmann::json& bad : {nlohmann::json(-1), nlohmann::json(1.5), nlohmann::json("0"), nlohmann::json(true)})
+    {
+        mock_with_response("TextToSpeech.speak", nlohmann::json{{"speechid", 1}, {"TTS_Status", bad}, {"success", true}});
+
+        auto result = ttsImpl.speak("utterance");
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
 }
 
 TEST_F(TextToSpeechUTest, subscribeOnWillSpeak)

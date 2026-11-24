@@ -1,0 +1,10 @@
+# Network contract. Field guide: openspec/README.md
+module: Network
+description: Network connectivity of the device.
+methods:
+  connected:
+    summary: Returns whether the device currently has a usable network connection
+    result: boolean
+    examples: [{result: true}]
+events:
+  onConnectedChanged: {changes: connected}

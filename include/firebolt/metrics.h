@@ -100,7 +100,7 @@ public:
     /**
      * @brief Informs the platform of an error that has occurred in your app
      *
-     * @param[in] type        : The type of error
+     * @param[in] type        : The type of error; a value that is not one of ErrorType returns InvalidParams
      * @param[in] code        : An app-specific error code
      * @param[in] description : The error description
      * @param[in] visible     : Whether the error is visible to the user
@@ -180,8 +180,7 @@ public:
      * @brief Called when a seek is initiated during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] target    : Target destination of the seek, as a decimal percentage (0-0.999) for content with a known
-     *                        duration, or an integer number of seconds (0-86400) for content with an unknown duration
+     * @param[in] target    : Target destination of the seek; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -194,9 +193,7 @@ public:
      * @brief Called when a seek is completed during media playback
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] position  : Resulting position of the seek operation, as a decimal percentage (0-0.999) for content
-     *                        with a known duration, or an integer number of seconds (0-86400) for content with an
-     *                        unknown duration
+     * @param[in] position  : Resulting position of the seek operation; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -209,7 +206,7 @@ public:
      * @brief Called when the playback rate of media is changed
      *
      * @param[in] entityId  : The ID of the media entity
-     * @param[in] rate      : The new playback rate
+     * @param[in] rate      : The new playback rate; must be a finite number
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
@@ -251,12 +248,13 @@ public:
     /**
      * @brief Called to inform the platform of 1st party distributor metrics
      *
-     * @param[in] schema    : The schema URI of the metric type
-     * @param[in] data      : A JSON payload
+     * @param[in] schema    : The schema URI of the metric type; must be a URI (scheme:rest)
+     * @param[in] data      : A JSON document, as text
      * @param[in] agePolicy : The age policy to associate with the metrics event, the age policy describes the age group
      *                        to which content is directed
      *
-     * @retval An ok Result on success, or an error; no value is returned
+     * @retval An ok Result on success, InvalidParams if schema is not a URI or data is not valid JSON, or an error; no
+     * value is returned
      */
     [[nodiscard]] virtual Result<void> event(const std::string& schema, const std::string& data,
                                              const std::optional<Firebolt::AgePolicy>& agePolicy) const = 0;

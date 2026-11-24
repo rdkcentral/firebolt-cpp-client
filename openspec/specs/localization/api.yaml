@@ -1,0 +1,29 @@
+# Localization contract. Field guide: openspec/README.md
+module: Localization
+description: Location and language preferences of the device.
+types:
+  CountryCode: {type: string, pattern: '^([A-Z]{2})?$', description: 'ISO 3166-1 alpha-2, or "" if not initialized'}
+  ISO639_2Language: {type: string, pattern: '^[a-z]{3}$', description: ISO 639-2/B language code}
+  Locale: {type: string, description: 'BCP 47 language tag, or "" if not initialized'}
+methods:
+  country:
+    summary: Returns the country, for example US, CA, GB or BE
+    result: CountryCode
+    examples: [{result: US}]
+  preferredAudioLanguages:
+    summary: Returns zero or more languages in order of decreasing preference, [] if not initialized. A language can be repeated
+    result: "array<ISO639_2Language>"
+    examples: [{result: [spa, eng]}]
+  presentationLanguage:
+    summary: Returns the presentation language of the device, for example en-US
+    result: Locale
+    examples: [{result: en-US}]
+  timeZone:
+    summary: Returns the current time zone in IANA format, for example America/New_York
+    result: string
+    examples: [{result: America/New_York}]
+events:
+  onCountryChanged: {changes: country}
+  onPreferredAudioLanguagesChanged: {changes: preferredAudioLanguages}
+  onPresentationLanguageChanged: {changes: presentationLanguage}
+  onTimeZoneChanged: {changes: timeZone}

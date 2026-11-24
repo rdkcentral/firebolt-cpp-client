@@ -20,6 +20,7 @@
 #include "device_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
+#include <vector>
 
 class DeviceUTest : public ::testing::Test, protected MockBase
 {
@@ -41,7 +42,9 @@ TEST_F(DeviceUTest, ChipsetId)
 TEST_F(DeviceUTest, ChipsetIdBadResponse)
 {
     mock_with_response("Device.chipsetId", 12345);
-    ASSERT_FALSE(deviceImpl_.chipsetId()) << "DeviceImpl::chipsetId() did not return an error";
+    auto result = deviceImpl_.chipsetId();
+    ASSERT_FALSE(result) << "DeviceImpl::chipsetId() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, DeviceClass)
@@ -63,6 +66,14 @@ TEST_F(DeviceUTest, OsName)
     auto result = deviceImpl_.osName();
     ASSERT_TRUE(result) << "DeviceImpl::osName() returned an error";
     EXPECT_EQ(*result, "Linux");
+}
+
+TEST_F(DeviceUTest, OsNameBadResponse)
+{
+    mock_with_response("Device.osName", 12345);
+    auto result = deviceImpl_.osName();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, SetOsName)
@@ -88,6 +99,14 @@ TEST_F(DeviceUTest, OsVersion)
     EXPECT_EQ(*result, "5.15.0");
 }
 
+TEST_F(DeviceUTest, OsVersionBadResponse)
+{
+    mock_with_response("Device.osVersion", 12345);
+    auto result = deviceImpl_.osVersion();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(DeviceUTest, SetOsVersion)
 {
     nlohmann::json expectedParams;
@@ -110,10 +129,20 @@ TEST_F(DeviceUTest, Firmware)
     EXPECT_EQ(*result, "1.0.0-20240101");
 }
 
+TEST_F(DeviceUTest, FirmwareBadResponse)
+{
+    mock_with_response("Device.firmware", 12345);
+    auto result = deviceImpl_.firmware();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(DeviceUTest, DeviceClassBadResponse)
 {
     mock_with_response("Device.deviceClass", "abc");
-    ASSERT_FALSE(deviceImpl_.deviceClass()) << "DeviceImpl::deviceClass() didn't returned an error";
+    auto result = deviceImpl_.deviceClass();
+    ASSERT_FALSE(result) << "DeviceImpl::deviceClass() didn't returned an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, Hdr)
@@ -131,6 +160,14 @@ TEST_F(DeviceUTest, Hdr)
     EXPECT_EQ(result->hlg, expectedValue["hlg"].get<bool>());
 }
 
+TEST_F(DeviceUTest, HdrBadResponse)
+{
+    mock_with_response("Device.hdr", nlohmann::json{{"hdr10", true}});
+    auto result = deviceImpl_.hdr();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
 TEST_F(DeviceUTest, TimeInActiveState)
 {
     mock("Device.timeInActiveState");
@@ -142,10 +179,53 @@ TEST_F(DeviceUTest, TimeInActiveState)
     EXPECT_EQ(*result, expectedValue);
 }
 
+TEST_F(DeviceUTest, TimeInActiveStatePassesThroughAppStateInvalidError)
+{
+    constexpr auto appStateInvalid = static_cast<Firebolt::Error>(-50110);
+    EXPECT_CALL(mockHelper, getJson("Device.timeInActiveState", _))
+        .WillOnce(Invoke([&](const std::string& /*methodName*/, const nlohmann::json& /*parameters*/)
+                         { return Firebolt::Result<nlohmann::json>{appStateInvalid}; }));
+
+    auto result = deviceImpl_.timeInActiveState();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), appStateInvalid);
+}
+
 TEST_F(DeviceUTest, TimeInActiveStateBadResponse)
 {
     mock_with_response("Device.timeInActiveState", "invalid_response");
-    ASSERT_FALSE(deviceImpl_.timeInActiveState()) << "DeviceImpl::timeInActiveState() did not return an error";
+    auto result = deviceImpl_.timeInActiveState();
+    ASSERT_FALSE(result) << "DeviceImpl::timeInActiveState() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(DeviceUTest, UnsignedGettersRejectInvalidNumbers)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const char* method : {"Device.uptime", "Device.timeInActiveState"})
+    {
+        for (const auto& bad : badUnsigned)
+        {
+            mock_with_response(method, bad);
+            auto result = std::string(method) == "Device.uptime" ? deviceImpl_.uptime() : deviceImpl_.timeInActiveState();
+            ASSERT_FALSE(result) << method << " " << bad.dump();
+            EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+        }
+    }
+}
+
+TEST_F(DeviceUTest, UnsignedGettersAcceptTheFullRange)
+{
+    mock_with_response("Device.uptime", 4294967295LL);
+    auto uptime = deviceImpl_.uptime();
+    ASSERT_TRUE(uptime);
+    EXPECT_EQ(*uptime, 4294967295U);
+
+    mock_with_response("Device.timeInActiveState", 0);
+    auto active = deviceImpl_.timeInActiveState();
+    ASSERT_TRUE(active);
+    EXPECT_EQ(*active, 0U);
 }
 
 TEST_F(DeviceUTest, Uid)
@@ -162,7 +242,9 @@ TEST_F(DeviceUTest, Uid)
 TEST_F(DeviceUTest, UidBadResponse)
 {
     mock_with_response("Device.uid", 67890);
-    ASSERT_FALSE(deviceImpl_.uid()) << "DeviceImpl::uid() did not return an error";
+    auto result = deviceImpl_.uid();
+    ASSERT_FALSE(result) << "DeviceImpl::uid() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 TEST_F(DeviceUTest, Uptime)
 {
@@ -178,7 +260,9 @@ TEST_F(DeviceUTest, Uptime)
 TEST_F(DeviceUTest, UptimeBadResponse)
 {
     mock_with_response("Device.uptime", "invalid_response");
-    ASSERT_FALSE(deviceImpl_.uptime()) << "DeviceImpl::uptime() did not return an error";
+    auto result = deviceImpl_.uptime();
+    ASSERT_FALSE(result) << "DeviceImpl::uptime() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, SubscribeOnHdrChanged)
@@ -208,8 +292,9 @@ TEST_F(DeviceUTest, DolbyAtmosExperienceAvailable)
 TEST_F(DeviceUTest, DolbyAtmosExperienceAvailableBadResponse)
 {
     mock_with_response("Device.dolbyAtmosExperienceAvailable", "invalid_response");
-    ASSERT_FALSE(deviceImpl_.dolbyAtmosExperienceAvailable())
-        << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
+    auto result = deviceImpl_.dolbyAtmosExperienceAvailable();
+    ASSERT_FALSE(result) << "DeviceImpl::dolbyAtmosExperienceAvailable() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, SubscribeOnDolbyAtmosExperienceAvailableChanged)
@@ -239,7 +324,9 @@ TEST_F(DeviceUTest, Name)
 TEST_F(DeviceUTest, NameBadResponse)
 {
     mock_with_response("Device.name", 12345);
-    ASSERT_FALSE(deviceImpl_.name()) << "DeviceImpl::name() did not return an error";
+    auto result = deviceImpl_.name();
+    ASSERT_FALSE(result) << "DeviceImpl::name() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(DeviceUTest, SubscribeOnNameChanged)

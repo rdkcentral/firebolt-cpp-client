@@ -1,0 +1,10 @@
+# Presentation contract. Field guide: openspec/README.md
+module: Presentation
+description: Presentation state of the app.
+methods:
+  focused:
+    summary: Returns whether the app is in focus, that is receiving key presses. For apps and runtimes that cannot use Wayland
+    result: boolean
+    examples: [{result: true}]
+events:
+  onFocusedChanged: {changes: focused}

@@ -1,0 +1,76 @@
+# Device contract. Field guide: openspec/README.md
+module: Device
+description: Information about the device.
+types:
+  DeviceClass:
+    enum: {ott: OTT, stb: STB, tv: TV}
+    description: "ott: no tuner/demod, no integrated display; stb: with tuner/demod, no integrated display; tv: possibly tuner/demod, with integrated display"
+  HDRFormat:
+    description: Which HDR formats are supported
+    fields:
+      hdr10: {type: boolean}
+      hdr10Plus: {type: boolean}
+      dolbyVision: {type: boolean}
+      hlg: {type: boolean}
+methods:
+  uid:
+    summary: Returns a persistent unique UUID for the current app and device. The UUID is reset when the app or device is reset
+    result: string
+    examples: [{result: ee6723b8-7ab3-462c-8d93-dbf61227998e}]
+  deviceClass:
+    summary: Returns the class of the device
+    result: DeviceClass
+    examples: [{result: ott}]
+  uptime:
+    summary: Returns the number of seconds since the most recent device boot, including any time spent in deep sleep
+    result: unsigned
+    examples: [{result: 123456}]
+  timeInActiveState:
+    summary: Returns the number of seconds since the device transitioned to the ON power state
+    result: unsigned
+    errors: [-50110]
+    examples: [{result: 654321}]
+  chipsetId:
+    summary: Returns the chipset ID as a printable string
+    result: string
+    examples: [{result: BCM72180}]
+  hdr:
+    summary: Returns the HDR formats supported by the attached TV or the integral display
+    result: HDRFormat
+    examples: [{result: {hdr10: true, hdr10Plus: true, dolbyVision: true, hlg: true}}]
+  dolbyAtmosExperienceAvailable:
+    summary: Returns whether the Dolby Atmos experience is available on the device
+    result: boolean
+    examples: [{result: true}]
+  osName:
+    summary: Returns the operating system name as defined by the operator
+    result: string
+    examples: [{result: Linux}]
+  setOsName:
+    summary: Sets the operating system name. Testing only
+    extension: true
+    params:
+      value: {type: string, description: The operating system name}
+    examples: [{params: {value: Linux}}]
+  osVersion:
+    summary: Returns the operating system version as defined by the operator
+    result: string
+    examples: [{result: 5.15.0}]
+  setOsVersion:
+    summary: Sets the operating system version. Testing only
+    extension: true
+    params:
+      value: {type: string, description: The operating system version}
+    examples: [{params: {value: 5.15.0}}]
+  firmware:
+    summary: Returns a string that identifies the firmware image of the device
+    result: string
+    examples: [{result: 1.0.0-20240101}]
+  name:
+    summary: Returns the device friendly name
+    result: string
+    examples: [{result: Living Room TV}]
+events:
+  onHdrChanged: {changes: hdr}
+  onDolbyAtmosExperienceAvailableChanged: {changes: dolbyAtmosExperienceAvailable}
+  onNameChanged: {changes: name}

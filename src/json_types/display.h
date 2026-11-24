@@ -19,6 +19,7 @@
 #pragma once
 
 #include "firebolt/display.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
 
@@ -35,8 +36,8 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        width_ = json["width"].get<uint32_t>();
-        height_ = json["height"].get<uint32_t>();
+        width_ = ::Firebolt::JsonData::parseUnsigned(json["width"]);
+        height_ = ::Firebolt::JsonData::parseUnsigned(json["height"]);
     }
     [[nodiscard]] ::Firebolt::Display::DisplaySize value() const override
     {

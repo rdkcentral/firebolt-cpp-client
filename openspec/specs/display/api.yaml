@@ -1,0 +1,21 @@
+# Display contract. Field guide: openspec/README.md
+module: Display
+description: Details of the connected or integral display. An OTT or STB device with no display connected over HDMI answers `edid` with "" and `size` and `maxResolution` with 0, 0.
+types:
+  DisplaySize:
+    fields:
+      width: {type: unsigned}
+      height: {type: unsigned}
+methods:
+  edid:
+    summary: Returns the EDID (and extensions) of the connected or integral display, Base64 encoded
+    result: string
+    examples: [{result: ZWU2NzIzYjgtN2FiMy00NjJjLThkOTMtZGJmNjEyMjc5OThl}]
+  size:
+    summary: Returns the physical dimensions of the connected or integral display, in centimeters
+    result: DisplaySize
+    examples: [{result: {width: 48, height: 27}}]
+  maxResolution:
+    summary: Returns the physical (native) resolution of the connected or integral display, in pixels
+    result: DisplaySize
+    examples: [{result: {width: 1920, height: 1080}}]

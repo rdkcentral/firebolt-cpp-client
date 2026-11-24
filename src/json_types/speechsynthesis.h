@@ -21,6 +21,7 @@
 #include <memory_resource>
 
 #include "firebolt/speechsynthesis.h"
+#include "json_types/common.h"
 #include <firebolt/json_types.h>
 
 namespace Firebolt::SpeechSynthesis::JsonData
@@ -85,7 +86,7 @@ public:
             throw std::invalid_argument("Unknown utterance event");
         }
 
-        utteranceId_ = json["utteranceId"].get<::Firebolt::SpeechSynthesis::UtteranceId>();
+        utteranceId_ = ::Firebolt::JsonData::parseUnsigned(json["utteranceId"]);
 
         event_ = eventIt->second;
     }

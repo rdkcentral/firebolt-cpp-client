@@ -39,7 +39,8 @@ public:
     /**
      * @brief Returns the EDID (and extensions) of the connected or integral display, as a Base64 encoded string
      *
-     * @retval The class property or error
+     * @retval The Base64 encoded EDID, or an empty string on an OTT/STB device when a display is not connected over
+     *         HDMI, or error
      */
     [[nodiscard]] virtual Result<std::string> edid() const = 0;
 

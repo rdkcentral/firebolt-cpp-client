@@ -1,0 +1,69 @@
+# VideoOutput contract. Field guide: openspec/README.md
+module: VideoOutput
+description: Properties of the active video output. With no display connected, `resolution` is 0 x 0, `refreshRate` and `colorDepth` are 0, and the other properties are `none`.
+types:
+  VideoOutputResolution:
+    fields:
+      height: {type: unsigned}
+      width: {type: unsigned}
+  HdcpState:
+    enum: {direct: Direct, "hdcp1.4": Hdcp14, "hdcp2.2": Hdcp22, none: None}
+  CecStateValue:
+    enum: {active: Active, inactive: Inactive, unsupported: Unsupported}
+  RefreshRateValue:
+    enum: {0: R0, 23.976: R23976, 24: R24, 25: R25, 29.97: R2997, 30: R30, 50: R50, 59.94: R5994, 60: R60}
+    description: Refresh rate in Hz, as a number
+  ColorDepthValue:
+    enum: {0: D0, 8: D8, 10: D10, 12: D12}
+    description: Color depth in bits, as a number
+  ColorFormatValue:
+    enum: {ycbcr420: Ycbcr420, ycbcr422: Ycbcr422, ycbcr444: Ycbcr444, rgb444: Rgb444, none: None}
+  OutputColorimetry:
+    enum: {bt2020rgb: Bt2020rgb, bt2020ycc: Bt2020ycc, bt709: Bt709, oprgb: Oprgb, none: None}
+  DynamicRangeValue:
+    enum: {hdr10: Hdr10, hdr10plus: Hdr10plus, dolbyVision: DolbyVision, hlg: Hlg, sdr: Sdr, none: None}
+  QuantizationRangeValue:
+    enum: {limited: Limited, full: Full, none: None}
+methods:
+  resolution:
+    summary: Returns the resolution of the active video output
+    result: VideoOutputResolution
+    examples: [{result: {height: 1080, width: 1920}}]
+  hdcp:
+    summary: Returns the HDCP state of the active video output
+    result: HdcpState
+    examples: [{result: hdcp1.4}]
+  cecState:
+    summary: Returns the CEC state of the active video output
+    result: CecStateValue
+    errors: [-50120]
+    examples: [{result: inactive}]
+  refreshRate:
+    summary: Returns the refresh rate of the active video output
+    result: RefreshRateValue
+    examples: [{result: 59.94}]
+  colorDepth:
+    summary: Returns the color depth of the active video output
+    result: ColorDepthValue
+    examples: [{result: 8}]
+  colorFormat:
+    summary: Returns the color format of the active video output
+    result: ColorFormatValue
+    examples: [{result: ycbcr422}]
+  colorimetry:
+    summary: Returns the colorimetry of the active video output
+    result: OutputColorimetry
+    examples: [{result: bt709}]
+  dynamicRange:
+    summary: Returns the dynamic range of the active video output
+    result: DynamicRangeValue
+    examples: [{result: sdr}]
+  quantizationRange:
+    summary: Returns the quantization range of the active video output
+    result: QuantizationRangeValue
+    examples: [{result: limited}]
+events:
+  onResolutionChanged: {changes: resolution}
+  onHdcpChanged: {changes: hdcp}
+  onCecStateChanged: {changes: cecState}
+  onRefreshRateChanged: {changes: refreshRate}

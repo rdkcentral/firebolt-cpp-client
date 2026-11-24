@@ -26,16 +26,6 @@
 
 namespace Firebolt::TextToSpeech
 {
-// Enums
-enum class SpeechRate
-{
-    SLOW,
-    MEDIUM,
-    FAST,
-    FASTER,
-    FASTEST
-};
-
 enum class SpeechState
 {
     PENDING = 0,
@@ -45,6 +35,9 @@ enum class SpeechState
 };
 
 // Types
+// Firebolt 9: 0 OK, 1 Fail, 2 not enabled, 3 invalid configuration. The platform also sends 4 (no access, when the
+// app is not allowed to speak after setACL). The client does not interpret the value; callers use it, not `success`,
+// to judge the call.
 using TTSStatus = uint32_t;
 using SpeechId = uint32_t;
 
@@ -89,25 +82,25 @@ public:
      *
      * @param[in] language : Request language as a BCP 47 locale tag (for example, "en-US")
      *
-     * @retval The list of voices supported for the language
+     * @retval The list of voices supported for the language, or InvalidParams if language is not a valid BCP 47 tag
      */
     [[nodiscard]] virtual Result<ListVoicesResponse> listVoices(const std::string& language) const = 0;
 
     /**
      * @brief Speak the uttered text using the TTS engine
      *
-     * @param[in] text : String to be converted to Audio for speech
-     * @param[in] callSign : Optional call sign for the app making the request
-     * @param[in] language : Optional language for the speech request
-     * @param[in] voice : Optional voice for the speech request
-     * @param[in] volume : Optional volume for the speech request
-     * @param[in] rate : Optional rate for the speech request
-     * @param[in] pitch : Optional pitch for the speech request
+     * @param[in] text : Plain text or a well-formed SSML document to be converted to speech
+     * @param[in] callsign : Optional application call sign. Required if setACL was called before speak.
+     * @param[in] language : Optional language of the text as a BCP 47 tag
+     * @param[in] voice : Optional voice identifier returned by listVoices
+     * @param[in] volume : Optional speaking volume, decimal string from 0 to 1 (default 1)
+     * @param[in] rate : Optional speaking rate, decimal string from 0.1 to 10 (default 1)
+     * @param[in] pitch : Optional speaking pitch, decimal string from 0 to 2 (default 1; not currently supported)
      *
-     * @retval Result for Speak
+     * @retval Result for Speak, or InvalidParams if language, volume, rate or pitch is malformed or out of range
      */
     [[nodiscard]] virtual Result<SpeechResponse>
-    speak(const std::string& text, std::optional<std::string> callSign = std::nullopt,
+    speak(const std::string& text, std::optional<std::string> callsign = std::nullopt,
           std::optional<std::string> language = std::nullopt, std::optional<std::string> voice = std::nullopt,
           std::optional<std::string> volume = std::nullopt, std::optional<std::string> rate = std::nullopt,
           std::optional<std::string> pitch = std::nullopt) const = 0;
@@ -206,8 +199,7 @@ public:
     subscribeOnSpeechInterrupted(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
-     * @brief Triggered when an error occurs during playback including network
-     *        failures
+     * @brief Utterance failed due to network
      *
      * @param[in]  notification : The callback function
      *
@@ -216,8 +208,7 @@ public:
     virtual Result<SubscriptionId> subscribeOnNetworkError(std::function<void(const SpeechIdEvent&)>&& notification) = 0;
 
     /**
-     * @brief Triggered when an error occurs during playback including pipeline
-     *        failures
+     * @brief Utterance failed during playback
      *
      * @param[in]  notification : The callback function
      *

@@ -40,7 +40,9 @@ TEST_F(LocalizationUTest, Country)
 TEST_F(LocalizationUTest, CountryBadResponse)
 {
     mock_with_response("Localization.country", 12345);
-    ASSERT_FALSE(localizationImpl_.country()) << "LocalizationImpl::country() did not return an error";
+    auto result = localizationImpl_.country();
+    ASSERT_FALSE(result) << "LocalizationImpl::country() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(LocalizationUTest, PreferredAudioLanguages)
@@ -51,16 +53,33 @@ TEST_F(LocalizationUTest, PreferredAudioLanguages)
     ASSERT_TRUE(result) << "error on get";
 
     auto expectedValue = jsonEngine.get_value("Localization.preferredAudioLanguages");
-    std::set<std::string> expectedSet(expectedValue.begin(), expectedValue.end());
-    std::set<std::string> resultSet(result->begin(), result->end());
-    EXPECT_EQ(resultSet, expectedSet);
+    EXPECT_EQ(*result, expectedValue.get<std::vector<std::string>>());
+}
+
+TEST_F(LocalizationUTest, PreferredAudioLanguagesKeepOrderAndRepeats)
+{
+    mock_with_response("Localization.preferredAudioLanguages", nlohmann::json{"spa", "eng", "spa", "fra"});
+
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, (std::vector<std::string>{"spa", "eng", "spa", "fra"}));
+}
+
+TEST_F(LocalizationUTest, PreferredAudioLanguagesMayBeEmpty)
+{
+    mock_with_response("Localization.preferredAudioLanguages", nlohmann::json::array());
+
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_TRUE(result);
+    EXPECT_TRUE(result->empty());
 }
 
 TEST_F(LocalizationUTest, PreferredAudioLanguagesBadResponse)
 {
     mock_with_response("Localization.preferredAudioLanguages", 12345);
-    ASSERT_FALSE(localizationImpl_.preferredAudioLanguages())
-        << "LocalizationImpl::preferredAudioLanguages() did not return an error";
+    auto result = localizationImpl_.preferredAudioLanguages();
+    ASSERT_FALSE(result) << "LocalizationImpl::preferredAudioLanguages() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(LocalizationUTest, PresentationLanguage)
@@ -77,8 +96,9 @@ TEST_F(LocalizationUTest, PresentationLanguage)
 TEST_F(LocalizationUTest, PresentationLanguageBadResponse)
 {
     mock_with_response("Localization.presentationLanguage", 67890);
-    ASSERT_FALSE(localizationImpl_.presentationLanguage())
-        << "LocalizationImpl::presentationLanguage() did not return an error";
+    auto result = localizationImpl_.presentationLanguage();
+    ASSERT_FALSE(result) << "LocalizationImpl::presentationLanguage() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(LocalizationUTest, subscribeOnCountryChanged)
@@ -128,7 +148,9 @@ TEST_F(LocalizationUTest, TimeZone)
 TEST_F(LocalizationUTest, TimeZoneBadResponse)
 {
     mock_with_response("Localization.timeZone", 12345);
-    ASSERT_FALSE(localizationImpl_.timeZone()) << "LocalizationImpl::timeZone() did not return an error";
+    auto result = localizationImpl_.timeZone();
+    ASSERT_FALSE(result) << "LocalizationImpl::timeZone() did not return an error";
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
 }
 
 TEST_F(LocalizationUTest, subscribeOnTimeZoneChanged)

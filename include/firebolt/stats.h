@@ -38,6 +38,8 @@ public:
     /**
      * @brief Returns information about container memory usage in bytes.
      *
+     * The values are 64-bit, unlike the 32-bit `unsigned` of Firebolt 9, because a byte count can exceed 4 GiB.
+     *
      * @retval MemoryInfo struct or error
      */
     [[nodiscard]] virtual Result<MemoryInfo> memoryUsage() const = 0;

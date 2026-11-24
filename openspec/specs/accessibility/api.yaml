@@ -1,0 +1,35 @@
+# Accessibility contract. Field guide: openspec/README.md
+module: Accessibility
+description: Device settings for closed captions, audio description, high contrast UI and voice guidance.
+types:
+  ClosedCaptionsSettings:
+    fields:
+      enabled: {type: boolean, description: Whether closed captions are enabled by default}
+      preferredLanguages: {type: "array<Localization.ISO639_2Language>", description: "Languages in order of decreasing preference; [] if not initialized"}
+  VoiceGuidanceSettings:
+    fields:
+      enabled: {type: boolean, description: Whether voice guidance is enabled by default}
+      rate: {type: double, minimum: 0.1, maximum: 10, description: "Speech rate of voice guidance; 1 is the normal rate"}
+      navigationHints: {type: boolean, description: Whether voice guidance includes additional navigation hints}
+methods:
+  audioDescription:
+    summary: Returns the audio description setting of the device
+    result: boolean
+    examples: [{result: true}]
+  closedCaptionsSettings:
+    summary: Returns the closed captions settings
+    result: ClosedCaptionsSettings
+    examples: [{result: {enabled: true, preferredLanguages: [eng, spa]}}]
+  highContrastUI:
+    summary: Returns the high contrast UI setting of the device
+    result: boolean
+    examples: [{result: true}]
+  voiceGuidanceSettings:
+    summary: Returns the voice guidance settings
+    result: VoiceGuidanceSettings
+    examples: [{result: {enabled: true, rate: 0.8, navigationHints: true}}]
+events:
+  onAudioDescriptionChanged: {changes: audioDescription}
+  onClosedCaptionsSettingsChanged: {changes: closedCaptionsSettings}
+  onHighContrastUIChanged: {changes: highContrastUI}
+  onVoiceGuidanceSettingsChanged: {changes: voiceGuidanceSettings}

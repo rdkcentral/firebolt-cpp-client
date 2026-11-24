@@ -1,0 +1,16 @@
+# Stats contract. Field guide: openspec/README.md
+module: Stats
+description: Application-level system information.
+types:
+  MemoryInfo:
+    description: Current and maximum memory usage of the container, in bytes. Firebolt 9 types the values `unsigned`; they can exceed 4 GiB, so this client uses `unsigned64`
+    fields:
+      userMemoryUsed: {type: unsigned64, description: User memory currently used}
+      userMemoryLimit: {type: unsigned64, description: Maximum user memory available}
+      gpuMemoryUsed: {type: unsigned64, description: GPU memory currently used}
+      gpuMemoryLimit: {type: unsigned64, description: Maximum GPU memory available}
+methods:
+  memoryUsage:
+    summary: Returns information about container memory usage in bytes
+    result: MemoryInfo
+    examples: [{result: {userMemoryUsed: 126418944, userMemoryLimit: 807948288, gpuMemoryUsed: 353974272, gpuMemoryLimit: 922863616}}]

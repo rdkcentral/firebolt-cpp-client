@@ -1,0 +1,70 @@
+# SpeechSynthesis contract. Field guide: openspec/README.md
+module: SpeechSynthesis
+description: Speech synthesis of text or SSML. Replaces the deprecated `TextToSpeech`.
+types:
+  Voice:
+    fields:
+      name: {type: string, description: The voice name}
+      lang: {type: string, description: The language of the voice, BCP 47}
+      default: {type: boolean, cpp_name: _default, description: Whether this is the default voice for its language}
+  UtteranceEventEnum:
+    enum:
+      synthesisStarting: synthesisStarting
+      playbackStarting: playbackStarting
+      paused: paused
+      resumed: resumed
+      completed: completed
+      interrupted: interrupted
+      networkFailed: networkFailed
+      synthesisFailed: synthesisFailed
+      playbackFailed: playbackFailed
+    description: What happened to an utterance
+  UtteranceEvent:
+    fields:
+      utteranceId: {type: unsigned}
+      event: {type: UtteranceEventEnum}
+methods:
+  speak:
+    summary: Requests the platform to speak an utterance. Returns the utterance ID if the request is accepted
+    params:
+      text: {type: string, description: Plain text or a well-formed SSML document}
+      lang: {type: string, format: bcp47, optional: true, description: The language of the text, BCP 47}
+      voice: {type: string, optional: true, description: A voice name as returned by `voices`}
+      volume: {type: double, minimum: 0, maximum: 1, optional: true, description: "Speaking volume, 0 (lowest) to 1 (highest)"}
+      rate: {type: double, minimum: 0.1, maximum: 10, optional: true, description: "Speaking rate, 0.1 (slowest) to 10 (fastest)"}
+      pitch: {type: double, minimum: 0, maximum: 2, optional: true, description: "Speaking pitch, 0 (lowest) to 2 (highest)"}
+      pii: {type: boolean, optional: true, description: "True if the text contains personally identifiable information, so logging and telemetry are restricted; false if not set"}
+    result: unsigned
+    errors: [-50110, -50130]
+    examples:
+      - params: {text: I am a text waiting for speech., lang: en-US, voice: female-1, volume: 0.8, rate: 1, pitch: 1, pii: false}
+        result: 1
+  voices:
+    summary: Returns the available voices, in no particular order. The list is empty if no speech synthesis engine is available
+    result: "array<Voice>"
+    cpp_result: "std::pmr::vector<Voice>"
+    examples: [{result: [{name: Salli, lang: en-US, default: true}]}]
+  cancel:
+    summary: Cancels an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50130]
+    examples: [{params: {utteranceId: 1}}]
+  pause:
+    summary: Pauses an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50130]
+    examples: [{params: {utteranceId: 1}}]
+  resume:
+    summary: Resumes an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50110, -50130]
+    examples: [{params: {utteranceId: 1}}]
+events:
+  onVoicesChanged: {changes: voices}
+  onUtteranceEvent:
+    summary: Progress of an utterance
+    payload: UtteranceEvent
+    examples: [{payload: {utteranceId: 77, event: resumed}}]

@@ -1,0 +1,27 @@
+# Actions contract. Field guide: openspec/README.md
+module: Actions
+description: Receiving the most recent intent from the platform and sending an intent to it.
+types:
+  Intent:
+    fields:
+      intent: {type: json, description: The intent, a JSON document}
+      intentId: {type: unsigned, description: Monotonic; greater than the id of the previous intent}
+methods:
+  intent:
+    summary: Returns the intent most recently received from the platform. Typically called by an app after it becomes active
+    result: Intent
+    examples:
+      - result: {intent: {action: pre-load, context: {source: system}, data: {ids: [1, two, true, null]}}, intentId: 0}
+  start:
+    summary: Sends an intent to the platform
+    params:
+      intent: {type: json, description: The intent to send, a JSON document}
+      handlerAppId: {type: string, optional: true, description: ID of the application that should handle the intent}
+    examples:
+      - params: {intent: {action: pre-load, context: {source: system}, data: {ids: [1, two, true, null]}}}
+events:
+  onIntent:
+    summary: The platform sent an intent to the app
+    payload: Intent
+    examples:
+      - payload: {intent: {action: pre-load, context: {source: system}, data: {ids: [1, two, true, null]}}, intentId: 0}

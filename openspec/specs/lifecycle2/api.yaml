@@ -1,0 +1,30 @@
+# Lifecycle2 contract. Field guide: openspec/README.md
+module: Lifecycle2
+cpp: {module: Lifecycle}
+description: Closing the app, reading its lifecycle state and receiving state changes. "Lifecycle" is reserved by Firebolt 8 and earlier, so the wire module is `Lifecycle2`.
+types:
+  CloseType:
+    enum: {deactivate: DEACTIVATE, unload: UNLOAD, killReload: KILL_RELOAD, killReactivate: KILL_REACTIVATE}
+    description: "deactivate: deactivate the app if active, typically a user closing it; unload: deactivate if active, then terminate, typically after the app detected an error; killReload: kill the app, then reload it to paused or suspended (by policy); killReactivate: kill the app, reload it, then activate it"
+  LifecycleState:
+    enum: {initializing: INITIALIZING, active: ACTIVE, paused: PAUSED, suspended: SUSPENDED, hibernated: HIBERNATED, terminating: TERMINATING}
+    description: The first state an app can observe is initializing
+  StateChange:
+    fields:
+      oldState: {type: LifecycleState}
+      newState: {type: LifecycleState}
+methods:
+  close:
+    summary: Requests the platform to deactivate the app, and possibly take further action
+    params:
+      type: {type: CloseType, description: What the platform should do}
+    examples: [{params: {type: unload}}]
+  state:
+    summary: Returns the current lifecycle state of the app. Apps should normally use state change notifications instead
+    result: LifecycleState
+    examples: [{result: active}]
+events:
+  onStateChanged:
+    summary: The platform has transitioned the app to a new lifecycle state. The list always has exactly one item
+    payload: "array<StateChange>"
+    examples: [{payload: [{oldState: initializing, newState: active}]}]

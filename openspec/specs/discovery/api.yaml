@@ -1,0 +1,15 @@
+# Discovery contract. Field guide: openspec/README.md
+module: Discovery
+description: Telling the platform that content was watched.
+methods:
+  watched:
+    summary: Notifies the platform that content was partially or completely watched
+    cpp_name: watchedV2
+    params:
+      entityId: {type: string, minLength: 1, description: The entity ID of the watched content}
+      progress: {type: double, minimum: 0, optional: true, description: "How much was watched: 0 to 0.99 for VOD, a number of seconds for live"}
+      completed: {type: boolean, optional: true, description: Whether the viewing is complete, as the app defines it}
+      watchedOn: {type: string, format: timestamp, optional: true, description: When the content was watched, in UTC}
+      agePolicy: {type: Common.AgePolicy, optional: true, description: The age group to which the content is directed}
+    examples:
+      - params: {entityId: partner.com/entity/123, progress: 0.95, completed: true, watchedOn: "2021-04-23T18:25:43.511Z"}

@@ -20,9 +20,11 @@
 #define FIREBOLT_VIDEOOUTPUT_JSON_H
 
 #include "firebolt/videooutput.h"
+#include "json_types/common.h"
 #include <cmath>
 #include <firebolt/json_types.h>
 #include <nlohmann/json.hpp>
+#include <utility>
 
 namespace Firebolt::VideoOutput::JsonData
 {
@@ -177,29 +179,26 @@ public:
             return;
         }
 
-        if (json.is_number_integer() || json.is_number_unsigned())
+        if (json.is_number())
         {
-            const auto value = json.get<int>();
-            switch (value)
+            // A whole-number depth can arrive as a float on the wire (e.g. 10.0), as for refreshRate. Comparing as
+            // double also keeps a large integer from wrapping into a valid depth.
+            using ::Firebolt::VideoOutput::ColorDepthValue;
+            const double depth = json.get<double>();
+            for (const auto& [bits, value] :
+                 {std::pair{0.0, ColorDepthValue::D0}, std::pair{8.0, ColorDepthValue::D8},
+                  std::pair{10.0, ColorDepthValue::D10}, std::pair{12.0, ColorDepthValue::D12}})
             {
-            case 0:
-                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D0;
-                return;
-            case 8:
-                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D8;
-                return;
-            case 10:
-                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D10;
-                return;
-            case 12:
-                colorDepthValue_ = ::Firebolt::VideoOutput::ColorDepthValue::D12;
-                return;
-            default:
-                throw std::out_of_range("Unsupported color depth value");
+                if (depth == bits)
+                {
+                    colorDepthValue_ = value;
+                    return;
+                }
             }
+            throw std::out_of_range("Unsupported color depth value");
         }
 
-        throw std::invalid_argument("ColorDepthValue must be a string or integer");
+        throw std::invalid_argument("ColorDepthValue must be a string or number");
     }
     [[nodiscard]] ::Firebolt::VideoOutput::ColorDepthValue value() const override { return colorDepthValue_; }
 
@@ -272,6 +271,9 @@ private:
     ::Firebolt::VideoOutput::QuantizationRangeValue quantizationRangeValue_;
 };
 
+// Firebolt 9 defines refreshRate and colorDepth as numbers, and the platform sends numbers. Text ("59.94") is still
+// accepted so that an older or differently serialising platform keeps working; the value must in every case be one of
+// the values defined by Firebolt 9.
 class RefreshRateValueJson : public Firebolt::JSON::NL_Json_Basic<::Firebolt::VideoOutput::RefreshRateValue>
 {
 public:
@@ -285,7 +287,7 @@ public:
 
         if (json.is_number_integer() || json.is_number_unsigned())
         {
-            const auto value = json.get<int>();
+            const auto value = json.get<int64_t>(); // not int: a large value must not wrap into a valid one
             switch (value)
             {
             case 0:
@@ -379,8 +381,8 @@ public:
         {
             throw std::invalid_argument("Missing required fields in JSON");
         }
-        height_ = json["height"].get<uint32_t>();
-        width_ = json["width"].get<uint32_t>();
+        height_ = ::Firebolt::JsonData::parseUnsigned(json["height"]);
+        width_ = ::Firebolt::JsonData::parseUnsigned(json["width"]);
     }
     [[nodiscard]] ::Firebolt::VideoOutput::VideoOutputResolution value() const override
     {

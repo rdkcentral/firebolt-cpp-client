@@ -37,6 +37,14 @@ public:
         ifa = json["ifa"].get<std::string>();
         ifa_type = json["ifa_type"].get<std::string>();
         lmt = json["lmt"].get<std::string>();
+        if (ifa_type != "dpid" && ifa_type != "sspid" && ifa_type != "sessionid")
+        {
+            throw std::invalid_argument("Unsupported ifa_type value");
+        }
+        if (lmt != "0" && lmt != "1")
+        {
+            throw std::invalid_argument("Unsupported lmt value");
+        }
     }
     [[nodiscard]] ::Firebolt::Advertising::Ifa value() const override
     {

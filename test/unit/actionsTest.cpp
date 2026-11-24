@@ -19,6 +19,7 @@
 #include "actions_impl.h"
 #include "json_engine.h"
 #include "mock_helper.h"
+#include <vector>
 
 using ::testing::Invoke;
 
@@ -49,6 +50,27 @@ TEST_F(ActionsUTest, IntentPreservesNonObjectPayload)
     auto result = actionsImpl_.intent();
     ASSERT_TRUE(result) << "ActionsImpl::intent() returned an error";
     EXPECT_EQ(result->intent, expectedIntent.dump());
+}
+
+TEST_F(ActionsUTest, IntentBadResponse)
+{
+    mock_with_response("Actions.intent", nlohmann::json{{"intentId", 1U}});
+    auto result = actionsImpl_.intent();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(ActionsUTest, IntentRejectsInvalidIntentId)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        mock_with_response("Actions.intent", {{"intent", {{"action", "x"}}}, {"intentId", bad}});
+        auto result = actionsImpl_.intent();
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
 }
 
 TEST_F(ActionsUTest, SubscribeOnIntent)
@@ -98,4 +120,56 @@ TEST_F(ActionsUTest, StartRejectsMalformedJsonWithoutThrowing)
     auto result = actionsImpl_.start("{not valid json");
     ASSERT_FALSE(result) << "ActionsImpl::start() should reject malformed JSON";
     EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(ActionsUTest, UnsubscribeForwardsToHelper)
+{
+    EXPECT_CALL(mockHelper, unsubscribe(7)).WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    auto result = actionsImpl_.unsubscribe(7);
+    ASSERT_TRUE(result) << "unsubscribe should return success when helper succeeds";
+}
+
+TEST_F(ActionsUTest, ForwardsIntentTransportErrors)
+{
+    EXPECT_CALL(mockHelper, getJson("Actions.intent", ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [](const std::string& /*method*/, const nlohmann::json& params)
+            {
+                EXPECT_TRUE(params.is_null() || (params.is_object() && params.empty()))
+                    << "Actions.intent getter should not send request params";
+                return Firebolt::Result<nlohmann::json>{Firebolt::Error::General};
+            }));
+
+    auto result = actionsImpl_.intent();
+    EXPECT_FALSE(result) << "Expected error propagation when helper getJson fails";
+}
+
+TEST_F(ActionsUTest, SubscribeOnIntentDispatchesGenericPayload)
+{
+    bool notified = false;
+    const auto expectedIntent =
+        nlohmann::json::parse(R"({"action":"pre-load","data":{"ids":[1,"two",true,null],"future":{"enabled":false}}})");
+
+    EXPECT_CALL(mockHelper, subscribe(&actionsImpl_, "Actions.onIntent", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, {{"intent", expectedIntent}, {"intentId", 11U}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{99};
+            }));
+
+    auto result = actionsImpl_.subscribeOnIntent(
+        [&](const Firebolt::Actions::Intent& intent)
+        {
+            notified = true;
+            EXPECT_EQ(intent.intent, expectedIntent.dump());
+            EXPECT_EQ(intent.intentId, 11U);
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 99U);
+    EXPECT_TRUE(notified);
 }

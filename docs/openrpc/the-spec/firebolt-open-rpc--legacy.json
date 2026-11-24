@@ -2845,7 +2845,7 @@
 					"required": true
 				},
 				{
-					"name": "callSign",
+					"name": "callsign",
 					"summary": "Optional call sign for the app making the request",
 					"schema": {
 						"type": "string"
@@ -2914,7 +2914,7 @@
 							"value": "I am a text waiting for speech."
 						},
 						{
-							"name": "callSign",
+							"name": "callsign",
 							"value": "AppA"
 						},
 						{

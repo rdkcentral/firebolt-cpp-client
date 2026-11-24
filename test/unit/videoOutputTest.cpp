@@ -1,0 +1,653 @@
+/**
+ * Copyright 2026 Comcast Cable Communications Management, LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include "json_types/videooutput.h"
+#include "mock_helper.h"
+#include "videooutput_impl.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+#include <vector>
+
+class VideoOutputUTest : public ::testing::Test
+{
+protected:
+    static bool areGetterParamsEmpty(const nlohmann::json& params)
+    {
+        return params.is_null() || (params.is_object() && params.empty());
+    }
+
+    void expectGetterResponse(const std::string& methodName, const nlohmann::json& response)
+    {
+        EXPECT_CALL(mockHelper, getJson(methodName, ::testing::_))
+            .WillOnce(::testing::Invoke(
+                [methodName, response](const std::string& /*method*/, const nlohmann::json& params)
+                {
+                    EXPECT_TRUE(areGetterParamsEmpty(params)) << methodName << " getter should not send request params";
+                    return Firebolt::Result<nlohmann::json>{response};
+                }));
+    }
+
+    void expectGetterTransportError(const std::string& methodName, Firebolt::Error error = Firebolt::Error::General)
+    {
+        EXPECT_CALL(mockHelper, getJson(methodName, ::testing::_))
+            .WillOnce(::testing::Invoke(
+                [methodName, error](const std::string& /*method*/, const nlohmann::json& params)
+                {
+                    EXPECT_TRUE(areGetterParamsEmpty(params)) << methodName << " getter should not send request params";
+                    return Firebolt::Result<nlohmann::json>{error};
+                }));
+    }
+
+    ::testing::NiceMock<MockHelper> mockHelper;
+    Firebolt::VideoOutput::VideoOutputImpl impl{mockHelper};
+};
+
+TEST_F(VideoOutputUTest, Constructs)
+{
+    SUCCEED();
+}
+TEST_F(VideoOutputUTest, UnsubscribeForwardsToHelper)
+{
+    EXPECT_CALL(mockHelper, unsubscribe(7)).WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::None}));
+
+    auto result = impl.unsubscribe(7);
+    ASSERT_TRUE(result) << "unsubscribe should return success when helper succeeds";
+}
+
+TEST_F(VideoOutputUTest, UnsubscribeForwardsHelperErrors)
+{
+    EXPECT_CALL(mockHelper, unsubscribe(42)).WillOnce(::testing::Return(Firebolt::Result<void>{Firebolt::Error::General}));
+
+    auto result = impl.unsubscribe(42);
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, UnsubscribeAllForwardsToHelper)
+{
+    EXPECT_CALL(mockHelper, unsubscribeAll(&impl)).Times(2);
+
+    impl.unsubscribeAll();
+}
+
+TEST_F(VideoOutputUTest, ResolutionReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.resolution", nlohmann::json{{"height", 1080}, {"width", 1920}});
+
+    auto result = impl.resolution();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(result->height, 1080U);
+    EXPECT_EQ(result->width, 1920U);
+}
+
+TEST_F(VideoOutputUTest, ResolutionForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.resolution");
+
+    auto result = impl.resolution();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, ResolutionReturnsInvalidParamsWhenPayloadIsMalformed)
+{
+    expectGetterResponse("VideoOutput.resolution", nlohmann::json{{"width", 1920}});
+
+    auto result = impl.resolution();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, ResolutionRejectsInvalidUnsignedValues)
+{
+    const std::vector<nlohmann::json> badUnsigned = {nlohmann::json(-1), nlohmann::json(4294967296LL),
+                                                     nlohmann::json(1.5), nlohmann::json(true), nlohmann::json("5")};
+    for (const auto& bad : badUnsigned)
+    {
+        expectGetterResponse("VideoOutput.resolution", nlohmann::json{{"width", bad}, {"height", 1080}});
+        auto result = impl.resolution();
+        ASSERT_FALSE(result) << bad.dump();
+        EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+    }
+}
+
+TEST_F(VideoOutputUTest, ColorDepthAcceptsWholeNumberFloats)
+{
+    // Like refreshRate, a whole-number depth can arrive as a float on the wire
+    for (const auto& [wire, expected] : {std::pair{"8.0", Firebolt::VideoOutput::ColorDepthValue::D8},
+                                         std::pair{"10.0", Firebolt::VideoOutput::ColorDepthValue::D10},
+                                         std::pair{"12.0", Firebolt::VideoOutput::ColorDepthValue::D12},
+                                         std::pair{"0.0", Firebolt::VideoOutput::ColorDepthValue::D0}})
+    {
+        Firebolt::VideoOutput::JsonData::ColorDepthValueJson parser;
+        parser.fromJson(nlohmann::json::parse(wire));
+        EXPECT_EQ(parser.value(), expected) << wire;
+    }
+
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson parser;
+    EXPECT_THROW(parser.fromJson(nlohmann::json::parse("10.5")), std::out_of_range);
+    EXPECT_THROW(parser.fromJson(nlohmann::json(true)), std::invalid_argument);
+}
+
+TEST_F(VideoOutputUTest, NumericEnumsDoNotWrapLargeIntegersIntoValidValues)
+{
+    // 4294967320 is 24 modulo 2^32 and 4294967306 is 10, which a narrowing conversion would have accepted
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRate;
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepth;
+    EXPECT_THROW(refreshRate.fromJson(nlohmann::json(4294967320LL)), std::out_of_range);
+    EXPECT_THROW(colorDepth.fromJson(nlohmann::json(4294967306LL)), std::out_of_range);
+}
+
+TEST_F(VideoOutputUTest, HdcpReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.hdcp", nlohmann::json("hdcp2.2"));
+
+    auto result = impl.hdcp();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::HdcpState::Hdcp22);
+}
+
+TEST_F(VideoOutputUTest, HdcpForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.hdcp");
+
+    auto result = impl.hdcp();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, HdcpReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.hdcp", nlohmann::json("hdcp3.0"));
+
+    auto result = impl.hdcp();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, CecStateReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.cecState", nlohmann::json("inactive"));
+
+    auto result = impl.cecState();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::CecStateValue::Inactive);
+}
+
+TEST_F(VideoOutputUTest, CecStateForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.cecState");
+
+    auto result = impl.cecState();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, CecStateReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.cecState", nlohmann::json("invalid-cec"));
+
+    auto result = impl.cecState();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json("59.94"));
+
+    auto result = impl.refreshRate();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateReturnsParsedValueWhenPayloadIsNumber)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(59.94));
+
+    auto result = impl.refreshRate();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateReturnsInvalidParamsWhenPayloadIsUnsupportedInteger)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(59));
+
+    auto result = impl.refreshRate();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateReturnsInvalidParamsWhenNumericValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.refreshRate", nlohmann::json(61));
+
+    auto result = impl.refreshRate();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.refreshRate");
+
+    auto result = impl.refreshRate();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, ColorDepthReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.colorDepth", nlohmann::json("12"));
+
+    auto result = impl.colorDepth();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D12);
+}
+
+TEST_F(VideoOutputUTest, ColorDepthReturnsParsedValueWhenPayloadIsNumber)
+{
+    expectGetterResponse("VideoOutput.colorDepth", nlohmann::json(8));
+
+    auto result = impl.colorDepth();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::ColorDepthValue::D8);
+}
+
+TEST_F(VideoOutputUTest, ColorDepthReturnsInvalidParamsWhenNumericValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.colorDepth", nlohmann::json(11));
+
+    auto result = impl.colorDepth();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, ColorDepthForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.colorDepth");
+
+    auto result = impl.colorDepth();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, ColorFormatReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.colorFormat", nlohmann::json("ycbcr444"));
+
+    auto result = impl.colorFormat();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::ColorFormatValue::Ycbcr444);
+}
+
+TEST_F(VideoOutputUTest, ColorFormatForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.colorFormat");
+
+    auto result = impl.colorFormat();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, ColorFormatReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.colorFormat", nlohmann::json("invalid-format"));
+
+    auto result = impl.colorFormat();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, ColorimetryReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.colorimetry", nlohmann::json("bt2020rgb"));
+
+    auto result = impl.colorimetry();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::OutputColorimetry::Bt2020rgb);
+}
+
+TEST_F(VideoOutputUTest, ColorimetryForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.colorimetry");
+
+    auto result = impl.colorimetry();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, ColorimetryReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.colorimetry", nlohmann::json("invalid-colorimetry"));
+
+    auto result = impl.colorimetry();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, DynamicRangeReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.dynamicRange", nlohmann::json("hdr10plus"));
+
+    auto result = impl.dynamicRange();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::DynamicRangeValue::Hdr10plus);
+}
+
+TEST_F(VideoOutputUTest, DynamicRangeForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.dynamicRange");
+
+    auto result = impl.dynamicRange();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, DynamicRangeReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.dynamicRange", nlohmann::json("invalid-range"));
+
+    auto result = impl.dynamicRange();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, QuantizationRangeReturnsParsedValue)
+{
+    expectGetterResponse("VideoOutput.quantizationRange", nlohmann::json("limited"));
+
+    auto result = impl.quantizationRange();
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, Firebolt::VideoOutput::QuantizationRangeValue::Limited);
+}
+
+TEST_F(VideoOutputUTest, QuantizationRangeForwardsTransportErrors)
+{
+    expectGetterTransportError("VideoOutput.quantizationRange");
+
+    auto result = impl.quantizationRange();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, QuantizationRangeReturnsInvalidParamsWhenEnumValueIsUnknown)
+{
+    expectGetterResponse("VideoOutput.quantizationRange", nlohmann::json("invalid-range"));
+
+    auto result = impl.quantizationRange();
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::InvalidParams);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnResolutionChangedForwardsAndDispatchesParsedPayload)
+{
+    bool notified = false;
+    Firebolt::VideoOutput::VideoOutputResolution received{};
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json{{"height", 2160}, {"width", 3840}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{99};
+            }));
+
+    auto result = impl.subscribeOnResolutionChanged(
+        [&](const Firebolt::VideoOutput::VideoOutputResolution& value)
+        {
+            notified = true;
+            received = value;
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 99U);
+    EXPECT_TRUE(notified);
+    EXPECT_EQ(received.height, 2160U);
+    EXPECT_EQ(received.width, 3840U);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnResolutionChangedSwallowsMalformedEventPayload)
+{
+    bool notified = false;
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json{{"width", 3840}});
+                return Firebolt::Result<Firebolt::SubscriptionId>{5};
+            }));
+
+    auto result = impl.subscribeOnResolutionChanged([&](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/)
+                                                    { notified = true; });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 5U);
+    EXPECT_FALSE(notified);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnResolutionChangedForwardsSubscribeErrors)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onResolutionChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = impl.subscribeOnResolutionChanged([](const Firebolt::VideoOutput::VideoOutputResolution& /*value*/) {});
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnHdcpChangedForwardsAndDispatchesParsedPayload)
+{
+    bool notified = false;
+    Firebolt::VideoOutput::HdcpState received = Firebolt::VideoOutput::HdcpState::None;
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onHdcpChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json("direct"));
+                return Firebolt::Result<Firebolt::SubscriptionId>{11};
+            }));
+
+    auto result = impl.subscribeOnHdcpChanged(
+        [&](const Firebolt::VideoOutput::HdcpState& value)
+        {
+            notified = true;
+            received = value;
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 11U);
+    EXPECT_TRUE(notified);
+    EXPECT_EQ(received, Firebolt::VideoOutput::HdcpState::Direct);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnHdcpChangedForwardsSubscribeErrors)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onHdcpChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = impl.subscribeOnHdcpChanged([](const Firebolt::VideoOutput::HdcpState& /*value*/) {});
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnCecStateChangedForwardsAndDispatchesParsedPayload)
+{
+    bool notified = false;
+    Firebolt::VideoOutput::CecStateValue received = Firebolt::VideoOutput::CecStateValue::Unsupported;
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onCecStateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json("active"));
+                return Firebolt::Result<Firebolt::SubscriptionId>{12};
+            }));
+
+    auto result = impl.subscribeOnCecStateChanged(
+        [&](const Firebolt::VideoOutput::CecStateValue& value)
+        {
+            notified = true;
+            received = value;
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 12U);
+    EXPECT_TRUE(notified);
+    EXPECT_EQ(received, Firebolt::VideoOutput::CecStateValue::Active);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnCecStateChangedForwardsSubscribeErrors)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onCecStateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = impl.subscribeOnCecStateChanged([](const Firebolt::VideoOutput::CecStateValue& /*value*/) {});
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnRefreshRateChangedForwardsAndDispatchesParsedPayload)
+{
+    bool notified = false;
+    Firebolt::VideoOutput::RefreshRateValue received = Firebolt::VideoOutput::RefreshRateValue::R0;
+
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Invoke(
+            [&](void* owner, const std::string& eventName, std::any&& notification,
+                void (*callback)(void*, const nlohmann::json&))
+            {
+                Firebolt::Helpers::SubscriptionData data{owner, eventName, std::move(notification)};
+                callback(&data, nlohmann::json("24"));
+                return Firebolt::Result<Firebolt::SubscriptionId>{13};
+            }));
+
+    auto result = impl.subscribeOnRefreshRateChanged(
+        [&](const Firebolt::VideoOutput::RefreshRateValue& value)
+        {
+            notified = true;
+            received = value;
+        });
+
+    ASSERT_TRUE(result);
+    EXPECT_EQ(*result, 13U);
+    EXPECT_TRUE(notified);
+    EXPECT_EQ(received, Firebolt::VideoOutput::RefreshRateValue::R24);
+}
+
+TEST_F(VideoOutputUTest, SubscribeOnRefreshRateChangedForwardsSubscribeErrors)
+{
+    EXPECT_CALL(mockHelper, subscribe(&impl, "VideoOutput.onRefreshRateChanged", ::testing::_, ::testing::_))
+        .WillOnce(::testing::Return(Firebolt::Result<Firebolt::SubscriptionId>{Firebolt::Error::General}));
+
+    auto result = impl.subscribeOnRefreshRateChanged([](const Firebolt::VideoOutput::RefreshRateValue& /*value*/) {});
+
+    ASSERT_FALSE(result);
+    EXPECT_EQ(result.error(), Firebolt::Error::General);
+}
+
+TEST_F(VideoOutputUTest, HdcpMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::HdcpStateJson jsonType;
+    jsonType.fromJson(nlohmann::json("hdcp1.4"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::HdcpState::Hdcp14);
+}
+
+TEST_F(VideoOutputUTest, CecStateMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::CecStateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("inactive"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::CecStateValue::Inactive);
+}
+
+TEST_F(VideoOutputUTest, ColorFormatMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::ColorFormatValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("ycbcr422"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::ColorFormatValue::Ycbcr422);
+}
+
+TEST_F(VideoOutputUTest, DynamicRangeMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("sdr"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::DynamicRangeValue::Sdr);
+}
+
+TEST_F(VideoOutputUTest, QuantizationRangeMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("limited"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::QuantizationRangeValue::Limited);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateMarshallerParsesWireString)
+{
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json("59.94"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R5994);
+}
+
+TEST_F(VideoOutputUTest, RefreshRateMarshallerParsesWholeNumberFloat)
+{
+    // Some servers encode a whole-number refresh rate (e.g. 24) as a JSON float literal (24.0).
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson jsonType;
+    jsonType.fromJson(nlohmann::json::parse("24.0"));
+
+    EXPECT_EQ(jsonType.value(), Firebolt::VideoOutput::RefreshRateValue::R24);
+}
+
+TEST_F(VideoOutputUTest, MarshallersRejectUnknownWireValues)
+{
+    Firebolt::VideoOutput::JsonData::HdcpStateJson hdcpJson;
+    Firebolt::VideoOutput::JsonData::CecStateValueJson cecStateJson;
+    Firebolt::VideoOutput::JsonData::ColorFormatValueJson colorFormatJson;
+    Firebolt::VideoOutput::JsonData::DynamicRangeValueJson dynamicRangeJson;
+    Firebolt::VideoOutput::JsonData::QuantizationRangeValueJson quantizationRangeJson;
+    Firebolt::VideoOutput::JsonData::RefreshRateValueJson refreshRateJson;
+    Firebolt::VideoOutput::JsonData::ColorDepthValueJson colorDepthJson;
+
+    EXPECT_THROW(hdcpJson.fromJson(nlohmann::json("hdcp3.0")), std::out_of_range);
+    EXPECT_THROW(cecStateJson.fromJson(nlohmann::json("not-a-state")), std::out_of_range);
+    EXPECT_THROW(colorFormatJson.fromJson(nlohmann::json("xyz")), std::out_of_range);
+    EXPECT_THROW(dynamicRangeJson.fromJson(nlohmann::json("hdr11")), std::out_of_range);
+    EXPECT_THROW(quantizationRangeJson.fromJson(nlohmann::json("super")), std::out_of_range);
+    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json("61")), std::out_of_range);
+    EXPECT_THROW(refreshRateJson.fromJson(nlohmann::json(59)), std::out_of_range);
+    EXPECT_THROW(colorDepthJson.fromJson(nlohmann::json("11")), std::out_of_range);
+}

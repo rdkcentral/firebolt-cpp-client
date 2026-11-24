@@ -1,18 +1,10 @@
-# Presentation API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# Presentation contract. Field guide: openspec/README.md
 module: Presentation
-header: include/firebolt/presentation.h
-interface: Firebolt::Presentation::IPresentation
-description: Methods for accessing Presentation preferences.
+description: Presentation state of the app.
 methods:
-- name: Presentation.focused
-  cpp: focused
-  kind: property
-  summary: Whether the app is in focus, i.e. receiving key presses. Provided for those apps/runtimes that cannot use Wayland
-  result: boolean
-  examples:
-  - {result: true}
-- {name: Presentation.onFocusedChanged, cpp: subscribeOnFocusedChanged, kind: event, summary: 'Whether the app is in focus, i.e. receiving key
-    presses. Provided for those apps/runtimes that cannot use Wayland', payload_of: Presentation.focused, result: boolean}
+  focused:
+    summary: Returns whether the app is in focus, that is receiving key presses. For apps and runtimes that cannot use Wayland
+    result: boolean
+    examples: [{result: true}]
+events:
+  onFocusedChanged: {changes: focused}

@@ -1,40 +1,30 @@
-# Lifecycle2 API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# Lifecycle2 contract. Field guide: openspec/README.md
 module: Lifecycle2
-header: include/firebolt/lifecycle.h
-interface: Firebolt::Lifecycle::ILifecycle
-description: Methods and events for responding to Lifecycle changes in your app.
+cpp: {module: Lifecycle}
+description: Closing the app, reading its lifecycle state and receiving state changes. "Lifecycle" is reserved by Firebolt 8 and earlier, so the wire module is `Lifecycle2`.
 types:
-- name: CloseType
-  type: string
-  enum: [deactivate, unload, killReload, killReactivate]
-  description: The application close type
-- name: LifecycleState
-  type: string
-  enum: [initializing, active, paused, suspended, hibernated, terminating]
-  description: The application Lifecycle state
-- name: StateChange
-  type: object
-  fields:
-  - {name: oldState, type: LifecycleState, required: true}
-  - {name: newState, type: LifecycleState, required: true}
+  CloseType:
+    enum: {deactivate: DEACTIVATE, unload: UNLOAD, killReload: KILL_RELOAD, killReactivate: KILL_REACTIVATE}
+    description: "deactivate: deactivate the app if active, typically a user closing it; unload: deactivate if active, then terminate, typically after the app detected an error; killReload: kill the app, then reload it to paused or suspended (by policy); killReactivate: kill the app, reload it, then activate it"
+  LifecycleState:
+    enum: {initializing: INITIALIZING, active: ACTIVE, paused: PAUSED, suspended: SUSPENDED, hibernated: HIBERNATED, terminating: TERMINATING}
+    description: The first state an app can observe is initializing
+  StateChange:
+    fields:
+      oldState: {type: LifecycleState}
+      newState: {type: LifecycleState}
 methods:
-- name: Lifecycle2.close
-  cpp: close
-  summary: Request the platform to deactivate the app, and possibly take further action.
-  params:
-  - {name: type, type: CloseType, required: true, description: The type of the close app is requesting}
-  result: 'null'
-  examples:
-  - params: {type: unload}
-    result: null
-- name: Lifecycle2.state
-  cpp: state
-  summary: Get the current lifecycle state of the app.
-  result: LifecycleState
-  examples:
-  - {result: active}
-- {name: Lifecycle2.onStateChanged, cpp: subscribeOnStateChanged, kind: event, summary: 'Notification of lifecycle state change, raised after
-    the platform has transitioned the app/runtime to the new lifecycle state. The list always carries exactly one state change', result: 'array<StateChange> (exactly one item)'}
+  close:
+    summary: Requests the platform to deactivate the app, and possibly take further action
+    params:
+      type: {type: CloseType, description: What the platform should do}
+    examples: [{params: {type: unload}}]
+  state:
+    summary: Returns the current lifecycle state of the app. Apps should normally use state change notifications instead
+    result: LifecycleState
+    examples: [{result: active}]
+events:
+  onStateChanged:
+    summary: The platform has transitioned the app to a new lifecycle state. The list always has exactly one item
+    payload: "array<StateChange>"
+    examples: [{payload: [{oldState: initializing, newState: active}]}]

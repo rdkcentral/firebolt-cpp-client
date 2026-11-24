@@ -1,192 +1,90 @@
-# TextToSpeech API contract (shapes and wire names only).
-# Behaviour lives in spec.md. Do not repeat behaviour here.
-# Wire names are exactly as sent/received on JSON-RPC (note the mixed casing).
-# Event subscriptions are implicit: the transport adds the `listen` boolean param.
-
+# TextToSpeech contract. Field guide: openspec/README.md
+# Wire names are spelled as the platform sends them, with mixed casing.
 module: TextToSpeech
-header: include/firebolt/texttospeech.h
-interface: Firebolt::TextToSpeech::ITextToSpeech
-description: Control and query text to speech over Firebolt.
-
+description: Text to speech. Deprecated; use `SpeechSynthesis`. Callers judge a call by `TTS_Status`, not by `success`.
+deprecated: {in: "9.0.0", replacement: SpeechSynthesis}
 types:
-  - name: SpeechId
-    type: integer
-    cpp: uint32_t
-    description: Identifier of one speak request.
-
-  - name: TTSStatus
-    type: integer
-    minimum: 0
-    cpp: uint32_t
-    description: "0 OK, 1 Fail, 2 not enabled, 3 invalid configuration (Firebolt 9). The platform also sends 4 for no access after setACL; any unsigned value is passed through."
-
-  - name: SpeechState
-    type: integer
-    enum:
-      - { value: 0, name: PENDING }
-      - { value: 1, name: IN_PROGRESS }
-      - { value: 2, name: PAUSED }
-      - { value: 3, name: NOT_FOUND }
-    cpp: Firebolt::TextToSpeech::SpeechState
-
-  - name: SpeechIdEvent
-    type: object
+  SpeechId: {type: unsigned, description: Identifies one speak request}
+  TTSStatus:
+    type: unsigned
+    description: "0 OK, 1 fail, 2 not enabled, 3 invalid configuration (Firebolt 9). The platform also sends 4, no access after setACL. Any unsigned value is accepted"
+  SpeechState:
+    enum: {0: PENDING, 1: IN_PROGRESS, 2: PAUSED, 3: NOT_FOUND}
+    description: State of an utterance
+  SpeechIdEvent:
     fields:
-      - { name: speechid, type: SpeechId, required: true }
-
-  - name: TTSStatusResponse
-    type: object
+      speechid: {type: SpeechId, cpp_name: speechId}
+  TTSStatusResponse:
     fields:
-      - { name: TTS_Status, type: TTSStatus, required: true }
-      - { name: success, type: boolean, required: true }
-
-  - name: SpeechResponse
-    type: object
+      TTS_Status: {type: TTSStatus, cpp_name: ttsStatus}
+      success: {type: boolean}
+  SpeechResponse:
     fields:
-      - { name: speechid, type: SpeechId, required: true }
-      - { name: TTS_Status, type: TTSStatus, required: true }
-      - { name: success, type: boolean, required: true }
-
-  - name: SpeechStateResponse
-    type: object
+      speechid: {type: SpeechId, cpp_name: speechId}
+      TTS_Status: {type: TTSStatus, cpp_name: ttsStatus}
+      success: {type: boolean}
+  SpeechStateResponse:
     fields:
-      - { name: speechstate, type: SpeechState, required: true }
-      - { name: TTS_Status, type: TTSStatus, required: true }
-      - { name: success, type: boolean, required: true }
-
-  - name: ListVoicesResponse
-    type: object
+      speechstate: {type: SpeechState, cpp_name: speechState}
+      TTS_Status: {type: TTSStatus, cpp_name: ttsStatus}
+      success: {type: boolean}
+  ListVoicesResponse:
     fields:
-      - { name: TTS_Status, type: TTSStatus, required: true }
-      - { name: voices, type: "array<string>", required: true }
-
+      TTS_Status: {type: TTSStatus, cpp_name: ttsStatus}
+      voices: {type: "array<string>", description: Voice names, for example ava}
 methods:
-  - name: TextToSpeech.speak
-    cpp: speak
-    summary: Speak the utterance immediately. Any ongoing speech is interrupted.
+  speak:
+    summary: Speaks the utterance immediately. Any ongoing speech is interrupted and `onSpeechInterrupted` is raised
     params:
-      - { name: text, type: string, required: true, description: "Plain text or a well-formed SSML document." }
-      - { name: callsign, type: string, description: "Application call sign; required if setACL was called before speak." }
-      - { name: language, type: string, description: "Language of the text as a BCP 47 tag; invalid syntax returns InvalidParams." }
-      - { name: voice, type: string, description: "Voice identifier returned by getVoices." }
-      - { name: volume, type: string, description: "Decimal string from 0 to 1 inclusive; default 1; invalid values return InvalidParams." }
-      - { name: rate, type: string, description: "Decimal string from 0.1 to 10 inclusive; default 1; invalid values return InvalidParams." }
-      - { name: pitch, type: string, description: "Decimal string from 0 to 2 inclusive; default 1; not currently supported by the platform; invalid values return InvalidParams." }
+      text: {type: string, description: Plain text or a well-formed SSML document}
+      callsign: {type: string, optional: true, description: Application call sign; the platform requires it if `setACL` was called earlier}
+      language: {type: string, format: bcp47, optional: true, description: The language of the text, BCP 47}
+      voice: {type: string, optional: true, description: A voice name as returned by `listvoices`}
+      volume: {type: string, format: decimal, minimum: 0, maximum: 1, optional: true, description: Speaking volume, platform default 1}
+      rate: {type: string, format: decimal, minimum: 0.1, maximum: 10, optional: true, description: Speaking rate, platform default 1}
+      pitch: {type: string, format: decimal, minimum: 0, maximum: 2, optional: true, description: Speaking pitch, platform default 1; the platform does not support it yet}
     result: SpeechResponse
     examples:
-      - params: { text: "I am a text waiting for speech.", callsign: AppA, language: en-US, voice: female-1, volume: "0.8", rate: "1", pitch: "1" }
-        result: { speechid: 1, TTS_Status: 0, success: true }
-
-  - name: TextToSpeech.pause
-    cpp: pause
-    summary: Pause the speech with the given id.
+      - params: {text: I am a text waiting for speech., callsign: AppA, language: en-US, voice: female-1, volume: "0.8", rate: "1", pitch: "1"}
+        result: {speechid: 1, TTS_Status: 0, success: true}
+  pause:
+    summary: Pauses the speech with the given ID. Raises `onSpeechPause`; does nothing if already paused
     params:
-      - { name: speechid, type: SpeechId, required: true }
+      speechid: {type: SpeechId}
     result: TTSStatusResponse
-    examples:
-      - params: { speechid: 1 }
-        result: { TTS_Status: 0, success: true }
-
-  - name: TextToSpeech.resume
-    cpp: resume
-    summary: Resume the speech with the given id.
+    examples: [{params: {speechid: 1}, result: {TTS_Status: 0, success: true}}]
+  resume:
+    summary: Resumes the speech with the given ID. Raises `onSpeechResume`; does nothing if not paused
     params:
-      - { name: speechid, type: SpeechId, required: true }
+      speechid: {type: SpeechId}
     result: TTSStatusResponse
-    examples:
-      - params: { speechid: 1 }
-        result: { TTS_Status: 0, success: true }
-
-  - name: TextToSpeech.cancel
-    cpp: cancel
-    summary: Cancel the speech with the given id.
+    examples: [{params: {speechid: 1}, result: {TTS_Status: 0, success: true}}]
+  cancel:
+    summary: Cancels the speech with the given ID. Raises `onSpeechInterrupted` if it was being spoken
     params:
-      - { name: speechid, type: SpeechId, required: true }
+      speechid: {type: SpeechId}
     result: TTSStatusResponse
-    examples:
-      - params: { speechid: 1 }
-        result: { TTS_Status: 0, success: true }
-
-  - name: TextToSpeech.getspeechstate
-    cpp: getSpeechState
-    summary: Return the state of the utterance.
+    examples: [{params: {speechid: 1}, result: {TTS_Status: 0, success: true}}]
+  getspeechstate:
+    summary: Returns the state of the utterance
+    cpp_name: getSpeechState
     params:
-      - { name: speechid, type: SpeechId, required: true }
+      speechid: {type: SpeechId}
     result: SpeechStateResponse
-    examples:
-      - params: { speechid: 1 }
-        result: { speechstate: 1, TTS_Status: 0, success: true }
-
-  - name: TextToSpeech.listvoices
-    cpp: listVoices
-    summary: "Return the available voices as human-readable names, e.g. 'ava'."
+    examples: [{params: {speechid: 1}, result: {speechstate: 1, TTS_Status: 0, success: true}}]
+  listvoices:
+    summary: Returns the available voices as human-readable names
+    cpp_name: listVoices
     params:
-      - { name: language, type: "Localization.Locale", required: true, description: BCP 47 tag. }
+      language: {type: string, format: bcp47, description: The language of the voices, BCP 47}
     result: ListVoicesResponse
-    examples:
-      - params: { language: en-US }
-        result: { TTS_Status: 0, voices: [carol, tom] }
-
-  - name: TextToSpeech.onWillSpeak
-    cpp: subscribeOnWillSpeak
-    kind: event
-    summary: Text to speech conversion is about to start.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onSpeechStart
-    cpp: subscribeOnSpeechStart
-    kind: event
-    summary: Utterance is about to be spoken.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onSpeechPause
-    cpp: subscribeOnSpeechPause
-    kind: event
-    summary: Ongoing speech was paused.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onSpeechResume
-    cpp: subscribeOnSpeechResume
-    kind: event
-    summary: Paused speech was resumed.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onSpeechComplete
-    cpp: subscribeOnSpeechComplete
-    kind: event
-    summary: Speech completed successfully.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onSpeechInterrupted
-    cpp: subscribeOnSpeechInterrupted
-    kind: event
-    summary: Speech was stopped by another speak call or by cancel.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onNetworkError
-    cpp: subscribeOnNetworkError
-    kind: event
-    summary: Utterance failed due to a network error.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
-
-  - name: TextToSpeech.onPlaybackError
-    cpp: subscribeOnPlaybackError
-    kind: event
-    summary: Utterance failed during playback.
-    result: SpeechIdEvent
-    examples:
-      - result: { speechid: 1 }
+    examples: [{params: {language: en-US}, result: {TTS_Status: 0, voices: [carol, tom]}}]
+events:
+  onWillSpeak: {summary: Text to speech conversion is about to start, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onSpeechStart: {summary: The utterance is about to be spoken, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onSpeechPause: {summary: Ongoing speech was paused, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onSpeechResume: {summary: Paused speech was resumed, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onSpeechComplete: {summary: Speech completed successfully, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onSpeechInterrupted: {summary: Speech was stopped by another speak call or by cancel, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onNetworkError: {summary: The utterance failed due to a network error, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}
+  onPlaybackError: {summary: The utterance failed during playback, payload: SpeechIdEvent, examples: [{payload: {speechid: 1}}]}

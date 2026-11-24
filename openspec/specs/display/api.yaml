@@ -1,37 +1,21 @@
-# Display API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# Display contract. Field guide: openspec/README.md
 module: Display
-header: include/firebolt/display.h
-interface: Firebolt::Display::IDisplay
-description: A module for querying about the display
+description: Details of the connected or integral display. An OTT or STB device with no display connected over HDMI answers `edid` with "" and `size` and `maxResolution` with 0, 0.
+types:
+  DisplaySize:
+    fields:
+      width: {type: unsigned}
+      height: {type: unsigned}
 methods:
-- name: Display.edid
-  cpp: edid
-  summary: Returns the EDID (and extensions) of the connected or integral display, as a Base64 encoded string
-  result: string
-  examples:
-  - {result: ZWU2NzIzYjgtN2FiMy00NjJjLThkOTMtZGJmNjEyMjc5OThl}
-- name: Display.size
-  cpp: size
-  summary: Returns the physical dimensions of the connected or integral display, in centimeters. Returns 0, 0 on a OTT/STB device when a display
-    is not connected over HDMI
-  result:
-    type: object
-    fields:
-    - {name: width, type: integer, description: The width of the display in centimeters}
-    - {name: height, type: integer, description: The height of the display in centimeters}
-  examples:
-  - result: {width: 48, height: 27}
-- name: Display.maxResolution
-  cpp: maxResolution
-  summary: Returns the physical/native resolution of the connected or integral display, in pixels. Returns 0, 0 on a OTT/STB device when a display
-    is not connected over HDMI
-  result:
-    type: object
-    fields:
-    - {name: width, type: integer, description: The width of the display in pixels}
-    - {name: height, type: integer, description: The height of the display in pixels}
-  examples:
-  - result: {width: 1920, height: 1080}
+  edid:
+    summary: Returns the EDID (and extensions) of the connected or integral display, Base64 encoded
+    result: string
+    examples: [{result: ZWU2NzIzYjgtN2FiMy00NjJjLThkOTMtZGJmNjEyMjc5OThl}]
+  size:
+    summary: Returns the physical dimensions of the connected or integral display, in centimeters
+    result: DisplaySize
+    examples: [{result: {width: 48, height: 27}}]
+  maxResolution:
+    summary: Returns the physical (native) resolution of the connected or integral display, in pixels
+    result: DisplaySize
+    examples: [{result: {width: 1920, height: 1080}}]

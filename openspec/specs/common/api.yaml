@@ -1,0 +1,17 @@
+# Definitions shared by several modules. Field guide: openspec/README.md
+module: Common
+description: Types and error codes used by more than one module.
+types:
+  AgePolicy:
+    enum: {"app:adult": ADULT, "app:child": CHILD, "app:teen": TEEN}
+    description: The age group to which content is directed. Used as `Common.AgePolicy` (C++ `Firebolt::AgePolicy`).
+errors:
+  # scope generic: any method can return it; specific: only the methods that list it under `errors`.
+  -32601: {scope: generic, name: Method not known, description: The platform does not know the method}
+  -40300: {scope: generic, name: Method not permitted, description: The app has no permission to call the method}
+  -32602: {scope: generic, name: Arguments invalid, description: "The arguments or the response are not valid (C++ `Error::InvalidParams`)"}
+  -32100: {scope: generic, name: Unspecified error, description: "Any unexpected error, for example a transport failure"}
+  -50100: {scope: specific, name: Method not supported, description: A non-mandatory method that this device does not implement}
+  -50110: {scope: specific, name: App state invalid, description: The app is not in a lifecycle state in which the method may be called}
+  -50120: {scope: specific, name: Wrong device class, description: The method does not apply to this class of device}
+  -50130: {scope: specific, name: Speech synthesis engine error, description: No speech synthesis engine is available or the engine rejected the request}

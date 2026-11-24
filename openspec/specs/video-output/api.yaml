@@ -1,119 +1,69 @@
-# VideoOutput API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# VideoOutput contract. Field guide: openspec/README.md
 module: VideoOutput
-header: include/firebolt/videooutput.h
-interface: Firebolt::VideoOutput::IVideoOutput
+description: Properties of the active video output. With no display connected, `resolution` is 0 x 0, `refreshRate` and `colorDepth` are 0, and the other properties are `none`.
+types:
+  VideoOutputResolution:
+    fields:
+      height: {type: unsigned}
+      width: {type: unsigned}
+  HdcpState:
+    enum: {direct: Direct, "hdcp1.4": Hdcp14, "hdcp2.2": Hdcp22, none: None}
+  CecStateValue:
+    enum: {active: Active, inactive: Inactive, unsupported: Unsupported}
+  RefreshRateValue:
+    enum: {0: R0, 23.976: R23976, 24: R24, 25: R25, 29.97: R2997, 30: R30, 50: R50, 59.94: R5994, 60: R60}
+    description: Refresh rate in Hz, as a number
+  ColorDepthValue:
+    enum: {0: D0, 8: D8, 10: D10, 12: D12}
+    description: Color depth in bits, as a number
+  ColorFormatValue:
+    enum: {ycbcr420: Ycbcr420, ycbcr422: Ycbcr422, ycbcr444: Ycbcr444, rgb444: Rgb444, none: None}
+  OutputColorimetry:
+    enum: {bt2020rgb: Bt2020rgb, bt2020ycc: Bt2020ycc, bt709: Bt709, oprgb: Oprgb, none: None}
+  DynamicRangeValue:
+    enum: {hdr10: Hdr10, hdr10plus: Hdr10plus, dolbyVision: DolbyVision, hlg: Hlg, sdr: Sdr, none: None}
+  QuantizationRangeValue:
+    enum: {limited: Limited, full: Full, none: None}
 methods:
-- name: VideoOutput.resolution
-  cpp: resolution
-  summary: Returns the resolution for the active video output
-  result:
-    type: object
-    fields:
-    - {name: height, type: integer, minimum: 0, required: true}
-    - {name: width, type: integer, minimum: 0, required: true}
-  examples:
-  - result: {height: 1080, width: 1920}
-- name: VideoOutput.hdcp
-  cpp: hdcp
-  kind: property
-  summary: Returns HDCP state for the active video output
-  result:
-    type: string
-    enum: [direct, hdcp1.4, hdcp2.2, none]
-  examples:
-  - {result: hdcp1.4}
-- name: VideoOutput.cecState
-  cpp: cecState
-  kind: property
-  summary: Returns CEC state for the active video output
-  result:
-    type: string
-    enum: [active, inactive, unsupported]
-  examples:
-  - {result: inactive}
-- name: VideoOutput.refreshRate
-  cpp: refreshRate
-  kind: property
-  summary: Returns refresh rate for the active video output
-  result:
-    type: number
-    enum: [0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60]
-  examples:
-  - {result: 59.94}
-- name: VideoOutput.colorDepth
-  cpp: colorDepth
-  summary: Returns color depth for the active video output
-  result:
-    type: integer
-    enum: [0, 8, 10, 12]
-  examples:
-  - {result: 8}
-- name: VideoOutput.colorFormat
-  cpp: colorFormat
-  summary: Returns color format for the active video output
-  result:
-    type: string
-    enum: [ycbcr420, ycbcr422, ycbcr444, rgb444, none]
-  examples:
-  - {result: ycbcr422}
-- name: VideoOutput.colorimetry
-  cpp: colorimetry
-  summary: Returns colorimetry for the active video output
-  result:
-    type: string
-    enum: [bt2020rgb, bt2020ycc, bt709, oprgb, none]
-  examples:
-  - {result: bt709}
-- name: VideoOutput.dynamicRange
-  cpp: dynamicRange
-  summary: Returns dynamic range for the active video output
-  result:
-    type: string
-    enum: [hdr10, hdr10plus, dolbyVision, hlg, sdr, none]
-  examples:
-  - {result: sdr}
-- name: VideoOutput.quantizationRange
-  cpp: quantizationRange
-  summary: Returns quantization range for the active video output
-  result:
-    type: string
-    enum: [limited, full, none]
-  examples:
-  - {result: limited}
-- name: VideoOutput.onHdcpChanged
-  cpp: subscribeOnHdcpChanged
-  kind: event
-  summary: Returns HDCP state changes for the active video output
-  payload_of: VideoOutput.hdcp
-  result:
-    type: string
-    enum: [direct, hdcp1.4, hdcp2.2, none]
-- name: VideoOutput.onCecStateChanged
-  cpp: subscribeOnCecStateChanged
-  kind: event
-  summary: Returns CEC state changes for the active video output
-  payload_of: VideoOutput.cecState
-  result:
-    type: string
-    enum: [active, inactive, unsupported]
-- name: VideoOutput.onRefreshRateChanged
-  cpp: subscribeOnRefreshRateChanged
-  kind: event
-  summary: Returns refresh rate changes for the active video output
-  payload_of: VideoOutput.refreshRate
-  result:
-    type: number
-    enum: [0, 23.976, 24, 25, 29.97, 30, 50, 59.94, 60]
-- name: VideoOutput.onResolutionChanged
-  cpp: subscribeOnResolutionChanged
-  kind: event
-  summary: Returns resolution changes for the active video output
-  payload_of: VideoOutput.resolution
-  result:
-    type: object
-    fields:
-    - {name: height, type: integer, minimum: 0, required: true}
-    - {name: width, type: integer, minimum: 0, required: true}
+  resolution:
+    summary: Returns the resolution of the active video output
+    result: VideoOutputResolution
+    examples: [{result: {height: 1080, width: 1920}}]
+  hdcp:
+    summary: Returns the HDCP state of the active video output
+    result: HdcpState
+    examples: [{result: hdcp1.4}]
+  cecState:
+    summary: Returns the CEC state of the active video output
+    result: CecStateValue
+    errors: [-50120]
+    examples: [{result: inactive}]
+  refreshRate:
+    summary: Returns the refresh rate of the active video output
+    result: RefreshRateValue
+    examples: [{result: 59.94}]
+  colorDepth:
+    summary: Returns the color depth of the active video output
+    result: ColorDepthValue
+    examples: [{result: 8}]
+  colorFormat:
+    summary: Returns the color format of the active video output
+    result: ColorFormatValue
+    examples: [{result: ycbcr422}]
+  colorimetry:
+    summary: Returns the colorimetry of the active video output
+    result: OutputColorimetry
+    examples: [{result: bt709}]
+  dynamicRange:
+    summary: Returns the dynamic range of the active video output
+    result: DynamicRangeValue
+    examples: [{result: sdr}]
+  quantizationRange:
+    summary: Returns the quantization range of the active video output
+    result: QuantizationRangeValue
+    examples: [{result: limited}]
+events:
+  onResolutionChanged: {changes: resolution}
+  onHdcpChanged: {changes: hdcp}
+  onCecStateChanged: {changes: cecState}
+  onRefreshRateChanged: {changes: refreshRate}

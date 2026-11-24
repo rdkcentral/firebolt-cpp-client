@@ -1,26 +1,14 @@
-# Advertising API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# Advertising contract. Field guide: openspec/README.md
 module: Advertising
-header: include/firebolt/advertising.h
-interface: Firebolt::Advertising::IAdvertising
-description: A module for platform provided advertising settings and functionality.
+description: Platform provided advertising settings.
 types:
-- name: AdvertisingIdResult
-  type: object
-  fields:
-  - {name: ifa, type: string, required: true, description: UUID conforming to IAB standard}
-  - {name: ifa_type, type: string, required: true, description: 'Source of the IFA as defined by IAB; one of dpid, sspid, sessionid'}
-  - name: lmt
-    type: string
-    enum: ['0', '1']
-    required: true
-    description: Boolean that if set to 1, user has requested ad tracking and measurement is disabled
+  Ifa:
+    fields:
+      ifa: {type: string, description: The advertising identifier, a UUID}
+      ifa_type: {type: string, values: [dpid, sspid, sessionid], description: "dpid: device provided ID; sspid: SSP provided ID; sessionid: session/synthetic ID"}
+      lmt: {type: string, values: ["0", "1"], description: "Limit ad tracking: \"0\" disabled, \"1\" enabled"}
 methods:
-- name: Advertising.advertisingId
-  cpp: advertisingId
-  summary: Returns the IFA.
-  result: AdvertisingIdResult
-  examples:
-  - result: {ifa: bd87dd10-8d1d-4b93-b1a6-a8e5d410e400, ifa_type: sspid, lmt: '0'}
+  advertisingId:
+    summary: Returns the identifier for advertising (IFA)
+    result: Ifa
+    examples: [{result: {ifa: bd87dd10-8d1d-4b93-b1a6-a8e5d410e400, ifa_type: sspid, lmt: "0"}}]

@@ -1,91 +1,70 @@
-# SpeechSynthesis API contract (shapes and wire names only). Behaviour lives in spec.md.
-# Wire names are exactly as sent/received. Event subscriptions are implicit: the transport adds the `listen` param.
-# kind: omitted = call; property = read-only getter; event = subscription.
-
+# SpeechSynthesis contract. Field guide: openspec/README.md
 module: SpeechSynthesis
-header: include/firebolt/speechsynthesis.h
-interface: Firebolt::SpeechSynthesis::ISpeechSynthesis
-description: A module for controlling speech synthesis over Firebolt.
-methods:
-- name: SpeechSynthesis.speak
-  cpp: speak
-  summary: Requests the system to speak an utterance. Returns an utteranceId if the request is accepted, otherwise an error is returned.
-  params:
-  - {name: text, type: string, required: true, description: Plain text or a well-formed SSML document}
-  - {name: lang, type: string, description: The language of the text in BCP 47}
-  - {name: voice, type: string, description: A voice name as returned by the voices method}
-  - {name: volume, type: number, minimum: 0, maximum: 1, description: The speaking volume, 0 (lowest) to 1 (highest) inclusive}
-  - {name: rate, type: number, minimum: 0.1, maximum: 10, description: The speaking rate, 0.1 (slowest) to 10 (fastest) inclusive}
-  - {name: pitch, type: number, minimum: 0, maximum: 2, description: The speaking pitch, 0 (lowest) to 2 (highest) inclusive}
-  - {name: pii, type: boolean, description: 'True if the text contains personally identifiable information, so logging and telemetry should be restricted; false if not set'}
-  result: {type: integer, minimum: 0}
-  examples:
-  - params: {text: I am a text waiting for speech., lang: en-US, voice: female-1, volume: 0.8, rate: 1, pitch: 1, pii: false}
-    result: 1
-- name: SpeechSynthesis.voices
-  cpp: voices
-  summary: Get available synthesis voices.
-  result_schema:
-    type: array
-    items:
-      type: object
-      required: [name, lang, default]
-      properties:
-        name: {type: string}
-        lang: {type: string}
-        default: {type: boolean}
-  examples:
-  - result:
-    - {name: Salli, lang: en-US, default: true}
-- name: SpeechSynthesis.cancel
-  cpp: cancel
-  summary: Cancel an utterance.
-  params:
-  - {name: utteranceId, type: integer, minimum: 0, required: true}
-  result: 'null'
-  examples:
-  - params: {utteranceId: 1}
-    result: null
-- name: SpeechSynthesis.pause
-  cpp: pause
-  summary: Pause an utterance.
-  params:
-  - {name: utteranceId, type: integer, minimum: 0, required: true}
-  result: 'null'
-  examples:
-  - params: {utteranceId: 1}
-    result: null
-- name: SpeechSynthesis.resume
-  cpp: resume
-  summary: Resume an utterance.
-  params:
-  - {name: utteranceId, type: integer, minimum: 0, required: true}
-  result: 'null'
-  examples:
-  - params: {utteranceId: 1}
-    result: null
-- name: SpeechSynthesis.onVoicesChanged
-  cpp: subscribeOnVoicesChanged
-  kind: event
-  summary: Notification when available voices change.
-  result_schema:
-    type: array
-    items:
-      type: object
-      required: [name, lang, default]
-      properties:
-        name: {type: string}
-        lang: {type: string}
-        default: {type: boolean}
-- name: SpeechSynthesis.onUtteranceEvent
-  cpp: subscribeOnUtteranceEvent
-  kind: event
-  summary: Notification for utterance lifecycle events.
-  result:
-    type: object
+description: Speech synthesis of text or SSML. Replaces the deprecated `TextToSpeech`.
+types:
+  Voice:
     fields:
-    - {name: utteranceId, type: integer, minimum: 0, required: true}
-    - name: event
-      type: string
-      enum: [synthesisStarting, playbackStarting, paused, resumed, completed, interrupted, networkFailed, synthesisFailed, playbackFailed]
-      required: true
+      name: {type: string, description: The voice name}
+      lang: {type: string, description: The language of the voice, BCP 47}
+      default: {type: boolean, cpp_name: _default, description: Whether this is the default voice for its language}
+  UtteranceEventEnum:
+    enum:
+      synthesisStarting: synthesisStarting
+      playbackStarting: playbackStarting
+      paused: paused
+      resumed: resumed
+      completed: completed
+      interrupted: interrupted
+      networkFailed: networkFailed
+      synthesisFailed: synthesisFailed
+      playbackFailed: playbackFailed
+    description: What happened to an utterance
+  UtteranceEvent:
+    fields:
+      utteranceId: {type: unsigned}
+      event: {type: UtteranceEventEnum}
+methods:
+  speak:
+    summary: Requests the platform to speak an utterance. Returns the utterance ID if the request is accepted
+    params:
+      text: {type: string, description: Plain text or a well-formed SSML document}
+      lang: {type: string, format: bcp47, optional: true, description: The language of the text, BCP 47}
+      voice: {type: string, optional: true, description: A voice name as returned by `voices`}
+      volume: {type: double, minimum: 0, maximum: 1, optional: true, description: "Speaking volume, 0 (lowest) to 1 (highest)"}
+      rate: {type: double, minimum: 0.1, maximum: 10, optional: true, description: "Speaking rate, 0.1 (slowest) to 10 (fastest)"}
+      pitch: {type: double, minimum: 0, maximum: 2, optional: true, description: "Speaking pitch, 0 (lowest) to 2 (highest)"}
+      pii: {type: boolean, optional: true, description: "True if the text contains personally identifiable information, so logging and telemetry are restricted; false if not set"}
+    result: unsigned
+    errors: [-50110, -50130]
+    examples:
+      - params: {text: I am a text waiting for speech., lang: en-US, voice: female-1, volume: 0.8, rate: 1, pitch: 1, pii: false}
+        result: 1
+  voices:
+    summary: Returns the available voices, in no particular order. The list is empty if no speech synthesis engine is available
+    result: "array<Voice>"
+    cpp_result: "std::pmr::vector<Voice>"
+    examples: [{result: [{name: Salli, lang: en-US, default: true}]}]
+  cancel:
+    summary: Cancels an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50130]
+    examples: [{params: {utteranceId: 1}}]
+  pause:
+    summary: Pauses an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50130]
+    examples: [{params: {utteranceId: 1}}]
+  resume:
+    summary: Resumes an utterance
+    params:
+      utteranceId: {type: unsigned}
+    errors: [-50110, -50130]
+    examples: [{params: {utteranceId: 1}}]
+events:
+  onVoicesChanged: {changes: voices}
+  onUtteranceEvent:
+    summary: Progress of an utterance
+    payload: UtteranceEvent
+    examples: [{payload: {utteranceId: 77, event: resumed}}]
